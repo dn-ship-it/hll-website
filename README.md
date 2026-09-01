@@ -19,6 +19,10 @@ npm run dev -- --port 43141
 
 Open [http://127.0.0.1:43141](http://127.0.0.1:43141).
 
+## Figma MCP prompt checklist
+
+Screen-by-screen Cursor prompts for instruction-driven UI build: [docs/figma-mcp-prompt-checklist.md](docs/figma-mcp-prompt-checklist.md)
+
 ## What this is based on
 
 | Source | What we could use |
