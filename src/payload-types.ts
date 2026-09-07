@@ -372,6 +372,42 @@ export interface Service {
     | 'hll-application';
   summary?: string | null;
   featuredImage?: (number | null) | Media;
+  /**
+   * HTML demos rendered inside the hero demo window. Each entry can map to a hero tab key.
+   */
+  demoWindow?: {
+    /**
+     * Label on the pill above the demo iframe.
+     */
+    selectorLabel?: string | null;
+    /**
+     * Optional per-tab demos. Set Tab key to match hero anchors (e.g. data-engineering).
+     */
+    demos?:
+      | {
+          tabKey: string;
+          title?: string | null;
+          contentType?: ('inline' | 'file') | null;
+          /**
+           * Full HTML document or fragment. Runs in a sandboxed iframe.
+           */
+          html?: string | null;
+          /**
+           * Upload a .html file (set Media type to HTML asset).
+           */
+          htmlFile?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Default HTML when no tab-specific demo matches.
+     */
+    fallbackHtml?: string | null;
+    /**
+     * Or upload a default .html demo file.
+     */
+    fallbackFile?: (number | null) | Media;
+  };
   layout?:
     | (
         | {
@@ -893,6 +929,23 @@ export interface ServicesSelect<T extends boolean = true> {
   variant?: T;
   summary?: T;
   featuredImage?: T;
+  demoWindow?:
+    | T
+    | {
+        selectorLabel?: T;
+        demos?:
+          | T
+          | {
+              tabKey?: T;
+              title?: T;
+              contentType?: T;
+              html?: T;
+              htmlFile?: T;
+              id?: T;
+            };
+        fallbackHtml?: T;
+        fallbackFile?: T;
+      };
   layout?:
     | T
     | {

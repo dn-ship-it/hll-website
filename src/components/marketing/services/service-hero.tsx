@@ -3,9 +3,17 @@
 import { useState } from "react";
 
 import type { HLLFoundationData } from "@/data/services/hll-foundation";
-import { MediaPlaceholder } from "@/components/marketing/home/primitives";
+import type { ServiceDemoConfig } from "@/types/service-demo";
 
-export function ServiceHero({ data }: { data: HLLFoundationData["hero"] }) {
+import { ServiceDemoWindow } from "./service-demo-window";
+
+export function ServiceHero({
+  data,
+  demo,
+}: {
+  data: HLLFoundationData["hero"];
+  demo: ServiceDemoConfig;
+}) {
   const [activeTab, setActiveTab] = useState<string>(data.tabs[0]?.id ?? "");
 
   return (
@@ -33,19 +41,7 @@ export function ServiceHero({ data }: { data: HLLFoundationData["hero"] }) {
           ))}
         </div>
 
-        <div
-          className="relative mt-8 overflow-hidden rounded-sm p-[clamp(1rem,3vw,2rem)]"
-          style={{
-            background: "linear-gradient(135deg, #FF5A1E 0%, #FF9126 45%, #EB3B3E 100%)",
-          }}
-        >
-          <div className="mx-auto max-w-3xl rounded-md border border-white/30 bg-white p-3 shadow-lg">
-            <MediaPlaceholder
-              className="aspect-[16/10] min-h-[clamp(10rem,28vw,16rem)] w-full"
-              label="HLL Foundation · Demo window"
-            />
-          </div>
-        </div>
+        <ServiceDemoWindow config={demo} activeTabKey={activeTab} />
       </div>
     </section>
   );

@@ -1,6 +1,12 @@
 import { hllFoundation } from "@/data/services/hll-foundation";
 import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import {
+  defaultFoundationDemo,
+  resolveServiceDemoConfig,
+} from "@/lib/payload/service-demo";
+import { getServiceBySlug } from "@/lib/payload/queries";
+import type { ServiceDemoConfig } from "@/types/service-demo";
 import { CapabilitiesSection } from "./capabilities-section";
 import {
   ExpertVoiceSection,
@@ -11,8 +17,18 @@ import { OutcomeSection } from "./outcome-section";
 import { ServiceBrandHeader, ServiceBreadcrumb } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
 
-export function HLLFoundationPage() {
+async function loadDemoConfig(): Promise<ServiceDemoConfig> {
+  try {
+    const service = await getServiceBySlug(hllFoundation.slug);
+    return resolveServiceDemoConfig(service) ?? defaultFoundationDemo;
+  } catch {
+    return defaultFoundationDemo;
+  }
+}
+
+export async function HLLFoundationPage() {
   const data = hllFoundation;
+  const demo = await loadDemoConfig();
 
   return (
     <MarketingShell>
@@ -23,7 +39,7 @@ export function HLLFoundationPage() {
         </div>
       </div>
 
-      <ServiceHero data={data.hero} />
+      <ServiceHero data={data.hero} demo={demo} />
       <CapabilitiesSection data={data.capabilities} />
       <OutcomeSection data={data.outcomes} />
       <EngagementSection data={data.engagement} />

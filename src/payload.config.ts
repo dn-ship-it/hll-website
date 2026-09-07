@@ -1,4 +1,5 @@
 import path from "path";
+import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
@@ -172,6 +173,48 @@ export default buildConfig({
       }
     } catch {
       // Global may not exist yet on first migration
+    }
+
+    try {
+      const foundation = await payload.find({
+        collection: "services",
+        where: { slug: { equals: "hll-foundation" } },
+        limit: 1,
+        overrideAccess: true,
+      });
+
+      if (foundation.totalDocs === 0) {
+        const demoPath = path.resolve(
+          dirname,
+          "../public/demos/hll-foundation-data-engineering.html",
+        );
+        const demoHtml = readFileSync(demoPath, "utf8");
+
+        await payload.create({
+          collection: "services",
+          overrideAccess: true,
+          data: {
+            title: "HLL Foundation",
+            slug: "hll-foundation",
+            variant: "hll-foundation",
+            summary: "Data your business can finally trust.",
+            _status: "published",
+            demoWindow: {
+              selectorLabel: "HLL Foundation",
+              demos: [
+                {
+                  tabKey: "data-engineering",
+                  title: "Data Engineering",
+                  contentType: "inline",
+                  html: demoHtml,
+                },
+              ],
+            },
+          },
+        });
+      }
+    } catch {
+      // Service seed is optional on first boot
     }
   },
 });
