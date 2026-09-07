@@ -49,3 +49,4 @@ next-env.d.ts
 # local analysis scratch
 /agent-tools
 /tmp-figma
+.tmp-figma.html
