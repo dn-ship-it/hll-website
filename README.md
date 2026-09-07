@@ -71,3 +71,4 @@ origin repo create-mirrored your-org/hll-cornerstone --namespace dn-ship-it
 
 - [CMS guide](docs/cms-payload.md)
 - [Figma MCP prompts](docs/figma-mcp-prompt-checklist.md)
+- [UI spec](docs/HLL_CORNERSTONE_UI_SPEC.md) · [Visual summary](docs/HLL_VISUAL_SUMMARY.md) · [Quick reference](docs/QUICK_REFERENCE.md)
