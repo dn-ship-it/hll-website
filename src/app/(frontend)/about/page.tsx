@@ -1,3 +1,5 @@
-import { createNavPage } from "@/components/marketing/nav-page";
+import { AboutPage } from "@/components/marketing/about/about-page";
 
-export default createNavPage("about");
+export default function AboutRoute() {
+  return <AboutPage />;
+}
