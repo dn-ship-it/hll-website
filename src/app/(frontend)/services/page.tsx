@@ -1,3 +1,5 @@
-import { createNavPage } from "@/components/marketing/nav-page";
+import { HLLFoundationPage } from "@/components/marketing/services/foundation-page";
 
-export default createNavPage("services");
+export default function ServicesPage() {
+  return <HLLFoundationPage />;
+}

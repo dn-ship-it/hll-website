@@ -128,12 +128,8 @@ export function OurImpact() {
         <SectionTitle>Our Impact</SectionTitle>
 
         <div
-          className="mt-10 grid gap-3"
-          style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 11rem), 1fr))",
-            gridAutoRows: "minmax(8rem, auto)",
-            gridAutoFlow: "dense",
-          }}
+          className="mt-10 grid auto-rows-min gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          style={{ gridAutoFlow: "dense" }}
         >
           {IMPACT_TILES.map((tile) => (
             <ImpactCard key={tile.id} tile={tile} />

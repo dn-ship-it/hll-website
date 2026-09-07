@@ -1,12 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-import {
-  GradientRevealText,
-  HLLButton,
-  SERVICE_VARIANTS,
-  VARIANT_GRADIENTS,
-  type ServiceVariant,
-} from "@/components/hll";
+import { HLLFoundationPage } from "@/components/marketing/services/foundation-page";
+import { SERVICE_VARIANTS, type ServiceVariant } from "@/components/hll";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 
 export default async function ServiceVerticalPage({
@@ -15,41 +10,35 @@ export default async function ServiceVerticalPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
+  if (slug === "hll-foundation") {
+    return <HLLFoundationPage />;
+  }
+
   if (!SERVICE_VARIANTS.includes(slug as ServiceVariant)) {
     notFound();
   }
 
-  const variant = slug as ServiceVariant;
-  const { colors } = VARIANT_GRADIENTS[variant];
-  const label = variant.replace("hll-", "").replace(/-/g, " ");
+  const label = slug.replace("hll-", "").replace(/-/g, " ");
 
   return (
     <MarketingShell>
-      <section className="px-6 py-20 lg:px-10 lg:py-28">
-        <div className="mx-auto max-w-4xl">
-          <div
-            className="mb-8 h-1.5 w-24 rounded-full"
-            style={{ background: `linear-gradient(90deg, ${colors.join(", ")})` }}
-          />
-          <p className="text-xs uppercase tracking-[0.24em] text-white/45">Service vertical</p>
-          <GradientRevealText
-            text={label}
-            variant={variant}
-            className="mt-6 capitalize"
-            fontSize="clamp(2rem, 5vw, 3.25rem)"
-          />
-          <p className="mt-8 text-lg leading-8 text-white/65">
-            Placeholder content for the {label} vertical. Replace with Figma MCP-built
-            sections as each frame is implemented.
+      <section className="px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
+        <div className="mx-auto max-w-3xl">
+          <p className="text-[10px] uppercase tracking-[0.24em] text-black/45">Service vertical</p>
+          <h1
+            className="mt-4 font-light capitalize text-black"
+            style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
+          >
+            {label}
+          </h1>
+          <p className="mt-6 text-sm leading-7 text-black/55">
+            This vertical page is coming soon. See the HLL Foundation services template at{" "}
+            <a href="/services" className="underline">
+              /services
+            </a>
+            .
           </p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <HLLButton href="/services" variant="services">
-              All services
-            </HLLButton>
-            <HLLButton href="/contact" variant={variant}>
-              Discuss {label}
-            </HLLButton>
-          </div>
         </div>
       </section>
     </MarketingShell>
