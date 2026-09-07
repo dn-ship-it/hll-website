@@ -1,7 +1,11 @@
 {
   "name": "hll-cornerstone",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dn-ship-it/hll-cornerstone.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --port 43141 --hostname 127.0.0.1",

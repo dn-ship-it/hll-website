@@ -1,34 +1,52 @@
 # HLL × Cornerstone India
 
-Marketing site + Payload CMS for the **HLL <> Cornerstone India** Figma design.
+React marketing site for **HLL <> Cornerstone India** — Next.js, Tailwind, LightFX UI components, and Payload CMS.
 
-## Quick start
+**Repository:** https://github.com/dn-ship-it/hll-cornerstone
+
+## Clone & run
 
 ```bash
+git clone https://github.com/dn-ship-it/hll-cornerstone.git
+cd hll-cornerstone
 cp .env.example .env
 npm install
 npm run dev
 ```
 
+Open http://127.0.0.1:43141
+
 | URL | What |
 |-----|------|
 | http://127.0.0.1:43141 | Marketing UI (home, nav pages, service verticals) |
-| http://127.0.0.1:43141/admin | Payload CMS |
+| http://127.0.0.1:43141/admin | Payload CMS (create admin user on first visit) |
 | http://127.0.0.1:43141/estimate | Planning effort dashboard |
 
 ## Stack
 
-- **Frontend:** Next.js 16, React 19, TypeScript, Tailwind, shadcn/ui
-- **Animation kit:** `src/components/hll/` — LightFX-style components (CSS fallback; swap in WebGL from HLL-UI-Demo)
-- **CMS:** Payload 3, block-based pages, SQLite dev / Postgres prod
+- **React 19** via **Next.js 16** (App Router, TypeScript)
+- **Tailwind CSS v4** + shadcn/ui
+- **LightFX components** in `src/components/hll/`
+- **Payload CMS 3** — SQLite locally, PostgreSQL in production
 
-## UI routes (Phase 1)
+## Project structure
+
+```
+src/
+├── app/(frontend)/     Public React pages
+├── app/(payload)/      CMS admin + API
+├── components/hll/     LightFX UI (buttons, shaders, headings)
+├── components/marketing/  Site shell, header, footer
+└── payload.config.ts   CMS schema
+```
+
+## UI routes
 
 | Route | Status |
 |-------|--------|
 | `/` | Home hero + service verticals |
-| `/services`, `/industries`, `/engagement`, `/about`, `/contact` | Nav shells with variant shaders |
-| `/services/hll-ai` … `/services/hll-application` | Service vertical pages |
+| `/services`, `/industries`, `/engagement`, `/about`, `/contact` | Nav pages |
+| `/services/hll-ai` … `/services/hll-application` | Service verticals |
 | `/[slug]` | CMS-driven pages from Payload |
 
 ## Copy full LightFX kit from HLL-UI-Demo
@@ -54,17 +72,11 @@ Then update imports in `src/components/hll/index.ts` to re-export the real compo
 
 ## Publish to `dn-ship-it/hll-cornerstone`
 
-Create the repo in your `dn-ship-it` namespace, then:
+This project targets **https://github.com/dn-ship-it/hll-cornerstone**. Push from your machine:
 
 ```bash
-git remote add dn-ship-it https://origin.cursor.com/git/dn-ship-it/hll-cornerstone.git
-git push -u dn-ship-it main
-```
-
-Or mirror from GitHub once `HLL-UI-Demo` / this project is on GitHub:
-
-```bash
-origin repo create-mirrored your-org/hll-cornerstone --namespace dn-ship-it
+git remote add origin https://github.com/dn-ship-it/hll-cornerstone.git  # if needed
+git push -u origin main
 ```
 
 ## Docs
