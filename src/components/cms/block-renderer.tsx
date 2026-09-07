@@ -4,31 +4,39 @@ import Link from "next/link";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import type { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 
+import {
+  BottomShader,
+  GradientRevealText,
+  HLLButton,
+  Shader,
+  type HLLVariant,
+} from "@/components/hll";
 import type { Page } from "@/payload-types";
 import { resolveMediaUrl } from "@/lib/payload/media";
 
 type LayoutBlock = NonNullable<Page["layout"]>[number];
 
-const variantColors: Record<string, string> = {
-  services: "from-violet-600/40 to-indigo-900/60",
-  industries: "from-emerald-600/40 to-teal-900/60",
-  engagement: "from-amber-600/40 to-orange-900/60",
-  about: "from-sky-600/40 to-blue-900/60",
-  contact: "from-rose-600/40 to-red-900/60",
-  "hll-ai": "from-fuchsia-600/40 to-purple-900/60",
-  "hll-trust": "from-cyan-600/40 to-slate-900/60",
-  "hll-foundation": "from-lime-600/40 to-green-900/60",
-  "hll-ontology": "from-indigo-600/40 to-violet-900/60",
-  "hll-people": "from-pink-600/40 to-rose-900/60",
-  "hll-application": "from-blue-600/40 to-indigo-900/60",
-};
-
-function variantGradient(variant?: string | null) {
-  return variantColors[variant ?? "services"] ?? variantColors.services;
+function asVariant(value?: string | null): HLLVariant {
+  const allowed: HLLVariant[] = [
+    "services",
+    "industries",
+    "engagement",
+    "about",
+    "contact",
+    "hll-ai",
+    "hll-trust",
+    "hll-foundation",
+    "hll-ontology",
+    "hll-people",
+    "hll-application",
+  ];
+  return allowed.includes(value as HLLVariant) ? (value as HLLVariant) : "services";
 }
 
 function HeroBlock({ block }: { block: Extract<LayoutBlock, { blockType: "hero" }> }) {
   const bgUrl = resolveMediaUrl(block.backgroundImage);
+  const variant = asVariant(block.variant);
+  const duration = block.revealSpeed === "normal" ? 600 : 1200;
 
   return (
     <section className="relative overflow-hidden border-b border-white/10 py-24 md:py-32">
@@ -42,17 +50,19 @@ function HeroBlock({ block }: { block: Extract<LayoutBlock, { blockType: "hero" 
           priority
         />
       ) : (
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${variantGradient(block.variant)}`}
-        />
+        <BottomShader variant={variant} intensity={65} />
       )}
       <div className="relative mx-auto max-w-5xl px-6">
         <p className="mb-3 text-xs uppercase tracking-[0.2em] text-white/50">
           {block.variant?.replace(/-/g, " ")}
         </p>
-        <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-white md:text-6xl">
-          {block.heading}
-        </h1>
+        <GradientRevealText
+          text={block.heading}
+          variant={
+            variant.startsWith("hll-") ? (variant as "hll-ai") : "hll-ai"
+          }
+          duration={duration}
+        />
         {block.subheading ? (
           <p className="mt-6 max-w-2xl text-lg text-white/70">{block.subheading}</p>
         ) : null}
@@ -102,20 +112,20 @@ function ShaderSectionBlock({
 }: {
   block: Extract<LayoutBlock, { blockType: "shaderSection" }>;
 }) {
-  const height = block.placement === "bottom" ? "h-48" : "h-[50vh]";
+  const variant = asVariant(block.variant);
+  const placement = block.placement === "bottom" ? "bottom" : "full";
+
+  if (placement === "bottom") {
+    return (
+      <div className="relative h-48 overflow-hidden border-y border-white/10">
+        <BottomShader variant={variant} intensity={block.intensity ?? 100} />
+      </div>
+    );
+  }
 
   return (
-    <div
-      className={`relative ${height} overflow-hidden border-y border-white/10`}
-      aria-hidden
-    >
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${variantGradient(block.variant)}`}
-        style={{ opacity: (block.intensity ?? 100) / 100 }}
-      />
-      <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-[0.25em] text-white/30">
-        LightFX shader · {block.variant}
-      </div>
+    <div className="relative h-[50vh] overflow-hidden border-y border-white/10">
+      <Shader variant={variant} intensity={block.intensity ?? 100} placement="full" />
     </div>
   );
 }
@@ -135,9 +145,6 @@ function LottieBlock({
       <div className="rounded-2xl border border-dashed border-white/20 bg-white/5 p-12">
         <p className="text-white/70">Lottie animation</p>
         {src ? <p className="mt-2 text-xs text-white/40">{src}</p> : null}
-        <p className="mt-2 text-xs text-white/30">
-          Wire to LightFX player · loop {block.loop ? "on" : "off"}
-        </p>
       </div>
     </section>
   );
@@ -182,12 +189,9 @@ function HtmlEmbedBlock({
 function CtaBlock({ block }: { block: Extract<LayoutBlock, { blockType: "cta" }> }) {
   return (
     <section className="mx-auto max-w-5xl px-6 py-16 text-center">
-      <Link
-        href={block.href}
-        className={`inline-flex items-center rounded-full bg-gradient-to-r px-8 py-3 text-sm font-medium text-white ${variantGradient(block.variant)}`}
-      >
+      <HLLButton href={block.href} variant={asVariant(block.variant)} size="lg">
         {block.label}
-      </Link>
+      </HLLButton>
     </section>
   );
 }

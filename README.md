@@ -1,6 +1,6 @@
-# HLL × Cornerstone
+# HLL × Cornerstone India
 
-React (Next.js) marketing site for **HLL <> Cornerstone India**, with **Payload CMS** for content and the LightFX animation kit on the frontend.
+Marketing site + Payload CMS for the **HLL <> Cornerstone India** Figma design.
 
 ## Quick start
 
@@ -12,33 +12,62 @@ npm run dev
 
 | URL | What |
 |-----|------|
-| http://127.0.0.1:43141 | Public site (CMS-driven when pages are published) |
-| http://127.0.0.1:43141/admin | **Payload CMS** — create admin user on first visit |
-
-On first boot, a sample **Home** page and site navigation are seeded automatically. Edit them in `/admin`, or add pages with slugs like `about`, `services`, and `contact`.
-
-Full CMS guide: [docs/cms-payload.md](docs/cms-payload.md)
-
-Figma MCP build prompts: [docs/figma-mcp-prompt-checklist.md](docs/figma-mcp-prompt-checklist.md)
+| http://127.0.0.1:43141 | Marketing UI (home, nav pages, service verticals) |
+| http://127.0.0.1:43141/admin | Payload CMS |
+| http://127.0.0.1:43141/estimate | Planning effort dashboard |
 
 ## Stack
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind, shadcn/ui
-- **CMS:** Payload 3 (self-hosted), Lexical rich text, block-based pages
-- **DB:** SQLite locally → PostgreSQL in production (`docker-compose.yml` for Postgres + MinIO)
-- **Files:** `./media` locally → S3 / MinIO in production
+- **Animation kit:** `src/components/hll/` — LightFX-style components (CSS fallback; swap in WebGL from HLL-UI-Demo)
+- **CMS:** Payload 3, block-based pages, SQLite dev / Postgres prod
 
-## Production-like local stack
+## UI routes (Phase 1)
+
+| Route | Status |
+|-------|--------|
+| `/` | Home hero + service verticals |
+| `/services`, `/industries`, `/engagement`, `/about`, `/contact` | Nav shells with variant shaders |
+| `/services/hll-ai` … `/services/hll-application` | Service vertical pages |
+| `/[slug]` | CMS-driven pages from Payload |
+
+## Copy full LightFX kit from HLL-UI-Demo
+
+The private repo `buildwithteky/HLL-UI-Demo` is not accessible from this environment. To drop in the real WebGL components:
 
 ```bash
-docker compose up -d
-# Set DATABASE_URI and S3_* in .env, then npm run dev
+# After cloning HLL-UI-Demo locally:
+cp -R HLL-UI-Demo/src/components/hll-button workspace/src/components/hll/hll-button
+cp -R HLL-UI-Demo/src/components/shader workspace/src/components/hll/shader
+# … repeat for heading-anim, ripple, tag, etc.
 ```
 
-## Scripts
+Reference: [LightFX docs](https://hok-sdf-lensblur-lyart.vercel.app/docs.html)
 
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | Next.js + Payload on port 43141 |
-| `npm run generate:types` | Regenerate `src/payload-types.ts` after schema changes |
-| `npm run generate:importmap` | Regenerate admin import map |
+Then update imports in `src/components/hll/index.ts` to re-export the real components.
+
+## Figma MCP build workflow
+
+1. Open [Figma file](https://www.figma.com/design/m08lOU9DrNl1YNI4kfFvl5/HLL-%3C%3E-Cornerstone-India) → **Pages** cluster (not node `16:3`, which is the project board)
+2. Use [docs/figma-mcp-prompt-checklist.md](docs/figma-mcp-prompt-checklist.md) screen-by-screen
+3. Each frame → route under `src/app/(frontend)/`
+
+## Publish to `dn-ship-it/hll-cornerstone`
+
+Create the repo in your `dn-ship-it` namespace, then:
+
+```bash
+git remote add dn-ship-it https://origin.cursor.com/git/dn-ship-it/hll-cornerstone.git
+git push -u dn-ship-it main
+```
+
+Or mirror from GitHub once `HLL-UI-Demo` / this project is on GitHub:
+
+```bash
+origin repo create-mirrored your-org/hll-cornerstone --namespace dn-ship-it
+```
+
+## Docs
+
+- [CMS guide](docs/cms-payload.md)
+- [Figma MCP prompts](docs/figma-mcp-prompt-checklist.md)

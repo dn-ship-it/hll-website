@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HLL × Cornerstone",
-  description: "HLL Cornerstone India marketing site powered by Payload CMS.",
+  title: "HLL × Cornerstone India",
+  description:
+    "Healthcare logistics and digital innovation — marketing site with Payload CMS and LightFX UI.",
 };
 
 export default function RootLayout({

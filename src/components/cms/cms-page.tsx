@@ -1,18 +1,18 @@
 import type { Page, SiteSetting } from "@/payload-types";
 
 import { BlockRenderer } from "./block-renderer";
-import { SiteShell } from "./site-shell";
+import { MarketingShell } from "@/components/marketing/marketing-shell";
 
 export function CmsPage({
   page,
-  settings,
+  settings: _settings,
 }: {
   page: Page;
   settings: SiteSetting | null;
 }) {
   return (
-    <SiteShell settings={settings}>
+    <MarketingShell>
       <BlockRenderer blocks={page.layout} />
-    </SiteShell>
+    </MarketingShell>
   );
 }
