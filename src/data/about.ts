@@ -87,7 +87,7 @@ export const aboutPage = {
       role: "Chief Operating Officer",
     })) satisfies AboutTeamMember[],
     ctaLabel: "View all team",
-    ctaHref: "/about",
+    ctaHref: "/team",
   },
   promise: {
     eyebrow: "Our promise",

@@ -128,7 +128,7 @@ export function WhoWeAre() {
 
         <div className="mt-10 flex justify-center">
           <a
-            href="/about"
+            href="/team"
             className="inline-flex rounded-full border border-black/20 px-5 py-2 text-[11px] uppercase tracking-[0.18em] text-black/80"
           >
             View all team
