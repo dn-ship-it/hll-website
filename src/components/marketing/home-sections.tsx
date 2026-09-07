@@ -64,10 +64,10 @@ export function HomeHero() {
       <BottomShader variant="hll-ai" intensity={75} />
       <div className="relative mx-auto w-full max-w-[90rem]">
         <p className="mb-[clamp(1rem,3vw,1.5rem)] text-[clamp(0.65rem,1.5vw,0.75rem)] uppercase tracking-[0.24em] text-white/45">
-          HLL Lifecare · Cornerstone India
+          HLL Lifecare × Cornerstone India
         </p>
         <GradientRevealText
-          text="Health logistics at national scale"
+          text="Intelligence and Imagination"
           variant="hll-ai"
           className="max-w-[min(100%,52rem)]"
           fontSize="clamp(2.25rem, 5.5vw + 0.5rem, 4.5rem)"
@@ -79,15 +79,15 @@ export function HomeHero() {
             lineHeight: 1.65,
           }}
         >
-          A digital experience for procurement, distribution, and innovation across
-          India&apos;s public health ecosystem — built with the LightFX design system.
+          A next-generation digital experience for healthcare logistics, trust
+          infrastructure, and AI-led public health innovation.
         </p>
         <div className="mt-[clamp(1.5rem,4vw,2.5rem)] flex flex-wrap gap-3">
           <HLLButton href="/services" variant="services" size="lg">
             Explore services
           </HLLButton>
           <HLLButton href="/contact" variant="contact" size="lg">
-            Partner with us
+            Talk to us
           </HLLButton>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function ServiceVerticals() {
               className="mt-2 font-semibold text-white"
               style={{ fontSize: "clamp(1.75rem, 3vw + 0.5rem, 2.25rem)" }}
             >
-              Six integrated service verticals
+              Six service verticals
             </h2>
           </div>
           <p
@@ -120,8 +120,8 @@ export function ServiceVerticals() {
               maxWidth: "36rem",
             }}
           >
-            Grid columns reflow automatically — one column on phones, two on tablets,
-            three or more on wide screens depending on available width.
+            Each vertical maps to the LightFX shader preset system for a consistent
+            brand experience across pages.
           </p>
         </div>
 
@@ -160,7 +160,7 @@ export function ServiceVerticals() {
                 </p>
                 <span className="mt-5 inline-flex">
                   <HLLButton href={`/services/${variant}`} variant={variant} size="sm">
-                    Learn more
+                    View vertical
                   </HLLButton>
                 </span>
               </Link>
@@ -202,26 +202,9 @@ export function MissionStrip() {
 
 export function ProofStrip() {
   const stats = [
-    {
-      label: "Coverage",
-      value: "Pan-India",
-      detail: "Central & state health programs",
-    },
-    {
-      label: "Platforms",
-      value: "CMS + APIs",
-      detail: "Bilingual, GIGW-ready content",
-    },
-    {
-      label: "Experience",
-      value: "LightFX",
-      detail: "Shader-driven brand system",
-    },
-    {
-      label: "Operations",
-      value: "24×7",
-      detail: "Mission-critical logistics",
-    },
+    { label: "Public health reach", value: "Pan-India" },
+    { label: "Digital platforms", value: "CMS + APIs" },
+    { label: "Experience system", value: "LightFX" },
   ];
 
   return (
@@ -245,12 +228,6 @@ export function ProofStrip() {
                 style={{ fontSize: "clamp(1.35rem, 2vw + 0.5rem, 1.75rem)" }}
               >
                 {stat.value}
-              </p>
-              <p
-                className="mt-1 text-white/50"
-                style={{ fontSize: "clamp(0.75rem, 1vw + 0.35rem, 0.8125rem)" }}
-              >
-                {stat.detail}
               </p>
             </article>
           ))}
