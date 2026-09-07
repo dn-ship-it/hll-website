@@ -13,9 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HLL × Cornerstone India",
-  description:
-    "Healthcare logistics and digital innovation — marketing site with Payload CMS and LightFX UI.",
+  title: "Hyper Lychee Labs",
+  description: "Future-facing initiatives for accelerated advancement.",
 };
 
 export default function RootLayout({
@@ -24,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0c0c0c] antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-white antialiased text-black`}
       >
         {children}
       </body>

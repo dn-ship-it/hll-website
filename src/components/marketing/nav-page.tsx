@@ -51,7 +51,7 @@ export function createNavPage(variant: NavVariant) {
 
   return function NavPage() {
     return (
-      <MarketingShell activeVariant={variant} shaderVariant={variant}>
+      <MarketingShell>
         <section className="px-6 py-20 lg:px-10 lg:py-28">
           <div className="mx-auto max-w-4xl">
             <p className="text-xs uppercase tracking-[0.24em] text-white/45">{copy.eyebrow}</p>

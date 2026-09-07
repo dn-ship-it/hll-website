@@ -160,7 +160,21 @@
 
 @media (prefers-reduced-motion: reduce) {
   .shader-layer,
-  .gtr-text .gtr-sweep.is-running {
+  .gtr-text .gtr-sweep.is-running,
+  .promise-shader,
+  .lab-shader,
+  .footer-shader {
     animation: none !important;
   }
+}
+
+.promise-shader,
+.lab-shader {
+  animation: shader-drift 20s ease-in-out infinite;
+  filter: blur(48px) saturate(130%);
+  transform: scale(1.1);
+}
+
+.footer-shader {
+  animation: shader-drift 24s ease-in-out infinite;
 }

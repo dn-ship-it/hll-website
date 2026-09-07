@@ -24,7 +24,7 @@ export default async function ServiceVerticalPage({
   const label = variant.replace("hll-", "").replace(/-/g, " ");
 
   return (
-    <MarketingShell activeVariant="services" shaderVariant="services">
+    <MarketingShell>
       <section className="px-6 py-20 lg:px-10 lg:py-28">
         <div className="mx-auto max-w-4xl">
           <div
