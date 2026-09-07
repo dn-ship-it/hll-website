@@ -1,4 +1,4 @@
-export function AboutBreadcrumb({ items }: { items: readonly string[] }) {
+export function CareersBreadcrumb({ items }: { items: readonly string[] }) {
   return (
     <nav aria-label="Breadcrumb" className="text-[10px] uppercase tracking-[0.22em] text-black/45">
       {items.map((item, i) => (
@@ -11,7 +11,7 @@ export function AboutBreadcrumb({ items }: { items: readonly string[] }) {
   );
 }
 
-export function AboutPageHeader({
+export function CareersSectionLabel({
   title,
   accentColor,
 }: {

@@ -1,4 +1,4 @@
-import type { Page, Service, SiteSetting } from "@/payload-types";
+import type { Career, Page, Service, SiteSetting } from "@/payload-types";
 
 import { getPayloadClient } from "./client";
 
@@ -39,4 +39,19 @@ export async function getServiceBySlug(slug: string): Promise<Service | null> {
   });
 
   return result.docs[0] ?? null;
+}
+
+export async function getPublishedCareers(): Promise<Career[]> {
+  const payload = await getPayloadClient();
+  const result = await payload.find({
+    collection: "careers",
+    where: {
+      status: { equals: "published" },
+    },
+    sort: "-updatedAt",
+    limit: 50,
+    depth: 2,
+  });
+
+  return result.docs;
 }

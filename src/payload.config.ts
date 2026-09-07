@@ -216,5 +216,54 @@ export default buildConfig({
     } catch {
       // Service seed is optional on first boot
     }
+
+    try {
+      const careers = await payload.find({
+        collection: "careers",
+        limit: 1,
+        overrideAccess: true,
+      });
+
+      if (careers.totalDocs === 0) {
+        await payload.create({
+          collection: "careers",
+          overrideAccess: true,
+          data: {
+            title: "Senior Data Engineer",
+            slug: "senior-data-engineer",
+            status: "published",
+            expiryDate: "2026-10-15",
+            externalApplyUrl: "mailto:careers@hyperlychee.com?subject=Senior%20Data%20Engineer",
+            summary: {
+              root: {
+                type: "root",
+                children: [
+                  {
+                    type: "paragraph",
+                    children: [
+                      {
+                        type: "text",
+                        text: "Design and build lakehouse pipelines, governed metrics, and integration layers for enterprise clients.",
+                        version: 1,
+                      },
+                    ],
+                    direction: "ltr",
+                    format: "",
+                    indent: 0,
+                    version: 1,
+                  },
+                ],
+                direction: "ltr",
+                format: "",
+                indent: 0,
+                version: 1,
+              },
+            },
+          },
+        });
+      }
+    } catch {
+      // Careers seed is optional on first boot
+    }
   },
 });
