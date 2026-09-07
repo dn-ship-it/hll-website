@@ -8,13 +8,13 @@ type DemoEntry = NonNullable<NonNullable<Service["demoWindow"]>["demos"]>[number
 function resolveDemoItem(entry: DemoEntry): ServiceDemoItem | null {
   if (!entry?.tabKey) return null;
 
-  const html =
-    entry.contentType === "inline" && entry.html?.trim() ? entry.html.trim() : null;
-
+  const html = entry.html?.trim() ? entry.html.trim() : null;
   const htmlUrl =
-    entry.contentType === "file"
+    !html && entry.htmlFile
       ? resolveMediaUrl(entry.htmlFile as Media | number | null | undefined)
-      : null;
+      : entry.contentType === "file"
+        ? resolveMediaUrl(entry.htmlFile as Media | number | null | undefined)
+        : null;
 
   if (!html && !htmlUrl) return null;
 
@@ -64,3 +64,18 @@ export const defaultFoundationDemo: ServiceDemoConfig = {
   fallbackHtml: null,
   fallbackUrl: "/demos/hll-foundation-data-engineering.html",
 };
+
+export function normalizeServiceDemoConfig(
+  config: Partial<ServiceDemoConfig> | null | undefined,
+): ServiceDemoConfig {
+  if (!config) return defaultFoundationDemo;
+
+  const items = Array.isArray(config.items) ? config.items : defaultFoundationDemo.items;
+
+  return {
+    selectorLabel: config.selectorLabel || defaultFoundationDemo.selectorLabel,
+    items,
+    fallbackHtml: config.fallbackHtml ?? defaultFoundationDemo.fallbackHtml,
+    fallbackUrl: config.fallbackUrl ?? defaultFoundationDemo.fallbackUrl,
+  };
+}

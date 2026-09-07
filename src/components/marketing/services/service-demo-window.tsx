@@ -10,10 +10,12 @@ type ServiceDemoWindowProps = {
 };
 
 function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
-  const match = config.items.find((item) => item.tabKey === activeTabKey);
+  const items = config.items ?? [];
+
+  const match = items.find((item) => item.tabKey === activeTabKey);
   if (match) return match;
 
-  if (config.items[0]) return config.items[0];
+  if (items[0]) return items[0];
 
   return {
     tabKey: activeTabKey,
@@ -23,7 +25,18 @@ function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
 }
 
 export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowProps) {
-  const demo = useMemo(() => pickDemo(config, activeTabKey), [config, activeTabKey]);
+  const safeConfig = useMemo(
+    () => ({
+      ...config,
+      items: Array.isArray(config.items) ? config.items : [],
+      selectorLabel: config.selectorLabel || "HLL Foundation",
+    }),
+    [config],
+  );
+  const demo = useMemo(
+    () => pickDemo(safeConfig, activeTabKey),
+    [safeConfig, activeTabKey],
+  );
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -45,7 +58,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
         <div className="relative mx-auto max-w-[min(100%,52rem)] rounded-sm bg-white p-[clamp(0.75rem,2vw,1rem)] shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
           <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2">
             <span className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-[#f3f3f3] px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] text-black/70">
-              {config.selectorLabel}
+              {safeConfig.selectorLabel}
               <svg
                 aria-hidden
                 className="size-3 text-black/45"
@@ -72,7 +85,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
               </div>
             ) : demo.html ? (
               <iframe
-                title={`${config.selectorLabel} demo`}
+                title={`${safeConfig.selectorLabel} demo`}
                 srcDoc={demo.html}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
                 className="block h-[clamp(12rem,32vw,18rem)] w-full border-0 bg-white"
@@ -80,7 +93,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
               />
             ) : (
               <iframe
-                title={`${config.selectorLabel} demo`}
+                title={`${safeConfig.selectorLabel} demo`}
                 src={demo.htmlUrl ?? undefined}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
                 className="block h-[clamp(12rem,32vw,18rem)] w-full border-0 bg-white"

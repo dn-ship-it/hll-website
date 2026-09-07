@@ -3,6 +3,7 @@ import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import {
   defaultFoundationDemo,
+  normalizeServiceDemoConfig,
   resolveServiceDemoConfig,
 } from "@/lib/payload/service-demo";
 import { getServiceBySlug } from "@/lib/payload/queries";
@@ -20,7 +21,8 @@ import { ServiceHero } from "./service-hero";
 async function loadDemoConfig(): Promise<ServiceDemoConfig> {
   try {
     const service = await getServiceBySlug(hllFoundation.slug);
-    return resolveServiceDemoConfig(service) ?? defaultFoundationDemo;
+    const resolved = resolveServiceDemoConfig(service);
+    return normalizeServiceDemoConfig(resolved ?? defaultFoundationDemo);
   } catch {
     return defaultFoundationDemo;
   }
