@@ -1,3 +1,5 @@
-import { createNavPage } from "@/components/marketing/nav-page";
+import { ContactPage } from "@/components/marketing/contact/contact-page";
 
-export default createNavPage("contact");
+export default function ContactRoute() {
+  return <ContactPage />;
+}
