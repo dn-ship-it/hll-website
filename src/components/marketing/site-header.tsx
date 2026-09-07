@@ -18,7 +18,7 @@ const NAV_ITEMS: { label: string; href: string; variant: NavVariant }[] = [
 export function SiteHeader({ activeVariant }: { activeVariant?: NavVariant }) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/8 bg-[#0c0c0c]/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5 lg:px-10">
+      <div className="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-6 px-[clamp(1.25rem,4vw,2.5rem)] py-5">
         <Link href="/" className="group flex items-center gap-3">
           <span
             className="flex size-9 items-center justify-center rounded-full text-xs font-bold text-white"

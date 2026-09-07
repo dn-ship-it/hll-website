@@ -14,7 +14,7 @@ const FOOTER_LINKS = [
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/8 bg-[#090909]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[1.2fr_1fr] lg:px-10">
+      <div className="mx-auto grid w-full max-w-[90rem] gap-10 px-[clamp(1.25rem,4vw,2.5rem)] py-16 lg:grid-cols-[1.2fr_1fr]">
         <div>
           <p className="text-lg font-semibold text-white">HLL × Cornerstone India</p>
           <p className="mt-3 max-w-md text-sm leading-7 text-white/55">

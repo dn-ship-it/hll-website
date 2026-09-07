@@ -16,7 +16,7 @@ export function MarketingShell({
     <div className="relative min-h-screen bg-[#0c0c0c] text-white">
       {shaderVariant ? <Shader variant={shaderVariant} intensity={55} /> : null}
       <SiteHeader activeVariant={activeVariant} />
-      <main>{children}</main>
+      <main className="overflow-x-clip">{children}</main>
       <SiteFooter />
     </div>
   );
