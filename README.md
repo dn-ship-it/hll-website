@@ -1,37 +1,44 @@
-# HLL × Cornerstone — UI + API effort estimate
+# HLL × Cornerstone
 
-Interactive estimate for building the **HLL <> Cornerstone India** website UI and the APIs behind it, using the existing LightFX animation components and Cursor.
+React (Next.js) marketing site for **HLL <> Cornerstone India**, with **Payload CMS** for content and the LightFX animation kit on the frontend.
 
-**Recommended slice: 23–33 working days** (186–260 hours) for one engineer using Cursor. Plan on the likely **33 days / 260 hours** unless the Figma Pages cluster is only a handful of templates.
-
-- UI only (Figma + existing shaders, mock data): **12–17 days**
-- UI + content APIs (recommended): **23–33 days**
-- Full HLL Lifecare RFP (bilingual GIGW CMS, chatbot, STQC, migration): **55–75 days** for two people — the official tender allows 90 calendar days
-
-The animation kit already covers HLLButton, outline button, heading reveal, full-page / bottom shaders, ripples, and tags. Rebuilding those shaders would add 3–4 weeks.
-
-## Run locally
+## Quick start
 
 ```bash
+cp .env.example .env
 npm install
-npm run dev -- --port 43141
+npm run dev
 ```
 
-Open [http://127.0.0.1:43141](http://127.0.0.1:43141).
+| URL | What |
+|-----|------|
+| http://127.0.0.1:43141 | Public site (CMS-driven when pages are published) |
+| http://127.0.0.1:43141/admin | **Payload CMS** — create admin user on first visit |
 
-## Figma MCP prompt checklist
+On first boot, a sample **Home** page and site navigation are seeded automatically. Edit them in `/admin`, or add pages with slugs like `about`, `services`, and `contact`.
 
-Screen-by-screen Cursor prompts for instruction-driven UI build: [docs/figma-mcp-prompt-checklist.md](docs/figma-mcp-prompt-checklist.md)
+Full CMS guide: [docs/cms-payload.md](docs/cms-payload.md)
 
-## What this is based on
+Figma MCP build prompts: [docs/figma-mcp-prompt-checklist.md](docs/figma-mcp-prompt-checklist.md)
 
-| Source | What we could use |
-| --- | --- |
-| [Figma](https://www.figma.com/design/m08lOU9DrNl1YNI4kfFvl5/HLL-%3C%3E-Cornerstone-India?node-id=16-3) | File loaded. Node `16:3` is the project board (Cover / Pages / Status / Tags). Export is restricted; Dev Mode needs login. Site IA is inferred from the animation kit, not a full frame inventory. |
-| [Animation docs](https://hok-sdf-lensblur-lyart.vercel.app/docs.html) | Eight production components + LightFX Studio + SDF lens blur. |
-| `github.com/buildwithteky/HLL-UI-Demo` | Private (404). Local zips were not available in this environment. |
-| [lifecarehll.com](https://www.lifecarehll.com) + HLL website RFP | ~60 public URLs and CMS modules (pages, tenders, careers, media, contact). |
+## Stack
 
-## Stack of this repo
+- **Frontend:** Next.js 16, React 19, TypeScript, Tailwind, shadcn/ui
+- **CMS:** Payload 3 (self-hosted), Lexical rich text, block-based pages
+- **DB:** SQLite locally → PostgreSQL in production (`docker-compose.yml` for Postgres + MinIO)
+- **Files:** `./media` locally → S3 / MinIO in production
 
-Next.js, TypeScript, Tailwind, shadcn/ui. The app is the estimate itself — it is not the HLL website.
+## Production-like local stack
+
+```bash
+docker compose up -d
+# Set DATABASE_URI and S3_* in .env, then npm run dev
+```
+
+## Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Next.js + Payload on port 43141 |
+| `npm run generate:types` | Regenerate `src/payload-types.ts` after schema changes |
+| `npm run generate:importmap` | Regenerate admin import map |

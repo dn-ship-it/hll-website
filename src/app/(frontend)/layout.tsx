@@ -13,9 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HLL × Cornerstone — UI + API estimate",
-  description:
-    "Effort estimate to develop the Cornerstone India HLL website UI and APIs using the existing LightFX animation kit and Cursor.",
+  title: "HLL × Cornerstone",
+  description: "HLL Cornerstone India marketing site powered by Payload CMS.",
 };
 
 export default function RootLayout({
