@@ -1,3 +1,5 @@
-import { createNavPage } from "@/components/marketing/nav-page";
+import { HealthcareIndustryPage } from "@/components/marketing/industries/healthcare-page";
 
-export default createNavPage("industries");
+export default function IndustriesPage() {
+  return <HealthcareIndustryPage />;
+}
