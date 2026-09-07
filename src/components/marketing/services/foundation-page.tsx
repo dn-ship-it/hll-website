@@ -6,6 +6,7 @@ import {
   normalizeServiceDemoConfig,
   resolveServiceDemoConfig,
 } from "@/lib/payload/service-demo";
+import { mapServiceToFoundation } from "@/lib/payload/marketing-mappers";
 import { getServiceBySlug } from "@/lib/payload/queries";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 import { CapabilitiesSection } from "./capabilities-section";
@@ -18,19 +19,23 @@ import { OutcomeSection } from "./outcome-section";
 import { ServiceBrandHeader, ServiceBreadcrumb } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
 
-async function loadDemoConfig(): Promise<ServiceDemoConfig> {
+async function loadFoundationPage() {
   try {
     const service = await getServiceBySlug(hllFoundation.slug);
+    const data = mapServiceToFoundation(service, hllFoundation);
     const resolved = resolveServiceDemoConfig(service);
-    return normalizeServiceDemoConfig(resolved ?? defaultFoundationDemo);
+    const demo = normalizeServiceDemoConfig(resolved ?? defaultFoundationDemo);
+    return { data, demo };
   } catch {
-    return defaultFoundationDemo;
+    return {
+      data: hllFoundation,
+      demo: defaultFoundationDemo as ServiceDemoConfig,
+    };
   }
 }
 
 export async function HLLFoundationPage() {
-  const data = hllFoundation;
-  const demo = await loadDemoConfig();
+  const { data, demo } = await loadFoundationPage();
 
   return (
     <MarketingShell>

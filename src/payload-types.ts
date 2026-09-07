@@ -71,9 +71,11 @@ export interface Config {
     media: Media;
     pages: Page;
     services: Service;
+    industries: Industry;
     tenders: Tender;
     posts: Post;
     careers: Career;
+    'team-members': TeamMember;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -85,9 +87,11 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
+    industries: IndustriesSelect<false> | IndustriesSelect<true>;
     tenders: TendersSelect<false> | TendersSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     careers: CareersSelect<false> | CareersSelect<true>;
+    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -99,9 +103,11 @@ export interface Config {
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'hi') | ('en' | 'hi')[];
   globals: {
     'site-settings': SiteSetting;
+    'marketing-content': MarketingContent;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'marketing-content': MarketingContentSelect<false> | MarketingContentSelect<true>;
   };
   locale: 'en' | 'hi';
   widgets: {
@@ -408,6 +414,101 @@ export interface Service {
      */
     fallbackFile?: (number | null) | Media;
   };
+  /**
+   * Structured content for the marketing service page template.
+   */
+  pageContent?: {
+    brand?: string | null;
+    breadcrumb?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    hero?: {
+      headline?: string | null;
+      tabs?:
+        | {
+            id: string;
+            label: string;
+          }[]
+        | null;
+      image?: (number | null) | Media;
+    };
+    capabilities?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      items?:
+        | {
+            id: string;
+            index?: string | null;
+            title: string;
+            description?: string | null;
+            subServices?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+          }[]
+        | null;
+      tools?: {
+        cloud?:
+          | {
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        data?:
+          | {
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+      };
+    };
+    outcomes?: {
+      title?: string | null;
+      cards?:
+        | {
+            stat: string;
+            description?: string | null;
+            hasMedia?: boolean | null;
+            image?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    engagement?: {
+      title?: string | null;
+      intro?: string | null;
+      cards?:
+        | {
+            id: string;
+            title: string;
+            client?: string | null;
+            tag?: string | null;
+            description?: string | null;
+            variant?: ('navy' | 'orange' | 'image') | null;
+            image?: (number | null) | Media;
+          }[]
+        | null;
+    };
+    expertVoice?: {
+      quote?: string | null;
+      name?: string | null;
+      role?: string | null;
+      company?: string | null;
+      portrait?: (number | null) | Media;
+    };
+    relatedServices?:
+      | {
+          label: string;
+          href: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
   layout?:
     | (
         | {
@@ -563,6 +664,108 @@ export interface Service {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industries".
+ */
+export interface Industry {
+  id: number;
+  title: string;
+  slug: string;
+  pageContent?: {
+    category?: string | null;
+    breadcrumb?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    accentColor?: string | null;
+    hero?: {
+      title?: string | null;
+      headline?: string | null;
+      overlayLabel?: string | null;
+      image?: (number | null) | Media;
+      filters?:
+        | {
+            id: string;
+            label: string;
+          }[]
+        | null;
+    };
+    capabilities?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      sidebar?:
+        | {
+            label: string;
+            id?: string | null;
+          }[]
+        | null;
+      items?:
+        | {
+            id: string;
+            index?: string | null;
+            title: string;
+            description?: string | null;
+            cards?:
+              | {
+                  id: string;
+                  title: string;
+                  client?: string | null;
+                  tag?: string | null;
+                  description?: string | null;
+                  variant?: ('navy' | 'orange' | 'image') | null;
+                  image?: (number | null) | Media;
+                }[]
+              | null;
+          }[]
+        | null;
+    };
+    clientVoice?: {
+      eyebrow?: string | null;
+      quote?: string | null;
+      name?: string | null;
+      role?: string | null;
+      company?: string | null;
+      slideCount?: number | null;
+      galleryImage?: (number | null) | Media;
+    };
+    experts?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      people?:
+        | {
+            name: string;
+            bio?: string | null;
+            photo?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    lab?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      selectorLabel?: string | null;
+      demoUrl?: string | null;
+    };
+    relatedIndustries?:
+      | {
+          label: string;
+          href: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenders".
  */
 export interface Tender {
@@ -674,6 +877,23 @@ export interface Career {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members".
+ */
+export interface TeamMember {
+  id: number;
+  name: string;
+  slug: string;
+  role: string;
+  bio?: string | null;
+  department: 'leadership' | 'engineering' | 'design' | 'operations';
+  featured?: boolean | null;
+  sortOrder?: number | null;
+  photo?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -713,6 +933,10 @@ export interface PayloadLockedDocument {
         value: number | Service;
       } | null)
     | ({
+        relationTo: 'industries';
+        value: number | Industry;
+      } | null)
+    | ({
         relationTo: 'tenders';
         value: number | Tender;
       } | null)
@@ -723,6 +947,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'careers';
         value: number | Career;
+      } | null)
+    | ({
+        relationTo: 'team-members';
+        value: number | TeamMember;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -946,6 +1174,112 @@ export interface ServicesSelect<T extends boolean = true> {
         fallbackHtml?: T;
         fallbackFile?: T;
       };
+  pageContent?:
+    | T
+    | {
+        brand?: T;
+        breadcrumb?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        hero?:
+          | T
+          | {
+              headline?: T;
+              tabs?:
+                | T
+                | {
+                    id?: T;
+                    label?: T;
+                  };
+              image?: T;
+            };
+        capabilities?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    id?: T;
+                    index?: T;
+                    title?: T;
+                    description?: T;
+                    subServices?:
+                      | T
+                      | {
+                          label?: T;
+                          id?: T;
+                        };
+                  };
+              tools?:
+                | T
+                | {
+                    cloud?:
+                      | T
+                      | {
+                          label?: T;
+                          id?: T;
+                        };
+                    data?:
+                      | T
+                      | {
+                          label?: T;
+                          id?: T;
+                        };
+                  };
+            };
+        outcomes?:
+          | T
+          | {
+              title?: T;
+              cards?:
+                | T
+                | {
+                    stat?: T;
+                    description?: T;
+                    hasMedia?: T;
+                    image?: T;
+                    id?: T;
+                  };
+            };
+        engagement?:
+          | T
+          | {
+              title?: T;
+              intro?: T;
+              cards?:
+                | T
+                | {
+                    id?: T;
+                    title?: T;
+                    client?: T;
+                    tag?: T;
+                    description?: T;
+                    variant?: T;
+                    image?: T;
+                  };
+            };
+        expertVoice?:
+          | T
+          | {
+              quote?: T;
+              name?: T;
+              role?: T;
+              company?: T;
+              portrait?: T;
+            };
+        relatedServices?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+      };
   layout?:
     | T
     | {
@@ -1050,6 +1384,121 @@ export interface ServicesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industries_select".
+ */
+export interface IndustriesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  pageContent?:
+    | T
+    | {
+        category?: T;
+        breadcrumb?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        accentColor?: T;
+        hero?:
+          | T
+          | {
+              title?: T;
+              headline?: T;
+              overlayLabel?: T;
+              image?: T;
+              filters?:
+                | T
+                | {
+                    id?: T;
+                    label?: T;
+                  };
+            };
+        capabilities?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              sidebar?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              items?:
+                | T
+                | {
+                    id?: T;
+                    index?: T;
+                    title?: T;
+                    description?: T;
+                    cards?:
+                      | T
+                      | {
+                          id?: T;
+                          title?: T;
+                          client?: T;
+                          tag?: T;
+                          description?: T;
+                          variant?: T;
+                          image?: T;
+                        };
+                  };
+            };
+        clientVoice?:
+          | T
+          | {
+              eyebrow?: T;
+              quote?: T;
+              name?: T;
+              role?: T;
+              company?: T;
+              slideCount?: T;
+              galleryImage?: T;
+            };
+        experts?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              people?:
+                | T
+                | {
+                    name?: T;
+                    bio?: T;
+                    photo?: T;
+                    id?: T;
+                  };
+            };
+        lab?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              selectorLabel?: T;
+              demoUrl?: T;
+            };
+        relatedIndustries?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenders_select".
  */
 export interface TendersSelect<T extends boolean = true> {
@@ -1118,6 +1567,22 @@ export interface CareersSelect<T extends boolean = true> {
         file?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members_select".
+ */
+export interface TeamMembersSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  role?: T;
+  bio?: T;
+  department?: T;
+  featured?: T;
+  sortOrder?: T;
+  photo?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1217,6 +1682,162 @@ export interface SiteSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing-content".
+ */
+export interface MarketingContent {
+  id: number;
+  home?: {
+    heroHeading?: string | null;
+    heroImage?: (number | null) | Media;
+    heroCtaLabel?: string | null;
+    heroCtaHref?: string | null;
+    clientLogos?:
+      | {
+          name?: string | null;
+          logo?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  about?: {
+    accentColor?: string | null;
+    hero?: {
+      eyebrow?: string | null;
+      headline?: string | null;
+      description?: string | null;
+      image?: (number | null) | Media;
+      ctaLabel?: string | null;
+      ctaHref?: string | null;
+    };
+    story?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      paragraphs?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      image?: (number | null) | Media;
+    };
+    values?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      items?:
+        | {
+            id: string;
+            title: string;
+            description?: string | null;
+          }[]
+        | null;
+    };
+    promise?: {
+      eyebrow?: string | null;
+      line1?: string | null;
+      line2?: string | null;
+    };
+    clients?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      logos?:
+        | {
+            name?: string | null;
+            logo?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
+    };
+  };
+  contact?: {
+    accentColor?: string | null;
+    hero?: {
+      eyebrow?: string | null;
+      headline?: string | null;
+      description?: string | null;
+    };
+    details?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      email?: string | null;
+      linkedin?: string | null;
+      linkedinLabel?: string | null;
+      officeImage?: (number | null) | Media;
+    };
+    locations?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      items?:
+        | {
+            id: string;
+            city: string;
+            label?: string | null;
+            address?: string | null;
+          }[]
+        | null;
+    };
+  };
+  careers?: {
+    accentColor?: string | null;
+    hero?: {
+      eyebrow?: string | null;
+      headline?: string | null;
+      description?: string | null;
+      image?: (number | null) | Media;
+    };
+    culture?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      description?: string | null;
+      image?: (number | null) | Media;
+      highlights?:
+        | {
+            id: string;
+            title: string;
+            body?: string | null;
+          }[]
+        | null;
+    };
+  };
+  team?: {
+    accentColor?: string | null;
+    hero?: {
+      eyebrow?: string | null;
+      headline?: string | null;
+      description?: string | null;
+    };
+    grid?: {
+      eyebrow?: string | null;
+      title?: string | null;
+    };
+    join?: {
+      title?: string | null;
+      description?: string | null;
+      ctaLabel?: string | null;
+      ctaHref?: string | null;
+    };
+  };
+  footerServices?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  footerIndustries?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  cta?: {
+    headline?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1249,6 +1870,200 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
         ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing-content_select".
+ */
+export interface MarketingContentSelect<T extends boolean = true> {
+  home?:
+    | T
+    | {
+        heroHeading?: T;
+        heroImage?: T;
+        heroCtaLabel?: T;
+        heroCtaHref?: T;
+        clientLogos?:
+          | T
+          | {
+              name?: T;
+              logo?: T;
+              id?: T;
+            };
+      };
+  about?:
+    | T
+    | {
+        accentColor?: T;
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              description?: T;
+              image?: T;
+              ctaLabel?: T;
+              ctaHref?: T;
+            };
+        story?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              paragraphs?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              image?: T;
+            };
+        values?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    id?: T;
+                    title?: T;
+                    description?: T;
+                  };
+            };
+        promise?:
+          | T
+          | {
+              eyebrow?: T;
+              line1?: T;
+              line2?: T;
+            };
+        clients?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              logos?:
+                | T
+                | {
+                    name?: T;
+                    logo?: T;
+                    id?: T;
+                  };
+            };
+      };
+  contact?:
+    | T
+    | {
+        accentColor?: T;
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              description?: T;
+            };
+        details?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              email?: T;
+              linkedin?: T;
+              linkedinLabel?: T;
+              officeImage?: T;
+            };
+        locations?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    id?: T;
+                    city?: T;
+                    label?: T;
+                    address?: T;
+                  };
+            };
+      };
+  careers?:
+    | T
+    | {
+        accentColor?: T;
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              description?: T;
+              image?: T;
+            };
+        culture?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              image?: T;
+              highlights?:
+                | T
+                | {
+                    id?: T;
+                    title?: T;
+                    body?: T;
+                  };
+            };
+      };
+  team?:
+    | T
+    | {
+        accentColor?: T;
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              description?: T;
+            };
+        grid?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+            };
+        join?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              ctaLabel?: T;
+              ctaHref?: T;
+            };
+      };
+  footerServices?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  footerIndustries?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        headline?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
       };
   updatedAt?: T;
   createdAt?: T;

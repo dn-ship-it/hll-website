@@ -7,10 +7,33 @@ export type TeamMember = {
   bio: string;
   department: TeamDepartment;
   featured?: boolean;
+  photoUrl?: string | null;
 };
 
-export const teamPageContent = {
-  breadcrumb: ["About", "Team"] as const,
+export type TeamPageContent = {
+  breadcrumb: readonly string[];
+  accentColor: string;
+  hero: {
+    eyebrow: string;
+    headline: string;
+    description: string;
+  };
+  grid: {
+    eyebrow: string;
+    title: string;
+    filters: readonly { id: string; label: string }[];
+  };
+  join: {
+    title: string;
+    description: string;
+    ctaLabel: string;
+    ctaHref: string;
+  };
+  members: TeamMember[];
+};
+
+export const teamPageContent: TeamPageContent = {
+  breadcrumb: ["About", "Team"],
   accentColor: "#9AB4D3",
   hero: {
     eyebrow: "Team",
@@ -27,7 +50,7 @@ export const teamPageContent = {
       { id: "engineering", label: "Engineering" },
       { id: "design", label: "Design" },
       { id: "operations", label: "Operations" },
-    ] as const,
+    ],
   },
   join: {
     title: "Join the mission",
@@ -95,6 +118,5 @@ export const teamPageContent = {
       department: "operations",
     },
   ] satisfies TeamMember[],
-} as const;
+};
 
-export type TeamPageContent = typeof teamPageContent;

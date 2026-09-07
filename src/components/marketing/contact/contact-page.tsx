@@ -1,12 +1,23 @@
 import { contactPageContent } from "@/data/contact-page";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { mapContactPage } from "@/lib/payload/marketing-mappers";
+import { getMarketingContent } from "@/lib/payload/queries";
 import { ContactBreadcrumb } from "./contact-chrome";
 import { ContactDetailsPanel, ContactLocationsSection } from "./contact-details";
 import { ContactFormSection } from "./contact-form";
 import { ContactHero } from "./contact-hero";
 
-export function ContactPage() {
-  const content = contactPageContent;
+async function loadContactData() {
+  try {
+    const marketing = await getMarketingContent();
+    return mapContactPage(marketing, contactPageContent);
+  } catch {
+    return contactPageContent;
+  }
+}
+
+export async function ContactPage() {
+  const content = await loadContactData();
 
   return (
     <MarketingShell>

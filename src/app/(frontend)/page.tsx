@@ -8,11 +8,33 @@ import {
   InsideTheLab,
   WhoWeAre,
 } from "@/components/marketing/home/sections-bottom";
+import { getMarketingContent } from "@/lib/payload/queries";
+import { getCmsImageUrl } from "@/lib/payload/marketing-mappers";
 
-export default function HomePage() {
+export default async function HomePage() {
+  let heroHeading: string | undefined;
+  let heroCtaLabel: string | undefined;
+  let heroCtaHref: string | undefined;
+  let heroImageUrl: string | null = null;
+
+  try {
+    const marketing = await getMarketingContent();
+    heroHeading = marketing?.home?.heroHeading ?? undefined;
+    heroCtaLabel = marketing?.home?.heroCtaLabel ?? undefined;
+    heroCtaHref = marketing?.home?.heroCtaHref ?? undefined;
+    heroImageUrl = getCmsImageUrl(marketing?.home?.heroImage);
+  } catch {
+    // defaults in HomeHero
+  }
+
   return (
     <MarketingShell>
-      <HomeHero />
+      <HomeHero
+        heading={heroHeading}
+        ctaLabel={heroCtaLabel}
+        ctaHref={heroCtaHref}
+        heroImageUrl={heroImageUrl}
+      />
       <WhatWeDo />
       <OurClients />
       <OurPromise />

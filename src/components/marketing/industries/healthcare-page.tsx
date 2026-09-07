@@ -1,6 +1,8 @@
 import { healthcareIndustry } from "@/data/industries/healthcare";
 import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { mapIndustryPage } from "@/lib/payload/marketing-mappers";
+import { getIndustryBySlug } from "@/lib/payload/queries";
 import { ClientVoiceSection } from "./client-voice-section";
 import { IndustryCapabilitiesSection } from "./industry-capabilities";
 import {
@@ -12,8 +14,17 @@ import { IndustryLabSection } from "./industry-lab-section";
 import { NamedExpertsSection } from "./named-experts-section";
 import { RelatedIndustriesSection } from "./related-industries-section";
 
-export function HealthcareIndustryPage() {
-  const data = healthcareIndustry;
+async function loadHealthcareData() {
+  try {
+    const industry = await getIndustryBySlug("healthcare");
+    return mapIndustryPage(industry, healthcareIndustry);
+  } catch {
+    return healthcareIndustry;
+  }
+}
+
+export async function HealthcareIndustryPage() {
+  const data = await loadHealthcareData();
 
   return (
     <MarketingShell>

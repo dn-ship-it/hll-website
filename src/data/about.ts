@@ -16,8 +16,58 @@ export type AboutProcessStep = {
   body: string;
 };
 
-export const aboutPage = {
-  breadcrumb: ["About"] as const,
+export type AboutPageData = {
+  breadcrumb: readonly string[];
+  accentColor: string;
+  hero: {
+    eyebrow: string;
+    headline: string;
+    description: string;
+    ctaLabel: string;
+    ctaHref: string;
+  };
+  story: {
+    eyebrow: string;
+    title: string;
+    paragraphs: readonly string[];
+  };
+  values: {
+    eyebrow: string;
+    title: string;
+    items: AboutValue[];
+  };
+  process: {
+    eyebrow: string;
+    title: string;
+    steps: AboutProcessStep[];
+  };
+  team: {
+    eyebrow: string;
+    title: string;
+    members: AboutTeamMember[];
+    ctaLabel: string;
+    ctaHref: string;
+  };
+  promise: {
+    eyebrow: string;
+    line1: string;
+    line2: string;
+  };
+  lab: {
+    eyebrow: string;
+    title: string;
+    selectorLabel: string;
+    demoUrl: string;
+  };
+  clients: {
+    eyebrow: string;
+    title: string;
+    slotCount: number;
+  };
+};
+
+export const aboutPage: AboutPageData = {
+  breadcrumb: ["About"],
   accentColor: "#9AB4D3",
   hero: {
     eyebrow: "About us",
@@ -105,6 +155,5 @@ export const aboutPage = {
     title: "People & companies we've partnered with",
     slotCount: 8,
   },
-} as const;
+};
 
-export type AboutPageData = typeof aboutPage;

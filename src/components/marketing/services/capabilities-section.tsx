@@ -54,7 +54,7 @@ export function CapabilitiesSection({
               </div>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-black/55">{item.description}</p>
 
-              {item.subServices.length > 0 ? (
+              {item.subServices && item.subServices.length > 0 ? (
                 <div className="mt-5 flex flex-wrap gap-2">
                   {item.subServices.map((sub) => (
                     <ToolPill key={sub} label={sub} />

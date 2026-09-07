@@ -21,7 +21,42 @@ export type EngagementCard = {
   variant: "navy" | "orange" | "image";
 };
 
-export const hllFoundation = {
+export type HLLFoundationData = {
+  slug: string;
+  brand: string;
+  breadcrumb: readonly string[];
+  hero: {
+    headline: string;
+    tabs: { id: string; label: string }[];
+  };
+  capabilities: {
+    eyebrow: string;
+    title: string;
+    items: CapabilityItem[];
+    tools: {
+      cloud: readonly string[];
+      data: readonly string[];
+    };
+  };
+  outcomes: {
+    title: string;
+    cards: OutcomeCard[];
+  };
+  engagement: {
+    title: string;
+    intro: string;
+    cards: EngagementCard[];
+  };
+  expertVoice: {
+    quote: string;
+    name: string;
+    role: string;
+    company: string;
+  };
+  relatedServices: readonly { label: string; href: string }[];
+};
+
+export const hllFoundation: HLLFoundationData = {
   slug: "hll-foundation",
   brand: "HLL Foundation",
   breadcrumb: ["Services", "HLL Foundation"],
@@ -174,6 +209,5 @@ export const hllFoundation = {
     { label: "HLL Cloud Build", href: "/services/hll-application" },
     { label: "HLL Cybersec", href: "/services/hll-trust" },
   ],
-} as const;
+};
 
-export type HLLFoundationData = typeof hllFoundation;

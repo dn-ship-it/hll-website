@@ -14,8 +14,37 @@ export type ContactLocation = {
   label?: string;
 };
 
-export const contactPageContent = {
-  breadcrumb: ["Contact"] as const,
+export type ContactPageContent = {
+  breadcrumb: readonly string[];
+  accentColor: string;
+  hero: {
+    eyebrow: string;
+    headline: string;
+    description: string;
+  };
+  form: {
+    title: string;
+    submitLabel: string;
+    successMessage: string;
+    errorMessage: string;
+    fields: ContactFormField[];
+  };
+  details: {
+    eyebrow: string;
+    title: string;
+    email: string;
+    linkedin: string;
+    linkedinLabel: string;
+  };
+  locations: {
+    eyebrow: string;
+    title: string;
+    items: ContactLocation[];
+  };
+};
+
+export const contactPageContent: ContactPageContent = {
+  breadcrumb: ["Contact"],
   accentColor: "#076EB8",
   hero: {
     eyebrow: "Contact",
@@ -95,6 +124,5 @@ export const contactPageContent = {
       },
     ] satisfies ContactLocation[],
   },
-} as const;
+};
 
-export type ContactPageContent = typeof contactPageContent;

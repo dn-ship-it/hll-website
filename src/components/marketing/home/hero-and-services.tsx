@@ -2,7 +2,20 @@ import Link from "next/link";
 
 import { MediaPlaceholder, OutlinePillButton } from "./primitives";
 
-export function HomeHero() {
+export function HomeHero({
+  heading,
+  ctaLabel = "See our work",
+  ctaHref = "#impact",
+  heroImageUrl,
+}: {
+  heading?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  heroImageUrl?: string | null;
+}) {
+  const title =
+    heading ?? "We champion future-facing initiatives for an accelerated advancement.";
+
   return (
     <section className="px-[clamp(1.25rem,4vw,3rem)] pb-[clamp(2rem,5vw,3rem)] pt-[clamp(1.5rem,3vw,2rem)]">
       <div className="mx-auto max-w-[90rem]">
@@ -10,16 +23,25 @@ export function HomeHero() {
           className="max-w-[min(100%,56rem)] font-light leading-[1.15] tracking-tight text-black"
           style={{ fontSize: "clamp(2rem, 4.5vw + 0.5rem, 3.75rem)" }}
         >
-          We champion future-facing initiatives for an accelerated advancement.
+          {title}
         </h1>
 
         <div className="relative mt-[clamp(1.5rem,4vw,2.5rem)]">
-          <MediaPlaceholder
-            className="aspect-[16/7] min-h-[clamp(12rem,40vw,22rem)] w-full rounded-sm"
-            label="Hero media"
-          />
+          {heroImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={heroImageUrl}
+              alt=""
+              className="aspect-[16/7] min-h-[clamp(12rem,40vw,22rem)] w-full rounded-sm object-cover"
+            />
+          ) : (
+            <MediaPlaceholder
+              className="aspect-[16/7] min-h-[clamp(12rem,40vw,22rem)] w-full rounded-sm"
+              label="Hero media"
+            />
+          )}
           <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6">
-            <OutlinePillButton href="#impact">See our work</OutlinePillButton>
+            <OutlinePillButton href={ctaHref}>{ctaLabel}</OutlinePillButton>
           </div>
         </div>
       </div>

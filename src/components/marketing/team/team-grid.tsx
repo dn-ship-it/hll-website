@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { TeamMember, TeamPageContent } from "@/data/team-page";
+import { CmsImage } from "@/components/marketing/cms-image";
 import { MediaPlaceholder, SectionTitle } from "@/components/marketing/home/primitives";
 
 import { TeamSectionLabel } from "./team-chrome";
@@ -10,14 +11,26 @@ import { TeamSectionLabel } from "./team-chrome";
 function TeamMemberCard({ member }: { member: TeamMember }) {
   return (
     <article>
-      <MediaPlaceholder
-        className={`aspect-[3/4] w-full ${
-          member.featured
-            ? "min-h-[clamp(14rem,32vw,20rem)]"
-            : "min-h-[clamp(12rem,28vw,18rem)]"
-        }`}
-        label={member.name}
-      />
+      {member.photoUrl ? (
+        <CmsImage
+          src={member.photoUrl}
+          alt={member.name}
+          className={`aspect-[3/4] w-full ${
+            member.featured
+              ? "min-h-[clamp(14rem,32vw,20rem)]"
+              : "min-h-[clamp(12rem,28vw,18rem)]"
+          }`}
+        />
+      ) : (
+        <MediaPlaceholder
+          className={`aspect-[3/4] w-full ${
+            member.featured
+              ? "min-h-[clamp(14rem,32vw,20rem)]"
+              : "min-h-[clamp(12rem,28vw,18rem)]"
+          }`}
+          label={member.name}
+        />
+      )}
       <p className="mt-4 text-sm font-medium text-black">{member.name}</p>
       <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-black/50">{member.role}</p>
       <p className="mt-2 text-[10px] uppercase leading-5 tracking-[0.12em] text-black/45">

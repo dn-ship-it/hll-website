@@ -10,13 +10,17 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Careers } from "./collections/Careers";
+import { Industries } from "./collections/Industries";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
 import { Posts } from "./collections/Posts";
 import { Services } from "./collections/Services";
+import { TeamMembers } from "./collections/TeamMembers";
 import { Tenders } from "./collections/Tenders";
 import { Users } from "./collections/Users";
+import { MarketingContent } from "./globals/MarketingContent";
 import { SiteSettings } from "./globals/SiteSettings";
+import { seedMarketingContent } from "./lib/payload/seed-marketing";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -35,8 +39,8 @@ export default buildConfig({
       titleSuffix: "— HLL CMS",
     },
   },
-  collections: [Users, Media, Pages, Services, Tenders, Posts, Careers],
-  globals: [SiteSettings],
+  collections: [Users, Media, Pages, Services, Industries, Tenders, Posts, Careers, TeamMembers],
+  globals: [SiteSettings, MarketingContent],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -265,5 +269,7 @@ export default buildConfig({
     } catch {
       // Careers seed is optional on first boot
     }
+
+    await seedMarketingContent(payload);
   },
 });

@@ -9,7 +9,8 @@ import {
   isNoticeActive,
   mapCareerToNotice,
 } from "@/lib/payload/careers";
-import { getPublishedCareers } from "@/lib/payload/queries";
+import { mapCareersPageContent } from "@/lib/payload/marketing-mappers";
+import { getMarketingContent, getPublishedCareers } from "@/lib/payload/queries";
 import { CareersBreadcrumb } from "./careers-chrome";
 import { CareersCultureSection } from "./careers-culture";
 import { CareersHero } from "./careers-hero";
@@ -21,15 +22,23 @@ async function loadNotices(): Promise<CareerNotice[]> {
     const mapped = careers.map(mapCareerToNotice).filter((notice) => isNoticeActive(notice));
     if (mapped.length > 0) return mapped;
   } catch {
-    // fall through to defaults
+    // fall through
   }
 
   return defaultCareerNotices.filter((notice) => isNoticeActive(notice));
 }
 
+async function loadCareersContent() {
+  try {
+    const marketing = await getMarketingContent();
+    return mapCareersPageContent(marketing, careersPageContent);
+  } catch {
+    return careersPageContent;
+  }
+}
+
 export async function CareersPage() {
-  const content = careersPageContent;
-  const notices = await loadNotices();
+  const [content, notices] = await Promise.all([loadCareersContent(), loadNotices()]);
 
   return (
     <MarketingShell>

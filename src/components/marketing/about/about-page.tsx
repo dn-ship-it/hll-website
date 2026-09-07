@@ -1,6 +1,8 @@
 import { aboutPage } from "@/data/about";
 import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { mapAboutPage } from "@/lib/payload/marketing-mappers";
+import { getMarketingContent } from "@/lib/payload/queries";
 import { AboutBreadcrumb } from "./about-chrome";
 import { AboutClientsSection } from "./about-clients";
 import { AboutHero } from "./about-hero";
@@ -10,8 +12,17 @@ import { AboutStorySection } from "./about-story";
 import { AboutTeamSection } from "./about-team";
 import { AboutValuesSection } from "./about-values";
 
-export function AboutPage() {
-  const data = aboutPage;
+async function loadAboutData() {
+  try {
+    const marketing = await getMarketingContent();
+    return mapAboutPage(marketing, aboutPage);
+  } catch {
+    return aboutPage;
+  }
+}
+
+export async function AboutPage() {
+  const data = await loadAboutData();
 
   return (
     <MarketingShell>

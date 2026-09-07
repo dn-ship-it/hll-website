@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { hllVariantOptions, pageBlocks, seoFields } from "../blocks/index";
+import { servicePageContentFields } from "../fields/marketing-fields";
 
 export const Services: CollectionConfig = {
   slug: "services",
@@ -133,6 +134,15 @@ export const Services: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: "pageContent",
+      type: "group",
+      label: "Service page content",
+      admin: {
+        description: "Structured content for the marketing service page template.",
+      },
+      fields: servicePageContentFields,
     },
     {
       name: "layout",
