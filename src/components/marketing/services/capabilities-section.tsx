@@ -55,13 +55,11 @@ export function CapabilitiesSection({
               <p className="mt-4 max-w-3xl text-sm leading-7 text-black/55">{item.description}</p>
 
               {item.subServices.length > 0 ? (
-                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   {item.subServices.map((sub) => (
-                    <li key={sub} className="text-xs text-black/50">
-                      · {sub}
-                    </li>
+                    <ToolPill key={sub} label={sub} />
                   ))}
-                </ul>
+                </div>
               ) : null}
 
               {item.id === "tools" ? (
@@ -75,14 +73,9 @@ export function CapabilitiesSection({
                     </div>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Stack</p>
-                    <div
-                      className="mt-3 grid gap-2"
-                      style={{
-                        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 6rem), 1fr))",
-                      }}
-                    >
-                      {data.tools.stack.map((t) => (
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Data</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {data.tools.data.map((t) => (
                         <ToolPill key={t} label={t} />
                       ))}
                     </div>

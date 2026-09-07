@@ -100,8 +100,8 @@ export const hllFoundation = {
       },
     ] satisfies CapabilityItem[],
     tools: {
-      cloud: ["AWS", "Azure", "GCP", "Digital Ocean"],
-      stack: ["Kotlin", "Python", "Spark", "dbt", "Airflow", "Snowflake"],
+      cloud: ["AWS", "Azure", "GCP", "Snowflake"],
+      data: ["Databricks", "BigQuery", "Digital Ocean", "dbt", "Airflow", "Spark"],
     },
   },
   outcomes: {
@@ -168,11 +168,11 @@ export const hllFoundation = {
     company: "McKinsey",
   },
   relatedServices: [
-    { label: "HLL Momentum", href: "/services/hll-application" },
-    { label: "HLL Governance & Trust", href: "/services/hll-trust" },
-    { label: "HLL Kinetic", href: "/services/hll-ai" },
-    { label: "HLL Motion", href: "/services/hll-people" },
-    { label: "HLL Ontology", href: "/services/hll-ontology" },
+    { label: "HLL Infrastructure", href: "/services/hll-foundation" },
+    { label: "HLL Data Science & AI Studio", href: "/services/hll-ai" },
+    { label: "HLL Beyond AI", href: "/services/hll-ai" },
+    { label: "HLL Cloud Build", href: "/services/hll-application" },
+    { label: "HLL Cybersec", href: "/services/hll-trust" },
   ],
 } as const;
 

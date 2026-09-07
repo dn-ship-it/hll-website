@@ -47,6 +47,11 @@ export function EngagementSection({ data }: { data: HLLFoundationData["engagemen
               >
                 {card.description}
               </p>
+              {card.variant !== "image" ? (
+                <span className="mt-6 text-[10px] uppercase tracking-[0.18em] text-white/90 underline decoration-white/40 underline-offset-4">
+                  Learn more
+                </span>
+              ) : null}
             </article>
           ))}
         </div>

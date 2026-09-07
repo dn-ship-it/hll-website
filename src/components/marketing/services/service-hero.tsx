@@ -6,7 +6,7 @@ import type { HLLFoundationData } from "@/data/services/hll-foundation";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 export function ServiceHero({ data }: { data: HLLFoundationData["hero"] }) {
-  const [activeTab, setActiveTab] = useState(data.tabs[0]?.id);
+  const [activeTab, setActiveTab] = useState<string>(data.tabs[0]?.id ?? "");
 
   return (
     <section className="px-[clamp(1.25rem,4vw,3rem)] pb-[clamp(2rem,5vw,3rem)] pt-6">
