@@ -178,3 +178,67 @@
 .footer-shader {
   animation: shader-drift 24s ease-in-out infinite;
 }
+
+/* LightFX "BlockGL — jewel refraction" WebGL kit — ported from HLL-UI-Demo's
+   shader.css and menu-trigger-overlay.css. Static, hand-authored classes:
+   this is what shader-variants.ts's cva() composes, nothing is generated
+   here. Lives in the global sheet because Next.js only accepts plain global
+   CSS from the root layout, and the cva class names must stay unhashed. */
+
+.shader {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+}
+
+.shader__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The canvas isn't mounted at this point, so this just keeps the plain
+   background from reading as a broken effect. */
+.shader--disabled {
+  opacity: 0.5;
+}
+
+/* Scopes the jewel to its nearest positioned ancestor rather than taking over
+   the viewport, for section-level backgrounds. */
+.shader--contained {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Background usage: the canvas covers real page content, so it must never
+   swallow the clicks and hovers meant for it. */
+.shader--passthrough {
+  pointer-events: none;
+}
+
+/* The image is real, in-flow content — not fixed, or there would be nothing
+   on the page to scroll. `.shader` is already fixed, so it stays pinned to the
+   viewport on its own while the content scrolls underneath. */
+.menu-trigger-overlay {
+  position: relative;
+  width: 100%;
+}
+
+.menu-trigger-overlay__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.menu-trigger-overlay__content {
+  position: relative;
+}
+
+.menu-trigger-overlay--under .menu-trigger-overlay__content {
+  z-index: 1;
+}
