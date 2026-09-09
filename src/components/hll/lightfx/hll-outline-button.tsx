@@ -9,13 +9,7 @@
 // preset's plain gray hairline and only the hover gradient follows the
 // variant, matching the preset's own resting/hover split.
 import Link from "next/link";
-import {
-  useEffect,
-  useRef,
-  type CSSProperties,
-  type ElementType,
-  type ReactNode,
-} from "react";
+import { useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
 
 import type { HLLVariant } from "../variants";
 
@@ -26,7 +20,8 @@ import {
   SIZE_SCALE,
   type LightSize,
 } from "./light-variants";
-import { cloneDefinition, LightComponent } from "./lightfx-runtime";
+import { cloneDefinition } from "./lightfx-runtime";
+import { useLightComponent } from "./use-light-component";
 
 type Overrides = {
   gradient?: string[];
@@ -107,15 +102,11 @@ export function HLLOutlineButton({
 }: HLLOutlineButtonProps) {
   const ref = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    if (!ref.current) return undefined;
-    const fx = new LightComponent(
-      ref.current,
-      buildDefinition(variant, { gradient, direction, radius, glow, animated, size }),
-    );
-    return () => fx.dispose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, gradient?.join(","), direction, radius, glow, animated, size]);
+  useLightComponent(
+    ref,
+    () => buildDefinition(variant, { gradient, direction, radius, glow, animated, size }),
+    [variant, gradient?.join(","), direction, radius, glow, animated, size],
+  );
 
   const isInert = disabled || isLoading;
   const { text, box } = BASE_DEFINITION;

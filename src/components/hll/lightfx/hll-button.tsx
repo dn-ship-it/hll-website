@@ -10,19 +10,14 @@
 // `gradient`/`direction`/`radius`/`glow` exist as explicit one-off overrides,
 // not a substitute for adding a real variant.
 import Link from "next/link";
-import {
-  useEffect,
-  useRef,
-  type CSSProperties,
-  type ElementType,
-  type ReactNode,
-} from "react";
+import { useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
 
 import type { HLLVariant } from "../variants";
 
 import { BASE_DEFINITION } from "./hll-button-definition";
 import { hllButtonVariants, resolveButtonColors, SIZE_SCALE, type LightSize } from "./light-variants";
-import { cloneDefinition, LightComponent } from "./lightfx-runtime";
+import { cloneDefinition } from "./lightfx-runtime";
+import { useLightComponent } from "./use-light-component";
 
 type Overrides = {
   gradient?: string[];
@@ -113,17 +108,12 @@ export function HLLButton({
   const ref = useRef<HTMLElement>(null);
 
   // The shader engine owns hover and active entirely through its own DOM
-  // listeners — no React state, so hovering never triggers a re-render. The
-  // effect only re-runs when a value that changes the definition changes.
-  useEffect(() => {
-    if (!ref.current) return undefined;
-    const fx = new LightComponent(
-      ref.current,
-      buildDefinition(variant, { gradient, direction, radius, glow, animated, size }),
-    );
-    return () => fx.dispose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, gradient?.join(","), direction, radius, glow, animated, size]);
+  // listeners — no React state, so hovering never triggers a re-render.
+  useLightComponent(
+    ref,
+    () => buildDefinition(variant, { gradient, direction, radius, glow, animated, size }),
+    [variant, gradient?.join(","), direction, radius, glow, animated, size],
+  );
 
   const isInert = disabled || isLoading;
   const { text, box } = BASE_DEFINITION;

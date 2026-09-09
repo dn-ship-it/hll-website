@@ -8,7 +8,7 @@
 // blurred colour blob. Unlike the button's fixed box, the canvas auto-fits to
 // whatever size the host renders at via CSS padding, so the pill always hugs
 // its content.
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
 
 import { BASE_DEFINITION } from "./tag-definition";
 import {
@@ -18,7 +18,8 @@ import {
   type LightSize,
   type TagVariant,
 } from "./light-variants";
-import { cloneDefinition, LightComponent } from "./lightfx-runtime";
+import { cloneDefinition } from "./lightfx-runtime";
+import { useLightComponent } from "./use-light-component";
 
 // plus.svg's own paths at its native stroke width, inlined so the viewBox can
 // be cropped tight to the glyph's actual bounding box (it only fills the
@@ -84,12 +85,10 @@ export function Tag({
 }: TagProps) {
   const ref = useRef<HTMLSpanElement>(null);
 
-  useEffect(() => {
-    if (!ref.current) return undefined;
-    const fx = new LightComponent(ref.current, buildDefinition(variant, gradient));
-    return () => fx.dispose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, gradient?.join(",")]);
+  useLightComponent(ref, () => buildDefinition(variant, gradient), [
+    variant,
+    gradient?.join(","),
+  ]);
 
   const { text } = BASE_DEFINITION;
   const scale = TAG_SIZE_SCALE[size] ?? 1;
