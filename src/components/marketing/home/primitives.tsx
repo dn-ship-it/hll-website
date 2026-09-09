@@ -1,3 +1,9 @@
+import {
+  GradientRevealTextNormal,
+  HLLOutlineButton,
+  type HLLVariant,
+} from "@/components/hll";
+
 /** Light grey content placeholder — swap for CMS media when finalized. */
 export function MediaPlaceholder({
   className = "",
@@ -29,31 +35,55 @@ export function SectionEyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function SectionTitle({ children }: { children: React.ReactNode }) {
+/**
+ * Section headings run the demo's 600ms sweep reveal, held until the heading
+ * scrolls into view. `children` stays a ReactNode for call-site convenience,
+ * but the reveal needs the plain string it animates, so anything richer falls
+ * back to a static heading.
+ */
+export function SectionTitle({
+  children,
+  variant = "hll-ai",
+}: {
+  children: React.ReactNode;
+  variant?: HLLVariant;
+}) {
+  const className = "mt-2 text-[clamp(1.5rem,3vw,2rem)] font-normal tracking-tight text-black";
+
+  if (typeof children !== "string") {
+    return <h2 className={className}>{children}</h2>;
+  }
+
   return (
-    <h2 className="mt-2 text-[clamp(1.5rem,3vw,2rem)] font-normal tracking-tight text-black">
-      {children}
-    </h2>
+    <GradientRevealTextNormal
+      as="h2"
+      text={children}
+      variant={variant}
+      playOnView
+      className={className}
+      fontSize="clamp(1.5rem, 3vw, 2rem)"
+      letterSpacing="-0.01em"
+    />
   );
 }
 
+/**
+ * The site's CTA affordance is the demo's outline button: same uppercase,
+ * letter-spaced label in a hairline pill that blooms into the variant's
+ * gradient border under the cursor.
+ */
 export function OutlinePillButton({
   href,
+  variant = "hll-ai",
   children,
 }: {
   href?: string;
+  variant?: HLLVariant;
   children: React.ReactNode;
 }) {
-  const cls =
-    "inline-flex items-center rounded-full border border-black/20 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-black/80 transition hover:border-black/40 hover:bg-black/[0.02]";
-
-  if (href) {
-    return (
-      <a href={href} className={cls}>
-        {children}
-      </a>
-    );
-  }
-
-  return <button type="button" className={cls}>{children}</button>;
+  return (
+    <HLLOutlineButton href={href} variant={variant}>
+      {children}
+    </HLLOutlineButton>
+  );
 }

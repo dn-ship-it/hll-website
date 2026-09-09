@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { GradientRevealTextSlow, LightFXTag } from "@/components/hll";
+
 import { MediaPlaceholder, OutlinePillButton } from "./primitives";
 
 export function HomeHero({
@@ -19,12 +21,14 @@ export function HomeHero({
   return (
     <section className="px-[clamp(1.25rem,4vw,3rem)] pb-[clamp(2rem,5vw,3rem)] pt-[clamp(1.5rem,3vw,2rem)]">
       <div className="mx-auto max-w-[90rem]">
-        <h1
-          className="max-w-[min(100%,56rem)] font-light leading-[1.15] tracking-tight text-black"
-          style={{ fontSize: "clamp(2rem, 4.5vw + 0.5rem, 3.75rem)" }}
-        >
-          {title}
-        </h1>
+        <GradientRevealTextSlow
+          as="h1"
+          text={title}
+          variant="hll-ai"
+          className="block max-w-[min(100%,56rem)] tracking-tight text-black"
+          fontSize="clamp(2rem, 4.5vw + 0.5rem, 3.75rem)"
+          letterSpacing="-0.01em"
+        />
 
         <div className="relative mt-[clamp(1.5rem,4vw,2.5rem)]">
           {heroImageUrl ? (
@@ -60,22 +64,25 @@ export function WhatWeDo() {
           <h2 className="mt-2 text-[clamp(1.35rem,2.5vw,1.75rem)] font-normal text-black">
             What we do
           </h2>
-          <ul className="mt-8 space-y-2">
-            {categories.map((cat) => (
-              <li
-                key={cat}
-                className="text-[10px] uppercase tracking-[0.22em] text-black/35"
-              >
-                {cat}
+          {/* The demo's Tag is its filter/status chip, which is what this
+              service list reads as — one static chip per category. */}
+          <ul className="mt-8 flex flex-wrap gap-2">
+            {categories.map((cat, i) => (
+              <li key={cat}>
+                <LightFXTag variant={i % 2 === 0 ? "warm" : "cool"} removable={false}>
+                  {cat}
+                </LightFXTag>
               </li>
             ))}
           </ul>
-          <h3
-            className="mt-10 font-light text-black"
-            style={{ fontSize: "clamp(1.75rem, 3vw, 2.5rem)" }}
-          >
-            HLL Trust &amp; Governance
-          </h3>
+          <GradientRevealTextSlow
+            as="h3"
+            text="HLL Trust & Governance"
+            variant="hll-trust"
+            playOnView
+            className="mt-10 block text-black"
+            fontSize="clamp(1.75rem, 3vw, 2.5rem)"
+          />
         </div>
 
         <div>

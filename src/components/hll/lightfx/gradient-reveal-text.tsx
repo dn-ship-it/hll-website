@@ -12,7 +12,7 @@
 //
 // Each instance scopes its keyframes behind a useId-derived class, so several
 // headings can animate independently on the same page.
-import { useEffect, useId, useState, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -58,6 +58,13 @@ export type GradientRevealTextProps = {
   /** "slow" is the 1200ms band sweep; "normal" the 600ms light-to-dark sweep. */
   speed?: "slow" | "normal";
   autoPlay?: boolean;
+  /**
+   * Waits for the heading to scroll into view before revealing. The demo plays
+   * on mount, which is right for its single-viewport page but means every
+   * heading further down a long page has already finished by the time it is
+   * seen.
+   */
+  playOnView?: boolean;
   /** Change this to replay the animation with the same text. */
   replayKey?: unknown;
   fontSize?: string;
@@ -79,6 +86,7 @@ export function GradientRevealText({
   colors,
   speed = "slow",
   autoPlay = true,
+  playOnView = false,
   replayKey,
   fontSize = "clamp(2rem, 5vw, 3.5rem)",
   letterSpacing = "0.010em",
@@ -92,6 +100,7 @@ export function GradientRevealText({
   style,
 }: GradientRevealTextProps) {
   const rawId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const hostRef = useRef<HTMLElement>(null);
   const [running, setRunning] = useState(false);
   const palette = colors && colors.length >= 2 ? colors : getVariantColors(variant);
 
@@ -102,13 +111,41 @@ export function GradientRevealText({
   useEffect(() => {
     if (!autoPlay) return undefined;
     setRunning(false);
+
     // Two frames: the first commits the reset, the second starts the run, so
     // restarting on a replayKey change actually re-triggers the animation.
-    const raf = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setRunning(true));
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [text, replayKey, autoPlay]);
+    let raf = 0;
+    const start = () => {
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(() => setRunning(true));
+      });
+    };
+
+    if (!playOnView) {
+      start();
+      return () => cancelAnimationFrame(raf);
+    }
+
+    const host = hostRef.current;
+    if (!host) return undefined;
+
+    // Headings above the fold are already intersecting on the first callback,
+    // so this covers them without a separate initial check.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        start();
+      },
+      { rootMargin: "0px 0px -15% 0px" },
+    );
+    observer.observe(host);
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [text, replayKey, autoPlay, playOnView]);
 
   const mid = palette[0];
   const sweepGradient = isSlow
@@ -208,7 +245,11 @@ export function GradientRevealText({
           .gtr-${rawId} .gtr-inner { opacity: 1; filter: none; color: ${ink}; }
         }
       `}</style>
-      <Tag className={cn("gradient-reveal-text", className)} style={style}>
+      <Tag
+        ref={hostRef as React.Ref<HTMLHeadingElement>}
+        className={cn("gradient-reveal-text", className)}
+        style={style}
+      >
         <span className={`gtr-${rawId}${running ? " is-running" : ""}`} data-text={text}>
           <span className="gtr-inner">{text}</span>
         </span>
