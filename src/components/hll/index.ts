@@ -1,16 +1,5 @@
-export { HLLButton } from "./hll-button";
 export { GradientRevealText, GradientRevealTextNormal } from "./gradient-reveal-text";
 export { Shader, BottomShader } from "./shader";
-export {
-  LightFXShader,
-  MenuTriggerOverlay,
-  BASE_SETTINGS,
-  TRANSPARENT_SETTINGS,
-  createShaderFX,
-  type LightFXShaderProps,
-  type MenuTriggerOverlayProps,
-  type ShaderSettings,
-} from "./lightfx";
 export { OurPromise } from "./our-promise";
 export { Tag, HLLServiceTag } from "./tag";
 export {
@@ -24,3 +13,23 @@ export {
   type NavVariant,
   type ServiceVariant,
 } from "./variants";
+
+// The real LightFX (three.js) kit ported from HLL-UI-Demo. HLLButton here
+// replaces the CSS stand-in that used to live in ./hll-button.tsx.
+export {
+  HLLButton,
+  HLLOutlineButton,
+  LightFXShader,
+  LightFXTag,
+  MenuTriggerOverlay,
+  BASE_SETTINGS,
+  TRANSPARENT_SETTINGS,
+  createShaderFX,
+  type HLLButtonProps,
+  type HLLOutlineButtonProps,
+  type LightFXShaderProps,
+  type LightFXTagProps,
+  type MenuTriggerOverlayProps,
+  type ShaderSettings,
+  type TagVariant,
+} from "./lightfx";
