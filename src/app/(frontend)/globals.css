@@ -386,3 +386,79 @@
   pointer-events: none;
   opacity: 0.5;
 }
+
+/* BottomShader — ported from HLL-UI-Demo's bottom-shader.css. Same engine as
+   Shader; only the host clips it down to the bottom slice. The canvas is
+   always the true viewport height, so its resolution and aspect ratio (and
+   every effect computed from them) match Shader's full-viewport render
+   pixel-for-pixel. */
+.bottom-shader {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: var(--bottom-shader-height, 25vh);
+  background: transparent;
+
+  /* The soft top edge. Masking the WebGL canvas itself hits a Chromium bug
+     where a gradient with two flat alpha regions makes the entire canvas
+     disappear, so the host is masked instead. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 5%,
+    rgba(0, 0, 0, 0.15) 15%,
+    rgba(0, 0, 0, 0.5) 30%,
+    black 50%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 5%,
+    rgba(0, 0, 0, 0.15) 15%,
+    rgba(0, 0, 0, 0.5) 30%,
+    black 50%,
+    black 100%
+  );
+}
+
+/* Two classes deep for specificity, not nesting: a stylesheet targeting bare
+   `canvas` elements would otherwise beat `bottom: 0` with its own `top: 0`,
+   and the browser resolves that over-constrained box by dropping `bottom` —
+   anchoring the canvas from the wrong edge and showing the top of the render
+   instead of the bottom slice this component exists to crop to. `top` needs
+   the explicit `auto` for the same reason: the cascade runs per-property. */
+.bottom-shader .bottom-shader__canvas {
+  display: block;
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--bottom-shader-canvas-height, 100vh);
+}
+
+/* Deliberately on the host, not the canvas: mix-blend-mode only mixes with
+   backdrop content in the same stacking context, and the fixed-position host
+   is what sits alongside the page's own content. Blending the canvas would
+   only mix against the host's empty local context. */
+.bottom-shader--overlay {
+  mix-blend-mode: hard-light;
+}
+
+.bottom-shader--disabled {
+  opacity: 0.5;
+}
+
+/* Anchors the strip to its nearest positioned ancestor instead of the
+   viewport, for section-level backgrounds. */
+.bottom-shader--contained {
+  position: absolute;
+  width: 100%;
+}
+
+.bottom-shader--passthrough {
+  pointer-events: none;
+}

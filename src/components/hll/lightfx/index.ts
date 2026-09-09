@@ -3,7 +3,20 @@ export {
   MenuTriggerOverlay,
   type MenuTriggerOverlayProps,
 } from "./menu-trigger-overlay";
-export { shaderVariants, resolveVariantColors } from "./shader-variants";
+export { BottomShader, type BottomShaderProps } from "./bottom-shader";
+export {
+  DEFAULT_LAYOUT,
+  HALF_HEIGHT_LAYOUT,
+  makeBottomShaderLayout,
+  type BottomShaderLayout,
+} from "./bottom-shader-definition";
+export {
+  GradientRevealText,
+  GradientRevealTextSlow,
+  GradientRevealTextNormal,
+  type GradientRevealTextProps,
+} from "./gradient-reveal-text";
+export { shaderVariants, bottomShaderVariants, resolveVariantColors } from "./shader-variants";
 export {
   BASE_SETTINGS,
   TRANSPARENT_SETTINGS,

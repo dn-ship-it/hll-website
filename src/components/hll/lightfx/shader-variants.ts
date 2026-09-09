@@ -41,6 +41,37 @@ export const shaderVariants = cva("shader", {
   },
 });
 
+/** BottomShader's own class hooks — the same variant keys, its own prefix. */
+export const bottomShaderVariants = cva("bottom-shader", {
+  variants: {
+    variant: {
+      services: "bottom-shader--services",
+      industries: "bottom-shader--industries",
+      engagement: "bottom-shader--engagement",
+      about: "bottom-shader--about",
+      contact: "bottom-shader--contact",
+      "hll-ai": "bottom-shader--hll-ai",
+      "hll-trust": "bottom-shader--hll-trust",
+      "hll-foundation": "bottom-shader--hll-foundation",
+      "hll-ontology": "bottom-shader--hll-ontology",
+      "hll-people": "bottom-shader--hll-people",
+      "hll-application": "bottom-shader--hll-application",
+    },
+    disabled: {
+      true: "bottom-shader--disabled",
+    },
+    passthrough: {
+      true: "bottom-shader--passthrough",
+    },
+    contained: {
+      true: "bottom-shader--contained",
+    },
+  },
+  defaultVariants: {
+    variant: "services",
+  },
+});
+
 /**
  * The runtime needs at least two stops to build the angular gradient ring, so
  * a one-color override falls back to the variant's own palette.

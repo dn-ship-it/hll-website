@@ -36,7 +36,6 @@ function asVariant(value?: string | null): HLLVariant {
 function HeroBlock({ block }: { block: Extract<LayoutBlock, { blockType: "hero" }> }) {
   const bgUrl = resolveMediaUrl(block.backgroundImage);
   const variant = asVariant(block.variant);
-  const duration = block.revealSpeed === "normal" ? 600 : 1200;
 
   return (
     <section className="relative overflow-hidden border-b border-white/10 py-24 md:py-32">
@@ -50,18 +49,18 @@ function HeroBlock({ block }: { block: Extract<LayoutBlock, { blockType: "hero" 
           priority
         />
       ) : (
-        <BottomShader variant={variant} intensity={65} />
+        <BottomShader variant={variant} contained passthrough overlay />
       )}
       <div className="relative mx-auto max-w-5xl px-6">
         <p className="mb-3 text-xs uppercase tracking-[0.2em] text-white/50">
           {block.variant?.replace(/-/g, " ")}
         </p>
         <GradientRevealText
+          as="h1"
           text={block.heading}
-          variant={
-            variant.startsWith("hll-") ? (variant as "hll-ai") : "hll-ai"
-          }
-          duration={duration}
+          variant={variant}
+          speed={block.revealSpeed === "normal" ? "normal" : "slow"}
+          ink="#f5f5f5"
         />
         {block.subheading ? (
           <p className="mt-6 max-w-2xl text-lg text-white/70">{block.subheading}</p>
@@ -114,18 +113,21 @@ function ShaderSectionBlock({
 }) {
   const variant = asVariant(block.variant);
   const placement = block.placement === "bottom" ? "bottom" : "full";
+  // The block's 0-100 intensity has no counterpart in the real engine, whose
+  // look is fixed by its preset, so it drives the host's opacity instead.
+  const opacity = Math.max(0, Math.min(100, block.intensity ?? 100)) / 100;
 
   if (placement === "bottom") {
     return (
       <div className="relative h-48 overflow-hidden border-y border-white/10">
-        <BottomShader variant={variant} intensity={block.intensity ?? 100} />
+        <BottomShader variant={variant} contained passthrough style={{ opacity }} />
       </div>
     );
   }
 
   return (
     <div className="relative h-[50vh] overflow-hidden border-y border-white/10">
-      <Shader variant={variant} intensity={block.intensity ?? 100} placement="full" />
+      <Shader variant={variant} contained passthrough style={{ opacity }} />
     </div>
   );
 }
