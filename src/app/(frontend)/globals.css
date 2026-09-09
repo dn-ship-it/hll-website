@@ -452,6 +452,124 @@
   opacity: 0.5;
 }
 
+/* OurPromise — ported from HLL-UI-Demo's our-promise.css. The demo pins every
+   layer with `position: fixed`, which only works when the piece owns the whole
+   page; `.our-promise--section` swaps that for a sticky stage so the same
+   animation can sit inside a normal page. The demo's Aeonik TRIAL font is not
+   shipped, so the type inherits the site's own faces. */
+.our-promise {
+  position: relative;
+}
+
+.our-promise-stage {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.our-promise--section .our-promise-stage {
+  position: sticky;
+  inset: auto;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  width: 100%;
+}
+
+.our-promise-canvas-host {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.our-promise-canvas-host canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.our-promise-hero-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: min(90vw, 900px);
+  text-align: center;
+  color: #1a1a1a;
+  /* Purely decorative — never block the page underneath. */
+  pointer-events: none;
+}
+
+.our-promise-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.our-promise-headline {
+  margin: 0;
+  font-weight: 300;
+  font-size: clamp(28px, 5.5vw, 64px);
+  line-height: 1.15;
+}
+
+.our-promise-question-mark {
+  display: inline-block;
+  font-weight: 300;
+  transform: scaleX(0.82);
+  transform-origin: center;
+}
+
+.our-promise-image-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80vw;
+  height: 100%;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.82);
+  will-change: opacity, transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.our-promise-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Fits edge-to-edge on the limiting axis. */
+  object-fit: contain;
+  object-position: center;
+}
+
+.our-promise-scroll-spacer {
+  width: 1px;
+}
+
+/* Ripple / CornerRipple — ported from HLL-UI-Demo's ripple.css and
+   corner-ripple.css. A full-viewport backdrop sitting behind page content;
+   the sketch paints an opaque black base, so this belongs on dark sections. */
+.ripple {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+/* Scopes the backdrop to its nearest positioned ancestor rather than taking
+   over the viewport, for section-level use. */
+.ripple--contained {
+  position: absolute;
+  z-index: 0;
+}
+
 /* Anchors the strip to its nearest positioned ancestor instead of the
    viewport, for section-level backgrounds. */
 .bottom-shader--contained {

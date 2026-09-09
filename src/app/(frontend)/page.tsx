@@ -1,4 +1,4 @@
-import { OurPromise } from "@/components/hll/our-promise";
+import { OurPromise } from "@/components/hll";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { HomeHero, OurClients, WhatWeDo } from "@/components/marketing/home/hero-and-services";
 import { OurImpact } from "@/components/marketing/home/our-impact";

@@ -1,4 +1,3 @@
-export { OurPromise } from "./our-promise";
 export { Tag, HLLServiceTag } from "./tag";
 export {
   HLL_VARIANTS,
@@ -17,6 +16,7 @@ export {
 // ./gradient-reveal-text.tsx.
 export {
   BottomShader,
+  CornerRipple,
   GradientRevealText,
   GradientRevealTextNormal,
   GradientRevealTextSlow,
@@ -25,6 +25,9 @@ export {
   LightFXShader as Shader,
   LightFXTag,
   MenuTriggerOverlay,
+  OurPromise,
+  Ripple,
+  SERVICE_TO_RIPPLE,
   BASE_SETTINGS,
   TRANSPARENT_SETTINGS,
   DEFAULT_LAYOUT,
@@ -39,6 +42,9 @@ export {
   type LightFXShaderProps as ShaderProps,
   type LightFXTagProps,
   type MenuTriggerOverlayProps,
+  type OurPromiseProps,
+  type RippleProps,
+  type RippleVariant,
   type ShaderSettings,
   type TagVariant,
 } from "./lightfx";

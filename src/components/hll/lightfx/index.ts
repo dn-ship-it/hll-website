@@ -16,6 +16,16 @@ export {
   GradientRevealTextNormal,
   type GradientRevealTextProps,
 } from "./gradient-reveal-text";
+export { OurPromise, type OurPromiseProps } from "./our-promise";
+export { Ripple, CornerRipple, type RippleProps } from "./ripple";
+export {
+  RIPPLE_GRADIENTS,
+  SERVICE_TO_RIPPLE,
+  resolveVariantParams as resolveRippleParams,
+  resolveVariantPalette as resolveRipplePalette,
+  type RippleOrigin,
+  type RippleVariant,
+} from "./ripple-definition";
 export { shaderVariants, bottomShaderVariants, resolveVariantColors } from "./shader-variants";
 export {
   BASE_SETTINGS,
