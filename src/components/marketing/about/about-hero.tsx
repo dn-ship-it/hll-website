@@ -1,3 +1,4 @@
+import { GradientRevealTextSlow } from "@/components/hll";
 import type { AboutPageData } from "@/data/about";
 import { MediaPlaceholder, OutlinePillButton } from "@/components/marketing/home/primitives";
 
@@ -15,12 +16,14 @@ export function AboutHero({
       <div className="mx-auto max-w-[90rem]">
         <AboutPageHeader title={data.eyebrow} accentColor={accentColor} />
 
-        <h1
-          className="mt-4 max-w-[min(100%,52rem)] font-light leading-[1.12] tracking-tight text-black"
-          style={{ fontSize: "clamp(2rem, 4vw + 0.5rem, 3.25rem)" }}
-        >
-          {data.headline}
-        </h1>
+        <GradientRevealTextSlow
+          as="h1"
+          text={data.headline}
+          variant="about"
+          className="mt-4 block max-w-[min(100%,52rem)] tracking-tight text-black"
+          fontSize="clamp(2rem, 4vw + 0.5rem, 3.25rem)"
+          letterSpacing="-0.01em"
+        />
 
         <p className="mt-6 max-w-2xl text-sm leading-7 text-black/55">{data.description}</p>
 
@@ -37,7 +40,9 @@ export function AboutHero({
             }}
           />
           <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6">
-            <OutlinePillButton href={data.ctaHref}>{data.ctaLabel}</OutlinePillButton>
+            <OutlinePillButton href={data.ctaHref} variant="about">
+              {data.ctaLabel}
+            </OutlinePillButton>
           </div>
         </div>
       </div>

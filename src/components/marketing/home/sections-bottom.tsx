@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+import {
+  BottomShader,
+  GradientRevealTextNormal,
+  HLLOutlineButton,
+} from "@/components/hll";
+
 import { MediaPlaceholder } from "./primitives";
 
 const STEPS = [
@@ -165,24 +171,28 @@ export function InsideTheLab() {
 export function HomeCta() {
   return (
     <section
-      className="px-[clamp(1.25rem,4vw,3rem)] py-[clamp(2rem,5vw,3rem)]"
+      className="relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,7vw,4.5rem)]"
       style={{
         background: "linear-gradient(90deg, #FFF6B7 0%, #E8F4FF 50%, #D4ECFF 100%)",
       }}
     >
-      <div className="mx-auto flex max-w-[90rem] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-        <h2
-          className="font-light text-black"
-          style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)" }}
-        >
-          Let&apos;s start a conversation
-        </h2>
-        <a
-          href="/contact"
-          className="inline-flex rounded-full border border-black/25 bg-white/60 px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-black/80 backdrop-blur-sm transition hover:bg-white"
-        >
+      {/* This section closes every page, which is the slice BottomShader is
+          cropped to. `overlay` puts it in hard-light so it reads the gradient
+          behind it instead of sitting on top as a flat plate. */}
+      <BottomShader variant="contact" contained passthrough overlay />
+
+      <div className="relative mx-auto flex max-w-[90rem] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+        <GradientRevealTextNormal
+          as="h2"
+          text="Let's start a conversation"
+          variant="contact"
+          playOnView
+          className="block text-black"
+          fontSize="clamp(1.5rem, 3vw, 2.25rem)"
+        />
+        <HLLOutlineButton href="/contact" variant="contact">
           Write to us
-        </a>
+        </HLLOutlineButton>
       </div>
     </section>
   );

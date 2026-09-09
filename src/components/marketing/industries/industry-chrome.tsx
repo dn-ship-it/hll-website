@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { GradientRevealTextSlow } from "@/components/hll";
+
 export function IndustryBreadcrumb({ items }: { items: readonly string[] }) {
   return (
     <nav aria-label="Breadcrumb" className="text-[10px] uppercase tracking-[0.22em] text-black/45">
@@ -21,11 +23,13 @@ export function IndustryBreadcrumb({ items }: { items: readonly string[] }) {
 
 export function IndustryCategoryHeader({ category }: { category: string }) {
   return (
-    <h1
-      className="font-light tracking-tight text-black"
-      style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)" }}
-    >
-      {category}
-    </h1>
+    <GradientRevealTextSlow
+      as="h1"
+      text={category}
+      variant="industries"
+      className="block tracking-tight text-black"
+      fontSize="clamp(1.75rem, 3.5vw, 2.75rem)"
+      letterSpacing="-0.01em"
+    />
   );
 }
