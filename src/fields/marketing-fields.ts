@@ -43,6 +43,11 @@ export const servicePageContentFields: Field[] = [
           {
             name: "subServices",
             type: "array",
+            // Postgres caps identifiers at 63 characters, and the versioned
+            // table for this field nests deeply enough to overrun it:
+            // _services_v_version_page_content_capabilities_items_sub_services
+            // is 64. Shortening just this segment brings it back under.
+            dbName: "subsvc",
             fields: [{ name: "label", type: "text", required: true }],
           },
         ],
@@ -185,6 +190,11 @@ export const industryPageContentFields: Field[] = [
                   { label: "Orange", value: "orange" },
                   { label: "Image", value: "image" },
                 ],
+                // Same 63-character identifier cap as subServices above: the
+                // generated enum for this nesting depth,
+                // enum__industries_v_version_page_content_capabilities_items_cards_variant,
+                // is well over it.
+                enumName: "enum_industries_cap_card_variant",
               },
               { name: "image", type: "upload", relationTo: "media" },
             ],
