@@ -561,6 +561,11 @@
   inset: 0;
   overflow: hidden;
   z-index: -1;
+  /* Decorative and aria-hidden, and tap ripples are off, so it has no reason
+     to take input. The demo's fullscreen version sits at z-index -1 where it
+     could never intercept anything; `.ripple--contained` raises it into the
+     content layer, where it can. Inherited, so it covers the canvas too. */
+  pointer-events: none;
 }
 
 /* Scopes the backdrop to its nearest positioned ancestor rather than taking
