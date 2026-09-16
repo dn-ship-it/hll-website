@@ -47,18 +47,28 @@ export function ServiceHero({
           letterSpacing="-0.01em"
         />
 
-        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-b border-black/8 pb-4">
+        {/* Buttons, not anchors. These used to be href="#<id>" links, and
+            because each id also matches a capability section further down the
+            page, clicking one jumped the demo out of view — so switching tabs
+            looked like it did nothing at all. */}
+        <div
+          role="tablist"
+          aria-label="Service demos"
+          className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-b border-black/8 pb-4"
+        >
           {data.tabs.map((tab) => (
-            <a
+            <button
               key={tab.id}
-              href={`#${tab.id}`}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`text-[10px] uppercase tracking-[0.18em] transition ${
+              className={`cursor-pointer text-[10px] uppercase tracking-[0.18em] transition ${
                 activeTab === tab.id ? "text-black" : "text-black/40 hover:text-black/70"
               }`}
             >
               {tab.label}
-            </a>
+            </button>
           ))}
         </div>
 

@@ -1,5 +1,4 @@
 import path from "path";
-import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
@@ -188,12 +187,6 @@ export default buildConfig({
       });
 
       if (foundation.totalDocs === 0) {
-        const demoPath = path.resolve(
-          dirname,
-          "../public/demos/hll-foundation-data-engineering.html",
-        );
-        const demoHtml = readFileSync(demoPath, "utf8");
-
         await payload.create({
           collection: "services",
           overrideAccess: true,
@@ -203,16 +196,17 @@ export default buildConfig({
             variant: "hll-foundation",
             summary: "Data your business can finally trust.",
             _status: "published",
+            // Deliberately seeded without any `demos` entries. This used to
+            // inline the contents of public/demos/*.html into the row, which
+            // snapshotted the file into the database on first boot: the two
+            // then diverged permanently, and editing the file had no effect on
+            // an already-seeded environment. Leaving it empty makes
+            // resolveServiceDemoConfig return null, so the files in
+            // public/demos stay the single source of truth via
+            // defaultFoundationDemo, and an editor can still override any tab
+            // from the admin when they want to.
             demoWindow: {
               selectorLabel: "HLL Foundation",
-              demos: [
-                {
-                  tabKey: "data-engineering",
-                  title: "Data Engineering",
-                  contentType: "inline",
-                  html: demoHtml,
-                },
-              ],
             },
           },
         });
