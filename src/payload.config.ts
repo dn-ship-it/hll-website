@@ -28,6 +28,28 @@ const usePostgres = Boolean(process.env.DATABASE_URI?.startsWith("postgres"));
 
 const s3Enabled = Boolean(process.env.S3_BUCKET);
 
+// A misconfigured deploy is hard to spot here, because it does not look broken:
+// every marketing page wraps its CMS query in try/catch and falls back to
+// static data, so the site renders completely while serving no CMS content at
+// all, with only /admin returning 500. These warn loudly rather than throwing,
+// so the marketing pages keep degrading gracefully instead of the whole site
+// going down over a CMS misconfiguration. See docs/DEPLOY.md.
+if (process.env.NODE_ENV === "production") {
+  if (!usePostgres) {
+    console.warn(
+      "[payload] DATABASE_URI is not a postgres:// string, so the SQLite fallback is active. " +
+        "SQLite writes to the local filesystem, which is read-only on serverless hosts such as " +
+        "Vercel — the CMS and /admin will not work. Set a Postgres DATABASE_URI.",
+    );
+  }
+  if (!s3Enabled) {
+    console.warn(
+      "[payload] S3_BUCKET is not set, so uploads go to local disk, which does not persist on " +
+        "serverless hosts. Media added through the admin will disappear. Configure S3 storage.",
+    );
+  }
+}
+
 export default buildConfig({
   admin: {
     user: Users.slug,
