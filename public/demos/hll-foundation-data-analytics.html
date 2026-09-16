@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HLL Foundation · Data Analytics</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Geist Sans", system-ui, -apple-system, sans-serif;
+        background: #fafafa;
+        color: #111;
+        padding: 1rem 1.25rem 1.25rem;
+        font-size: 13px;
+      }
+      .head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .eyebrow {
+        font-size: 0.5625rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.45);
+      }
+      h1 {
+        margin: 0.25rem 0 0;
+        font-size: 0.9375rem;
+        font-weight: 500;
+      }
+      .ranges {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.1875rem;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .ranges button {
+        font: inherit;
+        font-size: 0.625rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        border: 0;
+        background: transparent;
+        color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s;
+      }
+      .ranges button[aria-pressed="true"] {
+        background: #fff;
+        color: #111;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .ranges button:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 1px;
+      }
+
+      .metrics {
+        display: flex;
+        gap: 0.375rem;
+        margin-top: 0.875rem;
+        flex-wrap: wrap;
+      }
+      .metric {
+        font: inherit;
+        font-size: 0.6875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        background: #fff;
+        color: rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+        transition: color 0.18s, border-color 0.18s, opacity 0.18s;
+      }
+      .metric[aria-pressed="true"] {
+        color: #111;
+        border-color: rgba(0, 0, 0, 0.24);
+      }
+      .metric:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 2px;
+      }
+      .swatch {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 2px;
+        background: currentColor;
+        opacity: 0.25;
+        transition: opacity 0.18s;
+      }
+      .metric[aria-pressed="true"] .swatch {
+        opacity: 1;
+      }
+
+      .chart {
+        position: relative;
+        margin-top: 0.75rem;
+        height: 8.5rem;
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 1px;
+      }
+      .col {
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 1px;
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+      .col:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 2px;
+      }
+      .seg {
+        width: 100%;
+        border-radius: 1px;
+        transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s;
+      }
+      .col:hover .seg,
+      .col[aria-expanded="true"] .seg {
+        filter: brightness(1.08);
+      }
+      .col::after {
+        content: "";
+        position: absolute;
+        inset: 0 -1px;
+        border-radius: 2px;
+        background: rgba(255, 90, 30, 0.07);
+        opacity: 0;
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
+      .col:hover::after,
+      .col[aria-expanded="true"]::after {
+        opacity: 1;
+      }
+
+      .tip {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-50%, -100%);
+        background: #111;
+        color: #fff;
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.625rem;
+        line-height: 1.5;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        z-index: 2;
+        font-variant-numeric: tabular-nums;
+      }
+      .tip.is-on {
+        opacity: 1;
+      }
+      .tip-day {
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 0.5625rem;
+      }
+      .tip-row {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
+      .tip-row i {
+        width: 0.375rem;
+        height: 0.375rem;
+        border-radius: 1px;
+        flex-shrink: 0;
+      }
+
+      .foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.625rem;
+        color: rgba(0, 0, 0, 0.4);
+        font-variant-numeric: tabular-nums;
+      }
+      .foot b {
+        color: #111;
+        font-weight: 500;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <div>
+        <p class="eyebrow">Dispatch analytics</p>
+        <h1>Data Analytics</h1>
+      </div>
+      <div class="ranges" id="ranges" role="group" aria-label="Time range"></div>
+    </div>
+
+    <div class="metrics" id="metrics"></div>
+
+    <div class="chart" id="chart" aria-label="Stacked volume by day">
+      <div class="tip" id="tip" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="foot">
+      <span id="range-label"></span>
+      <span id="total">Total <b>0</b></span>
+    </div>
+
+    <script>
+      (function () {
+        var SERIES = [
+          { id: "dispatch", name: "Dispatched", color: "#ff5a1e", base: 320, spread: 90 },
+          { id: "transit", name: "In transit", color: "#cc8b93", base: 210, spread: 70 },
+          { id: "held", name: "Quality hold", color: "#7cbaaa", base: 64, spread: 34 },
+        ];
+        var RANGES = [
+          { id: "7d", label: "7d", days: 7 },
+          { id: "30d", label: "30d", days: 30 },
+          { id: "90d", label: "90d", days: 90 },
+        ];
+
+        var chart = document.getElementById("chart");
+        var tip = document.getElementById("tip");
+        var metricsEl = document.getElementById("metrics");
+        var rangesEl = document.getElementById("ranges");
+        var totalEl = document.getElementById("total");
+        var rangeLabel = document.getElementById("range-label");
+
+        var active = { dispatch: true, transit: true, held: true };
+        var range = RANGES[1];
+        var pinned = null;
+
+        // A seeded generator, so the same range always renders the same shape —
+        // a demo that reshuffled on every toggle would read as noise.
+        function seeded(seed) {
+          var s = seed;
+          return function () {
+            s = (s * 16807) % 2147483647;
+            return s / 2147483647;
+          };
+        }
+
+        function buildData(days) {
+          var rand = seeded(days * 7919 + 13);
+          var out = [];
+          for (var i = 0; i < days; i++) {
+            var weekend = (i + 2) % 7 < 2;
+            var point = { day: i, values: {} };
+            SERIES.forEach(function (s) {
+              var v = s.base + (rand() - 0.5) * s.spread;
+              // A visible weekly rhythm reads as real operational data.
+              if (weekend) v *= 0.55;
+              v *= 1 + (i / days) * 0.18;
+              point.values[s.id] = Math.max(0, Math.round(v));
+            });
+            out.push(point);
+          }
+          return out;
+        }
+
+        var data = buildData(range.days);
+
+        RANGES.forEach(function (r) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = r.label;
+          b.setAttribute("aria-pressed", r.id === range.id ? "true" : "false");
+          b.addEventListener("click", function () {
+            range = r;
+            data = buildData(r.days);
+            pinned = null;
+            Array.prototype.forEach.call(rangesEl.children, function (c) {
+              c.setAttribute("aria-pressed", c === b ? "true" : "false");
+            });
+            render();
+          });
+          rangesEl.appendChild(b);
+        });
+
+        SERIES.forEach(function (s) {
+          var b = document.createElement("button");
+          b.className = "metric";
+          b.type = "button";
+          b.style.color = s.color;
+          b.setAttribute("aria-pressed", "true");
+          b.innerHTML = '<span class="swatch"></span><span>' + s.name + "</span>";
+          b.addEventListener("click", function () {
+            var on = !active[s.id];
+            // Keep at least one series on, or the chart empties out.
+            if (!on && SERIES.filter(function (x) { return active[x.id]; }).length === 1) return;
+            active[s.id] = on;
+            b.setAttribute("aria-pressed", on ? "true" : "false");
+            render();
+          });
+          metricsEl.appendChild(b);
+        });
+
+        function dayLabel(i) {
+          var d = new Date();
+          d.setDate(d.getDate() - (range.days - 1 - i));
+          return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+        }
+
+        function pointTotal(p) {
+          return SERIES.reduce(function (sum, s) {
+            return sum + (active[s.id] ? p.values[s.id] : 0);
+          }, 0);
+        }
+
+        function showTip(index, col) {
+          var p = data[index];
+          var rows = SERIES.filter(function (s) {
+            return active[s.id];
+          })
+            .map(function (s) {
+              return (
+                '<div class="tip-row"><i style="background:' +
+                s.color +
+                '"></i>' +
+                s.name +
+                " <b>" +
+                p.values[s.id].toLocaleString("en-IN") +
+                "</b></div>"
+              );
+            })
+            .join("");
+          tip.innerHTML = '<div class="tip-day">' + dayLabel(index) + "</div>" + rows;
+          tip.classList.add("is-on");
+          var left = col.offsetLeft + col.offsetWidth / 2;
+          tip.style.left = left + "px";
+          tip.style.top = Math.max(0, col.offsetHeight - 4) + "px";
+          // Keep the tooltip inside the frame at both ends of the chart.
+          var half = tip.offsetWidth / 2;
+          if (left - half < 4) tip.style.left = half + 4 + "px";
+          if (left + half > chart.offsetWidth - 4) {
+            tip.style.left = chart.offsetWidth - half - 4 + "px";
+          }
+        }
+
+        function hideTip() {
+          if (pinned !== null) return;
+          tip.classList.remove("is-on");
+        }
+
+        function render() {
+          var max = 1;
+          data.forEach(function (p) {
+            max = Math.max(max, pointTotal(p));
+          });
+
+          Array.prototype.slice.call(chart.querySelectorAll(".col")).forEach(function (c) {
+            c.remove();
+          });
+
+          data.forEach(function (p, i) {
+            var col = document.createElement("button");
+            col.className = "col";
+            col.type = "button";
+            col.setAttribute("aria-expanded", pinned === i ? "true" : "false");
+            col.setAttribute(
+              "aria-label",
+              dayLabel(i) + ", " + pointTotal(p).toLocaleString("en-IN") + " units",
+            );
+
+            SERIES.forEach(function (s) {
+              if (!active[s.id]) return;
+              var seg = document.createElement("span");
+              seg.className = "seg";
+              seg.style.background = s.color;
+              seg.style.height = (p.values[s.id] / max) * 100 + "%";
+              col.appendChild(seg);
+            });
+
+            col.addEventListener("mouseenter", function () {
+              showTip(i, col);
+            });
+            col.addEventListener("focus", function () {
+              showTip(i, col);
+            });
+            col.addEventListener("mouseleave", hideTip);
+            col.addEventListener("blur", hideTip);
+            col.addEventListener("click", function () {
+              pinned = pinned === i ? null : i;
+              render();
+              if (pinned === i) showTip(i, col);
+              else tip.classList.remove("is-on");
+            });
+
+            chart.appendChild(col);
+          });
+
+          var grand = data.reduce(function (sum, p) {
+            return sum + pointTotal(p);
+          }, 0);
+          totalEl.innerHTML = "Total <b>" + grand.toLocaleString("en-IN") + "</b> units";
+          rangeLabel.textContent =
+            dayLabel(0) + " – " + dayLabel(data.length - 1) + " · click a bar to pin";
+        }
+
+        render();
+      })();
+    </script>
+  </body>
+</html>

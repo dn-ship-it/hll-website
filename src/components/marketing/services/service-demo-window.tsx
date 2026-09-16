@@ -110,9 +110,9 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
             </span>
           </div>
 
-          <div className="relative mt-10 min-h-[clamp(12rem,32vw,18rem)] overflow-hidden rounded-sm bg-white">
+          <div className="relative mt-10 min-h-[clamp(19rem,34vw,24rem)] overflow-hidden rounded-sm bg-white">
             {!hasContent ? (
-              <div className="flex min-h-[clamp(12rem,32vw,18rem)] items-center justify-center bg-[#fafafa]">
+              <div className="flex min-h-[clamp(19rem,34vw,24rem)] items-center justify-center bg-[#fafafa]">
                 <p className="text-[10px] uppercase tracking-[0.28em] text-black/30">
                   Demo window
                 </p>
@@ -123,7 +123,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
                 title={`${safeConfig.selectorLabel} demo`}
                 srcDoc={demo.html}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
-                className="block h-[clamp(12rem,32vw,18rem)] w-full border-0 bg-white"
+                className="block h-[clamp(19rem,34vw,24rem)] w-full border-0 bg-white"
                 onLoad={() => setLoaded(true)}
               />
             ) : (
@@ -132,7 +132,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
                 title={`${safeConfig.selectorLabel} demo`}
                 src={demo.htmlUrl ?? undefined}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
-                className="block h-[clamp(12rem,32vw,18rem)] w-full border-0 bg-white"
+                className="block h-[clamp(19rem,34vw,24rem)] w-full border-0 bg-white"
                 onLoad={() => setLoaded(true)}
               />
             )}

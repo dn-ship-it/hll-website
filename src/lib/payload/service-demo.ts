@@ -52,6 +52,9 @@ export function resolveServiceDemoConfig(service: Service | null): ServiceDemoCo
   };
 }
 
+// One demo per hero tab. Every tab used to resolve to the data-engineering
+// panel, because pickDemo falls back to items[0] for any tab without an entry
+// of its own, so switching tabs appeared to do nothing.
 export const defaultFoundationDemo: ServiceDemoConfig = {
   selectorLabel: "HLL Foundation",
   items: [
@@ -59,6 +62,21 @@ export const defaultFoundationDemo: ServiceDemoConfig = {
       tabKey: "data-engineering",
       title: "Data Engineering",
       htmlUrl: "/demos/hll-foundation-data-engineering.html",
+    },
+    {
+      tabKey: "data-analytics",
+      title: "Data Analytics",
+      htmlUrl: "/demos/hll-foundation-data-analytics.html",
+    },
+    {
+      tabKey: "data-audit",
+      title: "Data Audit",
+      htmlUrl: "/demos/hll-foundation-data-audit.html",
+    },
+    {
+      tabKey: "data-infrastructure",
+      title: "Data Infrastructure Assessment",
+      htmlUrl: "/demos/hll-foundation-data-infrastructure.html",
     },
   ],
   fallbackHtml: null,

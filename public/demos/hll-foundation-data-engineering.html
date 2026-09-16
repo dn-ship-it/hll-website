@@ -5,91 +5,412 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HLL Foundation · Data Engineering</title>
     <style>
-      * {
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
       }
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: "Geist Sans", system-ui, sans-serif;
+        font-family: "Geist Sans", system-ui, -apple-system, sans-serif;
         background: #fafafa;
         color: #111;
-        display: grid;
-        place-items: center;
-        padding: 1.5rem;
+        padding: 1rem 1.25rem 1.25rem;
+        font-size: 13px;
       }
-      .panel {
-        width: min(100%, 28rem);
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        border-radius: 0.5rem;
-        background: #fff;
-        padding: 1.25rem;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+      .head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
       .eyebrow {
-        font-size: 0.625rem;
+        font-size: 0.5625rem;
         letter-spacing: 0.22em;
         text-transform: uppercase;
         color: rgba(0, 0, 0, 0.45);
       }
       h1 {
-        margin: 0.5rem 0 0;
-        font-size: 1.125rem;
+        margin: 0.25rem 0 0;
+        font-size: 0.9375rem;
         font-weight: 500;
       }
+      .controls {
+        display: flex;
+        gap: 0.5rem;
+      }
+      button {
+        font: inherit;
+        font-size: 0.625rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 0.4rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        background: #fff;
+        color: rgba(0, 0, 0, 0.75);
+        cursor: pointer;
+        transition: border-color 0.18s, background 0.18s, color 0.18s;
+      }
+      button:hover:not(:disabled) {
+        border-color: rgba(0, 0, 0, 0.4);
+      }
+      button:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 2px;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .run {
+        border-color: transparent;
+        background: linear-gradient(135deg, #ff5a1e, #cc8b93);
+        color: #fff;
+      }
+
       .flow {
         display: grid;
-        gap: 0.75rem;
-        margin-top: 1.25rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-top: 1rem;
       }
-      .node {
+      @media (max-width: 30rem) {
+        .flow {
+          grid-template-columns: 1fr;
+        }
+      }
+      .stage {
+        position: relative;
+        text-align: left;
+        display: block;
+        padding: 0.625rem 0.75rem 0.75rem;
+        border-radius: 0.375rem;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: #fff;
+        text-transform: none;
+        letter-spacing: normal;
+        font-size: inherit;
+        transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+      }
+      .stage[aria-selected="true"] {
+        border-color: rgba(255, 90, 30, 0.55);
+        box-shadow: 0 6px 18px rgba(255, 90, 30, 0.13);
+      }
+      .stage[data-state="active"] {
+        transform: translateY(-2px);
+      }
+      .stage-top {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 0.875rem;
-        border-radius: 0.375rem;
-        background: #f5f5f5;
-        animation: pulse 2.4s ease-in-out infinite;
-      }
-      .node:nth-child(2) {
-        animation-delay: 0.4s;
-      }
-      .node:nth-child(3) {
-        animation-delay: 0.8s;
+        gap: 0.4rem;
       }
       .dot {
-        width: 0.5rem;
-        height: 0.5rem;
+        width: 0.4375rem;
+        height: 0.4375rem;
         border-radius: 999px;
-        background: linear-gradient(135deg, #ff5a1e, #eb3b3e);
+        background: rgba(0, 0, 0, 0.18);
         flex-shrink: 0;
+        transition: background 0.2s, box-shadow 0.2s;
       }
-      .label {
-        font-size: 0.8125rem;
-        line-height: 1.4;
+      .stage[data-state="active"] .dot {
+        background: #ff5a1e;
+        box-shadow: 0 0 0 3px rgba(255, 90, 30, 0.16);
       }
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: translateY(0);
-          opacity: 1;
+      .stage[data-state="done"] .dot {
+        background: #129562;
+      }
+      .stage-name {
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+      }
+      .stage-rows {
+        margin-top: 0.5rem;
+        font-variant-numeric: tabular-nums;
+        font-size: 0.6875rem;
+        color: rgba(0, 0, 0, 0.5);
+      }
+      .stage-rows b {
+        color: #111;
+        font-weight: 500;
+      }
+      .bar {
+        margin-top: 0.5rem;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+      }
+      .bar span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ff5a1e, #cc8b93);
+        transition: width 0.25s linear;
+      }
+
+      .detail {
+        margin-top: 0.875rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding-top: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .detail-label {
+        font-size: 0.5625rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.4);
+      }
+      .detail ul {
+        margin: 0.375rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+      }
+      .detail li {
+        font-size: 0.6875rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.04);
+        color: rgba(0, 0, 0, 0.62);
+      }
+      .status {
+        font-size: 0.6875rem;
+        color: rgba(0, 0, 0, 0.45);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .status b {
+        color: #129562;
+        font-weight: 500;
+      }
+      .status.is-running b {
+        color: #ff5a1e;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
         }
-        50% {
-          transform: translateY(-2px);
-          opacity: 0.88;
+        .stage[data-state="active"] {
+          transform: none;
         }
       }
     </style>
   </head>
   <body>
-    <div class="panel">
-      <p class="eyebrow">Live pipeline preview</p>
-      <h1>Data Engineering demo</h1>
-      <div class="flow">
-        <div class="node"><span class="dot"></span><span class="label">Ingest operational sources</span></div>
-        <div class="node"><span class="dot"></span><span class="label">Transform &amp; validate in lakehouse</span></div>
-        <div class="node"><span class="dot"></span><span class="label">Publish governed datasets</span></div>
+    <div class="head">
+      <div>
+        <p class="eyebrow">Live pipeline preview</p>
+        <h1>Data Engineering</h1>
+      </div>
+      <div class="controls">
+        <button class="run" id="run" type="button">Run pipeline</button>
+        <button id="reset" type="button" disabled>Reset</button>
       </div>
     </div>
+
+    <div class="flow" id="flow" role="tablist" aria-label="Pipeline stages"></div>
+
+    <div class="detail">
+      <div>
+        <p class="detail-label" id="detail-label">Ingest · sources</p>
+        <ul id="detail-list"></ul>
+      </div>
+      <p class="status" id="status">Idle · <b>0</b> records processed</p>
+    </div>
+
+    <script>
+      (function () {
+        var STAGES = [
+          {
+            id: "ingest",
+            name: "Ingest",
+            label: "Ingest · sources",
+            items: ["SAP ERP", "Oracle WMS", "Cold-chain IoT", "Distributor SFTP"],
+            target: 48210,
+            dropRate: 0.004,
+          },
+          {
+            id: "transform",
+            name: "Transform",
+            label: "Transform · validation rules",
+            items: ["Batch lineage", "Unit harmonisation", "GxP field checks", "Dedupe"],
+            target: 48018,
+            dropRate: 0.011,
+          },
+          {
+            id: "publish",
+            name: "Publish",
+            label: "Publish · governed datasets",
+            items: ["dim_product", "fact_dispatch", "vw_cold_chain_breach"],
+            target: 47490,
+            dropRate: 0,
+          },
+        ];
+
+        var flow = document.getElementById("flow");
+        var runBtn = document.getElementById("run");
+        var resetBtn = document.getElementById("reset");
+        var statusEl = document.getElementById("status");
+        var detailLabel = document.getElementById("detail-label");
+        var detailList = document.getElementById("detail-list");
+
+        var selected = 0;
+        var running = false;
+        var timer = null;
+        // Progress is per stage, 0..1, so a stage only starts once the one
+        // before it has finished — the point the diagram is making.
+        var progress = [0, 0, 0];
+
+        var reduceMotion =
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function fmt(n) {
+          return Math.round(n).toLocaleString("en-IN");
+        }
+
+        STAGES.forEach(function (stage, i) {
+          var btn = document.createElement("button");
+          btn.className = "stage";
+          btn.type = "button";
+          btn.setAttribute("role", "tab");
+          btn.dataset.index = String(i);
+          btn.innerHTML =
+            '<span class="stage-top"><span class="dot"></span>' +
+            '<span class="stage-name">' +
+            stage.name +
+            "</span></span>" +
+            '<span class="stage-rows"><b data-count>0</b> / ' +
+            fmt(stage.target) +
+            " records</span>" +
+            '<span class="bar"><span data-fill></span></span>';
+          btn.addEventListener("click", function () {
+            select(i);
+          });
+          flow.appendChild(btn);
+        });
+
+        var stageEls = Array.prototype.slice.call(flow.querySelectorAll(".stage"));
+
+        function select(i) {
+          selected = i;
+          var stage = STAGES[i];
+          stageEls.forEach(function (el, n) {
+            el.setAttribute("aria-selected", n === i ? "true" : "false");
+          });
+          detailLabel.textContent = stage.label;
+          detailList.innerHTML = "";
+          stage.items.forEach(function (item) {
+            var li = document.createElement("li");
+            li.textContent = item;
+            detailList.appendChild(li);
+          });
+        }
+
+        function render() {
+          var total = 0;
+          STAGES.forEach(function (stage, i) {
+            var p = progress[i];
+            var el = stageEls[i];
+            var count = stage.target * p;
+            total = Math.max(total, count);
+
+            el.querySelector("[data-count]").textContent = fmt(count);
+            el.querySelector("[data-fill]").style.width = p * 100 + "%";
+            el.dataset.state = p >= 1 ? "done" : p > 0 ? "active" : "idle";
+          });
+
+          var done = progress[2] >= 1;
+          statusEl.className = "status" + (running ? " is-running" : "");
+          if (running) {
+            statusEl.innerHTML = "Running · <b>" + fmt(total) + "</b> records processed";
+          } else if (done) {
+            var dropped = STAGES[0].target - STAGES[2].target;
+            statusEl.innerHTML =
+              "Complete · <b>" +
+              fmt(STAGES[2].target) +
+              "</b> published, " +
+              fmt(dropped) +
+              " quarantined";
+          } else {
+            statusEl.innerHTML = "Idle · <b>0</b> records processed";
+          }
+        }
+
+        function stop() {
+          running = false;
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+          runBtn.disabled = false;
+          runBtn.textContent = progress[2] >= 1 ? "Run again" : "Run pipeline";
+          resetBtn.disabled = progress[0] === 0;
+          render();
+        }
+
+        function run() {
+          progress = [0, 0, 0];
+          running = true;
+          runBtn.disabled = true;
+          runBtn.textContent = "Running…";
+          resetBtn.disabled = true;
+
+          if (reduceMotion) {
+            // Skip straight to the finished state rather than animating.
+            progress = [1, 1, 1];
+            stop();
+            return;
+          }
+
+          var step = 0;
+          timer = setInterval(function () {
+            // Fill each stage in turn, so the handoff between them is legible
+            // instead of all three racing at once.
+            var i = 0;
+            while (i < 3 && progress[i] >= 1) i++;
+            if (i === 3) {
+              stop();
+              return;
+            }
+
+            progress[i] = Math.min(1, progress[i] + 0.06 + Math.random() * 0.05);
+            step++;
+            render();
+          }, 55);
+        }
+
+        runBtn.addEventListener("click", run);
+        resetBtn.addEventListener("click", function () {
+          progress = [0, 0, 0];
+          stop();
+          runBtn.textContent = "Run pipeline";
+          resetBtn.disabled = true;
+        });
+
+        // Left/right arrows move between stages, as a tablist should.
+        flow.addEventListener("keydown", function (e) {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          e.preventDefault();
+          var next = (selected + (e.key === "ArrowRight" ? 1 : -1) + 3) % 3;
+          select(next);
+          stageEls[next].focus();
+        });
+
+        select(0);
+        render();
+      })();
+    </script>
   </body>
 </html>

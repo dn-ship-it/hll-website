@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HLL Foundation · Data Infrastructure Assessment</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Geist Sans", system-ui, -apple-system, sans-serif;
+        background: #fafafa;
+        color: #111;
+        padding: 1rem 1.25rem 1.25rem;
+        font-size: 13px;
+      }
+      .head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .eyebrow {
+        font-size: 0.5625rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.45);
+      }
+      h1 {
+        margin: 0.25rem 0 0;
+        font-size: 0.9375rem;
+        font-weight: 500;
+      }
+      .total {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .total b {
+        font-size: 1.25rem;
+        font-weight: 500;
+        line-height: 1;
+      }
+      .total span {
+        display: block;
+        margin-top: 0.1875rem;
+        font-size: 0.5625rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.42);
+      }
+
+      .grid {
+        margin-top: 0.875rem;
+        display: grid;
+        gap: 0.5rem;
+      }
+      .dim {
+        display: grid;
+        grid-template-columns: 8.5rem minmax(0, 1fr) 2.25rem;
+        align-items: center;
+        gap: 0.625rem;
+      }
+      @media (max-width: 26rem) {
+        .dim {
+          grid-template-columns: 6.5rem minmax(0, 1fr) 2rem;
+          gap: 0.5rem;
+        }
+      }
+      .dim-name {
+        font-size: 0.6875rem;
+        color: rgba(0, 0, 0, 0.62);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .steps {
+        display: flex;
+        gap: 3px;
+      }
+      .steps button {
+        flex: 1 1 0;
+        height: 1.375rem;
+        border: 0;
+        padding: 0;
+        border-radius: 2px;
+        background: rgba(0, 0, 0, 0.07);
+        cursor: pointer;
+        transition: background 0.18s, transform 0.12s;
+      }
+      .steps button:hover {
+        transform: translateY(-1px);
+      }
+      .steps button:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 2px;
+      }
+      .steps button[data-on="true"] {
+        background: linear-gradient(135deg, #ff5a1e, #cc8b93);
+      }
+      .dim-score {
+        font-size: 0.6875rem;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: rgba(0, 0, 0, 0.45);
+      }
+
+      .readout {
+        margin-top: 0.875rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding-top: 0.75rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .band {
+        font-size: 0.6875rem;
+        line-height: 1.55;
+        color: rgba(0, 0, 0, 0.55);
+        max-width: 26rem;
+      }
+      .band b {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        color: #111;
+        font-weight: 500;
+      }
+      .band b::before {
+        content: "";
+        width: 0.4375rem;
+        height: 0.4375rem;
+        border-radius: 999px;
+        background: currentColor;
+      }
+      .presets {
+        display: flex;
+        gap: 0.375rem;
+        align-items: flex-start;
+      }
+      .presets button {
+        font: inherit;
+        font-size: 0.5625rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.625rem;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        background: #fff;
+        color: rgba(0, 0, 0, 0.6);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.18s;
+      }
+      .presets button:hover {
+        border-color: rgba(0, 0, 0, 0.38);
+      }
+      .presets button:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 2px;
+      }
+      .hint {
+        margin: 0.5rem 0 0;
+        font-size: 0.625rem;
+        color: rgba(0, 0, 0, 0.35);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+        .steps button:hover {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <div>
+        <p class="eyebrow">Readiness scorecard</p>
+        <h1>Data Infrastructure Assessment</h1>
+      </div>
+      <p class="total"><b id="total">0</b><span>of 25 · <span id="band-word">—</span></span></p>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="readout">
+      <p class="band" id="band"></p>
+      <div class="presets">
+        <button type="button" data-preset="typical">Typical intake</button>
+        <button type="button" data-preset="target">Target state</button>
+      </div>
+    </div>
+    <p class="hint">Set each dimension to score your own estate.</p>
+
+    <script>
+      (function () {
+        var DIMS = [
+          { id: "ingest", name: "Ingestion", note: "batch-only, no CDC" },
+          { id: "storage", name: "Storage layer", note: "warehouse without a lake" },
+          { id: "governance", name: "Governance", note: "ownership undefined" },
+          { id: "observability", name: "Observability", note: "failures found by users" },
+          { id: "lineage", name: "Lineage", note: "traced by hand" },
+        ];
+        var LEVELS = 5;
+
+        var PRESETS = {
+          typical: { ingest: 2, storage: 3, governance: 1, observability: 1, lineage: 1 },
+          target: { ingest: 4, storage: 5, governance: 4, observability: 4, lineage: 4 },
+        };
+
+        var BANDS = [
+          {
+            min: 0,
+            word: "Ad hoc",
+            color: "#eb3b3e",
+            text: "Pipelines are load-bearing but undocumented. The first engagement is usually a lineage map and an owner for every dataset.",
+          },
+          {
+            min: 11,
+            word: "Emerging",
+            color: "#f9b535",
+            text: "The platform holds, but nothing warns you before a business user does. Observability and contract tests come first.",
+          },
+          {
+            min: 17,
+            word: "Managed",
+            color: "#129562",
+            text: "Solid foundations. Effort shifts from firefighting to shortening the path from a new source to a governed dataset.",
+          },
+          {
+            min: 22,
+            word: "Optimised",
+            color: "#0352b2",
+            text: "Governed, observable and reproducible. The remaining work is cost, latency and self-serve access.",
+          },
+        ];
+
+        var state = Object.assign({}, PRESETS.typical);
+
+        var grid = document.getElementById("grid");
+        var totalEl = document.getElementById("total");
+        var bandEl = document.getElementById("band");
+        var bandWord = document.getElementById("band-word");
+
+        DIMS.forEach(function (dim) {
+          var row = document.createElement("div");
+          row.className = "dim";
+
+          var name = document.createElement("span");
+          name.className = "dim-name";
+          name.textContent = dim.name;
+          name.title = dim.name + " — at level 1: " + dim.note;
+
+          var steps = document.createElement("div");
+          steps.className = "steps";
+          steps.setAttribute("role", "radiogroup");
+          steps.setAttribute("aria-label", dim.name + " maturity");
+
+          for (var i = 1; i <= LEVELS; i++) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.setAttribute("role", "radio");
+            b.dataset.level = String(i);
+            b.setAttribute("aria-label", dim.name + " level " + i + " of " + LEVELS);
+            b.addEventListener(
+              "click",
+              (function (level) {
+                return function () {
+                  // Clicking the level you are already on steps back down, so a
+                  // single control can both raise and lower the score.
+                  state[dim.id] = state[dim.id] === level ? level - 1 : level;
+                  render();
+                };
+              })(i),
+            );
+            steps.appendChild(b);
+          }
+
+          var score = document.createElement("span");
+          score.className = "dim-score";
+          score.dataset.for = dim.id;
+
+          row.appendChild(name);
+          row.appendChild(steps);
+          row.appendChild(score);
+          grid.appendChild(row);
+        });
+
+        Array.prototype.forEach.call(document.querySelectorAll("[data-preset]"), function (b) {
+          b.addEventListener("click", function () {
+            state = Object.assign({}, PRESETS[b.dataset.preset]);
+            render();
+          });
+        });
+
+        function bandFor(total) {
+          var found = BANDS[0];
+          BANDS.forEach(function (b) {
+            if (total >= b.min) found = b;
+          });
+          return found;
+        }
+
+        function render() {
+          var total = 0;
+          DIMS.forEach(function (dim) {
+            var value = state[dim.id];
+            total += value;
+            var row = grid.children[DIMS.indexOf(dim)];
+            Array.prototype.forEach.call(row.querySelectorAll(".steps button"), function (b) {
+              var on = Number(b.dataset.level) <= value;
+              b.dataset.on = on ? "true" : "false";
+              b.setAttribute("aria-checked", Number(b.dataset.level) === value ? "true" : "false");
+            });
+            row.querySelector("[data-for]").textContent = value + "/" + LEVELS;
+          });
+
+          var band = bandFor(total);
+          totalEl.textContent = total;
+          bandWord.textContent = band.word;
+          bandEl.innerHTML =
+            '<b style="color:' + band.color + '">' + band.word + "</b> " + band.text;
+        }
+
+        render();
+      })();
+    </script>
+  </body>
+</html>

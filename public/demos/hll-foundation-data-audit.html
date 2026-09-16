@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HLL Foundation · Data Audit</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Geist Sans", system-ui, -apple-system, sans-serif;
+        background: #fafafa;
+        color: #111;
+        padding: 1rem 1.25rem 1.25rem;
+        font-size: 13px;
+      }
+      .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .eyebrow {
+        font-size: 0.5625rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.45);
+      }
+      h1 {
+        margin: 0.25rem 0 0;
+        font-size: 0.9375rem;
+        font-weight: 500;
+      }
+      .score {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+      }
+      .dial {
+        position: relative;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 999px;
+        background: conic-gradient(#129562 0turn, #129562 0turn, rgba(0, 0, 0, 0.07) 0turn);
+        display: grid;
+        place-items: center;
+        transition: background 0.4s ease;
+      }
+      .dial::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 999px;
+        background: #fafafa;
+      }
+      .dial span {
+        position: relative;
+        font-size: 0.75rem;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+      }
+      .score-meta {
+        font-size: 0.625rem;
+        color: rgba(0, 0, 0, 0.45);
+        line-height: 1.5;
+      }
+      .score-meta b {
+        display: block;
+        color: #111;
+        font-size: 0.6875rem;
+        font-weight: 500;
+      }
+
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      .run {
+        font-size: 0.625rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 0.4rem 0.8rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        background: linear-gradient(135deg, #ff5a1e, #cc8b93);
+        color: #fff;
+        transition: opacity 0.18s;
+      }
+      .run:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .run:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: 2px;
+      }
+
+      .checks {
+        margin-top: 0.875rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .row {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      .row-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.5rem 0.125rem;
+        background: none;
+        border: 0;
+        text-align: left;
+        font-size: 0.75rem;
+        color: rgba(0, 0, 0, 0.35);
+        transition: color 0.2s;
+      }
+      .row[data-done="true"] .row-btn {
+        color: #111;
+      }
+      .row-btn:focus-visible {
+        outline: 2px solid #ff5a1e;
+        outline-offset: -2px;
+      }
+      .pip {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.12);
+        flex-shrink: 0;
+        transition: background 0.25s, box-shadow 0.25s;
+      }
+      .row[data-result="pass"] .pip {
+        background: #129562;
+      }
+      .row[data-result="warn"] .pip {
+        background: #f9b535;
+      }
+      .row[data-result="fail"] .pip {
+        background: #eb3b3e;
+      }
+      .row[data-scanning="true"] .pip {
+        background: #ff5a1e;
+        animation: pulse 0.7s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        50% {
+          box-shadow: 0 0 0 4px rgba(255, 90, 30, 0.18);
+        }
+      }
+      .row-name {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .tagline {
+        font-size: 0.5625rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.3);
+        flex-shrink: 0;
+      }
+      .row[data-result="pass"] .tagline {
+        color: #129562;
+      }
+      .row[data-result="warn"] .tagline {
+        color: #b57d10;
+      }
+      .row[data-result="fail"] .tagline {
+        color: #eb3b3e;
+      }
+      .chev {
+        flex-shrink: 0;
+        color: rgba(0, 0, 0, 0.28);
+        transition: transform 0.2s;
+      }
+      .row[aria-expanded="true"] .chev {
+        transform: rotate(180deg);
+      }
+      .finding {
+        display: none;
+        padding: 0 0.125rem 0.625rem 1.75rem;
+        font-size: 0.6875rem;
+        line-height: 1.55;
+        color: rgba(0, 0, 0, 0.55);
+      }
+      .row[aria-expanded="true"] .finding {
+        display: block;
+      }
+      .finding code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.625rem;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 0.05rem 0.25rem;
+        border-radius: 2px;
+      }
+      .hint {
+        margin: 0.625rem 0 0;
+        font-size: 0.625rem;
+        color: rgba(0, 0, 0, 0.35);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <div>
+        <p class="eyebrow">Governance audit</p>
+        <h1>Data Audit</h1>
+      </div>
+      <div class="score">
+        <div class="dial" id="dial"><span id="dial-value">—</span></div>
+        <p class="score-meta"><b id="verdict">Not run</b><span id="counts">12 checks queued</span></p>
+        <button class="run" id="run" type="button">Run audit</button>
+      </div>
+    </div>
+
+    <div class="checks" id="checks"></div>
+    <p class="hint">Select a check to read its finding.</p>
+
+    <script>
+      (function () {
+        var CHECKS = [
+          {
+            name: "Batch traceability to source lot",
+            result: "pass",
+            finding: "All 4,812 dispatch rows resolve to a manufacturing lot. No orphaned batch IDs.",
+          },
+          {
+            name: "Cold-chain excursion completeness",
+            result: "warn",
+            finding:
+              "3 consignments are missing sensor readings for a 40-minute window. Gaps traced to a gateway reboot on <code>iot-gw-04</code>.",
+          },
+          {
+            name: "Expiry date format consistency",
+            result: "pass",
+            finding: "Normalised to <code>YYYY-MM</code> across all 6 distributor feeds.",
+          },
+          {
+            name: "Duplicate consignment records",
+            result: "fail",
+            finding:
+              "148 rows share a consignment number with differing quantities. Root cause: the SFTP feed re-sends a full day on retry without a dedupe key.",
+          },
+          {
+            name: "Unit-of-measure harmonisation",
+            result: "pass",
+            finding: "Strips, vials and packs reconcile to base units with no residual mismatch.",
+          },
+          {
+            name: "PII exposure in free-text fields",
+            result: "warn",
+            finding:
+              "Patient initials detected in 22 <code>remarks</code> values. Recommend masking at ingest rather than in the warehouse.",
+          },
+          {
+            name: "Referential integrity, product master",
+            result: "pass",
+            finding: "Every SKU in dispatch facts exists in <code>dim_product</code>.",
+          },
+          {
+            name: "Audit-trail retention window",
+            result: "pass",
+            finding: "Change history retained 7 years, meeting the stated GxP requirement.",
+          },
+        ];
+
+        var checksEl = document.getElementById("checks");
+        var runBtn = document.getElementById("run");
+        var dial = document.getElementById("dial");
+        var dialValue = document.getElementById("dial-value");
+        var verdict = document.getElementById("verdict");
+        var counts = document.getElementById("counts");
+
+        var reduceMotion =
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var running = false;
+        var revealed = 0;
+        var timer = null;
+
+        var LABEL = { pass: "Pass", warn: "Review", fail: "Fail" };
+
+        CHECKS.forEach(function (check, i) {
+          var row = document.createElement("div");
+          row.className = "row";
+          row.dataset.done = "false";
+          row.setAttribute("aria-expanded", "false");
+          row.innerHTML =
+            '<button class="row-btn" type="button">' +
+            '<span class="pip"></span>' +
+            '<span class="row-name">' +
+            check.name +
+            "</span>" +
+            '<span class="tagline" data-tag>Queued</span>' +
+            '<svg class="chev" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">' +
+            '<path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+            "</svg></button>" +
+            '<div class="finding">' +
+            check.finding +
+            "</div>";
+
+          row.querySelector(".row-btn").addEventListener("click", function () {
+            // Only a completed check has a finding worth opening.
+            if (row.dataset.done !== "true") return;
+            var open = row.getAttribute("aria-expanded") === "true";
+            row.setAttribute("aria-expanded", open ? "false" : "true");
+          });
+
+          checksEl.appendChild(row);
+        });
+
+        var rows = Array.prototype.slice.call(checksEl.querySelectorAll(".row"));
+
+        function updateScore() {
+          var done = CHECKS.slice(0, revealed);
+          var pass = done.filter(function (c) {
+            return c.result === "pass";
+          }).length;
+          var warn = done.filter(function (c) {
+            return c.result === "warn";
+          }).length;
+          var fail = done.filter(function (c) {
+            return c.result === "fail";
+          }).length;
+
+          // Warnings cost half a point, failures a whole one.
+          var score = done.length
+            ? Math.round(((pass + warn * 0.5) / done.length) * 100)
+            : 0;
+          var turn = score / 100;
+          var color = fail ? "#eb3b3e" : warn ? "#f9b535" : "#129562";
+          dial.style.background =
+            "conic-gradient(" +
+            color +
+            " 0turn, " +
+            color +
+            " " +
+            turn +
+            "turn, rgba(0,0,0,0.07) " +
+            turn +
+            "turn)";
+
+          if (!revealed) {
+            dialValue.textContent = "—";
+            verdict.textContent = "Not run";
+            counts.textContent = CHECKS.length + " checks queued";
+            return;
+          }
+
+          dialValue.textContent = score;
+          verdict.textContent = running
+            ? "Scanning…"
+            : fail
+              ? "Action required"
+              : warn
+                ? "Passed with notes"
+                : "Clean";
+          counts.textContent =
+            pass + " pass · " + warn + " review · " + fail + " fail";
+        }
+
+        function finish() {
+          running = false;
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+          runBtn.disabled = false;
+          runBtn.textContent = "Run again";
+          rows.forEach(function (r) {
+            r.dataset.scanning = "false";
+          });
+          updateScore();
+          // Open the first real problem, which is what an auditor looks at first.
+          var firstIssue = CHECKS.findIndex(function (c) {
+            return c.result === "fail";
+          });
+          if (firstIssue >= 0) rows[firstIssue].setAttribute("aria-expanded", "true");
+        }
+
+        function reveal(i) {
+          var check = CHECKS[i];
+          var row = rows[i];
+          row.dataset.done = "true";
+          row.dataset.scanning = "false";
+          row.dataset.result = check.result;
+          row.querySelector("[data-tag]").textContent = LABEL[check.result];
+        }
+
+        runBtn.addEventListener("click", function () {
+          revealed = 0;
+          running = true;
+          runBtn.disabled = true;
+          runBtn.textContent = "Scanning…";
+          rows.forEach(function (r) {
+            r.dataset.done = "false";
+            r.dataset.scanning = "false";
+            r.removeAttribute("data-result");
+            r.setAttribute("aria-expanded", "false");
+            r.querySelector("[data-tag]").textContent = "Queued";
+          });
+          updateScore();
+
+          if (reduceMotion) {
+            for (var i = 0; i < CHECKS.length; i++) reveal(i);
+            revealed = CHECKS.length;
+            finish();
+            return;
+          }
+
+          rows[0].dataset.scanning = "true";
+          timer = setInterval(function () {
+            reveal(revealed);
+            revealed++;
+            if (revealed >= CHECKS.length) {
+              finish();
+              return;
+            }
+            rows[revealed].dataset.scanning = "true";
+            updateScore();
+          }, 260);
+        });
+
+        updateScore();
+      })();
+    </script>
+  </body>
+</html>
