@@ -20,7 +20,7 @@ import {
   SIZE_SCALE,
   type LightSize,
 } from "./light-variants";
-import { cloneDefinition } from "./lightfx-runtime";
+import { cloneDefinition } from "./clone-definition";
 import { useLightComponent } from "./use-light-component";
 
 type Overrides = {

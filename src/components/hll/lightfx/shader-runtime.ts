@@ -620,11 +620,48 @@ export function createShaderFX(
 
     drawOutput(bufferRead.tex);
   }
-  raf = requestAnimationFrame(frame);
+
+  // Each frame is five full-screen GPU passes, so a shader that is parked off
+  // the viewport — the page-closing CTA, most of the time — costs as much as
+  // one the user is looking at. Running only while on screen and while the tab
+  // is foregrounded is what keeps scrolling smooth on pages that carry more
+  // than one of these.
+  let running = false;
+
+  function start() {
+    if (disposed || running) return;
+    running = true;
+    last = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(raf);
+  }
+
+  function sync() {
+    if (onScreen && !document.hidden) start();
+    else stop();
+  }
+
+  let onScreen = false;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) onScreen = entry.isIntersecting;
+      sync();
+    },
+    { rootMargin: "200px" },
+  );
+  io.observe(canvas!);
+  document.addEventListener("visibilitychange", sync);
 
   function dispose() {
     disposed = true;
-    cancelAnimationFrame(raf);
+    stop();
+    io.disconnect();
+    document.removeEventListener("visibilitychange", sync);
     ro.disconnect();
     window.removeEventListener("pointermove", onPointerMove);
     if (pauseOnDoubleClick) canvas!.removeEventListener("dblclick", onDblClick);

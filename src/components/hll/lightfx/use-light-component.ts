@@ -2,8 +2,6 @@
 
 import { useEffect, type RefObject } from "react";
 
-import { LightComponent } from "./lightfx-runtime";
-
 /**
  * Mounts a LightFX effect on `ref` only while it is near the viewport.
  *
@@ -29,10 +27,19 @@ export function useLightComponent(
     if (!host) return undefined;
 
     let fx: { dispose: () => void } | null = null;
+    let onScreen = false;
+    let cancelled = false;
 
+    // The runtime carries all of `three`, so it is fetched on first approach
+    // rather than shipped with the page that merely renders a button.
     const mount = () => {
       if (fx) return;
-      fx = new LightComponent(host, buildDefinition());
+      import("./lightfx-runtime").then(({ LightComponent }) => {
+        // Resolves a tick later, by which point the host may have scrolled
+        // back out or the effect been torn down.
+        if (cancelled || !onScreen || fx) return;
+        fx = new LightComponent(host, buildDefinition());
+      });
     };
 
     const unmount = () => {
@@ -44,16 +51,16 @@ export function useLightComponent(
     // actually on screen, rather than initializing in front of the user.
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) mount();
-          else unmount();
-        }
+        for (const entry of entries) onScreen = entry.isIntersecting;
+        if (onScreen) mount();
+        else unmount();
       },
       { rootMargin: "200px" },
     );
     observer.observe(host);
 
     return () => {
+      cancelled = true;
       observer.disconnect();
       unmount();
     };

@@ -530,10 +530,6 @@ const DEFAULT_DEFINITION = {
   },
 };
 
-export function cloneDefinition(def) {
-  return JSON.parse(JSON.stringify(def));
-}
-
 function hexToRGB(hex) {
   const h = hex.replace('#', '');
   return [

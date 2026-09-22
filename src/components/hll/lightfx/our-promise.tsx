@@ -69,6 +69,10 @@ function smoothStep(t: number) {
 
 type SketchRefs = {
   scrollY: { current: number };
+  /** Called once per frame. Reading the section's position inside the draw
+      loop keeps the layout read on the frame clock; measuring it from a scroll
+      listener instead forced a synchronous reflow on every scroll event. */
+  readScroll: () => void;
   heroText: { current: HTMLDivElement | null };
   imageStage: { current: HTMLDivElement | null };
 };
@@ -96,6 +100,8 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
   };
 
   p.draw = () => {
+    refs.readScroll();
+
     p.background(0);
     p.shader(shaderProgram);
 
@@ -224,30 +230,52 @@ export function OurPromise({
       scrollYRef.current = Math.max(0, -top);
     };
     readScroll();
-    window.addEventListener("scroll", readScroll, { passive: true });
-    window.addEventListener("resize", readScroll);
 
     const refs: SketchRefs = {
       scrollY: scrollYRef,
+      readScroll,
       heroText: heroTextRef,
       imageStage: imageStageRef,
     };
 
-    let instance: { remove: () => void } | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let instance: any = null;
     let cancelled = false;
+    let onScreen = false;
+    let observer: IntersectionObserver | null = null;
+
+    const sync = () => {
+      if (!instance) return;
+      if (onScreen && !document.hidden) instance.loop();
+      else instance.noLoop();
+    };
 
     // p5 touches `window` at import time, so it is loaded here rather than at
     // module scope, which would break server rendering.
     import("p5").then(({ default: p5 }) => {
-      if (cancelled || !canvasHostRef.current) return;
+      const host = canvasHostRef.current;
+      const root = rootRef.current;
+      if (cancelled || !host || !root) return;
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      instance = new p5((p: any) => sketch(p, refs, scrollTriggerPx), canvasHostRef.current);
+      instance = new p5((p: any) => sketch(p, refs, scrollTriggerPx), host);
+      instance.noLoop();
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) onScreen = entry.isIntersecting;
+          sync();
+        },
+        { rootMargin: "200px" },
+      );
+      observer.observe(root);
+      document.addEventListener("visibilitychange", sync);
     });
 
     return () => {
       cancelled = true;
-      window.removeEventListener("scroll", readScroll);
-      window.removeEventListener("resize", readScroll);
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", sync);
       instance?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

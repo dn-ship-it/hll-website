@@ -18,7 +18,7 @@ import {
   type LightSize,
   type TagVariant,
 } from "./light-variants";
-import { cloneDefinition } from "./lightfx-runtime";
+import { cloneDefinition } from "./clone-definition";
 import { useLightComponent } from "./use-light-component";
 
 // plus.svg's own paths at its native stroke width, inlined so the viewBox can

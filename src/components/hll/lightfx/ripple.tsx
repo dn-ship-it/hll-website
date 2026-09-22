@@ -168,11 +168,26 @@ export function Ripple({
   originRef.current = RIPPLE_ORIGINS[origin];
 
   useEffect(() => {
-    let instance: { remove: () => void } | null = null;
+    // The sketch draws a viewport-sized fragment shader every frame, so left
+    // unattended it costs the same parked off screen as it does in view. It is
+    // only allowed to run while the host is near the viewport and the tab is
+    // foregrounded.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let instance: any = null;
     let cancelled = false;
+    let onScreen = false;
+    let observer: IntersectionObserver | null = null;
+
+    const sync = () => {
+      if (!instance) return;
+      if (onScreen && !document.hidden) instance.loop();
+      else instance.noLoop();
+    };
 
     import("p5").then(({ default: p5 }) => {
-      if (cancelled || !hostRef.current) return;
+      const host = hostRef.current;
+      if (cancelled || !host) return;
+
       instance = new p5(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (p: any) =>
@@ -182,12 +197,25 @@ export function Ripple({
             () => paramsRef.current,
             () => originRef.current,
           ),
-        hostRef.current,
+        host,
       );
+      instance.noLoop();
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) onScreen = entry.isIntersecting;
+          sync();
+        },
+        { rootMargin: "200px" },
+      );
+      observer.observe(host);
+      document.addEventListener("visibilitychange", sync);
     });
 
     return () => {
       cancelled = true;
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", sync);
       instance?.remove();
     };
   }, []);
