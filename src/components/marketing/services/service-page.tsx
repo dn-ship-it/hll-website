@@ -1,41 +1,38 @@
-import { hllFoundation } from "@/data/services/hll-foundation";
 import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import type { ServicePageData } from "@/data/services/types";
 import {
   defaultFoundationDemo,
   normalizeServiceDemoConfig,
   resolveServiceDemoConfig,
 } from "@/lib/payload/service-demo";
-import { mapServiceToFoundation } from "@/lib/payload/marketing-mappers";
+import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
 import { getServiceBySlug } from "@/lib/payload/queries";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 import { CapabilitiesSection } from "./capabilities-section";
-import {
-  ExpertVoiceSection,
-  RelatedServicesSection,
-} from "./expert-and-related";
+import { ExpertVoiceSection, RelatedServicesSection } from "./expert-and-related";
 import { EngagementSection } from "./engagement-section";
 import { OutcomeSection } from "./outcome-section";
 import { ServiceBrandHeader, ServiceBreadcrumb } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
 
-async function loadFoundationPage() {
+async function loadServicePage(fallback: ServicePageData) {
   try {
-    const service = await getServiceBySlug(hllFoundation.slug);
-    const data = mapServiceToFoundation(service, hllFoundation);
+    const service = await getServiceBySlug(fallback.slug);
+    const data = mapServiceToPage(service, fallback);
     const resolved = resolveServiceDemoConfig(service);
     const demo = normalizeServiceDemoConfig(resolved ?? defaultFoundationDemo);
     return { data, demo };
   } catch {
     return {
-      data: hllFoundation,
+      data: fallback,
       demo: defaultFoundationDemo as ServiceDemoConfig,
     };
   }
 }
 
-export async function HLLFoundationPage() {
-  const { data, demo } = await loadFoundationPage();
+export async function ServicePage({ content }: { content: ServicePageData }) {
+  const { data, demo } = await loadServicePage(content);
 
   return (
     <MarketingShell>
@@ -46,13 +43,17 @@ export async function HLLFoundationPage() {
         </div>
       </div>
 
-      <ServiceHero data={data.hero} demo={demo} />
+      <ServiceHero data={data.hero} demo={demo} variant={data.variant} />
       <CapabilitiesSection data={data.capabilities} />
-      <OutcomeSection data={data.outcomes} />
+      <OutcomeSection data={data.outcomes} variant={data.variant} />
       <EngagementSection data={data.engagement} />
       <ExpertVoiceSection data={data.expertVoice} />
       <RelatedServicesSection items={data.relatedServices} />
-      <HomeCta />
+      <HomeCta
+        headline={data.cta.headline}
+        buttonLabel={data.cta.buttonLabel}
+        href={data.cta.href}
+      />
     </MarketingShell>
   );
 }

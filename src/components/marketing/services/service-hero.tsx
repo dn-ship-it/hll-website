@@ -8,7 +8,7 @@ import {
   SERVICE_TO_RIPPLE,
   type ServiceVariant,
 } from "@/components/hll";
-import type { HLLFoundationData } from "@/data/services/hll-foundation";
+import type { ServicePageData } from "@/data/services/types";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 
 import { ServiceDemoWindow } from "./service-demo-window";
@@ -18,7 +18,7 @@ export function ServiceHero({
   demo,
   variant = "hll-foundation",
 }: {
-  data: HLLFoundationData["hero"];
+  data: ServicePageData["hero"];
   demo: ServiceDemoConfig;
   variant?: ServiceVariant;
 }) {
@@ -46,6 +46,12 @@ export function ServiceHero({
           fontSize="clamp(2rem, 4vw + 0.5rem, 3.25rem)"
           letterSpacing="-0.01em"
         />
+
+        {data.support ? (
+          <p className="mt-6 max-w-[min(100%,42rem)] text-sm leading-7 text-black/55">
+            {data.support}
+          </p>
+        ) : null}
 
         {/* Buttons, not anchors. These used to be href="#<id>" links, and
             because each id also matches a capability section further down the

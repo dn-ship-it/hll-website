@@ -168,7 +168,15 @@ export function InsideTheLab() {
   );
 }
 
-export function HomeCta() {
+export function HomeCta({
+  headline = "Let's start a conversation",
+  buttonLabel = "Write to us",
+  href = "/contact",
+}: {
+  headline?: string;
+  buttonLabel?: string;
+  href?: string;
+} = {}) {
   return (
     <section
       className="relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,7vw,4.5rem)]"
@@ -184,14 +192,14 @@ export function HomeCta() {
       <div className="relative mx-auto flex max-w-[90rem] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <GradientRevealTextNormal
           as="h2"
-          text="Let's start a conversation"
+          text={headline}
           variant="contact"
           playOnView
           className="block text-black"
           fontSize="clamp(1.5rem, 3vw, 2.25rem)"
         />
-        <HLLOutlineButton href="/contact" variant="contact">
-          Write to us
+        <HLLOutlineButton href={href} variant="contact">
+          {buttonLabel}
         </HLLOutlineButton>
       </div>
     </section>

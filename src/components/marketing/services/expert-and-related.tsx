@@ -1,7 +1,11 @@
-import type { HLLFoundationData } from "@/data/services/hll-foundation";
+import type { ExpertVoice, ServicePageData } from "@/data/services/types";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
-export function ExpertVoiceSection({ data }: { data: HLLFoundationData["expertVoice"] }) {
+export function ExpertVoiceSection({ data }: { data: ExpertVoice | null }) {
+  if (!data) return null;
+
+  const attribution = [data.name, data.role, data.company].filter(Boolean).join(", ");
+
   return (
     <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
       <div className="mx-auto max-w-[90rem]">
@@ -24,7 +28,7 @@ export function ExpertVoiceSection({ data }: { data: HLLFoundationData["expertVo
               label="Expert portrait"
             />
             <p className="mt-3 text-[10px] uppercase tracking-[0.16em] text-black/35">
-              01/02 · {data.company}
+              {data.company ?? data.role}
             </p>
           </div>
 
@@ -36,9 +40,7 @@ export function ExpertVoiceSection({ data }: { data: HLLFoundationData["expertVo
               &ldquo;{data.quote}&rdquo;
             </p>
             <footer className="mt-8 text-sm text-black/55">
-              <cite className="not-italic">
-                {data.name}, {data.role}, {data.company}
-              </cite>
+              <cite className="not-italic">{attribution}</cite>
             </footer>
           </blockquote>
         </div>
@@ -50,7 +52,7 @@ export function ExpertVoiceSection({ data }: { data: HLLFoundationData["expertVo
 export function RelatedServicesSection({
   items,
 }: {
-  items: HLLFoundationData["relatedServices"];
+  items: ServicePageData["relatedServices"];
 }) {
   return (
     <section className="bg-[#f5f5f5] px-[clamp(1.25rem,4vw,3rem)] py-[clamp(2.5rem,6vw,4rem)]">
@@ -64,7 +66,7 @@ export function RelatedServicesSection({
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {items.map((item) => (
             <a
-              key={item.href}
+              key={item.label}
               href={item.href}
               className="rounded-full border border-black/12 bg-white px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-black/70 transition hover:border-black/25"
             >

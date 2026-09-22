@@ -1,7 +1,8 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
-import { HLLFoundationPage } from "@/components/marketing/services/foundation-page";
-import { SERVICE_VARIANTS, type ServiceVariant } from "@/components/hll";
+import { ServicePage } from "@/components/marketing/services/service-page";
+import { SERVICE_VARIANTS, type ServiceVariant } from "@/components/hll/variants";
+import { getServicePage } from "@/data/services";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 
 export default async function ServiceVerticalPage({
@@ -11,8 +12,9 @@ export default async function ServiceVerticalPage({
 }) {
   const { slug } = await params;
 
-  if (slug === "hll-foundation") {
-    return <HLLFoundationPage />;
+  const content = getServicePage(slug);
+  if (content) {
+    return <ServicePage content={content} />;
   }
 
   if (!SERVICE_VARIANTS.includes(slug as ServiceVariant)) {

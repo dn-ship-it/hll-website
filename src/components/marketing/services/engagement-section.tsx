@@ -1,4 +1,4 @@
-import type { HLLFoundationData } from "@/data/services/hll-foundation";
+import type { ServicePageData } from "@/data/services/types";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 import { Tag } from "@/components/hll/tag";
 
@@ -8,7 +8,7 @@ const CARD_STYLES = {
   image: "bg-white text-black border border-black/8",
 } as const;
 
-export function EngagementSection({ data }: { data: HLLFoundationData["engagement"] }) {
+export function EngagementSection({ data }: { data: ServicePageData["engagement"] }) {
   return (
     <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
       <div className="mx-auto max-w-[90rem]">
@@ -33,9 +33,9 @@ export function EngagementSection({ data }: { data: HLLFoundationData["engagemen
             >
               {card.variant === "image" ? (
                 <MediaPlaceholder className="mb-4 aspect-[4/3] w-full" label={card.title} />
-              ) : (
+              ) : card.tag === "Client work" ? (
                 <p className="text-lg font-medium opacity-90">{card.client}</p>
-              )}
+              ) : null}
               <div className="mt-3">
                 <Tag variant={card.variant === "navy" ? "cool" : "warm"}>{card.tag}</Tag>
               </div>

@@ -1,5 +1,6 @@
-import { HLLFoundationPage } from "@/components/marketing/services/foundation-page";
+import { ServicePage } from "@/components/marketing/services/service-page";
+import { hllFoundation } from "@/data/services";
 
 export default function ServicesPage() {
-  return <HLLFoundationPage />;
+  return <ServicePage content={hllFoundation} />;
 }

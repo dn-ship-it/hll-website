@@ -24,11 +24,11 @@ function foundationPageContentSeed() {
         index: item.index,
         title: item.title,
         description: item.description,
-        subServices: item.subServices?.map((label) => ({ label })) ?? [],
+        subServices: item.subServices?.map((sub) => ({ label: sub.name })) ?? [],
       })),
       tools: {
-        cloud: f.capabilities.tools.cloud.map((label) => ({ label })),
-        data: f.capabilities.tools.data.map((label) => ({ label })),
+        cloud: (f.capabilities.tools?.cloud ?? []).map((label) => ({ label })),
+        data: (f.capabilities.tools?.data ?? []).map((label) => ({ label })),
       },
     },
     outcomes: {
@@ -51,12 +51,14 @@ function foundationPageContentSeed() {
         variant: card.variant,
       })),
     },
-    expertVoice: {
-      quote: f.expertVoice.quote,
-      name: f.expertVoice.name,
-      role: f.expertVoice.role,
-      company: f.expertVoice.company,
-    },
+    expertVoice: f.expertVoice
+      ? {
+          quote: f.expertVoice.quote,
+          name: f.expertVoice.name ?? "",
+          role: f.expertVoice.role,
+          company: f.expertVoice.company ?? "",
+        }
+      : undefined,
     relatedServices: f.relatedServices.map((link) => ({
       label: link.label,
       href: link.href,
@@ -197,10 +199,10 @@ export async function seedMarketingContent(payload: Payload) {
           footerServices: [
             { label: "HLL Kinetic" },
             { label: "HLL Momentum" },
-            { label: "HLL Mission" },
+            { label: "HLL Motion" },
             { label: "HLL Foundation" },
             { label: "HLL Ontology" },
-            { label: "HLL Trust & Governance" },
+            { label: "HLL Governance & Trust" },
           ],
           footerIndustries: [
             { label: "Financial Services" },

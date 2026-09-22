@@ -5,7 +5,7 @@ import type { CareersPageContent } from "@/data/careers-page";
 import { careersPageContent } from "@/data/careers-page";
 import type { ContactPageContent } from "@/data/contact-page";
 import { contactPageContent } from "@/data/contact-page";
-import type { HLLFoundationData } from "@/data/services/hll-foundation";
+import type { EngagementCardType, ServicePageData } from "@/data/services/types";
 import { hllFoundation } from "@/data/services/hll-foundation";
 import type { IndustryPageData } from "@/types/industry";
 import { healthcareIndustry } from "@/data/industries/healthcare";
@@ -16,19 +16,21 @@ import { resolveMediaUrl } from "./media";
 
 export type CmsImageRef = Media | number | string | null | undefined;
 
-export function mapServiceToFoundation(
+export function mapServiceToPage(
   service: Service | null,
-  fallback: HLLFoundationData = hllFoundation,
-): HLLFoundationData {
+  fallback: ServicePageData = hllFoundation,
+): ServicePageData {
   const pc = service?.pageContent;
   if (!pc?.hero?.headline) return fallback;
 
   return {
     slug: service?.slug ?? fallback.slug,
+    variant: fallback.variant,
     brand: pc.brand ?? service?.title ?? fallback.brand,
-    breadcrumb: (pc.breadcrumb?.map((b) => b.label) ?? fallback.breadcrumb) as HLLFoundationData["breadcrumb"],
+    breadcrumb: (pc.breadcrumb?.map((b) => b.label) ?? fallback.breadcrumb) as ServicePageData["breadcrumb"],
     hero: {
       headline: pc.hero.headline ?? fallback.hero.headline,
+      support: fallback.hero.support,
       tabs:
         pc.hero.tabs?.map((t) => ({ id: t.id, label: t.label })) ?? fallback.hero.tabs,
     },
@@ -41,16 +43,18 @@ export function mapServiceToFoundation(
           index: item.index ?? "",
           title: item.title,
           description: item.description ?? "",
-          subServices: item.subServices?.map((s) => s.label) ?? [],
+          subServices: item.subServices?.map((s) => ({ name: s.label })) ?? [],
         })) ?? fallback.capabilities.items,
-      tools: {
-        cloud:
-          pc.capabilities?.tools?.cloud?.map((c) => c.label) ??
-          fallback.capabilities.tools.cloud,
-        data:
-          pc.capabilities?.tools?.data?.map((d) => d.label) ??
-          fallback.capabilities.tools.data,
-      },
+      tools: fallback.capabilities.tools
+        ? {
+            cloud:
+              pc.capabilities?.tools?.cloud?.map((c) => c.label) ??
+              fallback.capabilities.tools.cloud,
+            data:
+              pc.capabilities?.tools?.data?.map((d) => d.label) ??
+              fallback.capabilities.tools.data,
+          }
+        : undefined,
     },
     outcomes: {
       title: pc.outcomes?.title ?? fallback.outcomes.title,
@@ -69,22 +73,25 @@ export function mapServiceToFoundation(
           id: card.id,
           title: card.title,
           client: card.client ?? card.title,
-          tag: card.tag ?? "Client work",
+          tag: (card.tag ?? "Client work") as EngagementCardType,
           description: card.description ?? "",
           variant: (card.variant ?? "navy") as "navy" | "orange" | "image",
         })) ?? fallback.engagement.cards,
     },
-    expertVoice: {
-      quote: pc.expertVoice?.quote ?? fallback.expertVoice.quote,
-      name: pc.expertVoice?.name ?? fallback.expertVoice.name,
-      role: pc.expertVoice?.role ?? fallback.expertVoice.role,
-      company: pc.expertVoice?.company ?? fallback.expertVoice.company,
-    },
+    expertVoice: pc.expertVoice?.quote
+      ? {
+          quote: pc.expertVoice.quote,
+          name: pc.expertVoice.name ?? undefined,
+          role: pc.expertVoice.role ?? "",
+          company: pc.expertVoice.company ?? undefined,
+        }
+      : fallback.expertVoice,
     relatedServices:
       pc.relatedServices?.map((link) => ({
         label: link.label,
         href: link.href,
       })) ?? fallback.relatedServices,
+    cta: fallback.cta,
   };
 }
 
