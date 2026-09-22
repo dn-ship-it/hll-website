@@ -54,7 +54,7 @@ export function HomeHero({
 }
 
 export function WhatWeDo() {
-  const categories = ["KINETIC", "MOMENTUM", "MISSION", "FOUNDATION", "ONTOLOGY"];
+  const categories = ["KINETIC", "MOMENTUM", "MOTION", "FOUNDATION", "ONTOLOGY"];
 
   return (
     <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
@@ -77,7 +77,7 @@ export function WhatWeDo() {
           </ul>
           <GradientRevealTextSlow
             as="h3"
-            text="HLL Trust & Governance"
+            text="HLL Governance & Trust"
             variant="hll-trust"
             playOnView
             className="mt-10 block text-black"

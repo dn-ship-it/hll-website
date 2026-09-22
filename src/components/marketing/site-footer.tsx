@@ -13,10 +13,10 @@ const DEFAULT_FOOTER_NAV: SiteNavItem[] = [
 const DEFAULT_FOOTER_SERVICES = [
   "HLL Kinetic",
   "HLL Momentum",
-  "HLL Mission",
+  "HLL Motion",
   "HLL Foundation",
   "HLL Ontology",
-  "HLL Trust & Governance",
+  "HLL Governance & Trust",
 ];
 
 const DEFAULT_FOOTER_INDUSTRIES = [
