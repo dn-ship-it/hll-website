@@ -58,6 +58,10 @@ function sketch(
   }
 
   p.setup = () => {
+    // p5 defaults to the device's full pixel ratio, which on a 3x phone screen
+    // means nine times the fragment work for a backdrop that sits under a
+    // scrim. The WebGL runtimes already cap at 2; match them.
+    p.pixelDensity(Math.min(p.displayDensity(), 2));
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, RIPPLE_FRAG_SRC);

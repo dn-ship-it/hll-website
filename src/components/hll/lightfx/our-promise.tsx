@@ -94,6 +94,9 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
   let smoothImageScale = IMAGE_SCALE_START;
 
   p.setup = () => {
+    // Capped for the same reason as the ripple: p5 would otherwise render this
+    // full-viewport shader at the phone's full pixel ratio.
+    p.pixelDensity(Math.min(p.displayDensity(), 2));
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, OUR_PROMISE_FRAG_SRC);
