@@ -11,6 +11,7 @@ type ImpactTile = {
   minHeight: string;
   type?: "media" | "stat";
   stat?: string;
+  statLabel?: string;
 };
 
 const IMPACT_TILES: ImpactTile[] = [
@@ -43,10 +44,11 @@ const IMPACT_TILES: ImpactTile[] = [
     title: "",
     tags: [],
     gridColumn: "span 1",
-    gridRow: "span 1",
-    minHeight: "clamp(8rem, 14vw, 10rem)",
+    gridRow: "span 2",
+    minHeight: "clamp(15rem, 22vw, 20rem)",
     type: "stat",
-    stat: "60+ Clients across the world",
+    stat: "60+",
+    statLabel: "Clients across the world",
   },
   {
     id: "big-red",
@@ -77,10 +79,11 @@ const IMPACT_TILES: ImpactTile[] = [
     title: "",
     tags: [],
     gridColumn: "span 1",
-    gridRow: "span 1",
-    minHeight: "clamp(8rem, 14vw, 10rem)",
+    gridRow: "span 2",
+    minHeight: "clamp(15rem, 22vw, 20rem)",
     type: "stat",
-    stat: "80% Clients across the world",
+    stat: "80%",
+    statLabel: "Client satisfaction",
   },
 ];
 
@@ -88,15 +91,11 @@ function ImpactCard({ tile }: { tile: ImpactTile }) {
   if (tile.type === "stat") {
     return (
       <article
-        className="flex items-end p-4"
+        className="flex flex-col items-start justify-end p-4 md:p-6"
         style={{ gridColumn: tile.gridColumn, gridRow: tile.gridRow, minHeight: tile.minHeight }}
       >
-        <p
-          className="font-light leading-tight text-black"
-          style={{ fontSize: "clamp(1.35rem, 2.5vw, 2rem)" }}
-        >
-          {tile.stat}
-        </p>
+        <p className="hll-display text-[clamp(3.5rem,8.5vw,8rem)] font-light leading-none text-black">{tile.stat}</p>
+        <p className="mt-3 max-w-[12ch] text-[clamp(1.1rem,2.2vw,2.25rem)] leading-[1.05] text-black">{tile.statLabel}</p>
       </article>
     );
   }
@@ -121,7 +120,7 @@ export function OurImpact() {
   return (
     <section
       id="impact"
-      className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]"
+      className="hll-home-section border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionEyebrow>Work</SectionEyebrow>

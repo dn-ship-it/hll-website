@@ -29,20 +29,22 @@ export default async function HomePage() {
 
   return (
     <MarketingShell>
-      <HomeHero
-        heading={heroHeading}
-        ctaLabel={heroCtaLabel}
-        ctaHref={heroCtaHref}
-        heroImageUrl={heroImageUrl}
-      />
-      <WhatWeDo />
-      <OurClients />
-      <OurPromise />
-      <OurImpact />
-      <HowWeWork />
-      <WhoWeAre />
-      <InsideTheLab />
-      <HomeCta />
+      <div className="hll-home">
+        <HomeHero
+          heading={heroHeading}
+          ctaLabel={heroCtaLabel}
+          ctaHref={heroCtaHref}
+          heroImageUrl={heroImageUrl}
+        />
+        <WhatWeDo />
+        <OurClients />
+        <OurPromise />
+        <OurImpact />
+        <HowWeWork />
+        <WhoWeAre />
+        <InsideTheLab />
+        <HomeCta />
+      </div>
     </MarketingShell>
   );
 }

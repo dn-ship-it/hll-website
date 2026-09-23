@@ -33,12 +33,13 @@ const STEPS = [
 
 export function HowWeWork() {
   const [active, setActive] = useState<(typeof STEPS)[number]["id"]>("build");
+  const activeIndex = STEPS.findIndex((step) => step.id === active);
 
   return (
-    <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
+    <section className="hll-home-section border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
       <div className="mx-auto max-w-[90rem]">
         <p className="text-[10px] uppercase tracking-[0.28em] text-black/45">About</p>
-        <h2 className="mt-2 text-[clamp(1.35rem,2.5vw,1.75rem)] font-normal text-black">
+        <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
           How we work
         </h2>
 
@@ -47,7 +48,7 @@ export function HowWeWork() {
             type="button"
             className="text-black/30 hover:text-black/60"
             aria-label="Previous"
-            onClick={() => setActive("shape")}
+            onClick={() => setActive(STEPS[(activeIndex + STEPS.length - 1) % STEPS.length].id)}
           >
             ←
           </button>
@@ -90,7 +91,7 @@ export function HowWeWork() {
             type="button"
             className="text-black/30 hover:text-black/60"
             aria-label="Next"
-            onClick={() => setActive("evolve")}
+            onClick={() => setActive(STEPS[(activeIndex + 1) % STEPS.length].id)}
           >
             →
           </button>
@@ -108,10 +109,10 @@ export function WhoWeAre() {
   }));
 
   return (
-    <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
+    <section className="hll-home-section border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
       <div className="mx-auto max-w-[90rem]">
         <p className="text-[10px] uppercase tracking-[0.28em] text-black/45">Team</p>
-        <h2 className="mt-2 text-[clamp(1.35rem,2.5vw,1.75rem)] font-normal text-black">
+        <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
           Who are we
         </h2>
 
@@ -147,7 +148,7 @@ export function WhoWeAre() {
 
 export function InsideTheLab() {
   return (
-    <section className="relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(4rem,10vw,6rem)]">
+    <section className="hll-home-section relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(4rem,10vw,6rem)]">
       <div
         className="lab-shader absolute inset-0"
         style={{
@@ -157,10 +158,10 @@ export function InsideTheLab() {
       />
       <div className="relative mx-auto max-w-[90rem] text-center">
         <p className="text-[10px] uppercase tracking-[0.28em] text-black/60">Demo tool</p>
-        <h2 className="mt-2 text-[clamp(1.35rem,2.5vw,1.75rem)] font-normal text-black">
+        <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
           Inside the Lab
         </h2>
-        <div className="mx-auto mt-10 max-w-4xl rounded-lg border border-white/40 bg-white p-3 shadow-xl">
+        <div className="mx-auto mt-10 max-w-[73rem] rounded-lg border border-white/40 bg-white p-3 shadow-xl">
           <MediaPlaceholder className="aspect-[16/9] w-full min-h-[clamp(10rem,30vw,18rem)]" label="Demo window" />
         </div>
       </div>
@@ -179,7 +180,7 @@ export function HomeCta({
 } = {}) {
   return (
     <section
-      className="relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,7vw,4.5rem)]"
+      className="hll-home-section relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,7vw,4.5rem)]"
       style={{
         background: "linear-gradient(90deg, #FFF6B7 0%, #E8F4FF 50%, #D4ECFF 100%)",
       }}
@@ -195,8 +196,8 @@ export function HomeCta({
           text={headline}
           variant="contact"
           playOnView
-          className="block text-black"
-          fontSize="clamp(1.5rem, 3vw, 2.25rem)"
+          className="hll-display block text-black"
+          fontSize="clamp(1.875rem, 4.25vw, 4rem)"
         />
         <HLLOutlineButton href={href} variant="contact">
           {buttonLabel}
