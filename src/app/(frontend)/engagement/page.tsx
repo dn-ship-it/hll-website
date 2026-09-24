@@ -1,64 +1,82 @@
 import { MarketingShell } from "@/components/marketing/marketing-shell";
-import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 type Project = {
   name: string;
-  year?: string;
-  layout: string;
-  imageLabel: string;
+  year: string;
+  placement: string;
+  imageAlt: string;
 };
 
 const PROJECTS: Project[] = [
   {
     name: "Bajaj",
     year: "2021",
-    layout: "engagement-project--bajaj",
-    imageLabel: "Bajaj project image",
+    placement: "engagement-project--bajaj",
+    imageAlt: "Bajaj project",
   },
   {
     name: "KTM",
-    layout: "engagement-project--ktm",
-    imageLabel: "KTM project image",
-  },
-  {
-    name: "The Big Red Group",
-    layout: "engagement-project--big-red-top",
-    imageLabel: "The Big Red Group project image",
+    year: "2021",
+    placement: "engagement-project--ktm",
+    imageAlt: "KTM project",
   },
   {
     name: "WeCare",
-    layout: "engagement-project--wecare",
-    imageLabel: "WeCare project image",
-  },
-  {
-    name: "Zelish",
-    layout: "engagement-project--zelish",
-    imageLabel: "Zelish project image",
+    year: "2021",
+    placement: "engagement-project--wecare",
+    imageAlt: "WeCare project",
   },
   {
     name: "Salt",
-    layout: "engagement-project--salt",
-    imageLabel: "Salt project image",
+    year: "2021",
+    placement: "engagement-project--salt-middle-left",
+    imageAlt: "Salt project",
   },
   {
     name: "The Big Red Group",
-    layout: "engagement-project--big-red-bottom",
-    imageLabel: "The Big Red Group project image",
+    year: "2021",
+    placement: "engagement-project--big-red-top",
+    imageAlt: "The Big Red Group project",
+  },
+  {
+    name: "Salt",
+    year: "2021",
+    placement: "engagement-project--salt-middle-right",
+    imageAlt: "Salt project",
+  },
+  {
+    name: "Zelish",
+    year: "2021",
+    placement: "engagement-project--zelish",
+    imageAlt: "Zelish project",
+  },
+  {
+    name: "Salt",
+    year: "2021",
+    placement: "engagement-project--salt-bottom-left",
+    imageAlt: "Salt project",
+  },
+  {
+    name: "The Big Red Group",
+    year: "2021",
+    placement: "engagement-project--big-red-bottom",
+    imageAlt: "The Big Red Group project",
+  },
+  {
+    name: "Salt",
+    year: "2021",
+    placement: "engagement-project--salt-bottom-right",
+    imageAlt: "Salt project",
   },
 ];
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className={`engagement-project ${project.layout}`}>
-      <MediaPlaceholder
-        className="engagement-project__image"
-        label={project.imageLabel}
-      />
+    <article className={`engagement-project ${project.placement}`}>
+      <div className="engagement-project__image" role="img" aria-label={project.imageAlt} />
       <div className="engagement-project__meta">
-        <div className="flex items-center gap-2">
-          <h2>{project.name}</h2>
-          {project.year ? <p>{project.year}</p> : null}
-        </div>
+        <h2>{project.name}</h2>
+        <p>{project.year}</p>
       </div>
     </article>
   );
@@ -69,7 +87,6 @@ export default function EngagementPage() {
     <MarketingShell showFooter={false}>
       <section className="engagement-page" aria-labelledby="engagement-title">
         <header className="engagement-page__heading">
-          <p className="engagement-page__eyebrow">Selected work</p>
           <h1 id="engagement-title" className="hll-display">
             Engagements/ Work
           </h1>

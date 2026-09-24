@@ -665,39 +665,36 @@
 .engagement-page {
   --hll-engagement-font: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
   --hll-engagement-label: var(--font-sometype-mono), "Courier New", monospace;
-  padding: clamp(10rem, 27.5vw, 26rem) 10px clamp(5rem, 9vw, 9rem);
+  padding: 351px 10px 191px;
   background: #fafafa;
   color: #1a1a1a;
 }
 
 .engagement-page__heading {
-  margin: 0 20px clamp(3rem, 6vw, 5.5rem);
-}
-
-.engagement-page__eyebrow {
-  margin-bottom: 1rem;
-  color: rgb(26 26 26 / 48%);
-  font-family: var(--hll-engagement-label);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  margin: 0 20px 104px;
 }
 
 .engagement-page__heading h1 {
-  max-width: 12ch;
+  max-width: none;
   font-family: var(--hll-engagement-font);
-  font-size: clamp(3rem, 5vw, 4.625rem);
+  font-size: 64px;
   font-weight: 300;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
+  letter-spacing: 0;
+  line-height: 74px;
 }
 
 .engagement-projects {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-flow: dense;
+  grid-template-rows:
+    calc(var(--engagement-tile) + 72px)
+    calc(var(--engagement-tile) + 129px)
+    calc(56.5vw + 78.7px)
+    calc(var(--engagement-tile) + 90px);
+  --engagement-tile: calc(33.333333vw - 13.333333px);
+  grid-auto-flow: row;
   align-items: start;
-  gap: clamp(1rem, 2vw, 2rem);
+  column-gap: 10px;
 }
 
 .engagement-project {
@@ -705,96 +702,139 @@
 }
 
 .engagement-project__image {
+  display: block;
   width: 100%;
-  height: auto;
   aspect-ratio: 1;
-  background: #e3e3e3;
+  background: #dedede;
 }
 
 .engagement-project__meta {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
-  padding-top: 12px;
+  gap: 12px;
+  min-height: 50px;
+  padding-top: 8px;
+}
+
+.engagement-project--bajaj .engagement-project__meta {
+  min-height: 72px;
 }
 
 .engagement-project__meta h2 {
   font-family: var(--hll-engagement-font);
-  font-size: clamp(1rem, 1.5vw, 1.375rem);
+  font-size: 36px;
   font-weight: 400;
-  line-height: 1.2;
+  letter-spacing: 0;
+  line-height: 42px;
 }
 
-.engagement-project__meta p,
-.engagement-project__meta li {
+.engagement-project__meta p {
   color: rgb(26 26 26 / 52%);
   font-family: var(--hll-engagement-label);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  line-height: 1.65;
-  text-transform: uppercase;
-}
-
-.engagement-project__meta ul {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0 8px;
-  text-align: right;
+  font-size: 12px;
+  line-height: 14px;
 }
 
 .engagement-project--bajaj {
   grid-column: 1;
-  grid-row: span 2;
+  grid-row: 1;
 }
 
 .engagement-project--ktm {
   grid-column: 2;
+  grid-row: 1;
 }
 
 .engagement-project--ktm .engagement-project__image {
   aspect-ratio: 490 / 317;
 }
 
-.engagement-project--big-red-top {
-  grid-column: 2;
-  grid-row: span 2;
-}
-
 .engagement-project--wecare {
   grid-column: 3;
-  grid-row: span 2;
+  grid-row: 1;
+}
+
+.engagement-project--salt-middle-left,
+.engagement-project--big-red-top,
+.engagement-project--salt-middle-right {
+  grid-row: 2;
+  margin-top: 79px;
+}
+
+.engagement-project--salt-middle-left,
+.engagement-project--salt-bottom-left {
+  grid-column: 1;
+}
+
+.engagement-project--big-red-top,
+.engagement-project--big-red-bottom {
+  grid-column: 2;
+}
+
+.engagement-project--salt-middle-right,
+.engagement-project--salt-bottom-right {
+  grid-column: 3;
 }
 
 .engagement-project--zelish {
   grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: 40px;
 }
 
 .engagement-project--zelish .engagement-project__image {
   aspect-ratio: 1492 / 843;
 }
 
-.engagement-project--salt {
-  grid-column: 1;
+.engagement-project--salt-bottom-left,
+.engagement-project--big-red-bottom,
+.engagement-project--salt-bottom-right {
+  grid-row: 4;
+  margin-top: 40px;
 }
 
-.engagement-project--big-red-bottom {
-  grid-column: 2;
-  grid-row: span 2;
-}
-
-@media (max-width: 800px) {
+@media (max-width: 1100px) {
   .engagement-page {
-    padding-top: clamp(12rem, 40vw, 20rem);
+    padding-top: clamp(14rem, 24vw, 21rem);
+    padding-bottom: clamp(5rem, 12vw, 9rem);
+  }
+
+  .engagement-page__heading {
+    margin-bottom: clamp(3rem, 8vw, 6rem);
+  }
+
+  .engagement-page__heading h1 {
+    font-size: clamp(2.75rem, 7vw, 4rem);
+    line-height: 1.15;
+  }
+
+  .engagement-project__meta h2 {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    line-height: 1.16;
   }
 
   .engagement-projects {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    gap: 32px 12px;
   }
 
-  .engagement-project--wecare {
-    grid-column: 2;
+  .engagement-project,
+  .engagement-project--bajaj,
+  .engagement-project--ktm,
+  .engagement-project--wecare,
+  .engagement-project--salt-middle-left,
+  .engagement-project--big-red-top,
+  .engagement-project--salt-middle-right,
+  .engagement-project--zelish,
+  .engagement-project--salt-bottom-left,
+  .engagement-project--big-red-bottom,
+  .engagement-project--salt-bottom-right {
+    grid-column: auto;
+    grid-row: auto;
+    margin-top: 0;
   }
 
   .engagement-project--zelish {
@@ -802,30 +842,18 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   .engagement-page__heading {
-    margin-inline: 6px;
+    margin-inline: 8px;
   }
 
   .engagement-projects {
     grid-template-columns: minmax(0, 1fr);
+    row-gap: 28px;
   }
 
-  .engagement-project,
-  .engagement-project--bajaj,
-  .engagement-project--ktm,
-  .engagement-project--big-red-top,
-  .engagement-project--wecare,
-  .engagement-project--zelish,
-  .engagement-project--salt,
-  .engagement-project--big-red-bottom {
+  .engagement-project--zelish {
     grid-column: 1;
-    grid-row: auto;
-  }
-
-  .engagement-project--ktm .engagement-project__image,
-  .engagement-project--zelish .engagement-project__image {
-    aspect-ratio: 1;
   }
 }
 
