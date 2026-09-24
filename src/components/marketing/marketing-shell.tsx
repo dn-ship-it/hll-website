@@ -3,7 +3,13 @@ import { mapSiteNav } from "@/lib/payload/marketing-mappers";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 
-export async function MarketingShell({ children }: { children: React.ReactNode }) {
+export async function MarketingShell({
+  children,
+  showFooter = true,
+}: {
+  children: React.ReactNode;
+  showFooter?: boolean;
+}) {
   let siteName = "Hyper Lychee Labs";
   let nav = undefined;
   let footerLinks = undefined;
@@ -36,13 +42,15 @@ export async function MarketingShell({ children }: { children: React.ReactNode }
     <div className="min-h-screen bg-white text-black">
       <SiteHeader siteName={siteName} nav={nav} />
       <main className="overflow-x-clip">{children}</main>
-      <SiteFooter
-        siteName={siteName}
-        footerLinks={footerLinks}
-        socialLinks={socialLinks}
-        services={services}
-        industries={industries}
-      />
+      {showFooter ? (
+        <SiteFooter
+          siteName={siteName}
+          footerLinks={footerLinks}
+          socialLinks={socialLinks}
+          services={services}
+          industries={industries}
+        />
+      ) : null}
     </div>
   );
 }

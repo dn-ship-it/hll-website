@@ -1,9 +1,7 @@
 import { teamPageContent } from "@/data/team-page";
-import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { mapTeamMembers, mapTeamPageContent } from "@/lib/payload/marketing-mappers";
 import { getMarketingContent, getTeamMembers } from "@/lib/payload/queries";
-import { TeamBreadcrumb } from "./team-chrome";
 import { TeamGridSection } from "./team-grid";
 import { TeamHero } from "./team-hero";
 import { TeamJoinSection } from "./team-join";
@@ -32,20 +30,11 @@ export async function TeamPage() {
 
   return (
     <MarketingShell>
-      <div className="space-y-4 px-[clamp(1.25rem,4vw,3rem)] pt-6">
-        <div className="mx-auto max-w-[90rem]">
-          <TeamBreadcrumb items={content.breadcrumb} />
-        </div>
+      <div className="hll-team-page bg-[#fafafa] text-[#1a1a1a]">
+        <TeamHero data={content.hero} />
+        <TeamGridSection members={members} />
+        <TeamJoinSection data={content.join} />
       </div>
-
-      <TeamHero data={content.hero} accentColor={content.accentColor} />
-      <TeamGridSection
-        content={content.grid}
-        members={members}
-        accentColor={content.accentColor}
-      />
-      <TeamJoinSection data={content.join} />
-      <HomeCta />
     </MarketingShell>
   );
 }

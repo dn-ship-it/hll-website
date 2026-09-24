@@ -1,30 +1,48 @@
+import Link from "next/link";
 import type { TeamPageContent } from "@/data/team-page";
-import { gradientCss } from "@/components/hll/variants";
+
+const REASONS = [
+  "Work on platforms and products used by leading enterprises.",
+  "Build across the stack with mentorship and ownership.",
+  "Collaborate through open communication and visible progress.",
+  "Join a global team with local accountability.",
+];
 
 export function TeamJoinSection({ data }: { data: TeamPageContent["join"] }) {
   return (
-    <section
-      className="px-[clamp(1.25rem,4vw,3rem)] py-[clamp(2.5rem,6vw,4rem)]"
-      style={{
-        background: gradientCss(["#9AB4D3", "#A28DD7", "#AD7ECF"], 135),
-      }}
-    >
-      <div className="mx-auto flex max-w-[90rem] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-        <div>
-          <h2
-            className="font-light text-black"
-            style={{ fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)" }}
+    <section className="hll-team-section border-t border-[#d9d9d9] px-[30px] pb-[8rem] pt-[5rem]">
+      <p className="hll-team-label text-[12px] uppercase text-[#1a1a1a]">About</p>
+      <h2 className="hll-team-display mt-[14px] text-[clamp(2rem,4.25vw,4rem)] leading-none text-[#1a1a1a]">
+        Careers
+      </h2>
+
+      <div className="mt-[84px] grid grid-cols-1 md:grid-cols-12">
+        <div
+          aria-hidden="true"
+          className="aspect-[1.99/1] w-full rounded-lg bg-[#d9d9d9] md:col-span-9 md:col-start-4"
+        />
+      </div>
+
+      <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-12">
+        <p className="hll-team-display text-[12px] uppercase tracking-[3px] md:col-span-4 md:col-start-6">
+          Why work at HLL?
+        </p>
+        <div className="md:col-span-5 md:col-start-8">
+          <ol className="space-y-5">
+            {REASONS.map((reason, index) => (
+              <li key={reason} className="grid grid-cols-[2.5rem_1fr] gap-3">
+                <span className="hll-team-label text-[12px]">{String(index + 1).padStart(2, "0")}</span>
+                <p className="hll-team-display text-[16px] leading-[1.25] text-[#1a1a1a]">{reason}</p>
+              </li>
+            ))}
+          </ol>
+          <Link
+            href={data.ctaHref}
+            className="hll-team-label mt-8 inline-flex items-center justify-center rounded-[4px] bg-[#e6e6e6] px-[21px] py-[11px] text-[12px] uppercase tracking-[3px] text-[#1a1a1a] transition-colors hover:bg-[#d9d9d9] focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#949494]"
           >
-            {data.title}
-          </h2>
-          <p className="mt-3 max-w-xl text-sm leading-7 text-black/70">{data.description}</p>
+            View all careers
+          </Link>
         </div>
-        <a
-          href={data.ctaHref}
-          className="inline-flex rounded-full border border-black/20 bg-white/70 px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-black/80 backdrop-blur-sm transition hover:bg-white"
-        >
-          {data.ctaLabel}
-        </a>
       </div>
     </section>
   );

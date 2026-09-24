@@ -125,8 +125,8 @@ export function WhoWeAre() {
           {team.map((person) => (
             <article key={person.id}>
               <MediaPlaceholder className="aspect-[3/4] w-full min-h-[clamp(12rem,28vw,18rem)]" />
-              <p className="mt-4 text-sm font-medium text-black">{person.name}</p>
-              <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-black/45">
+              <p className="hll-home-profile-name mt-2">{person.name}</p>
+              <p className="hll-home-profile-role mt-1">
                 {person.role}
               </p>
             </article>
@@ -148,21 +148,25 @@ export function WhoWeAre() {
 
 export function InsideTheLab() {
   return (
-    <section className="hll-home-section relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(4rem,10vw,6rem)]">
+    <section className="hll-home-section relative min-h-[982px] overflow-hidden px-[30px] pb-[4rem] pt-[85px]">
       <div
         className="lab-shader absolute inset-0"
         style={{
           background:
-            "linear-gradient(135deg, #FF5A1E 0%, #FF9126 35%, #F9B535 60%, #FFB26A 100%)",
+            "linear-gradient(115deg, #FF5A1E 0%, #FF9126 34%, #F9B535 64%, #2BB4EB 100%)",
         }}
       />
-      <div className="relative mx-auto max-w-[90rem] text-center">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-black/60">Demo tool</p>
-        <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
+      <div className="relative">
+        <p className="hll-label text-[12px] uppercase text-black/60">Demo tool</p>
+        <h2 className="hll-display mt-3 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
           Inside the Lab
         </h2>
-        <div className="mx-auto mt-10 max-w-[73rem] rounded-lg border border-white/40 bg-white p-3 shadow-xl">
-          <MediaPlaceholder className="aspect-[16/9] w-full min-h-[clamp(10rem,30vw,18rem)]" label="Demo window" />
+        <div
+          aria-label="Demo window"
+          className="relative mx-auto mt-[60px] grid aspect-[1171/658] w-full max-w-[73.1875rem] place-items-center overflow-hidden rounded-lg bg-[#d9d9d9]"
+          role="img"
+        >
+          <span className="hll-label text-[12px] uppercase text-black/70">Demo window</span>
         </div>
       </div>
     </section>

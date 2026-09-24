@@ -1,31 +1,21 @@
-import { GradientRevealTextSlow } from "@/components/hll";
 import type { TeamPageContent } from "@/data/team-page";
 
-import { TeamSectionLabel } from "./team-chrome";
-
-export function TeamHero({
-  data,
-  accentColor,
-}: {
-  data: TeamPageContent["hero"];
-  accentColor: string;
-}) {
+export function TeamHero({ data }: { data: TeamPageContent["hero"] }) {
   return (
-    <section className="px-[clamp(1.25rem,4vw,3rem)] pb-[clamp(1.5rem,4vw,2.5rem)]">
-      <div className="mx-auto max-w-[90rem]">
-        <TeamSectionLabel title={data.eyebrow} accentColor={accentColor} />
-
-        <GradientRevealTextSlow
-          as="h1"
-          text={data.headline}
-          variant="about"
-          className="mt-4 block max-w-[min(100%,48rem)] tracking-tight text-black"
-          fontSize="clamp(2rem, 4vw + 0.5rem, 3.25rem)"
-          letterSpacing="-0.01em"
-        />
-
-        <p className="mt-6 max-w-2xl text-sm leading-7 text-black/55">{data.description}</p>
+    <section className="hll-team-hero px-[30px] pb-[clamp(8rem,12vw,9.5rem)] pt-[clamp(13rem,23.2vw,22rem)]">
+      <div className="grid items-start gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8">
+        <h1 className="hll-team-display font-light text-[clamp(2rem,4.25vw,4rem)] leading-[1.16] text-[#1a1a1a]">
+          Team
+        </h1>
+        <p className="hll-team-display pt-1 text-[clamp(1.25rem,2.4vw,2.25rem)] leading-[1.1] text-[#1a1a1a] md:pt-5">
+          {data.description}
+        </p>
       </div>
+      <div
+        aria-hidden="true"
+        className="mt-8 aspect-[1.478/1] w-full rounded-lg md:mt-[38px]"
+        style={{ backgroundColor: "#d9d9d9" }}
+      />
     </section>
   );
 }

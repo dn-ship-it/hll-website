@@ -37,9 +37,9 @@ export const teamPageContent: TeamPageContent = {
   accentColor: "#9AB4D3",
   hero: {
     eyebrow: "Team",
-    headline: "A talented team of builders and strategists",
+    headline: "Team",
     description:
-      "Senior talent deployed across the stack — engineers, designers, and delivery leaders helping enterprises move from vision to production.",
+      "Senior talent deployed across the stack with a knowledge graph window showing what customers see.",
   },
   grid: {
     eyebrow: "Named experts",
@@ -62,7 +62,7 @@ export const teamPageContent: TeamPageContent = {
     {
       id: "1",
       name: "Hannan Hakim",
-      role: "Chief Operating Officer",
+      role: "Chief Executive Officer",
       bio: "15+ yrs of experience · Previously at McKinsey, SNL",
       department: "leadership",
       featured: true,
