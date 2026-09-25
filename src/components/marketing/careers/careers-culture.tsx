@@ -16,19 +16,19 @@ export function CareersCultureSection({
         <div>
           <CareersSectionLabel title={data.eyebrow} accentColor={accentColor} />
           <SectionTitle>{data.title}</SectionTitle>
-          <p className="mt-6 text-sm leading-7 text-black/55">{data.description}</p>
+          <p className="careers-body-copy mt-6 leading-[1.25] text-black/55">{data.description}</p>
 
           <div className="mt-8 space-y-6">
             {data.highlights.map((item) => (
               <article key={item.id}>
                 <h3 className="text-base font-medium text-black">{item.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-black/55">{item.body}</p>
+                <p className="careers-body-copy mt-2 leading-[1.25] text-black/55">{item.body}</p>
               </article>
             ))}
           </div>
         </div>
 
-        <MediaPlaceholder className="aspect-[4/3] w-full min-h-[clamp(14rem,35vw,24rem)]" label="Life at HLL" />
+        <MediaPlaceholder className="careers-motion-media aspect-[4/3] w-full min-h-[clamp(14rem,35vw,24rem)]" label="Life at HLL" />
       </div>
     </section>
   );

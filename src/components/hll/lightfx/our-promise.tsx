@@ -140,6 +140,9 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
     if (refs.imageStage.current) {
       refs.imageStage.current.style.opacity = String(smoothImageOpacity);
       refs.imageStage.current.style.transform = `translate(-50%, -50%) scale(${smoothImageScale})`;
+      if (refs.imageStage.current.querySelector("iframe")) {
+        refs.imageStage.current.style.pointerEvents = smoothImageOpacity > 0.65 ? "auto" : "none";
+      }
     }
 
     shaderProgram.setUniform("uTapRippleMode", TAP_RIPPLE_MODE);
@@ -186,6 +189,8 @@ export type OurPromiseProps = {
   headline?: ReactNode;
   imageSrc?: string;
   imageAlt?: string;
+  /** Reveals the homepage's interactive Impact graph in place of the image. */
+  impactGraph?: boolean;
   /**
    * "section" pins the effect inside its own tall section; "fixed" is the
    * demo's original whole-page behavior.
@@ -208,6 +213,7 @@ export function OurPromise({
   ),
   imageSrc,
   imageAlt = "",
+  impactGraph = false,
   mode = "section",
   scrollTriggerPx = SCROLL_TRIGGER_PX,
   scrollSpacerVh = SCROLL_SPACER_VH,
@@ -301,12 +307,25 @@ export function OurPromise({
           <p className="our-promise-headline">{headline}</p>
         </div>
 
-        {imageSrc ? (
-          <div ref={imageStageRef} className="our-promise-image-stage">
+        {imageSrc || impactGraph ? (
+          <div
+            ref={imageStageRef}
+            className={cn("our-promise-image-stage", impactGraph && "our-promise-image-stage--impact")}
+          >
+            {impactGraph ? (
+              <iframe
+                className="our-promise-impact-frame"
+                src="/impact/section.html"
+                title="Interactive Impact knowledge graph"
+                loading="lazy"
+              />
+            ) : null}
             {/* Plain <img>: the sketch drives this element's own opacity and
                 transform every frame, and it is decorative. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="our-promise-image" src={imageSrc} alt={imageAlt} />
+            {!impactGraph && imageSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="our-promise-image" src={imageSrc} alt={imageAlt} />
+            ) : null}
           </div>
         ) : null}
       </div>

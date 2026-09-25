@@ -80,7 +80,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
   const hasContent = Boolean(demo.html || demo.htmlUrl);
 
   return (
-    <div className="relative mt-8 overflow-hidden rounded-sm">
+    <div className="service-demo-window relative mt-8 overflow-hidden rounded-sm" data-service-media>
       <div
         className="relative p-[clamp(1.25rem,3vw,2.5rem)]"
         style={{

@@ -38,7 +38,7 @@ export default async function HomePage() {
         />
         <WhatWeDo />
         <OurClients />
-        <OurPromise />
+        <OurPromise impactGraph />
         <OurImpact />
         <HowWeWork />
         <WhoWeAre />

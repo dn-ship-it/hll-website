@@ -38,11 +38,11 @@ export function CapabilitiesSection({
           </ul>
         </div>
 
-        <div className="space-y-[clamp(2.5rem,6vw,4rem)]">
+        <div className="space-y-0">
           {data.items.map((item) => (
-            <article key={item.id} id={item.id} className="scroll-mt-28">
+            <article key={item.id} id={item.id} className="grid scroll-mt-28 grid-cols-1 gap-x-8 border-t border-black/10 py-6 sm:grid-cols-[minmax(8rem,0.8fr)_minmax(0,1.2fr)] sm:py-8">
               <div className="flex items-baseline gap-4">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-black/35">
+                <span className="shrink-0 text-[10px] uppercase tracking-[0.2em] text-black/35">
                   {item.index}
                 </span>
                 <h3
@@ -52,9 +52,10 @@ export function CapabilitiesSection({
                   {item.title}
                 </h3>
               </div>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-black/55">{item.description}</p>
-
-              <SubServices items={item.subServices} />
+              <div>
+                <p className="mt-4 text-sm leading-6 text-black/55 sm:mt-0">{item.description}</p>
+                <SubServices items={item.subServices} />
+              </div>
             </article>
           ))}
 

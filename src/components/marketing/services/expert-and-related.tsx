@@ -1,4 +1,5 @@
 import type { ExpertVoice, ServicePageData } from "@/data/services/types";
+import Link from "next/link";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 export function ExpertVoiceSection({ data }: { data: ExpertVoice | null }) {
@@ -65,13 +66,13 @@ export function RelatedServicesSection({
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {items.map((item) => (
-            <a
+            <Link
               key={item.label}
               href={item.href}
               className="rounded-full border border-black/12 bg-white px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-black/70 transition hover:border-black/25"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

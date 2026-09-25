@@ -20,16 +20,16 @@ export function CareersHero({
           as="h1"
           text={data.headline}
           variant="engagement"
-          className="mt-4 block max-w-[min(100%,48rem)] tracking-tight text-black"
-          fontSize="clamp(2rem, 4vw + 0.5rem, 3.25rem)"
-          letterSpacing="-0.01em"
+          className="mt-4 block max-w-[min(100%,52rem)] text-black"
+          fontSize="clamp(1.875rem, 4.25vw, 4rem)"
+          letterSpacing="0"
         />
 
-        <p className="mt-6 max-w-2xl text-sm leading-7 text-black/55">{data.description}</p>
+        <p className="careers-body-copy mt-6 max-w-2xl leading-[1.25] text-black/55">{data.description}</p>
 
         <div className="relative mt-[clamp(1.5rem,4vw,2.5rem)]">
           <MediaPlaceholder
-            className="aspect-[16/7] min-h-[clamp(12rem,32vw,20rem)] w-full rounded-sm"
+            className="careers-motion-media aspect-[16/7] min-h-[clamp(12rem,32vw,20rem)] w-full rounded-sm"
             label="Team at work"
           />
           <div
@@ -38,9 +38,9 @@ export function CareersHero({
               background: "linear-gradient(135deg, #F9B535 0%, #FF9126 50%, #FF6302 100%)",
             }}
           />
-          <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6">
+          <div className="careers-open-roles-cta fixed bottom-5 right-5 z-30 md:bottom-6 md:right-6">
             <OutlinePillButton href="#open-roles" variant="engagement">
-              View open roles
+              See open roles
             </OutlinePillButton>
           </div>
         </div>

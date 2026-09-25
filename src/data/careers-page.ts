@@ -40,7 +40,7 @@ export const careersPageContent: CareersPageContent = {
   },
   notices: {
     eyebrow: "Open roles",
-    title: "Employment notices",
+    title: "Open Roles",
     emptyMessage: "There are no open notices at the moment. Check back soon or reach out directly.",
   },
   culture: {

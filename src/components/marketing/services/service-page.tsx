@@ -15,6 +15,7 @@ import { EngagementSection } from "./engagement-section";
 import { OutcomeSection } from "./outcome-section";
 import { ServiceBrandHeader, ServiceBreadcrumb } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
+import { ServiceReveal } from "./service-reveal";
 
 async function loadServicePage(fallback: ServicePageData) {
   try {
@@ -36,24 +37,28 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
 
   return (
     <MarketingShell>
-      <div className="px-[clamp(1.25rem,4vw,3rem)] pt-6">
-        <div className="mx-auto max-w-[90rem] space-y-4">
-          <ServiceBreadcrumb items={data.breadcrumb} />
-          <ServiceBrandHeader brand={data.brand} />
+      <div className="hll-service-page">
+        <div className="px-[clamp(1.25rem,4vw,3rem)] pt-6">
+          <div className="mx-auto max-w-[90rem] space-y-4">
+            <ServiceBreadcrumb items={data.breadcrumb} />
+            <ServiceBrandHeader brand={data.brand} />
+          </div>
         </div>
-      </div>
 
-      <ServiceHero data={data.hero} demo={demo} variant={data.variant} />
-      <CapabilitiesSection data={data.capabilities} />
-      <OutcomeSection data={data.outcomes} variant={data.variant} />
-      <EngagementSection data={data.engagement} />
-      <ExpertVoiceSection data={data.expertVoice} />
-      <RelatedServicesSection items={data.relatedServices} />
-      <HomeCta
-        headline={data.cta.headline}
-        buttonLabel={data.cta.buttonLabel}
-        href={data.cta.href}
-      />
+        <ServiceReveal>
+          <ServiceHero data={data.hero} demo={demo} variant={data.variant} />
+          <CapabilitiesSection data={data.capabilities} />
+          <OutcomeSection data={data.outcomes} variant={data.variant} />
+          <EngagementSection data={data.engagement} />
+          <ExpertVoiceSection data={data.expertVoice} />
+          <RelatedServicesSection items={data.relatedServices} />
+          <HomeCta
+            headline={data.cta.headline}
+            buttonLabel={data.cta.buttonLabel}
+            href={data.cta.href}
+          />
+        </ServiceReveal>
+      </div>
     </MarketingShell>
   );
 }

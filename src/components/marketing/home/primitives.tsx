@@ -15,6 +15,7 @@ export function MediaPlaceholder({
   return (
     <div
       className={`relative overflow-hidden bg-[#e3e3e3] ${className}`}
+      data-service-media
       aria-hidden={!label}
       aria-label={label}
     >

@@ -43,12 +43,12 @@ export function ServiceHero({
           text={data.headline}
           variant={variant}
           className="block max-w-[min(100%,48rem)] tracking-tight text-black"
-          fontSize="clamp(2rem, 4vw + 0.5rem, 3.25rem)"
-          letterSpacing="-0.01em"
+          fontSize="clamp(2rem, 4.23vw, 4rem)"
+          letterSpacing="0"
         />
 
         {data.support ? (
-          <p className="mt-6 max-w-[min(100%,42rem)] text-sm leading-7 text-black/55">
+          <p className="mt-6 max-w-[min(100%,42rem)] text-[clamp(0.875rem,1.32vw,1.25rem)] leading-[1.25] text-black/55">
             {data.support}
           </p>
         ) : null}

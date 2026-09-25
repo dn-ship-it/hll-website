@@ -20,7 +20,7 @@ export function CareersSectionLabel({
 }) {
   return (
     <p
-      className="text-[10px] font-medium uppercase tracking-[0.24em]"
+      className="careers-section-label text-[10px] font-medium uppercase tracking-[0.24em]"
       style={{ color: accentColor }}
     >
       {title}

@@ -1,0 +1,824 @@
+<!--
+  HLL website section: "Impact"
+  A knowledge graph in three layers. The word Impact sits at the centre, eight industries form the
+  inner ring, nine services form the outer ring, and the clients surface in the centre when an
+  industry is chosen. Every connection comes from real delivered work: CONFIG.clients lists each
+  client, its industry, and the services we delivered to it (from "industry service client.xlsx").
+  An industry connects to a service only when at least one client links the two.
+
+  What happens on interaction
+    - Industry: its clients rise into the centre under Impact. Lines draw from the industry to each
+      client, then from each client to the services it bought.
+    - Client (once surfaced): only that client's lines stay lit.
+    - Service: the industries where we delivered it light up, with a line to each.
+    - Services with no client in CONFIG yet (Artificial Intelligence, Ontology, Trust & Governance
+      at the time of writing) stay on the ring without lines until a client is added.
+
+  One graph engine, two layouts:
+    - Landscape (desktop, laptop, tablet in landscape, phone in landscape): the wide layout.
+    - Portrait, 820px wide or narrower (phones, tablets held upright): the same graph rearranged into a
+      vertical frame close to 9:16, sized to fit one screen. Positions are percentages of the frame.
+
+  Design authority: hll-website skill (references/design-system.md). Re-implemented in vanilla CSS,
+  SVG, and canvas because the React components cannot be imported into the marketing site directly.
+    Type: Aeonik Light 64px headline (30px on phone). Aeonik Regular for industry names (24px, 14px on
+          phone) and client names (20px Paragraph, 12 to 14px on phone). Sometype Mono uppercase for
+          service names (12px, 10px on phone). No weight above Medium.
+    Markers: industries a filled dot, services a small square, clients a hollow ring in the industry colour.
+    Colour: Dark Grey #1A1A1A, Mid Grey #949494, light ground only. Industry colours from the Figma
+          "Industry Colours" frame (Consulting uses the "Consulting Firms" swatch #5cb3de). Service
+          colours from VARIANT_GRADIENTS. No invented hex.
+    Service colour mapping the reviewer should know:
+      - Data Engineering: hll-foundation. Artificial Intelligence: hll-ai. Applications: hll-application.
+        Ontology: hll-ontology. Trust & Governance: hll-trust. People: hll-people.
+      - Analytics has no published variant, so it takes the neutral ink pair (#1A1A1A to #949494).
+      - Experience Design sits in the same line as Applications (HLL Motion), so it uses the
+        hll-application stops in reverse order (#72AAFF to #FF1F1F).
+      - Cloud Engineering sits in the same line as Data Engineering (HLL Foundation), so it uses the
+        hll-foundation stops in reverse order (#CC8B93 to #FF5A1E).
+      - Public Sector uses the "Public Sector, External Affairs" swatch #ffba6e so it does not share
+        #ffda52 with Payments on the same canvas.
+    Breakpoints 820 and 1100 are inferred beyond the Figma artboards. Node drift and the moving canvas
+    field are off below 820px and under prefers-reduced-motion; the connection lines still draw.
+
+  Touch behaviour (phones and tablets)
+    Press an industry and its clients rise while the lines draw. Lift the finger and the page opens.
+    If the finger moves (a scroll), the press is cancelled and nothing opens. An industry with no URL
+    stays open after the finger lifts, so its clients can be tapped. The section never blocks page
+    scrolling, with a finger, a mouse wheel, or a trackpad.
+
+  HOW TO EMBED
+    1. Drop this whole block (style, section, script) into the page. Everything is scoped to .hll-www.
+    2. Put the fonts folder next to the page, or change the four @font-face src paths below.
+       If the site already loads Aeonik and Sometype Mono, delete the @font-face block.
+    3. Fill in href for each industry, service, and client in CONFIG. A non-empty href makes that
+       node a real link on every layout. A client href is the place for its case study.
+    4. To add delivered work, add a row to CONFIG.clients. The lines follow automatically.
+    5. Optional: listen for the "hll:industry-select" event on the section for analytics.
+-->
+
+<style>
+  html, body { margin: 0; min-height: 100%; }
+
+  /* ===== Fonts. Replace ./fonts/ with the site's font path, or delete if already loaded. ===== */
+  @font-face { font-family: "Aeonik"; src: url("./fonts/Aeonik-Light.otf") format("opentype"); font-weight: 300; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Aeonik"; src: url("./fonts/Aeonik-Regular.otf") format("opentype"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Aeonik"; src: url("./fonts/Aeonik-Medium.otf") format("opentype"); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Sometype Mono"; src: url("./fonts/SometypeMono-VariableFont_wght.ttf") format("truetype"); font-weight: 400 500; font-style: normal; font-display: swap; }
+
+  /* ===== Tokens (hll-website design-system.md). Do not add a hex that is not in that file. ===== */
+  .hll-www {
+    --hll-ink: #1A1A1A;
+    --hll-ink-2: #949494;
+    --hll-ground: #FFFFFF;
+    --hll-hairline: rgba(26, 26, 26, 0.10);
+    --hll-hairline-strong: rgba(26, 26, 26, 0.18);
+    --hll-font: "Aeonik", "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --hll-mono: "Sometype Mono", ui-monospace, monospace;
+    --hll-radius: 6px;
+    --hll-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --hll-gutter: clamp(16px, 4vw, 72px);
+    --hll-max: 1400px;
+    /* Connection line timing. Client-to-service lines start once the industry-to-client lines are underway. */
+    --hll-line-ms: 598ms;
+    --hll-line-fade-ms: 253ms;
+    --hll-rest-fade-ms: 368ms;
+    --hll-line-2-delay: 270ms;
+
+    /* The industries menu gradient: headline reveal and canvas field */
+    --hll-ind-a: #0352B2; --hll-ind-b: #037A9F; --hll-ind-c: #6460D5;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--hll-ground);
+    color: var(--hll-ink);
+    font-family: var(--hll-font);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    color-scheme: light;
+  }
+  .hll-www *, .hll-www *::before, .hll-www *::after { box-sizing: border-box; }
+
+  /* ===== Ground: gradient field (canvas) under a fine grid ===== */
+  .hll-www-field { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .hll-www-field canvas { display: block; width: 100%; height: 100%; }
+  .hll-www-field-static {
+    background:
+      radial-gradient(55% 60% at 22% 30%, rgba(3, 82, 178, 0.10), transparent 70%),
+      radial-gradient(50% 55% at 78% 70%, rgba(100, 96, 213, 0.10), transparent 70%),
+      var(--hll-ground);
+  }
+  .hll-www-grid {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--hll-hairline) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--hll-hairline) 1px, transparent 1px);
+    background-size: 72px 72px;
+    background-position: center top;
+    mask-image: radial-gradient(85% 85% at 50% 50%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(85% 85% at 50% 50%, #000 40%, transparent 100%);
+    opacity: 0.7;
+  }
+
+  .hll-www-inner { position: relative; z-index: 1; max-width: var(--hll-max); margin: 0 auto; padding: 48px var(--hll-gutter); }
+
+  /* ===== Stage: the graph ===== */
+  .hll-www-stage { position: relative; height: clamp(580px, 82vh, 820px); }
+  .hll-www-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .hll-www-lines line { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .hll-www-lines .rest { stroke: var(--hll-ink); stroke-opacity: 0.16; stroke-width: 1; transition: stroke-opacity var(--hll-rest-fade-ms) var(--hll-ease); }
+  .hll-www-lines .pair {
+    stroke-width: 1.25; stroke-opacity: 0; stroke-dasharray: 1; stroke-dashoffset: 1;
+    transition: stroke-opacity var(--hll-line-fade-ms) var(--hll-ease), stroke-dashoffset var(--hll-line-ms) var(--hll-ease);
+  }
+  .hll-www-lines .pair.is-on { stroke-opacity: 0.95; stroke-dashoffset: 0; }
+  .hll-www-lines .pair.cs.is-on { transition-delay: var(--hll-line-2-delay), var(--hll-line-2-delay); }
+  .hll-www.has-active .hll-www-lines .rest { stroke-opacity: 0.06; }
+
+  /* Centre headline: Aeonik Light 64px, line-height 100%, gradient reveal on entry.
+     It lifts (and on phones shrinks a little) to make room when clients surface beneath it. */
+  .hll-www-centre {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    margin: 0; text-align: center; white-space: nowrap;
+    font-weight: 300; font-size: 64px; line-height: 1; letter-spacing: -0.01em; color: var(--hll-ink);
+    padding: 10px 22px;
+    transition: transform 460ms var(--hll-ease);
+  }
+  .hll-www-centre .rv {
+    display: inline-block;
+    background-image: linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 30%, var(--hll-ind-a) 40%, var(--hll-ind-b) 50%, var(--hll-ind-c) 60%, var(--hll-ink) 70%, var(--hll-ink) 100%);
+    background-size: 340% 100%; background-position: 100% 0;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    transition: background-position 1200ms var(--hll-ease);
+  }
+  .hll-www-centre.is-yield { opacity: 0; }
+  .hll-www-centre { transition: transform 460ms var(--hll-ease), opacity 260ms var(--hll-ease); }
+  .hll-www-centre.is-armed .rv { background-position: 0% 0; }
+  .hll-www-centre.is-in .rv { background-position: 100% 0; }
+
+  /* Nodes. Scrolling is never blocked: no touch-action lock, no preventDefault on press. */
+  .hll-www-node {
+    position: absolute; left: 0; top: 0;
+    display: inline-flex; align-items: center; gap: 10px;
+    transform: translate(-50%, -50%);
+    text-decoration: none; color: var(--hll-ink); cursor: pointer; white-space: nowrap; text-align: left;
+    padding: 6px 8px; border-radius: var(--hll-radius);
+    -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+    touch-action: manipulation;
+    transition: opacity 260ms var(--hll-ease), color 260ms var(--hll-ease);
+    will-change: transform;
+  }
+  .hll-www-node:focus { outline: none; }
+  .hll-www-node:focus-visible { outline: 2px solid var(--hll-ink); outline-offset: 2px; }
+  /* Nodes pinned to the left edge carry their dot on the inner side, so lines never cross the words */
+  .hll-www-node.anchor-left { flex-direction: row-reverse; text-align: right; }
+  .hll-www-node .m-br { display: none; }
+  .hll-www.is-portrait .hll-www-node .m-br { display: inline; }
+  .hll-www-node .dot {
+    flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--c, var(--hll-ink));
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--c, var(--hll-ink)) 30%, transparent);
+    transition: box-shadow 320ms var(--hll-ease), transform 320ms var(--hll-ease), background 320ms var(--hll-ease);
+  }
+  .hll-www-node .lbl { position: relative; display: inline-block; }
+
+  /* Industry nodes: Aeonik Regular 24px */
+  .hll-www-node.is-industry { font-size: 24px; font-weight: 400; line-height: 1.1; }
+  .hll-www-node.is-industry.is-active .dot { box-shadow: 0 0 0 7px color-mix(in srgb, var(--c) 22%, transparent); transform: scale(1.15); }
+  .hll-www-node.is-industry.is-lit .dot { box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 18%, transparent); }
+
+  /* Service nodes: Sometype Mono 12px uppercase, Mid Grey at rest, the service gradient when lit */
+  .hll-www-node.is-service {
+    font-family: var(--hll-mono); font-size: 12px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hll-ink-2); line-height: 1.3;
+  }
+  .hll-www-node.is-service .dot { width: 7px; height: 7px; border-radius: 1.5px; background: var(--hll-ink-2); }
+  .hll-www-node.is-service .lbl {
+    background-image: var(--g); -webkit-background-clip: text; background-clip: text; color: inherit;
+    transition: color 260ms var(--hll-ease);
+  }
+  .hll-www-node.is-service.is-lit, .hll-www-node.is-service.is-active { color: var(--hll-ink); }
+  .hll-www-node.is-service.is-lit .lbl, .hll-www-node.is-service.is-active .lbl { color: transparent; }
+  .hll-www-node.is-service.is-lit .dot, .hll-www-node.is-service.is-active .dot { background: var(--g); }
+  .hll-www-node.is-service.is-active .dot { box-shadow: 0 0 0 5px color-mix(in srgb, var(--ga) 18%, transparent); }
+
+  /* Client nodes: hidden at rest, they surface (rise and fade in) when their industry is chosen.
+     Aeonik Regular 20px (Paragraph) with a hollow ring in the industry colour. */
+  .hll-www-node.is-client { font-size: 20px; line-height: 1.15; padding: 3px 6px; pointer-events: none; }
+  .hll-www-node.is-client .in {
+    display: inline-flex; align-items: center; gap: 10px;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 280ms var(--hll-ease), transform 420ms var(--hll-ease);
+  }
+  .hll-www-node.is-client.is-shown { pointer-events: auto; }
+  .hll-www-node.is-client.is-shown .in { opacity: 1; transform: none; transition-delay: var(--d, 0ms); }
+  .hll-www-node.is-client .dot { width: 8px; height: 8px; background: transparent; box-shadow: inset 0 0 0 1.5px var(--c); }
+  .hll-www-node.is-client.is-active .dot { background: var(--c); }
+
+  .hll-www.has-active .hll-www-node.is-dim { opacity: 0.28; }
+  .hll-www.has-active .hll-www-node.is-client.is-dim { opacity: 0.45; }
+
+  /* ===== Tablet step (inferred, 1100px) ===== */
+  @media (max-width: 1100px) {
+    .hll-www-stage { height: clamp(580px, 82vh, 760px); }
+    .hll-www-centre { font-size: 48px; }
+    .hll-www-node.is-industry { font-size: 20px; }
+    .hll-www-node.is-service { font-size: 11px; }
+    .hll-www-node.is-client { font-size: 16px; }
+  }
+
+  /* ===== Phone and tablet held upright (inferred, 820px): the vertical graph =====
+     The frame is the smaller of one visible screen and 16/9 of its width, so it always fits one screen. */
+  @media (max-width: 820px) and (orientation: portrait) {
+    .hll-www-inner { padding: 16px var(--hll-gutter); }
+    .hll-www-stage {
+      height: calc(100vh - 32px);
+      height: min(calc(100svh - 32px), calc((100vw - 2 * var(--hll-gutter)) * 16 / 9));
+      min-height: 420px;
+    }
+    .hll-www-grid { background-size: 48px 48px; }
+    .hll-www-centre { font-size: clamp(30px, 8vw, 48px); padding: 6px 12px; }
+    .hll-www-node { gap: 7px; padding: 8px 6px; }
+    .hll-www-node.is-industry { font-size: clamp(14px, 3.8vw, 20px); }
+    .hll-www-node.is-service { font-size: clamp(10px, 2.7vw, 12px); letter-spacing: 0.06em; }
+    .hll-www-node.is-client { font-size: clamp(12px, 3.6vw, 16px); line-height: 1.1; padding: 1px 4px; }
+    .hll-www-node.is-client .in { gap: 7px; }
+    .hll-www-node.is-industry .dot { width: 8px; height: 8px; }
+    .hll-www-node.is-service .dot { width: 6px; height: 6px; }
+    .hll-www-node.is-client .dot { width: 7px; height: 7px; }
+    .hll-www-node.is-industry.is-active .dot { box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 22%, transparent); }
+  }
+
+  /* Narrowest phones (320 to 359px, the original iPhone SE class): trim side padding so the middle row clears */
+  @media (max-width: 359px) and (orientation: portrait) {
+    .hll-www-centre { padding: 6px 8px; }
+    .hll-www-node { padding: 8px 4px; }
+    .hll-www-node.is-client { padding: 1px 4px; }
+  }
+
+  /* ===== Phone held sideways: the wide graph squeezed into one short screen ===== */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .hll-www-inner { padding: 12px var(--hll-gutter); }
+    .hll-www-stage { height: calc(100vh - 24px); height: max(320px, calc(100svh - 24px)); }
+    .hll-www-centre { font-size: 36px; }
+    .hll-www-node { padding: 4px 6px; }
+    .hll-www-node.is-industry { font-size: 15px; }
+    .hll-www-node.is-service { font-size: 10px; }
+    .hll-www-node.is-client { font-size: 12px; padding: 1px 4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hll-www * { transition-duration: 1ms !important; transition-delay: 0ms !important; animation-duration: 1ms !important; }
+    .hll-www-centre .rv { background-position: 100% 0 !important; }
+  }
+</style>
+
+<section class="hll-www" id="hll-impact" aria-labelledby="hll-www-title">
+  <div class="hll-www-field hll-www-field-static" aria-hidden="true"><canvas></canvas></div>
+  <div class="hll-www-grid" aria-hidden="true"></div>
+
+  <div class="hll-www-inner">
+    <div class="hll-www-stage" data-stage>
+      <svg class="hll-www-lines" data-lines aria-hidden="true" focusable="false"><defs data-defs><mask data-mask maskUnits="userSpaceOnUse"><rect data-mask-all fill="#fff" x="0" y="0" width="100%" height="100%"></rect></mask></defs><g data-rest></g><g data-pairs></g></svg>
+      <h2 class="hll-www-centre" id="hll-www-title" data-centre><span class="rv">Impact</span></h2>
+      <!-- Industry, service, and client nodes are rendered here from CONFIG -->
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================================================
+     CONFIG. The developer edits this block and nothing else.
+     - href: paste the page URL. A non-empty href turns that industry, service, or client into a link.
+       A client's href is the place for its case study.
+     - clients: one row per client, mirroring "industry service client.xlsx". Each row names the
+       client's industry and the services we delivered. Industry-to-service lines are worked out
+       from these rows, so adding a row adds its lines. The order of rows is the order clients
+       surface in.
+     - x, y: position in the wide layout, in percent of the frame.
+     - m: position in the vertical phone layout, in percent of the frame.
+          anchor "left" pins the node to the left edge, "right" to the right edge, otherwise it is centred.
+          wrap: true breaks the name onto two lines, on phones only.
+     Change positions only if the layout needs to move.
+     ========================================================================================= */
+  var CONFIG = {
+    industries: [
+      { key: "banking",    name: "Banking",             colour: "#06d58c", href: "", x: 21.5, y: 37,   m: { x: 26, y: 32 } },
+      { key: "insurance",  name: "Insurance",           colour: "#2eb8f6", href: "/industries/insurance", x: 38,   y: 18.5, m: { x: 29, y: 15 } },
+      { key: "payments",   name: "Payments & Capital",  colour: "#ffda52", href: "/industries/payments", x: 62,   y: 18.5, m: { x: 71, y: 15, wrap: true } },
+      { key: "pharma",     name: "Pharmaceutical",      colour: "#086ee8", href: "", x: 78.5, y: 37,   m: { x: 73, y: 32 } },
+      { key: "healthcare", name: "Healthcare",          colour: "#09c1b6", href: "/industries/healthcare", x: 78.5, y: 63,   m: { x: 74, y: 68 } },
+      { key: "public",     name: "Public Sector",       colour: "#ffba6e", href: "", x: 38,   y: 81.5, m: { x: 29, y: 85 } },
+      { key: "consulting", name: "Consulting",          colour: "#5cb3de", href: "", x: 62,   y: 81.5, m: { x: 71, y: 85 } },
+      { key: "consumer",   name: "Consumer & Commerce", colour: "#fb500c", href: "", x: 21.5, y: 63,   m: { x: 27, y: 68, wrap: true } }
+    ],
+    /* a and b are the published service variant stops (see the header for the mapping). */
+    services: {
+      "data-engineering":  { name: "Data Engineering",        href: "/services/hll-foundation#data-engineering", a: "#FF5A1E", b: "#CC8B93", x: 35,   y: 7,    m: { x: 28, y: 3.5 } },
+      "analytics":         { name: "Analytics",               href: "/services/hll-foundation#data-analytics", a: "#1A1A1A", b: "#949494", x: 65,   y: 7,    m: { x: 74, y: 3.5 } },
+      "ai":                { name: "Artificial Intelligence", href: "/services/hll-ai", a: "#3773FF", b: "#BCA6D6", x: 87.5, y: 26,   m: { x: 100, y: 24, anchor: "right", wrap: true } },
+      "ontology":          { name: "Ontology",                href: "/services/hll-ontology", a: "#7455FF", b: "#FFB26A", x: 93,   y: 52,   m: { x: 100, y: 50, anchor: "right" } },
+      "trust":             { name: "Trust & Governance",      href: "/services/hll-trust", a: "#129562", b: "#7CBAAA", x: 80,   y: 88,   m: { x: 100, y: 76, anchor: "right", wrap: true } },
+      "cloud":             { name: "Cloud Engineering",       href: "/services/hll-foundation#data-infrastructure", a: "#CC8B93", b: "#FF5A1E", x: 50,   y: 96.5, m: { x: 50, y: 96.5 } },
+      "applications":      { name: "Applications",            href: "/services/hll-application", a: "#FF1F1F", b: "#72AAFF", x: 20,   y: 88,   m: { x: 0, y: 76, anchor: "left" } },
+      "experience-design": { name: "Experience Design",       href: "/services/hll-application", a: "#72AAFF", b: "#FF1F1F", x: 7,    y: 52,   m: { x: 0, y: 50, anchor: "left", wrap: true } },
+      "people":            { name: "People",                  href: "/services/hll-people", a: "#FF9042", b: "#FFEEC7", x: 12.5, y: 26,   m: { x: 0, y: 24, anchor: "left" } }
+    },
+    /* Delivered work, from "industry service client.xlsx" */
+    clients: [
+      { key: "principal-financial", name: "Principal Financial",   industry: "insurance",  href: "", services: ["analytics"] },
+      { key: "wataniya",            name: "Wataniya",              industry: "insurance",  href: "", services: ["applications", "people", "cloud"] },
+      { key: "saudi-national-bank", name: "Saudi National Bank",   industry: "banking",    href: "", services: ["applications", "experience-design"] },
+      { key: "upstox",              name: "Upstox",                industry: "payments",   href: "", services: ["applications", "people", "experience-design"] },
+      { key: "mastercard",          name: "Mastercard",            industry: "payments",   href: "", services: ["people"] },
+      { key: "fresenius-kabi",      name: "Fresenius Kabi",        industry: "pharma",     href: "", services: ["applications", "experience-design"] },
+      { key: "lesielle",            name: "Lesielle",              industry: "pharma",     href: "", services: ["applications", "experience-design"] },
+      { key: "arthrex",             name: "Arthrex",               industry: "pharma",     href: "", services: ["applications", "experience-design"] },
+      { key: "docupet",             name: "Docupet",               industry: "healthcare", href: "", services: ["applications", "people", "experience-design"] },
+      { key: "hobbes",              name: "Hobbes",                industry: "healthcare", href: "", services: ["applications", "experience-design"] },
+      { key: "uplifty",             name: "UpLifty",               industry: "healthcare", href: "", services: ["applications", "experience-design"] },
+      { key: "gosi",                name: "GOSI",                  industry: "public",     href: "", services: ["data-engineering", "applications", "experience-design"] },
+      { key: "undp",                name: "UNDP",                  industry: "public",     href: "", services: ["data-engineering"] },
+      { key: "zatca",               name: "ZATCA",                 industry: "public",     href: "", services: ["analytics", "people"] },
+      { key: "city-of-sacramento",  name: "City of Sacramento",    industry: "public",     href: "", services: ["applications", "experience-design"] },
+      { key: "mea-india",           name: "Ministry of External Affairs, India", industry: "public", href: "", services: ["applications"], m: { wrap: true } },
+      { key: "deme-by-gabriella",   name: "Deme by Gabriella",     industry: "consumer",   href: "", services: ["data-engineering"] },
+      { key: "wework",              name: "WeWork",                industry: "consumer",   href: "", services: ["experience-design"] },
+      { key: "abfrl",               name: "ABFRL",                 industry: "consumer",   href: "", services: ["experience-design"] },
+      { key: "galeries-lafayette",  name: "Galeries Lafayette",    industry: "consumer",   href: "", services: ["experience-design"] },
+      { key: "mckinsey",            name: "McKinsey & Co",         industry: "consulting", href: "", services: ["applications", "people"] }
+    ],
+    driftPx: 7.7,          /* how far a node floats from its anchor (wide layout, motion on) */
+    hoverGraceMs: 350,     /* mouse: time to travel from an industry to one of its clients before they sink again */
+    pressDelayMs: 90,      /* touch: wait this long before drawing, so a scroll that starts on a node does not flash */
+    moveTolerancePx: 10,   /* touch: a finger that moves further than this is a scroll, and the press is cancelled */
+    fieldColours: ["#0352B2", "#037A9F", "#6460D5"]
+  };
+
+  var NS = "http://www.w3.org/2000/svg";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var narrow = window.matchMedia("(max-width: 820px)");
+  var portrait = window.matchMedia("(max-width: 820px) and (orientation: portrait)");
+
+  /* ---- Work out the graph from the client rows, once ---- */
+  var IND = {}, SVC_IND = {};
+  CONFIG.industries.forEach(function (ind) { IND[ind.key] = { clients: [], services: [] }; });
+  Object.keys(CONFIG.services).forEach(function (k) { SVC_IND[k] = []; });
+  CONFIG.clients.forEach(function (c) {
+    var d = IND[c.industry];
+    if (!d) return;
+    c.order = d.clients.length;
+    d.clients.push(c);
+    c.services.forEach(function (s) {
+      if (!CONFIG.services[s]) return;
+      if (d.services.indexOf(s) < 0) d.services.push(s);
+      if (SVC_IND[s].indexOf(c.industry) < 0) SVC_IND[s].push(c.industry);
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".hll-www"), mount);
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function grad(s) { return "linear-gradient(135deg, " + s.a + ", " + s.b + ")"; }
+  function go(href) { (window.top || window).location.assign(href); }
+  function names(list) { return list.join(", "); }
+  /* The name, with an optional phone-only line break at the space that best balances the two lines.
+     A line never starts with "&". */
+  function labelHtml(name, wrap) {
+    if (!wrap) return esc(name);
+    var best = -1, bestLen = Infinity;
+    for (var i = 0; i < name.length; i++) {
+      if (name[i] !== " " || name[i + 1] === "&") continue;
+      var len = Math.max(i, name.length - i - 1);
+      if (len <= bestLen) { best = i; bestLen = len; }
+    }
+    if (best < 0) return esc(name);
+    return esc(name.slice(0, best)) + ' <br class="m-br">' + esc(name.slice(best + 1));
+  }
+  function listen(mq, fn) { if (mq.addEventListener) mq.addEventListener("change", fn); else if (mq.addListener) mq.addListener(fn); }
+
+  /* -----------------------------------------------------------------------------------------
+     Press controller. Touch and pen: draw on press, open on release, cancel on scroll.
+     Mouse: the native click opens the link, so cmd-click and middle-click keep working.
+     It never calls preventDefault on pointerdown or touchmove, so the page always scrolls.
+     ----------------------------------------------------------------------------------------- */
+  function pressable(el, h) {
+    var st = null, timer = 0, started = false, suppressClick = false;
+    function clearTimer() { if (timer) { clearTimeout(timer); timer = 0; } }
+    function abort() {
+      clearTimer();
+      if (!st) return;
+      var type = st.type; st = null;
+      if (started) h.cancel(type);
+      started = false;
+    }
+    el.setAttribute("draggable", "false");
+    el.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      st = { id: e.pointerId, x: e.clientX, y: e.clientY, type: e.pointerType === "mouse" ? "mouse" : "touch" };
+      started = false;
+      if (st.type === "mouse") { started = true; h.start("mouse"); return; }
+      timer = setTimeout(function () { timer = 0; if (st) { started = true; h.start("touch"); } }, CONFIG.pressDelayMs);
+    });
+    el.addEventListener("pointermove", function (e) {
+      if (!st || e.pointerId !== st.id || st.type === "mouse") return;
+      if (Math.abs(e.clientX - st.x) > CONFIG.moveTolerancePx || Math.abs(e.clientY - st.y) > CONFIG.moveTolerancePx) abort();
+    });
+    el.addEventListener("pointercancel", abort);            /* the browser took the gesture over for scrolling */
+    el.addEventListener("pointerleave", function () { if (st && st.type === "mouse") abort(); });
+    el.addEventListener("pointerup", function (e) {
+      if (!st || e.pointerId !== st.id) return;
+      var type = st.type; st = null; clearTimer();
+      if (type === "mouse") return;
+      suppressClick = true;
+      setTimeout(function () { suppressClick = false; }, 800);
+      h.release();
+    });
+    el.addEventListener("click", function (e) {
+      if (suppressClick) { suppressClick = false; e.preventDefault(); return; }
+      if (h.click) h.click(e);
+    });
+    el.addEventListener("contextmenu", function (e) { if (st && st.type === "touch") e.preventDefault(); });
+  }
+
+  function mount(root) {
+    var stage = root.querySelector("[data-stage]");
+    var svg = root.querySelector("[data-lines]");
+    var defs = root.querySelector("[data-defs]");
+    var gRest = root.querySelector("[data-rest]");
+    var gPairs = root.querySelector("[data-pairs]");
+    var maskEl = root.querySelector("[data-mask]");
+    var maskAll = root.querySelector("[data-mask-all]");
+    var centre = root.querySelector("[data-centre]");
+    var canvas = root.querySelector(".hll-www-field canvas");
+    var field = root.querySelector(".hll-www-field");
+    var uid = "w" + Math.random().toString(36).slice(2, 8);
+
+    /* Coloured connection lines stop at the edge of every word they pass: the mask cuts a hole for each
+       label and the headline. The faint resting lines are left whole, so they never look chained. */
+    maskEl.setAttribute("id", uid + "-mask");
+    gPairs.setAttribute("mask", "url(#" + uid + "-mask)");
+    function maskHole() {
+      var r = document.createElementNS(NS, "rect");
+      r.setAttribute("fill", "#000"); r.setAttribute("rx", "4");
+      maskEl.appendChild(r);
+      return r;
+    }
+    var centreHole = maskHole();
+
+    var nodes = [], byKey = {}, restLines = [], lines = [];
+    var active = null, pinned = null, leaveTimer = 0;
+
+    /* ---- Nodes ---- */
+    function makeNode(kind, key, data, aria) {
+      var el = document.createElement("a");
+      el.className = "hll-www-node is-" + kind;
+      el.setAttribute("data-key", key);
+      if (data.href) { el.setAttribute("href", data.href); el.setAttribute("target", "_top"); }
+      else { el.setAttribute("role", "button"); el.setAttribute("tabindex", "0"); }
+      el.setAttribute("aria-label", aria);
+      var inner = '<span class="dot" aria-hidden="true"></span><span class="lbl">' + labelHtml(data.name, data.m && data.m.wrap) + "</span>";
+      el.innerHTML = kind === "client" ? '<span class="in">' + inner + "</span>" : inner;
+      stage.appendChild(el);
+      var dot = el.querySelector(".dot"), lbl = el.querySelector(".lbl");
+      var n = { el: el, dot: dot, lbl: lbl, hole: maskHole(), kind: kind, key: key, data: data, anchor: "center",
+                phase: Math.random() * Math.PI * 2, speed: 0.5 + Math.random() * 0.35, cx: 0, cy: 0, sx: null, sy: null };
+      nodes.push(n);
+      return n;
+    }
+    CONFIG.industries.forEach(function (ind) {
+      var d = IND[ind.key];
+      var n = makeNode("industry", ind.key, ind, ind.name + ". Clients: " + (names(d.clients.map(function (c) { return c.name; })) || "none listed yet") +
+        ". Services we delivered: " + (names(d.services.map(function (k) { return CONFIG.services[k].name; })) || "none listed yet") + ".");
+      n.el.style.setProperty("--c", ind.colour);
+      byKey["i:" + ind.key] = n;
+    });
+    Object.keys(CONFIG.services).forEach(function (key) {
+      var svc = CONFIG.services[key];
+      var inds = SVC_IND[key].map(function (k) { return byKey["i:" + k].data.name; });
+      var n = makeNode("service", key, svc, svc.name + ". Industries where we delivered it: " + (names(inds) || "none listed yet") + ".");
+      n.el.style.setProperty("--g", grad(svc));
+      n.el.style.setProperty("--ga", svc.a);
+      byKey["s:" + key] = n;
+    });
+    CONFIG.clients.forEach(function (c) {
+      var ind = byKey["i:" + c.industry];
+      if (!ind) return;
+      var n = makeNode("client", c.key, c, c.name + ", " + ind.data.name + ". Services: " + names(c.services.map(function (k) { return CONFIG.services[k] ? CONFIG.services[k].name : k; })) + ".");
+      n.el.style.setProperty("--c", ind.data.colour);
+      n.el.setAttribute("aria-hidden", "true");
+      n.el.tabIndex = -1;
+      byKey["c:" + c.key] = n;
+    });
+
+    /* ---- Lines ---- */
+    function makeLine(cls, a, b, extra) {
+      var id = uid + "-l" + lines.length;
+      var g = document.createElementNS(NS, "linearGradient");
+      g.setAttribute("id", id);
+      g.setAttribute("gradientUnits", "userSpaceOnUse");
+      var s1 = document.createElementNS(NS, "stop"); s1.setAttribute("offset", "0");
+      var s2 = document.createElementNS(NS, "stop"); s2.setAttribute("offset", "1");
+      g.appendChild(s1); g.appendChild(s2); defs.appendChild(g);
+      var el = document.createElementNS(NS, "line");
+      el.setAttribute("class", "pair " + cls);
+      el.setAttribute("pathLength", "1");
+      el.setAttribute("stroke", "url(#" + id + ")");
+      gPairs.appendChild(el);
+      var l = { el: el, grad: g, s1: s1, s2: s2, a: a, b: b, cls: cls };
+      for (var k in extra) l[k] = extra[k];
+      lines.push(l);
+      return l;
+    }
+    nodes.forEach(function (n) {
+      if (n.kind !== "industry") return;
+      var l = document.createElementNS(NS, "line");
+      l.setAttribute("class", "rest");
+      gRest.appendChild(l);
+      restLines.push({ el: l, node: n });
+    });
+    CONFIG.clients.forEach(function (c) {
+      var cn = byKey["c:" + c.key], ind = byKey["i:" + c.industry];
+      if (!cn) return;
+      makeLine("ic", ind, cn, { ind: ind, client: cn });                                     /* industry to client */
+      c.services.forEach(function (sk) {
+        if (!byKey["s:" + sk]) return;
+        makeLine("cs", cn, byKey["s:" + sk], { ind: ind, client: cn, svc: CONFIG.services[sk] });   /* client to service */
+      });
+    });
+    Object.keys(SVC_IND).forEach(function (sk) {
+      SVC_IND[sk].forEach(function (ik) {
+        makeLine("si", byKey["s:" + sk], byKey["i:" + ik], { svc: CONFIG.services[sk], svcNode: byKey["s:" + sk] });   /* service to industry */
+      });
+    });
+
+    /* ---- Highlight ---- */
+    var fieldTint = null, context = null;
+    function contextOf(n) {
+      if (!n) return null;
+      if (n.kind === "industry") return n;
+      if (n.kind === "client") return byKey["i:" + n.data.industry];
+      return null;
+    }
+    function setActive(n) {
+      active = n;
+      context = contextOf(n);
+      root.classList.toggle("has-active", !!n);
+      root.classList.toggle("has-clients", !!(context && IND[context.key].clients.length));
+      var litS = {}, litI = {}, shown = {}, litC = {};
+      if (n && n.kind === "industry") {
+        IND[n.key].services.forEach(function (k) { litS[k] = true; });
+        IND[n.key].clients.forEach(function (c) { shown[c.key] = true; litC[c.key] = true; });
+      }
+      if (n && n.kind === "client") {
+        litI[n.data.industry] = true;
+        n.data.services.forEach(function (k) { litS[k] = true; });
+        IND[n.data.industry].clients.forEach(function (c) { shown[c.key] = true; });
+      }
+      if (n && n.kind === "service") SVC_IND[n.key].forEach(function (k) { litI[k] = true; });
+      nodes.forEach(function (m) {
+        var isActive = m === n;
+        var isLit = (m.kind === "service" && litS[m.key]) || (m.kind === "industry" && litI[m.key]) || (m.kind === "client" && litC[m.key]);
+        if (m.kind === "client") {
+          var sh = !!shown[m.key];
+          m.el.classList.toggle("is-shown", sh);
+          m.el.setAttribute("aria-hidden", sh ? "false" : "true");
+          m.el.tabIndex = sh ? 0 : -1;
+          m.el.style.setProperty("--d", (sh && n && n.kind === "industry" ? m.data.order * 70 : 0) + "ms");
+        }
+        m.el.classList.toggle("is-active", isActive);
+        m.el.classList.toggle("is-lit", !!isLit && !isActive);
+        m.el.classList.toggle("is-dim", !!n && !isActive && !isLit);
+      });
+      lines.forEach(function (l) {
+        var on = false;
+        if (n && n.kind === "industry") on = (l.cls === "ic" || l.cls === "cs") && l.ind === n;
+        if (n && n.kind === "client") on = (l.cls === "ic" || l.cls === "cs") && l.client === n;
+        if (n && n.kind === "service") on = l.cls === "si" && l.svcNode === n;
+        l.el.classList.toggle("is-on", on);
+        if (!on) return;
+        if (l.cls === "ic") { l.s1.setAttribute("stop-color", l.ind.data.colour); l.s2.setAttribute("stop-color", l.ind.data.colour); }
+        else { l.s1.setAttribute("stop-color", l.svc.a); l.s2.setAttribute("stop-color", l.svc.b); }
+        if (l.cls === "cs") { l.s1.setAttribute("stop-color", l.svc.b); l.s2.setAttribute("stop-color", l.svc.a); }
+      });
+      fieldTint = context ? context.data.colour : null;
+      /* Lay out straight away, so the state is right even when animation frames are paused */
+      if (W) place(performance.now());
+      if (n && n.kind === "industry") {
+        root.dispatchEvent(new CustomEvent("hll:industry-select", { bubbles: true, detail: { key: n.key, name: n.data.name, href: n.data.href || null } }));
+      }
+    }
+    function togglePin(n) { pinned = pinned === n ? null : n; setActive(pinned || n); }
+    function cancelLeave() { if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = 0; } }
+
+    nodes.forEach(function (n) {
+      n.el.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { cancelLeave(); setActive(n); } });
+      n.el.addEventListener("pointerleave", function (e) {
+        if (e.pointerType !== "mouse") return;
+        cancelLeave();
+        /* A short grace period lets the mouse travel from an industry to one of its clients */
+        leaveTimer = setTimeout(function () { leaveTimer = 0; setActive(pinned); }, CONFIG.hoverGraceMs);
+      });
+      n.el.addEventListener("focus", function () {
+        var kb = true; try { kb = n.el.matches(":focus-visible"); } catch (err) {}
+        if (kb) { cancelLeave(); setActive(n); }
+      });
+      n.el.addEventListener("blur", function () {
+        if (pinned === n) pinned = null;
+        setTimeout(function () {
+          var f = document.activeElement;
+          var stillInside = f && f.classList && f.classList.contains("hll-www-node") && root.contains(f);
+          if (!stillInside && active === n) setActive(pinned);
+        }, 0);
+      });
+      n.el.addEventListener("keydown", function (e) {
+        if (!n.data.href && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); togglePin(n); }
+        if (e.key === "Escape") { pinned = null; setActive(null); n.el.blur(); }
+      });
+      pressable(n.el, {
+        start: function (type) { if (type === "touch") setActive(n); },
+        cancel: function (type) { if (type === "touch") setActive(pinned); },
+        release: function () { if (n.data.href) { go(n.data.href); } else { pinned = n; setActive(n); } },
+        click: function (e) { if (n.data.href) return; e.preventDefault(); togglePin(n); }
+      });
+    });
+    /* A tap on empty space or on the headline clears a pinned node. It does not block scrolling. */
+    stage.addEventListener("pointerdown", function (e) {
+      if (e.target === stage || centre.contains(e.target)) { cancelLeave(); pinned = null; setActive(null); }
+    });
+
+    /* Coming back with the browser Back button restores the page from cache: clear the pressed state. */
+    window.addEventListener("pageshow", function (e) { if (e.persisted) { pinned = null; setActive(null); } });
+
+    /* ---- Layout ---- */
+    var W = 0, H = 0, motion = false, vertical = false;
+    function measure() {
+      var r = stage.getBoundingClientRect();
+      W = r.width; H = r.height;
+      svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+      svg.setAttribute("width", W); svg.setAttribute("height", H);
+      maskAll.setAttribute("width", W); maskAll.setAttribute("height", H);
+      motion = !reduce.matches && !narrow.matches;
+      vertical = portrait.matches;
+      root.classList.toggle("is-portrait", vertical);
+      nodes.forEach(function (n) {
+        n.anchor = n.kind === "client" ? "left" : (vertical && n.data.m && n.data.m.anchor ? n.data.m.anchor : "center");
+        n.el.classList.toggle("anchor-left", n.kind !== "client" && n.anchor === "left");
+        n.el.classList.toggle("anchor-right", n.anchor === "right");
+      });
+      sizeCanvas();
+    }
+    /* The centre column: Impact on top, the surfaced clients beneath it, the whole block centred.
+       If the clients would not fit between the industry rows, Impact steps aside and the clients take the centre. */
+    function stackCentre() {
+      var list = context ? IND[context.key].clients.map(function (c) { return byKey["c:" + c.key]; }) : [];
+      if (!list.length) { centre.classList.remove("is-yield"); return { shift: 0, scale: 1 }; }
+      var scale = vertical ? 0.72 : 1;
+      var h0 = centre.offsetHeight * scale, gap = vertical ? 4 : 12, rows = 0, colW = 0;
+      list.forEach(function (n) { rows += n.el.offsetHeight; colW = Math.max(colW, n.el.offsetWidth); });
+      var room = H * (vertical ? 0.34 : 0.42);
+      var yieldCentre = h0 + gap + rows > room;
+      centre.classList.toggle("is-yield", yieldCentre);
+      var head = yieldCentre ? 0 : h0 + gap, total = head + rows;
+      var top = H / 2 - total / 2, y = top + head, left = W / 2 - colW / 2;
+      list.forEach(function (n) { var h = n.el.offsetHeight; n.sx = left; n.sy = y + h / 2; y += h; });
+      return { shift: yieldCentre ? 0 : top + h0 / 2 - H / 2, scale: scale };
+    }
+    function place(t) {
+      var amp = motion ? CONFIG.driftPx : 0;
+      var cs = stackCentre();
+      centre.style.transform = "translate(-50%, calc(-50% + " + cs.shift.toFixed(1) + "px)) scale(" + cs.scale + ")";
+      var sr = stage.getBoundingClientRect();
+      nodes.forEach(function (n) {
+        var px, py, ax = "-50%";
+        if (n.kind === "client") {
+          if (n.sx === null) { n.sx = W / 2; n.sy = H / 2; }
+          px = n.sx; py = n.sy; ax = "0%";
+        } else {
+          var pos = vertical && n.data.m ? n.data.m : n.data;
+          px = pos.x / 100 * W + amp * Math.sin(t * 0.0006 * n.speed + n.phase);
+          py = pos.y / 100 * H + amp * Math.cos(t * 0.00045 * n.speed + n.phase * 1.3);
+          ax = n.anchor === "left" ? "0%" : n.anchor === "right" ? "-100%" : "-50%";
+        }
+        n.el.style.transform = "translate(" + px.toFixed(2) + "px," + py.toFixed(2) + "px) translate(" + ax + ",-50%)";
+        var dr = n.dot.getBoundingClientRect();
+        n.cx = dr.left - sr.left + dr.width / 2; n.cy = dr.top - sr.top + dr.height / 2;
+        /* Mask hole over the label, only while the label can be seen */
+        var visible = n.kind !== "client" || n.el.classList.contains("is-shown");
+        if (visible) {
+          var lr = n.lbl.getBoundingClientRect();
+          n.hole.setAttribute("x", lr.left - sr.left - 3); n.hole.setAttribute("y", lr.top - sr.top - 2);
+          n.hole.setAttribute("width", lr.width + 6); n.hole.setAttribute("height", lr.height + 4);
+        } else {
+          n.hole.setAttribute("width", 0); n.hole.setAttribute("height", 0);
+        }
+      });
+      var cr = centre.getBoundingClientRect();
+      var box = { l: cr.left - sr.left, t: cr.top - sr.top, r: cr.right - sr.left, b: cr.bottom - sr.top };
+      var ccx = (box.l + box.r) / 2, ccy = (box.t + box.b) / 2;
+      var yielded = centre.classList.contains("is-yield");
+      centreHole.setAttribute("x", box.l); centreHole.setAttribute("y", box.t);
+      centreHole.setAttribute("width", yielded ? 0 : box.r - box.l); centreHole.setAttribute("height", yielded ? 0 : box.b - box.t);
+      restLines.forEach(function (rl) {
+        var hit = rectHit(rl.node.cx, rl.node.cy, ccx, ccy, box);
+        rl.el.setAttribute("x1", rl.node.cx); rl.el.setAttribute("y1", rl.node.cy);
+        rl.el.setAttribute("x2", hit.x); rl.el.setAttribute("y2", hit.y);
+      });
+      lines.forEach(function (l) {
+        l.el.setAttribute("x1", l.a.cx); l.el.setAttribute("y1", l.a.cy);
+        l.el.setAttribute("x2", l.b.cx); l.el.setAttribute("y2", l.b.cy);
+        if (l.el.classList.contains("is-on")) {
+          l.grad.setAttribute("x1", l.a.cx); l.grad.setAttribute("y1", l.a.cy);
+          l.grad.setAttribute("x2", l.b.cx); l.grad.setAttribute("y2", l.b.cy);
+        }
+      });
+    }
+    /* Where the segment from (x0,y0) to the box centre meets the padded box edge */
+    function rectHit(x0, y0, cx, cy, box) {
+      var pad = 6, dx = cx - x0, dy = cy - y0;
+      var hw = (box.r - box.l) / 2 + pad, hh = (box.b - box.t) / 2 + pad;
+      if (Math.abs(dx) < 1e-6 && Math.abs(dy) < 1e-6) return { x: cx, y: cy };
+      var tx = Math.abs(dx) > 1e-6 ? hw / Math.abs(dx) : Infinity;
+      var ty = Math.abs(dy) > 1e-6 ? hh / Math.abs(dy) : Infinity;
+      var t = Math.min(tx, ty);
+      return { x: cx - dx * t, y: cy - dy * t };
+    }
+
+    /* ---- Canvas field: three soft colour pools that lean towards the cursor and tint to the active industry ---- */
+    var ctx = canvas ? canvas.getContext("2d") : null, cw = 0, ch = 0, dpr = 1;
+    var mouse = { x: 0.5, y: 0.5 }, eased = { x: 0.5, y: 0.5 }, tintMix = 0;
+    function sizeCanvas() {
+      if (!ctx) return;
+      var r = root.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      cw = Math.max(1, Math.floor(r.width)); ch = Math.max(1, Math.floor(r.height));
+      canvas.width = Math.floor(cw * dpr); canvas.height = Math.floor(ch * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    root.addEventListener("pointermove", function (e) {
+      var r = root.getBoundingClientRect();
+      mouse.x = (e.clientX - r.left) / r.width; mouse.y = (e.clientY - r.top) / r.height;
+    }, { passive: true });
+    function drawField(t) {
+      if (!ctx || !motion) { if (field) field.classList.add("hll-www-field-static"); if (ctx) ctx.clearRect(0, 0, cw, ch); return; }
+      field.classList.remove("hll-www-field-static");
+      eased.x += (mouse.x - eased.x) * 0.04; eased.y += (mouse.y - eased.y) * 0.04;
+      tintMix += ((fieldTint ? 1 : 0) - tintMix) * 0.06;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, cw, ch);
+      var cols = CONFIG.fieldColours;
+      var pools = [
+        { x: 0.22 + (eased.x - 0.5) * 0.18 + 0.03 * Math.sin(t * 0.00021), y: 0.32 + (eased.y - 0.5) * 0.14 + 0.03 * Math.cos(t * 0.00017), r: 0.55, c: cols[0], a: 0.10 },
+        { x: 0.78 + (eased.x - 0.5) * 0.12 + 0.03 * Math.cos(t * 0.00019), y: 0.70 + (eased.y - 0.5) * 0.18 + 0.03 * Math.sin(t * 0.00023), r: 0.55, c: cols[2], a: 0.10 },
+        { x: eased.x, y: eased.y, r: 0.34, c: cols[1], a: 0.07 }
+      ];
+      pools.forEach(function (p, i) {
+        var col = (fieldTint && i === 2) ? fieldTint : p.c;
+        var g = ctx.createRadialGradient(p.x * cw, p.y * ch, 0, p.x * cw, p.y * ch, p.r * Math.max(cw, ch));
+        var alpha = p.a + (i === 2 ? tintMix * 0.08 : 0);
+        g.addColorStop(0, hexA(col, alpha)); g.addColorStop(1, hexA(col, 0));
+        ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+      });
+    }
+    function hexA(hex, a) {
+      var h = hex.replace("#", ""); if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("");
+      var n = parseInt(h, 16);
+      return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a.toFixed(3) + ")";
+    }
+
+    /* ---- Headline gradient reveal on entry ---- */
+    if ("IntersectionObserver" in window && !reduce.matches) {
+      centre.classList.add("is-armed");
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { requestAnimationFrame(function () { centre.classList.add("is-in"); }); io.disconnect(); } });
+      }, { threshold: 0.4 });
+      io.observe(centre);
+    }
+
+    /* ---- Frame loop: runs only while the section is on screen ---- */
+    var visible = true, raf = 0;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(tick); });
+      }, { threshold: 0 }).observe(root);
+    }
+    function tick(t) {
+      raf = 0;
+      if (!visible) return;
+      place(t); drawField(t);
+      raf = requestAnimationFrame(tick);
+    }
+    function relayout() { measure(); place(performance.now()); }
+    if ("ResizeObserver" in window) new ResizeObserver(relayout).observe(stage);
+    else window.addEventListener("resize", relayout);
+    listen(reduce, relayout); listen(narrow, relayout); listen(portrait, relayout);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+
+    relayout(); drawField(performance.now());
+    raf = requestAnimationFrame(tick);
+  }
+})();
+</script>

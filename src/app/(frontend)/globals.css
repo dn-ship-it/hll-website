@@ -549,6 +549,18 @@
   object-position: center;
 }
 
+.our-promise-image-stage--impact {
+  width: 100vw;
+}
+
+.our-promise-impact-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
 .our-promise-scroll-spacer {
   width: 1px;
 }
@@ -631,6 +643,50 @@
 .hll-home .hll-label,
 .hll-home .hll-home-section > div > p:first-child {
   font-family: var(--hll-label-font);
+}
+
+/* Services typography and one-time Figma copy/media reveal. Aeonik TRIAL is
+   referenced here but still needs the licensed font asset added to the repo. */
+.hll-service-page {
+  --hll-service-font: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
+  --hll-service-label: var(--font-sometype-mono), "Courier New", monospace;
+  background: #fafafa;
+  color: #1a1a1a;
+  font-family: var(--hll-service-font);
+}
+
+.hll-service-page h1,
+.hll-service-page h2,
+.hll-service-page h3 {
+  font-family: var(--hll-service-font);
+}
+
+.hll-service-page nav[aria-label="Breadcrumb"],
+.hll-service-page [role="tablist"],
+.hll-service-page [data-service-label] {
+  font-family: var(--hll-service-label);
+}
+
+.hll-service-page .service-fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hll-service-page .service-fade-in.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hll-service-page .service-fade-in,
+  .hll-service-page .service-fade-in.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .hll-team-page {
@@ -852,8 +908,158 @@
     row-gap: 28px;
   }
 
-  .engagement-project--zelish {
-    grid-column: 1;
+.engagement-project--zelish {
+  grid-column: 1;
+}
+}
+
+.hll-careers-page {
+  --careers-font: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
+  --careers-mono: var(--font-sometype-mono), "Courier New", monospace;
+  background: #fafafa;
+  color: #1a1a1a;
+  font-family: var(--careers-font);
+}
+
+.hll-careers-page h1,
+.hll-careers-page h2,
+.hll-careers-page h3 {
+  color: #1a1a1a;
+  font-family: var(--careers-font);
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+.hll-careers-page h1 {
+  line-height: 1;
+  font-size: clamp(1.875rem, 4.25vw, 4rem) !important;
+}
+
+.hll-careers-page h2 {
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+  line-height: 1.16;
+}
+
+.hll-careers-page h3 {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  line-height: 1.2;
+}
+
+.hll-careers-page p {
+  font-family: var(--careers-font);
+}
+
+.hll-careers-page .careers-body-copy {
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.hll-careers-page .careers-section-label,
+.hll-careers-page nav[aria-label="Breadcrumb"] {
+  font-family: var(--careers-mono);
+  font-weight: 400;
+}
+
+.careers-fade-in {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.careers-fade-in.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.careers-notice__icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(26 26 26 / 18%);
+  border-radius: 999px;
+  color: rgb(26 26 26 / 75%);
+  font-size: 18px;
+  line-height: 1;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.careers-notice button:hover .careers-notice__icon {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+  color: white;
+}
+
+.careers-notice__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 260ms ease,
+    opacity 200ms ease,
+    visibility 0s linear 260ms;
+}
+
+.careers-notice__panel.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 260ms ease,
+    opacity 200ms ease,
+    visibility 0s;
+}
+
+.careers-notice__panel-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .hll-careers-page h1 {
+    font-size: 30px !important;
+    line-height: 1.05;
+  }
+
+  .hll-careers-page h2 {
+    font-size: 24px;
+  }
+
+  .hll-careers-page p {
+    line-height: 1.25;
+  }
+
+  .hll-careers-page .careers-body-copy {
+    font-size: 14px;
+  }
+}
+
+.careers-open-roles-cta a {
+  background: #fafafa;
+  box-shadow: 0 5px 20px rgb(0 0 0 / 12%);
+}
+
+@media (max-width: 600px) {
+  .careers-open-roles-cta {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .careers-fade-in,
+  .careers-notice__panel,
+  .careers-notice__icon {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

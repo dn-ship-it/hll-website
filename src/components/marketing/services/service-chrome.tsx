@@ -9,7 +9,7 @@ export function ServiceBreadcrumb({ items }: { items: readonly string[] }) {
           {i === items.length - 1 ? (
             <span className="text-black/70">{item}</span>
           ) : (
-            <Link href={i === 0 ? "/services" : "#"} className="hover:text-black">
+            <Link href="/services" className="hover:text-black">
               {item}
             </Link>
           )}
