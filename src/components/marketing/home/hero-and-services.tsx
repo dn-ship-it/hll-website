@@ -1,10 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Asterisk,
+  Database,
+  Network,
+  PanelsTopLeft,
+  ShieldCheck,
+  UsersRound,
+  type LucideIcon,
+} from "lucide-react";
 
-import { GradientRevealTextSlow, LightFXTag } from "@/components/hll";
+import { GradientRevealTextSlow } from "@/components/hll";
+import { getVariantColors, type ServiceVariant } from "@/components/hll/variants";
 
 import { MediaPlaceholder, OutlinePillButton } from "./primitives";
+
+const HOME_SERVICES: {
+  label: string;
+  name: string;
+  description: string;
+  icon: LucideIcon;
+  variant: ServiceVariant;
+}[] = [
+  { label: "KINETIC", name: "HLL Kinetic", description: "We build applications that are a delight to use.", icon: PanelsTopLeft, variant: "hll-application" },
+  { label: "MOMENTUM", name: "HLL Momentum", description: "The talent gap closed for you in under a week.", icon: UsersRound, variant: "hll-people" },
+  { label: "MOTION", name: "HLL Motion", description: "Applied AI built to move from experimentation into real work.", icon: Asterisk, variant: "hll-ai" },
+  { label: "FOUNDATION", name: "HLL Foundation", description: "Data your business can finally trust.", icon: Database, variant: "hll-foundation" },
+  { label: "ONTOLOGY", name: "HLL Ontology", description: "A connected view of the knowledge and relationships in your business.", icon: Network, variant: "hll-ontology" },
+  { label: "GOVERNANCE & TRUST", name: "HLL Governance & Trust", description: "Could you show a regulator where that number came from?", icon: ShieldCheck, variant: "hll-trust" },
+];
 
 export function HomeHero({
   heading,
@@ -56,42 +81,117 @@ export function HomeHero({
 }
 
 export function WhatWeDo() {
-  const categories = ["KINETIC", "MOMENTUM", "MOTION", "FOUNDATION", "ONTOLOGY", "GOVERNANCE & TRUST"];
-  const [active, setActive] = useState(1);
-  const selected = categories[active];
-  const serviceName = selected === "GOVERNANCE & TRUST" ? "Governance & Trust" : selected.charAt(0) + selected.slice(1).toLowerCase();
+  const [active, setActive] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const selected = HOME_SERVICES[active];
+  const selectedColors = getVariantColors(selected.variant);
+
+  const updateActiveFromScroll = useCallback(() => {
+    const section = sectionRef.current;
+    const sticky = stickyRef.current;
+    if (!section || !sticky) return;
+
+    const scrollRange = section.offsetHeight - sticky.offsetHeight;
+    if (scrollRange <= 0) return;
+
+    const progress = Math.min(1, Math.max(0, -section.getBoundingClientRect().top / scrollRange));
+    const next = Math.min(HOME_SERVICES.length - 1, Math.round(progress * (HOME_SERVICES.length - 1)));
+    setActive((current) => (current === next ? current : next));
+  }, []);
+
+  useEffect(() => {
+    let frame = 0;
+    const scheduleUpdate = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(updateActiveFromScroll);
+    };
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
+  }, [updateActiveFromScroll]);
+
+  function scrollToService(index: number) {
+    const section = sectionRef.current;
+    const sticky = stickyRef.current;
+    if (!section || !sticky) return;
+
+    const scrollRange = section.offsetHeight - sticky.offsetHeight;
+    const progress = index / (HOME_SERVICES.length - 1);
+    const top = window.scrollY + section.getBoundingClientRect().top + scrollRange * progress;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
+  }
 
   return (
-    <section className="hll-home-section border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
-      <div className="mx-auto grid max-w-[90rem] gap-[clamp(1.5rem,4vw,3rem)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.28em] text-black/45">Services</p>
-          <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
-            What we do
-          </h2>
-          <div className="mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Services">
-            {categories.map((cat, i) => (
-              <button key={cat} type="button" role="tab" aria-selected={active === i} onClick={() => setActive(i)}>
-                <LightFXTag variant={active === i ? "warm" : "cool"} removable={false}>{cat}</LightFXTag>
-              </button>
-            ))}
+    <section
+      ref={sectionRef}
+      className="hll-home-section border-t border-black/6"
+      style={{ height: `${HOME_SERVICES.length * 100}svh` }}
+      aria-label="Our services"
+    >
+      <div
+        ref={stickyRef}
+        className="sticky top-[66px] flex h-[calc(100svh-66px)] items-center px-[clamp(1.25rem,4vw,3rem)]"
+      >
+        <div className="mx-auto grid w-full max-w-[90rem] items-center gap-[clamp(1rem,4vw,3rem)] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-black/45">Services</p>
+            <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
+              What we do
+            </h2>
+            <nav className="mt-6 flex max-w-full flex-row gap-4 overflow-x-auto pb-1 md:mt-8 md:flex-col md:items-start md:gap-1" aria-label="Choose a service">
+              {HOME_SERVICES.map((service, index) => (
+                <button
+                  key={service.label}
+                  type="button"
+                  aria-current={active === index ? "step" : undefined}
+                  onClick={() => scrollToService(index)}
+                  className={`hll-display whitespace-nowrap text-left text-[clamp(1.125rem,2.3vw,2rem)] leading-tight transition-[opacity,color] duration-300 md:text-[clamp(1.25rem,2.3vw,2rem)] ${
+                    active === index ? "opacity-100" : "opacity-35 hover:opacity-65"
+                  }`}
+                >
+                  {service.name}
+                </button>
+              ))}
+            </nav>
           </div>
-          <GradientRevealTextSlow
-            as="h3"
-            text={`HLL ${selected === "MOMENTUM" ? "Trust & Governance" : serviceName}`}
-            variant="hll-trust"
-            playOnView
-            className="hll-display mt-10 block text-black"
-            fontSize="clamp(1.5rem, 3.6vw, 3rem)"
-          />
-        </div>
 
-        <div>
-          <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-black/45"><span>{selected}</span><span>0{active + 1} / 06</span></div>
-          <MediaPlaceholder className="aspect-square w-full min-h-[clamp(14rem,35vw,24rem)] lg:aspect-[1.15/1]" />
-          <p className="mt-6 max-w-xl text-sm leading-7 text-black/55">
-            {selected === "MOMENTUM" ? "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker, it takes center stage." : `Explore HLL ${serviceName} capabilities, built to move future-facing initiatives forward.`}
-          </p>
+          <div aria-live="polite" className="min-w-0">
+            <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-black/45">
+              <span>{selected.label}</span>
+              <span>0{active + 1} / 06</span>
+            </div>
+            <div
+              className="relative grid aspect-[2/1] min-h-[clamp(8rem,32vw,14rem)] place-items-center overflow-hidden transition-[background] duration-500 md:aspect-[1.15/1] md:min-h-[clamp(14rem,35vw,24rem)]"
+              style={{ background: `linear-gradient(135deg, ${selectedColors.join(", ")})` }}
+            >
+              <selected.icon
+                aria-hidden="true"
+                className="relative size-[clamp(5rem,13vw,10rem)] transition-colors duration-500"
+                stroke="white"
+                strokeWidth={1}
+              />
+            </div>
+            <div className="mt-4 flex flex-col items-start gap-2 sm:mt-6 sm:flex-row sm:justify-between sm:gap-6">
+              <GradientRevealTextSlow
+                key={selected.name}
+                as="h3"
+                text={selected.name}
+                variant={selected.variant}
+                playOnView
+                className="hll-display block text-black"
+                fontSize="clamp(1.5rem, 3.6vw, 3rem)"
+              />
+              <p className="max-w-sm text-sm leading-7 text-black/55">{selected.description}</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
