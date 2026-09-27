@@ -25,8 +25,11 @@ import { useLightComponent } from "./use-light-component";
 
 type Overrides = {
   gradient?: string[];
+  baseOpacity?: number;
   direction?: number;
   radius?: number;
+  shapeSize?: number;
+  strokeWidth?: number;
   glow?: number;
   animated?: boolean;
   size?: LightSize;
@@ -45,6 +48,15 @@ function buildDefinition(variant: HLLVariant, overrides: Overrides) {
   }
   if (overrides.radius != null) {
     definition.shape.cornerRadius = overrides.radius;
+  }
+  if (overrides.shapeSize != null) {
+    definition.shape.size = overrides.shapeSize;
+  }
+  if (overrides.strokeWidth != null) {
+    definition.shape.strokeWidth = overrides.strokeWidth;
+  }
+  if (overrides.baseOpacity != null) {
+    definition.params.base.opacity = overrides.baseOpacity;
   }
   if (overrides.glow != null) {
     definition.params.hover.blur = overrides.glow;
@@ -66,8 +78,12 @@ function buildDefinition(variant: HLLVariant, overrides: Overrides) {
 export type HLLOutlineButtonProps = {
   variant?: HLLVariant;
   gradient?: string[];
+  baseOpacity?: number;
+  labelStyle?: CSSProperties;
   direction?: number;
   radius?: number;
+  shapeSize?: number;
+  strokeWidth?: number;
   glow?: number;
   animated?: boolean;
   size?: LightSize;
@@ -76,6 +92,8 @@ export type HLLOutlineButtonProps = {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   isLoading?: boolean;
+  role?: string;
+  "aria-selected"?: boolean;
   onClick?: () => void;
   className?: string;
   style?: CSSProperties;
@@ -85,8 +103,12 @@ export type HLLOutlineButtonProps = {
 export function HLLOutlineButton({
   variant = "hll-ai",
   gradient,
+  baseOpacity,
+  labelStyle,
   direction,
   radius,
+  shapeSize,
+  strokeWidth,
   glow,
   animated = true,
   size = "md",
@@ -104,8 +126,8 @@ export function HLLOutlineButton({
 
   useLightComponent(
     ref,
-    () => buildDefinition(variant, { gradient, direction, radius, glow, animated, size }),
-    [variant, gradient?.join(","), direction, radius, glow, animated, size],
+    () => buildDefinition(variant, { gradient, baseOpacity, direction, radius, shapeSize, strokeWidth, glow, animated, size }),
+    [JSON.stringify([variant, gradient, baseOpacity, direction, radius, shapeSize, strokeWidth, glow, animated, size])],
   );
 
   const isInert = disabled || isLoading;
@@ -132,6 +154,7 @@ export function HLLOutlineButton({
           fontSize: text.fontSize,
           fontWeight: 400,
           letterSpacing: text.letterSpacing,
+          ...labelStyle,
         }}
       >
         {children}

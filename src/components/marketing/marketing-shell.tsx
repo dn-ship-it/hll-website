@@ -6,9 +6,11 @@ import { SiteHeader } from "@/components/marketing/site-header";
 export async function MarketingShell({
   children,
   showFooter = true,
+  compactHeader = false,
 }: {
   children: React.ReactNode;
   showFooter?: boolean;
+  compactHeader?: boolean;
 }) {
   let siteName = "Hyper Lychee Labs";
   let nav = undefined;
@@ -40,7 +42,7 @@ export async function MarketingShell({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <SiteHeader siteName={siteName} nav={nav} />
+      <SiteHeader siteName={siteName} nav={nav} compact={compactHeader} />
       <main className="overflow-x-clip">{children}</main>
       {showFooter ? (
         <SiteFooter

@@ -655,6 +655,10 @@
   font-family: var(--hll-service-font);
 }
 
+.hll-service-page--foundation {
+  background: #fff;
+}
+
 .hll-service-page h1,
 .hll-service-page h2,
 .hll-service-page h3 {

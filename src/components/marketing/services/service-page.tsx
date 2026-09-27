@@ -34,16 +34,25 @@ async function loadServicePage(fallback: ServicePageData) {
 
 export async function ServicePage({ content }: { content: ServicePageData }) {
   const { data, demo } = await loadServicePage(content);
+  const isFoundation = data.slug === "hll-foundation";
 
   return (
     <MarketingShell>
-      <div className="hll-service-page">
-        <div className="px-[clamp(1.25rem,4vw,3rem)] pt-6">
-          <div className="mx-auto max-w-[90rem] space-y-4">
-            <ServiceBreadcrumb items={data.breadcrumb} />
-            <ServiceBrandHeader brand={data.brand} />
+      <div className={`hll-service-page ${isFoundation ? "hll-service-page--foundation" : ""}`}>
+        {isFoundation ? (
+          <div className="px-5 pt-3">
+            <div className="mx-auto max-w-[90rem]">
+              <ServiceBrandHeader brand={data.brand} foundation />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="px-[clamp(1.25rem,4vw,3rem)] pt-6">
+            <div className="mx-auto max-w-[90rem] space-y-4">
+              <ServiceBreadcrumb items={data.breadcrumb} />
+              <ServiceBrandHeader brand={data.brand} />
+            </div>
+          </div>
+        )}
 
         <ServiceReveal>
           <ServiceHero data={data.hero} demo={demo} variant={data.variant} />

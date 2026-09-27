@@ -7,6 +7,7 @@ import type { ServiceDemoConfig } from "@/types/service-demo";
 type ServiceDemoWindowProps = {
   config: ServiceDemoConfig;
   activeTabKey: string;
+  foundation?: boolean;
 };
 
 function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
@@ -24,7 +25,7 @@ function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
   };
 }
 
-export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowProps) {
+export function ServiceDemoWindow({ config, activeTabKey, foundation = false }: ServiceDemoWindowProps) {
   const safeConfig = useMemo(
     () => ({
       ...config,
@@ -78,18 +79,32 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
   }, [srcKey]);
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
+  const iframeHeight = foundation
+    ? "h-[390px] min-h-[390px]"
+    : "h-[clamp(19rem,34vw,24rem)] min-h-[clamp(19rem,34vw,24rem)]";
 
   return (
-    <div className="service-demo-window relative mt-8 overflow-hidden rounded-sm" data-service-media>
+    <div
+      className={`service-demo-window relative mt-8 overflow-hidden ${foundation ? "rounded" : "rounded-sm"}`}
+      data-service-media
+    >
       <div
-        className="relative p-[clamp(1.25rem,3vw,2.5rem)]"
+        className={`relative ${
+          foundation
+            ? "px-[clamp(2rem,6.25vw,3.25rem)] py-[clamp(2rem,9vw,4.625rem)]"
+            : "p-[clamp(1.25rem,3vw,2.5rem)]"
+        }`}
         style={{
-          backgroundImage: "url(/assets/demo-window-gradient.png)",
+          backgroundImage: `url(${foundation ? "/assets/foundation-demo-gradient.png" : "/assets/demo-window-gradient.png"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="relative mx-auto max-w-[min(100%,52rem)] rounded-sm bg-white p-[clamp(0.75rem,2vw,1rem)] shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+        <div
+          className={`relative mx-auto rounded-sm bg-white p-[clamp(0.75rem,2vw,1rem)] ${
+            foundation ? "w-full shadow-none" : "max-w-[min(100%,52rem)] shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+          }`}
+        >
           <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2">
             <span className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-[#f3f3f3] px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] text-black/70">
               {safeConfig.selectorLabel}
@@ -110,9 +125,9 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
             </span>
           </div>
 
-          <div className="relative mt-10 min-h-[clamp(19rem,34vw,24rem)] overflow-hidden rounded-sm bg-white">
+          <div className={`relative mt-10 overflow-hidden rounded-sm bg-white ${iframeHeight}`}>
             {!hasContent ? (
-              <div className="flex min-h-[clamp(19rem,34vw,24rem)] items-center justify-center bg-[#fafafa]">
+              <div className={`flex items-center justify-center bg-[#fafafa] ${iframeHeight}`}>
                 <p className="text-[10px] uppercase tracking-[0.28em] text-black/30">
                   Demo window
                 </p>
@@ -123,7 +138,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
                 title={`${safeConfig.selectorLabel} demo`}
                 srcDoc={demo.html}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
-                className="block h-[clamp(19rem,34vw,24rem)] w-full border-0 bg-white"
+                className={`block w-full border-0 bg-white ${iframeHeight}`}
                 onLoad={() => setLoaded(true)}
               />
             ) : (
@@ -132,7 +147,7 @@ export function ServiceDemoWindow({ config, activeTabKey }: ServiceDemoWindowPro
                 title={`${safeConfig.selectorLabel} demo`}
                 src={demo.htmlUrl ?? undefined}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-modals"
-                className="block h-[clamp(19rem,34vw,24rem)] w-full border-0 bg-white"
+                className={`block w-full border-0 bg-white ${iframeHeight}`}
                 onLoad={() => setLoaded(true)}
               />
             )}
