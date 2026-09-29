@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
+
 const DEFAULT_NAV: SiteNavItem[] = [
   { label: "Services", href: "/services" },
   { label: "Industries", href: "/industries" },
@@ -14,26 +15,31 @@ export function SiteHeader({
   siteName = "Hyper Lychee Labs",
   nav = DEFAULT_NAV,
   compact = false,
+  markSrc,
 }: {
   siteName?: string;
   nav?: SiteNavItem[];
   compact?: boolean;
+  /** Service/industry-tinted logo mark (Figma "logo in the navbar changes
+      colour according to the service or industries"); grey when omitted. */
+  markSrc?: string;
 }) {
   return (
     <header className={`sticky top-0 z-50 ${compact ? "h-9 bg-white" : "h-[66px] bg-[#fafafa]"}`}>
-      <div className={`flex h-full items-center justify-between ${compact ? "px-5" : "px-[30px]"}`}>
+      <div className={`flex h-full items-center justify-between ${compact ? "px-5" : "px-[30px] pt-1.5"}`}>
         <Link
           href="/"
           aria-label={siteName}
           className={`flex shrink-0 items-center text-[#383838] ${compact ? "gap-2" : "h-[51px] gap-[10px]"}`}
         >
-          {/* Keep the Figma SVG at its intrinsic 25.5 × 51 px dimensions. */}
+          {/* Figma Nav Bar: the mark is drawn at 28 × 35, which squashes the
+              two lobes of the 25.5 × 51 vector into flat domes. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/hll-mark.svg"
+            src={markSrc ?? "/assets/hll-mark.png"}
             alt=""
             aria-hidden="true"
-            className={compact ? "block h-[18px] w-[9px] shrink-0" : "block shrink-0"}
+            className={compact ? "block h-[18px] w-[14px] shrink-0" : "block h-[35px] w-[28px] shrink-0"}
           />
           <span
             className={`whitespace-nowrap leading-none ${compact ? "text-[10px]" : "text-[17.28px]"}`}
@@ -44,7 +50,7 @@ export function SiteHeader({
         </Link>
 
         <nav
-          className={`items-center ${compact ? "hidden gap-1 sm:flex" : "mr-[-18px] hidden gap-5 lg:flex"}`}
+          className={`items-center ${compact ? "hidden gap-1 sm:flex" : "mr-[-21px] hidden gap-0 lg:flex"}`}
           aria-label="Main navigation"
         >
           {nav.map((item) => (

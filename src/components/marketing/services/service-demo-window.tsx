@@ -2,12 +2,21 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { CornerRipple, type RippleVariant } from "@/components/hll";
 import type { ServiceDemoConfig } from "@/types/service-demo";
+
+import { RIPPLE_FILL, RIPPLE_OPACITY } from "./service-theme";
 
 type ServiceDemoWindowProps = {
   config: ServiceDemoConfig;
   activeTabKey: string;
-  foundation?: boolean;
+  /** CSS background for the frame around the demo — the service's colours. */
+  background: string;
+  /**
+   * Figma: "Live corner ripple animation in the back according to the colours
+   * of the service" — drawn over `background`, which stays as the fallback.
+   */
+  ripple?: RippleVariant;
 };
 
 function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
@@ -25,7 +34,7 @@ function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
   };
 }
 
-export function ServiceDemoWindow({ config, activeTabKey, foundation = false }: ServiceDemoWindowProps) {
+export function ServiceDemoWindow({ config, activeTabKey, background, ripple }: ServiceDemoWindowProps) {
   const safeConfig = useMemo(
     () => ({
       ...config,
@@ -79,34 +88,23 @@ export function ServiceDemoWindow({ config, activeTabKey, foundation = false }: 
   }, [srcKey]);
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
-  const iframeHeight = foundation
-    ? "h-[390px] min-h-[390px]"
-    : "h-[clamp(19rem,34vw,24rem)] min-h-[clamp(19rem,34vw,24rem)]";
+  const iframeHeight = "h-[clamp(20rem,42.2vw,39.9rem)] min-h-[clamp(20rem,42.2vw,39.9rem)]";
 
   return (
     <div
-      className={`service-demo-window relative mt-8 overflow-hidden ${foundation ? "rounded" : "rounded-sm"}`}
+      className="service-demo-window relative mt-[clamp(1.125rem,2.18vw,2.0625rem)] overflow-hidden rounded-lg"
       data-service-media
     >
       <div
-        className={`relative ${
-          foundation
-            ? "px-[clamp(2rem,6.25vw,3.25rem)] py-[clamp(2rem,9vw,4.625rem)]"
-            : "p-[clamp(1.25rem,3vw,2.5rem)]"
-        }`}
-        style={{
-          backgroundImage: `url(${foundation ? "/assets/foundation-demo-gradient.png" : "/assets/demo-window-gradient.png"})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="relative px-[clamp(1.25rem,6.35vw,6rem)] py-[clamp(2rem,8.99vw,8.5rem)]"
+        style={{ background }}
       >
+        {ripple ? <CornerRipple variant={ripple} contained className={RIPPLE_FILL} style={{ opacity: RIPPLE_OPACITY }} /> : null}
         <div
-          className={`relative mx-auto rounded-sm bg-white p-[clamp(0.75rem,2vw,1rem)] ${
-            foundation ? "w-full shadow-none" : "max-w-[min(100%,52rem)] shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
-          }`}
+          className="relative mx-auto w-full rounded-lg bg-[var(--hll-bg)] p-[clamp(0.75rem,2vw,1rem)] shadow-none"
         >
           <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-[#f3f3f3] px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] text-black/70">
+            <span className="inline-flex h-9 items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)]">
               {safeConfig.selectorLabel}
               <svg
                 aria-hidden

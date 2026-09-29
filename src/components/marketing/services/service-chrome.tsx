@@ -1,48 +1,75 @@
-import Link from "next/link";
-import { Asterisk } from "lucide-react";
+import type { ServiceVariant } from "@/components/hll/variants";
+import { SectionTitle } from "@/components/marketing/home/primitives";
 
-export function ServiceBreadcrumb({ items }: { items: readonly string[] }) {
+import { getServiceTheme } from "./service-theme";
+
+/** Page gutter from the Figma service template: 30px at the 1512px frame. */
+export const SERVICE_GUTTER = "px-[clamp(1.25rem,1.98vw,1.875rem)]";
+
+/** Service icon + name, as in the Figma service template (no breadcrumb). */
+export function ServiceBrandHeader({ brand, variant }: { brand: string; variant: ServiceVariant }) {
+  const { iconSrc } = getServiceTheme(variant);
+
   return (
-    <nav aria-label="Breadcrumb" className="text-[10px] uppercase tracking-[0.22em] text-black/45">
-      {items.map((item, i) => (
-        <span key={item}>
-          {i > 0 ? <span className="mx-2 text-black/25">›</span> : null}
-          {i === items.length - 1 ? (
-            <span className="text-black/70">{item}</span>
-          ) : (
-            <Link href="/services" className="hover:text-black">
-              {item}
-            </Link>
-          )}
-        </span>
-      ))}
-    </nav>
+    <div className="flex items-center gap-[15px]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={iconSrc}
+        alt=""
+        aria-hidden="true"
+        className="size-[clamp(1.75rem,2.38vw,2.25rem)] shrink-0"
+      />
+      <span className="text-[clamp(1.5rem,2.38vw,2.25rem)] font-medium leading-[1.16] text-[var(--hll-dark-grey)]">
+        {brand}
+      </span>
+    </div>
   );
 }
 
-export function ServiceBrandHeader({
-  brand,
-  foundation = false,
+/**
+ * Eyebrow + H1 used by every section below the hero in the Figma service
+ * template: "SERVICES  <service>" in the Functional style, the service name in
+ * the service colour, then a 64px light title.
+ */
+export function ServiceSectionHeading({
+  breadcrumb,
+  title,
+  variant,
+  tone = "light",
 }: {
-  brand: string;
-  foundation?: boolean;
+  breadcrumb: readonly string[];
+  title: string;
+  variant: ServiceVariant;
+  /** "dark" sits on the coloured Outcome band. */
+  tone?: "light" | "dark";
 }) {
+  const { accent } = getServiceTheme(variant);
+  const [section, ...rest] = breadcrumb;
+
   return (
-    <div className={`flex items-center gap-2 ${foundation ? "" : "border-b border-black/6 pb-4"}`}>
-      {foundation ? (
-        <span
-          aria-hidden="true"
-          className="grid size-5 place-items-center rounded-[4px]"
-          style={{ background: "linear-gradient(135deg, #FB8330 0%, #FE5844 55%, #D75D87 100%)" }}
-        >
-          <Asterisk className="size-3.5 text-white" strokeWidth={2.2} />
+    <div>
+      <p
+        className="flex gap-[14px] text-[12px] uppercase leading-[1.2]"
+        style={{ fontFamily: "var(--hll-font-functional)" }}
+        data-service-label
+      >
+        <span style={{ color: tone === "dark" ? "rgba(250,250,250,0.7)" : "var(--hll-mid-grey)" }}>
+          {section}
         </span>
-      ) : (
-        <span className="flex size-7 items-center justify-center rounded-full bg-[#f5f5f5] text-[9px] font-bold text-black">
-          HLL
-        </span>
-      )}
-      <span className={`${foundation ? "text-[18px]" : "text-sm"} font-medium text-black`}>{brand}</span>
+        <span style={{ color: tone === "dark" ? "#fafafa" : accent }}>{rest.join(" ")}</span>
+      </p>
+      <SectionTitle
+        variant={variant}
+        fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+        letterSpacing="0"
+        lineHeight="1.16"
+        ink={tone === "dark" ? "#FAFAFA" : "#1A1A1A"}
+        className={`mt-[12px] font-light ${
+          tone === "dark" ? "text-[#fafafa]" : "text-[var(--hll-dark-grey)]"
+        }`}
+      >
+        {title}
+      </SectionTitle>
     </div>
   );
 }

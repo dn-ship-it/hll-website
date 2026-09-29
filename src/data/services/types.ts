@@ -30,6 +30,10 @@ export type EngagementCard = {
   tag: EngagementCardType;
   description: string;
   variant: "navy" | "orange" | "image";
+  /** Full-bleed photo for the card's media block (Figma: "Banking"). */
+  image?: string;
+  /** Client logo centred on the coloured block (Figma: McKinsey, KTM). */
+  logo?: string;
 };
 
 export type ExpertVoice = {
@@ -38,6 +42,10 @@ export type ExpertVoice = {
   name?: string;
   role: string;
   company?: string;
+  /** 300×400 portrait beside the quote. */
+  portrait?: string;
+  /** Company logo for the 115px tile next to the portrait. */
+  companyLogo?: string;
 };
 
 export type ServicePageData = {

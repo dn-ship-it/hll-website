@@ -3,8 +3,8 @@ import type { ServicePageData } from "./types";
 export const hllKinetic: ServicePageData = {
   slug: "hll-application",
   variant: "hll-application",
-  brand: "HLL Kinetic",
-  breadcrumb: ["Services", "HLL Kinetic"],
+  brand: "HLL Application",
+  breadcrumb: ["Services", "HLL Application"],
   hero: {
     headline: "We build applications that are a delight to use",
     tabs: [
@@ -133,6 +133,7 @@ export const hllKinetic: ServicePageData = {
         description:
           "A production-planning platform integrated end-to-end with Bajaj and KTM's SAP systems, giving vendors real-time visibility into schedules and material requirements.",
         variant: "orange",
+        logo: "/assets/engagement/logo-ktm.png",
       },
       {
         id: "legacy-modernization",
@@ -148,9 +149,9 @@ export const hllKinetic: ServicePageData = {
   expertVoice: null,
   relatedServices: [
     { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL Momentum", href: "/services/hll-people" },
-    { label: "HLL Governance & Trust", href: "/services/hll-trust" },
-    { label: "HLL Motion", href: "/services/hll-ai" },
+    { label: "HLL People & Policy", href: "/services/hll-people" },
+    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
+    { label: "HLL AI", href: "/services/hll-ai" },
     { label: "HLL Ontology", href: "/services/hll-ontology" },
   ],
   cta: {

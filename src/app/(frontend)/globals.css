@@ -4,10 +4,56 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Aeonik is the Figma type family for every style except Functional (Sometype
+   Mono). The files already shipped in public/impact/fonts but were never
+   declared, so every "Aeonik TRIAL" reference fell back to Helvetica/Arial. */
+@font-face {
+  font-family: "Aeonik TRIAL";
+  src: url("/impact/fonts/Aeonik-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Aeonik TRIAL";
+  src: url("/impact/fonts/Aeonik-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Aeonik TRIAL";
+  src: url("/impact/fonts/Aeonik-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Figma variables (Final › Desktop). Sizes are the 1512px desktop values. */
+:root {
+  --hll-bg: #fafafa;
+  --hll-dark-grey: #1a1a1a;
+  --hll-mid-grey: #949494;
+  --hll-light-grey: #e6e6e6;
+  --hll-font-aeonik: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Declared on body, not :root: next/font puts --font-sometype-mono on <body>,
+   and a var() that is undefined where the property is declared invalidates it
+   (which silently rendered every Functional label in Aeonik). */
+body {
+  --hll-font-functional: var(--font-sometype-mono), "Courier New", monospace;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* No var(--font-geist-*) here: next/font defines those on <body>, but this
+     stack is applied on <html>, where an undefined var() invalidates the whole
+     declaration and the page silently falls back to Times New Roman. */
+  --font-sans: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -122,7 +168,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
   }
   html {
     @apply font-sans;
@@ -655,8 +701,37 @@
   font-family: var(--hll-service-font);
 }
 
-.hll-service-page--foundation {
-  background: #fff;
+/* Footer CTA: while "write to us" is hovered, the still drifts slowly — the
+   stand-in for the per-page video until each page supplies one. */
+.footer-cta-still {
+  transform: scale(1);
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1), filter 1.2s ease;
+}
+
+.footer-cta-still.is-active {
+  animation: footer-cta-drift 6s ease-in-out infinite alternate;
+  filter: saturate(1.25);
+}
+
+@keyframes footer-cta-drift {
+  from { transform: scale(1.06) translate3d(-1.5%, 0, 0); }
+  to { transform: scale(1.12) translate3d(1.5%, -2%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-cta-still.is-active { animation: none; }
+}
+
+/* The WebGL canvas paints over any CSS border on the host, so the active
+   state is an overlay above it rather than a border on the button. */
+.service-tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 1px solid var(--service-tab-accent);
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 .hll-service-page h1,
@@ -665,8 +740,8 @@
   font-family: var(--hll-service-font);
 }
 
+/* Hero tabs use the Figma Button style (Aeonik), not the Functional mono. */
 .hll-service-page nav[aria-label="Breadcrumb"],
-.hll-service-page [role="tablist"],
 .hll-service-page [data-service-label] {
   font-family: var(--hll-service-label);
 }

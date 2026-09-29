@@ -3,7 +3,6 @@ import {
   defaultCareerNotices,
   type CareerNotice,
 } from "@/data/careers-page";
-import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import {
   isNoticeActive,
@@ -58,7 +57,6 @@ export async function CareersPage() {
             accentColor={content.accentColor}
           />
           <CareersCultureSection data={content.culture} accentColor={content.accentColor} />
-          <HomeCta />
         </div>
       </CareersReveal>
     </MarketingShell>

@@ -45,14 +45,29 @@ export function SectionEyebrow({ children }: { children: React.ReactNode }) {
 export function SectionTitle({
   children,
   variant = "hll-ai",
+  fontSize = "clamp(1.5rem, 3vw, 2rem)",
+  className: extraClassName = "mt-2 font-normal tracking-tight text-black",
+  ink,
+  letterSpacing = "-0.01em",
+  lineHeight,
 }: {
   children: React.ReactNode;
   variant?: HLLVariant;
+  fontSize?: string;
+  className?: string;
+  /** Final text colour; the reveal paints its letters with this, not `color`. */
+  ink?: string;
+  letterSpacing?: string;
+  lineHeight?: string;
 }) {
-  const className = "mt-2 text-[clamp(1.5rem,3vw,2rem)] font-normal tracking-tight text-black";
+  const className = `text-[length:var(--section-title-size)] ${extraClassName}`;
 
   if (typeof children !== "string") {
-    return <h2 className={className}>{children}</h2>;
+    return (
+      <h2 className={className} style={{ ["--section-title-size" as string]: fontSize }}>
+        {children}
+      </h2>
+    );
   }
 
   return (
@@ -61,9 +76,11 @@ export function SectionTitle({
       text={children}
       variant={variant}
       playOnView
-      className={className}
-      fontSize="clamp(1.5rem, 3vw, 2rem)"
-      letterSpacing="-0.01em"
+      className={extraClassName}
+      fontSize={fontSize}
+      letterSpacing={letterSpacing}
+      lineHeight={lineHeight}
+      ink={ink}
     />
   );
 }

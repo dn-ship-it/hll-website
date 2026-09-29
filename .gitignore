@@ -50,3 +50,7 @@ next-env.d.ts
 /agent-tools
 /tmp-figma
 .tmp-figma.html
+
+# Figma working cache (design JSON, renders, image fills) — regenerate with the Figma token
+docs/figma/*
+!docs/figma/README.md

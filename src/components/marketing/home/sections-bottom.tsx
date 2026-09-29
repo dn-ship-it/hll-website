@@ -2,12 +2,6 @@
 
 import { useState } from "react";
 
-import {
-  BottomShader,
-  GradientRevealTextNormal,
-  HLLOutlineButton,
-} from "@/components/hll";
-
 import { MediaPlaceholder } from "./primitives";
 
 const STEPS = [
@@ -168,44 +162,6 @@ export function InsideTheLab() {
         >
           <span className="hll-label text-[12px] uppercase text-black/70">Demo window</span>
         </div>
-      </div>
-    </section>
-  );
-}
-
-export function HomeCta({
-  headline = "Let's start a conversation",
-  buttonLabel = "Write to us",
-  href = "/contact",
-}: {
-  headline?: string;
-  buttonLabel?: string;
-  href?: string;
-} = {}) {
-  return (
-    <section
-      className="hll-home-section relative overflow-hidden px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,7vw,4.5rem)]"
-      style={{
-        background: "linear-gradient(90deg, #FFF6B7 0%, #E8F4FF 50%, #D4ECFF 100%)",
-      }}
-    >
-      {/* This section closes every page, which is the slice BottomShader is
-          cropped to. `overlay` puts it in hard-light so it reads the gradient
-          behind it instead of sitting on top as a flat plate. */}
-      <BottomShader variant="contact" contained passthrough overlay />
-
-      <div className="relative mx-auto flex max-w-[90rem] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-        <GradientRevealTextNormal
-          as="h2"
-          text={headline}
-          variant="contact"
-          playOnView
-          className="hll-display block text-black"
-          fontSize="clamp(1.875rem, 4.25vw, 4rem)"
-        />
-        <HLLOutlineButton href={href} variant="contact">
-          {buttonLabel}
-        </HLLOutlineButton>
       </div>
     </section>
   );

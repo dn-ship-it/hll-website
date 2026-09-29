@@ -2,7 +2,17 @@ import Link from "next/link";
 
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
-const DEFAULT_FOOTER_NAV: SiteNavItem[] = [
+import { FooterCta } from "./footer-cta";
+
+/*
+ * Figma "Footer" component (1341:23164, 1512 × 980), used on every page:
+ * a 237px "Let's start a conversation" band, then the body on Background with
+ * the large logo, four text columns, and a shader strip behind the copyright.
+ * All list type is the Button style: Aeonik 12px, uppercase, 0.25em tracking,
+ * on a 28px line; group headings are Mid Grey, items Dark Grey.
+ */
+
+const FOOTER_NAV: SiteNavItem[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Team", href: "/team" },
@@ -11,113 +21,143 @@ const DEFAULT_FOOTER_NAV: SiteNavItem[] = [
 ];
 
 const DEFAULT_FOOTER_SERVICES = [
-  "HLL Kinetic",
-  "HLL Momentum",
-  "HLL Motion",
+  "HLL Application",
+  "HLL People & Policy",
+  "HLL Trust & Governance",
   "HLL Foundation",
+  "HLL AI",
   "HLL Ontology",
-  "HLL Governance & Trust",
 ];
 
-const DEFAULT_FOOTER_INDUSTRIES = [
-  "Financial Services",
-  "Banking",
-  "Insurance",
-  "Healthcare",
-  "Retail",
-  "Technology",
+type IndustryGroup = { title: string; items: string[] };
+
+// Figma lists industries as groups over two columns; the second column has no
+// "industry" heading, so it starts one line lower.
+const INDUSTRY_COLUMNS: IndustryGroup[][] = [
+  [
+    { title: "Financial Services", items: ["Banking", "Insurance", "Other Financial Services"] },
+    { title: "Commerce & Consumer", items: ["Retail Commerce & Brands", "Travel & Hospitality", "Pet Tech"] },
+    { title: "Health & Life Sciences", items: ["Healthcare", "Pharmaceuticals"] },
+  ],
+  [
+    { title: "Built Environment & Industry", items: ["Manufacturing", "Real Estate", "Logistics"] },
+    {
+      title: "Government & Public Institutions",
+      items: ["Public Sector – External Affairs", "Public Sector – Tax & Commerce", "International Organization"],
+    },
+    { title: "Professional Services", items: ["Consulting Firms"] },
+  ],
 ];
+
+// Figma sets every list line on one line (e.g. "Government & Public
+// Institutions" fills its 305px column exactly), so lines never wrap on desktop.
+const LIST = "text-[12px] uppercase leading-[28px] tracking-[0.25em] lg:whitespace-nowrap";
+
+function FooterButton({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex h-[36.5px] items-center rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] transition-colors hover:bg-[#d9d9d9]"
+    >
+      {children}
+    </a>
+  );
+}
 
 type SiteFooterProps = {
   siteName?: string;
-  footerLinks?: SiteNavItem[];
   socialLinks?: { platform?: string | null; url: string }[];
   services?: string[];
-  industries?: string[];
+  ctaHeadline?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  /** This page's CTA background video (Figma: "each page will play a different video"). */
+  ctaVideo?: string;
 };
 
 export function SiteFooter({
   siteName = "Hyper Lychee Labs",
-  footerLinks = DEFAULT_FOOTER_NAV,
   socialLinks = [],
   services = DEFAULT_FOOTER_SERVICES,
-  industries = DEFAULT_FOOTER_INDUSTRIES,
+  ctaHeadline = "Let’s start a conversation",
+  ctaLabel = "Write to us",
+  ctaHref = "/contact",
+  ctaVideo,
 }: SiteFooterProps) {
-  const emailLink = socialLinks.find((s) => s.platform === "email")?.url;
-  const linkedInLink =
-    socialLinks.find((s) => s.platform === "linkedin")?.url ?? "https://linkedin.com";
+  const emailLink = socialLinks.find((s) => s.platform === "email")?.url ?? "mailto:hello@hyperlychee.com";
+  const linkedInLink = socialLinks.find((s) => s.platform === "linkedin")?.url ?? "https://linkedin.com";
 
   return (
-    <footer className="border-t border-black/6 bg-white">
-      <div className="mx-auto grid max-w-[90rem] gap-10 px-[clamp(1.25rem,4vw,3rem)] py-16 md:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <p className="text-sm font-medium text-black">{siteName}</p>
-          <p className="mt-3 text-sm leading-7 text-black/50">
-            Future-facing initiatives for accelerated advancement.
-          </p>
-        </div>
+    <footer className="bg-[var(--hll-bg)]">
+      <FooterCta
+        headline={ctaHeadline}
+        label={ctaLabel}
+        href={ctaHref}
+        poster="/assets/footer/cta-still.webp"
+        videoSrc={ctaVideo}
+      />
 
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Navigation</p>
-          <ul className="mt-4 space-y-2">
-            {footerLinks.map((link) => (
-              <li key={`${link.href}-${link.label}`}>
-                <Link href={link.href} className="text-xs text-black/60 hover:text-black">
+      <div className="relative overflow-hidden px-[clamp(1.25rem,1.98vw,1.875rem)] pt-[52px] lg:min-h-[743px]">
+        {/* Shader strip behind the copyright row: Figma crops the image to
+            its middle band (x 22.9–100%, y 47.3–69.1%) and stretches it. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-[514px] hidden h-[241px] lg:block"
+          style={{
+            backgroundImage: "url(/assets/footer/footer-strip.webp)",
+            backgroundSize: "129.7% 457.9%",
+            backgroundPosition: "100% 60.5%",
+          }}
+        />
+
+        <Link href="/" aria-label={siteName} className="relative inline-flex items-center gap-[22px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/hll-mark.png" alt="" aria-hidden className="h-[66px] w-[48px]" />
+          <span className="text-[32.7px] leading-none text-[#535353]">{siteName}</span>
+        </Link>
+
+        <div className="relative mt-[22px] grid gap-10 sm:grid-cols-2 lg:grid-cols-[455fr_151fr_260fr_281fr_305fr] lg:gap-0">
+          <div className="hidden lg:block" />
+
+          <ul className={`${LIST} text-[var(--hll-dark-grey)]`}>
+            {FOOTER_NAV.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="hover:text-black">
                   {link.label}
                 </Link>
               </li>
             ))}
           </ul>
-        </div>
 
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Services</p>
-          <ul className="mt-4 space-y-2">
+          <ul className={`${LIST} text-[var(--hll-dark-grey)]`}>
+            <li className="text-[var(--hll-mid-grey)]">Services</li>
             {services.map((label) => (
-              <li key={label} className="text-xs text-black/55">
-                {label}
-              </li>
+              <li key={label}>{label}</li>
             ))}
           </ul>
+
+          {INDUSTRY_COLUMNS.map((groups, col) => (
+            <div key={col} className={`${LIST} text-[var(--hll-dark-grey)] ${col === 1 ? "lg:pt-[28px]" : ""}`}>
+              {col === 0 ? <p className="text-[var(--hll-mid-grey)]">Industry</p> : null}
+              {groups.map((group, i) => (
+                <ul key={group.title} className={i > 0 ? "mt-[28px]" : undefined}>
+                  <li className="text-[var(--hll-mid-grey)]">{group.title}</li>
+                  {group.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              ))}
+            </div>
+          ))}
         </div>
 
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Industry</p>
-          <ul className="mt-4 space-y-2">
-            {industries.map((label) => (
-              <li key={label} className="text-xs text-black/55">
-                {label}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="relative overflow-hidden border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-8">
-        <div
-          className="footer-shader pointer-events-none absolute inset-0 opacity-40"
-          style={{
-            background: "linear-gradient(120deg, #FF9126, #2BB4EB, #7455FF, #F7A567)",
-            filter: "blur(60px)",
-          }}
-        />
-        <div className="relative flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="text-[10px] uppercase tracking-[0.16em] text-black/45">
-            © {siteName} {new Date().getFullYear()}
+        <div className="relative mt-16 flex flex-wrap items-start justify-between gap-4 pb-12 lg:absolute lg:inset-x-0 lg:bottom-[48px] lg:mt-0 lg:pb-0 lg:pl-[23px] lg:pr-[30px]">
+          <p className="mt-[18px] text-[12px] uppercase leading-none tracking-[0.25em] text-black">
+            ©{siteName} {new Date().getFullYear()}
           </p>
-          <div className="flex gap-3">
-            <a
-              href={emailLink ?? "mailto:hello@hyperlychee.com"}
-              className="rounded-full border border-black/15 px-4 py-1.5 text-[10px] uppercase tracking-wider text-black/70"
-            >
-              Email
-            </a>
-            <a
-              href={linkedInLink}
-              className="rounded-full border border-black/15 px-4 py-1.5 text-[10px] uppercase tracking-wider text-black/70"
-            >
-              LinkedIn
-            </a>
+          <div className="flex gap-2">
+            <FooterButton href={emailLink}>Email</FooterButton>
+            <FooterButton href={linkedInLink}>LinkedIn</FooterButton>
           </div>
         </div>
       </div>
