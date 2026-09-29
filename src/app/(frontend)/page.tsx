@@ -3,7 +3,6 @@ import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { HomeHero, OurClients, WhatWeDo } from "@/components/marketing/home/hero-and-services";
 import { OurImpact } from "@/components/marketing/home/our-impact";
 import {
-  HomeCta,
   HowWeWork,
   InsideTheLab,
   WhoWeAre,
@@ -43,7 +42,6 @@ export default async function HomePage() {
         <HowWeWork />
         <WhoWeAre />
         <InsideTheLab />
-        <HomeCta />
       </div>
     </MarketingShell>
   );

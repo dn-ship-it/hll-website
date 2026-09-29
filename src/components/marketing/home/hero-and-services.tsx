@@ -23,12 +23,12 @@ const HOME_SERVICES: {
   icon: LucideIcon;
   variant: ServiceVariant;
 }[] = [
-  { label: "KINETIC", name: "HLL Kinetic", description: "We build applications that are a delight to use.", icon: PanelsTopLeft, variant: "hll-application" },
-  { label: "MOMENTUM", name: "HLL Momentum", description: "The talent gap closed for you in under a week.", icon: UsersRound, variant: "hll-people" },
-  { label: "MOTION", name: "HLL Motion", description: "Applied AI built to move from experimentation into real work.", icon: Asterisk, variant: "hll-ai" },
+  { label: "APPLICATION", name: "HLL Application", description: "We build applications that are a delight to use.", icon: PanelsTopLeft, variant: "hll-application" },
+  { label: "PEOPLE & POLICY", name: "HLL People & Policy", description: "The talent gap closed for you in under a week.", icon: UsersRound, variant: "hll-people" },
+  { label: "AI", name: "HLL AI", description: "Applied AI built to move from experimentation into real work.", icon: Asterisk, variant: "hll-ai" },
   { label: "FOUNDATION", name: "HLL Foundation", description: "Data your business can finally trust.", icon: Database, variant: "hll-foundation" },
   { label: "ONTOLOGY", name: "HLL Ontology", description: "A connected view of the knowledge and relationships in your business.", icon: Network, variant: "hll-ontology" },
-  { label: "GOVERNANCE & TRUST", name: "HLL Governance & Trust", description: "Could you show a regulator where that number came from?", icon: ShieldCheck, variant: "hll-trust" },
+  { label: "TRUST & GOVERNANCE", name: "HLL Trust & Governance", description: "Could you show a regulator where that number came from?", icon: ShieldCheck, variant: "hll-trust" },
 ];
 
 export function HomeHero({

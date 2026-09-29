@@ -198,10 +198,10 @@ export const hllFoundation: ServicePageData = {
     role: "Group Director, IT & Analytics",
   },
   relatedServices: [
-    { label: "HLL Momentum", href: "/services/hll-people" },
-    { label: "HLL Kinetic", href: "/services/hll-application" },
-    { label: "HLL Governance & Trust", href: "/services/hll-trust" },
-    { label: "HLL Motion", href: "/services/hll-ai" },
+    { label: "HLL People & Policy", href: "/services/hll-people" },
+    { label: "HLL Application", href: "/services/hll-application" },
+    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
+    { label: "HLL AI", href: "/services/hll-ai" },
     { label: "HLL Ontology", href: "/services/hll-ontology" },
   ],
   cta: {

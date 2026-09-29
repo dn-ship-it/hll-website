@@ -84,7 +84,7 @@ function ProjectCard({ project }: { project: Project }) {
 
 export default function EngagementPage() {
   return (
-    <MarketingShell showFooter={false}>
+    <MarketingShell>
       <section className="engagement-page" aria-labelledby="engagement-title">
         <header className="engagement-page__heading">
           <h1 id="engagement-title" className="hll-display">

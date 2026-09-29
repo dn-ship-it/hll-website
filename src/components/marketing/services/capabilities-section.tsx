@@ -1,5 +1,14 @@
+import type { ServiceVariant } from "@/components/hll/variants";
 import type { ServicePageData } from "@/data/services/types";
-import { SectionEyebrow, SectionTitle } from "@/components/marketing/home/primitives";
+
+import { CapabilityNav } from "./capability-nav";
+import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
+import { getServiceTheme } from "./service-theme";
+
+// Figma service template columns at 1512px: nav list 436 | index 45 |
+// title 500 | body 366 | empty 105. Expressed as fractions so the proportions
+// hold at other desktop widths.
+const ROW_GRID = "lg:grid-cols-[45fr_500fr_366fr_105fr]";
 
 function ToolPill({ label }: { label: string }) {
   return (
@@ -11,79 +20,56 @@ function ToolPill({ label }: { label: string }) {
 
 export function CapabilitiesSection({
   data,
+  breadcrumb,
+  variant,
 }: {
   data: ServicePageData["capabilities"];
+  breadcrumb: readonly string[];
+  variant: ServiceVariant;
 }) {
+  const { accent } = getServiceTheme(variant);
+
   return (
     <section
       id="capabilities"
-      className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]"
+      className={`pt-[clamp(5.375rem,10.32vw,9.75rem)] pb-[clamp(3rem,5.75vw,5.4375rem)] ${SERVICE_GUTTER}`}
     >
-      <div className="mx-auto grid max-w-[90rem] gap-[clamp(2rem,5vw,4rem)] lg:grid-cols-[minmax(0,14rem)_1fr]">
+      <ServiceSectionHeading breadcrumb={breadcrumb} title={data.title} variant={variant} />
+
+      <div className="mt-[clamp(2.5rem,4.76vw,4.5rem)] grid gap-[clamp(2rem,5vw,4rem)] lg:grid-cols-[436fr_1016fr] lg:gap-0">
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <SectionEyebrow>{data.eyebrow}</SectionEyebrow>
-          <SectionTitle>{data.title}</SectionTitle>
-          <ul className="mt-8 hidden space-y-3 lg:block">
-            {data.items.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-black/40 hover:text-black"
-                >
-                  <span className="size-1.5 rounded-full bg-transparent group-hover:bg-[#EB3B3E]" />
-                  {item.title}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <CapabilityNav items={data.items} accent={accent} />
         </div>
 
-        <div className="space-y-0">
+        <div>
           {data.items.map((item) => (
-            <article key={item.id} id={item.id} className="grid scroll-mt-28 grid-cols-1 gap-x-8 border-t border-black/10 py-6 sm:grid-cols-[minmax(8rem,0.8fr)_minmax(0,1.2fr)] sm:py-8">
-              <div className="flex items-baseline gap-4">
-                <span className="shrink-0 text-[10px] uppercase tracking-[0.2em] text-black/35">
-                  {item.index}
-                </span>
-                <h3
-                  className="font-normal text-black"
-                  style={{ fontSize: "clamp(1.25rem, 2vw, 1.75rem)" }}
-                >
-                  {item.title}
-                </h3>
-              </div>
-              <div>
-                <p className="mt-4 text-sm leading-6 text-black/55 sm:mt-0">{item.description}</p>
+            <article
+              key={item.id}
+              id={item.id}
+              className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,4.43vw,4.1875rem)] ${ROW_GRID}`}
+            >
+              <CapabilityRule index={item.index} accent={accent} />
+              <h3 className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2 lg:pr-8">
+                {item.title}
+              </h3>
+              <div className="mt-4 lg:col-start-3 lg:mt-[clamp(0.8125rem,1.59vw,1.5rem)]">
+                <p className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                  {item.description}
+                </p>
                 <SubServices items={item.subServices} />
               </div>
             </article>
           ))}
 
           {data.tools ? (
-            <article className="scroll-mt-28 border-t border-black/6 pt-[clamp(2rem,4vw,3rem)]">
-              <h3
-                className="font-normal text-black"
-                style={{ fontSize: "clamp(1.25rem, 2vw, 1.75rem)" }}
-              >
+            <article className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,4.43vw,4.1875rem)] ${ROW_GRID}`}>
+              <CapabilityRule accent={accent} />
+              <h3 className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2">
                 Tools and Technologies
               </h3>
-              <div className="mt-6 space-y-6">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Cloud</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {data.tools.cloud.map((t) => (
-                      <ToolPill key={t} label={t} />
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">Data</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {data.tools.data.map((t) => (
-                      <ToolPill key={t} label={t} />
-                    ))}
-                  </div>
-                </div>
+              <div className="mt-6 space-y-6 lg:col-start-3 lg:mt-[clamp(0.8125rem,1.59vw,1.5rem)]">
+                <ToolGroup label="Cloud" tools={data.tools.cloud} />
+                <ToolGroup label="Data" tools={data.tools.data} />
               </div>
             </article>
           ) : null}
@@ -93,8 +79,39 @@ export function CapabilitiesSection({
   );
 }
 
-/** Foundation's sub-services carry a body, so they render as a list; the other
-    verticals are name-only and stay as pills. */
+/** "01/04" in the service colour, then a Mid Grey hairline to the body's right edge. */
+function CapabilityRule({ index, accent }: { index?: string; accent: string }) {
+  return (
+    <div className="flex h-6 items-center gap-3 lg:col-span-3 lg:grid lg:grid-cols-subgrid lg:items-center lg:gap-0">
+      <span
+        className="shrink-0 text-[12px] leading-[1.2]"
+        style={{ color: accent, fontFamily: "var(--hll-font-functional)" }}
+        data-service-label
+      >
+        {index}
+      </span>
+      <span aria-hidden className="h-px flex-1 bg-[var(--hll-mid-grey)] lg:col-span-2" />
+    </div>
+  );
+}
+
+function ToolGroup({ label, tools }: { label: string; tools: readonly string[] }) {
+  return (
+    <div>
+      <p className="text-[12px] uppercase text-[var(--hll-mid-grey)]" data-service-label>
+        {label}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {tools.map((t) => (
+          <ToolPill key={t} label={t} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Foundation's sub-services carry a body, so they render as a two-column list;
+    the other verticals are name-only and render as Figma's bulleted list. */
 function SubServices({ items }: { items?: ServicePageData["capabilities"]["items"][number]["subServices"] }) {
   if (!items || items.length === 0) return null;
 
@@ -102,11 +119,14 @@ function SubServices({ items }: { items?: ServicePageData["capabilities"]["items
 
   if (!hasDescriptions) {
     return (
-      <div className="mt-5 flex flex-wrap gap-2">
+      <ul className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[14px] leading-[28px] text-[var(--hll-mid-grey)]">
         {items.map((sub) => (
-          <ToolPill key={sub.name} label={sub.name} />
+          <li key={sub.name} className="flex gap-[9px]">
+            <span aria-hidden>•</span>
+            {sub.name}
+          </li>
         ))}
-      </div>
+      </ul>
     );
   }
 

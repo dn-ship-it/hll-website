@@ -3,8 +3,8 @@ import type { ServicePageData } from "./types";
 export const hllGovernanceTrust: ServicePageData = {
   slug: "hll-trust",
   variant: "hll-trust",
-  brand: "HLL Governance & Trust",
-  breadcrumb: ["Services", "HLL Governance & Trust"],
+  brand: "HLL Trust & Governance",
+  breadcrumb: ["Services", "HLL Trust & Governance"],
   hero: {
     headline: "Could you show a regulator where that number came from?",
     support:
@@ -124,16 +124,27 @@ export const hllGovernanceTrust: ServicePageData = {
         description:
           "Model risk, credit analytics, and regulatory reporting carry governance requirements most data platforms weren't built for. Our data science bench has delivered inside those exact constraints, for banking and insurance clients, on live regulatory workloads.",
         variant: "image",
+        image: "/assets/engagement/banking.webp",
       },
     ],
   },
-  expertVoice: null,
+  // PLACEHOLDER — copied from the Figma HLL TG frame so the section renders;
+  // the copy spec has no Trust & Governance quote yet. Replace via the CMS.
+  expertVoice: {
+    quote:
+      "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",
+    name: "John Doe",
+    role: "CEO",
+    company: "McKinsey",
+    portrait: "/assets/engagement/expert-portrait.webp",
+    companyLogo: "/assets/engagement/logo-mckinsey.png",
+  },
   relatedServices: [
     { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL Momentum", href: "/services/hll-people" },
-    { label: "HLL Motion", href: "/services/hll-ai" },
+    { label: "HLL People & Policy", href: "/services/hll-people" },
+    { label: "HLL AI", href: "/services/hll-ai" },
     { label: "HLL Ontology", href: "/services/hll-ontology" },
-    { label: "HLL Kinetic", href: "/services/hll-application" },
+    { label: "HLL Application", href: "/services/hll-application" },
   ],
   cta: {
     headline: "Talk to us about your data governance gap.",

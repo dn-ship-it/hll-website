@@ -197,12 +197,12 @@ export async function seedMarketingContent(payload: Payload) {
             join: teamPageContent.join,
           },
           footerServices: [
-            { label: "HLL Kinetic" },
-            { label: "HLL Momentum" },
-            { label: "HLL Motion" },
+            { label: "HLL Application" },
+            { label: "HLL People & Policy" },
+            { label: "HLL AI" },
             { label: "HLL Foundation" },
             { label: "HLL Ontology" },
-            { label: "HLL Governance & Trust" },
+            { label: "HLL Trust & Governance" },
           ],
           footerIndustries: [
             { label: "Financial Services" },

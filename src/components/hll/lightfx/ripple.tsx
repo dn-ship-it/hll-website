@@ -149,6 +149,15 @@ export type RippleProps = {
   style?: CSSProperties;
 };
 
+function supportsWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 export function Ripple({
   variant = "hll-application",
   origin = "center",
@@ -187,6 +196,11 @@ export function Ripple({
       if (onScreen && !document.hidden) instance.loop();
       else instance.noLoop();
     };
+
+    // p5 throws from setup() when the browser has WebGL disabled (blocklisted
+    // GPU, hardware acceleration off), which surfaces as an unhandled
+    // rejection. The ripple is decoration over a CSS fallback, so skip it.
+    if (!supportsWebGL()) return undefined;
 
     import("p5").then(({ default: p5 }) => {
       const host = hostRef.current;

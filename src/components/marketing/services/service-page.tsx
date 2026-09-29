@@ -1,4 +1,3 @@
-import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import type { ServicePageData } from "@/data/services/types";
 import {
@@ -13,8 +12,9 @@ import { CapabilitiesSection } from "./capabilities-section";
 import { ExpertVoiceSection, RelatedServicesSection } from "./expert-and-related";
 import { EngagementSection } from "./engagement-section";
 import { OutcomeSection } from "./outcome-section";
-import { ServiceBrandHeader, ServiceBreadcrumb } from "./service-chrome";
+import { SERVICE_GUTTER, ServiceBrandHeader } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
+import { getServiceTheme } from "./service-theme";
 import { ServiceReveal } from "./service-reveal";
 
 async function loadServicePage(fallback: ServicePageData) {
@@ -34,38 +34,25 @@ async function loadServicePage(fallback: ServicePageData) {
 
 export async function ServicePage({ content }: { content: ServicePageData }) {
   const { data, demo } = await loadServicePage(content);
-  const isFoundation = data.slug === "hll-foundation";
 
   return (
-    <MarketingShell>
-      <div className={`hll-service-page ${isFoundation ? "hll-service-page--foundation" : ""}`}>
-        {isFoundation ? (
-          <div className="px-5 pt-3">
-            <div className="mx-auto max-w-[90rem]">
-              <ServiceBrandHeader brand={data.brand} foundation />
-            </div>
-          </div>
-        ) : (
-          <div className="px-[clamp(1.25rem,4vw,3rem)] pt-6">
-            <div className="mx-auto max-w-[90rem] space-y-4">
-              <ServiceBreadcrumb items={data.breadcrumb} />
-              <ServiceBrandHeader brand={data.brand} />
-            </div>
-          </div>
-        )}
+    <MarketingShell markSrc={getServiceTheme(data.variant).markSrc}>
+      <div className="hll-service-page">
+        <div className={`pt-[18px] ${SERVICE_GUTTER}`}>
+          <ServiceBrandHeader brand={data.brand} variant={data.variant} />
+        </div>
 
         <ServiceReveal>
           <ServiceHero data={data.hero} demo={demo} variant={data.variant} />
-          <CapabilitiesSection data={data.capabilities} />
-          <OutcomeSection data={data.outcomes} variant={data.variant} />
-          <EngagementSection data={data.engagement} />
-          <ExpertVoiceSection data={data.expertVoice} />
-          <RelatedServicesSection items={data.relatedServices} />
-          <HomeCta
-            headline={data.cta.headline}
-            buttonLabel={data.cta.buttonLabel}
-            href={data.cta.href}
+          <CapabilitiesSection
+            data={data.capabilities}
+            breadcrumb={data.breadcrumb}
+            variant={data.variant}
           />
+          <OutcomeSection data={data.outcomes} breadcrumb={data.breadcrumb} variant={data.variant} />
+          <EngagementSection data={data.engagement} breadcrumb={data.breadcrumb} variant={data.variant} />
+          <ExpertVoiceSection data={data.expertVoice} breadcrumb={data.breadcrumb} variant={data.variant} />
+          <RelatedServicesSection items={data.relatedServices} />
         </ServiceReveal>
       </div>
     </MarketingShell>

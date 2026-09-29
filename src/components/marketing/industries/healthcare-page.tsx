@@ -1,5 +1,4 @@
 import { healthcareIndustry } from "@/data/industries/healthcare";
-import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { mapIndustryPage } from "@/lib/payload/marketing-mappers";
 import { getIndustryBySlug } from "@/lib/payload/queries";
@@ -44,7 +43,6 @@ export async function HealthcareIndustryPage() {
       <NamedExpertsSection data={data.experts} />
       <IndustryLabSection data={data.lab} />
       <RelatedIndustriesSection items={data.relatedIndustries} />
-      <HomeCta />
     </MarketingShell>
   );
 }

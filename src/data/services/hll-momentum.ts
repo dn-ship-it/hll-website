@@ -3,8 +3,8 @@ import type { ServicePageData } from "./types";
 export const hllMomentum: ServicePageData = {
   slug: "hll-people",
   variant: "hll-people",
-  brand: "HLL Momentum",
-  breadcrumb: ["Services", "HLL Momentum"],
+  brand: "HLL People & Policy",
+  breadcrumb: ["Services", "HLL People & Policy"],
   hero: {
     headline: "The talent gap closed for you in under a week",
     support:
@@ -130,15 +130,17 @@ export const hllMomentum: ServicePageData = {
         description:
           "Banking, insurance, and enterprise technology hiring carries its own constraints: compliance screening, clearance timelines, and a technical bar built for regulated environments specifically.",
         variant: "image",
+        // The service frames' Industry card image (Figma "Banking").
+        image: "/assets/engagement/banking.webp",
       },
     ],
   },
   expertVoice: null,
   relatedServices: [
     { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL Kinetic", href: "/services/hll-application" },
-    { label: "HLL Governance & Trust", href: "/services/hll-trust" },
-    { label: "HLL Motion", href: "/services/hll-ai" },
+    { label: "HLL Application", href: "/services/hll-application" },
+    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
+    { label: "HLL AI", href: "/services/hll-ai" },
     { label: "HLL Ontology", href: "/services/hll-ontology" },
   ],
   cta: {

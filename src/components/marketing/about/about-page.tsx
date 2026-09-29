@@ -1,5 +1,4 @@
 import { aboutPage } from "@/data/about";
-import { HomeCta } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { mapAboutPage } from "@/lib/payload/marketing-mappers";
 import { getMarketingContent } from "@/lib/payload/queries";
@@ -40,7 +39,6 @@ export async function AboutPage() {
       <AboutClientsSection data={data.clients} accentColor={data.accentColor} />
       <AboutPromiseSection data={data.promise} />
       <AboutLabSection data={data.lab} />
-      <HomeCta />
     </MarketingShell>
   );
 }

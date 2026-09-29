@@ -18,7 +18,7 @@ const IMPACT_TILES: ImpactTile[] = [
   {
     id: "bajaj",
     title: "Bajaj",
-    tags: ["HLL MOMENTUM"],
+    tags: ["HLL PEOPLE & POLICY"],
     gridColumn: "span 1",
     gridRow: "span 2",
     minHeight: "clamp(14rem, 28vw, 20rem)",
@@ -26,7 +26,7 @@ const IMPACT_TILES: ImpactTile[] = [
   {
     id: "ktm",
     title: "KTM",
-    tags: ["HLL GOVERNANCE"],
+    tags: ["HLL TRUST & GOVERNANCE"],
     gridColumn: "span 1",
     gridRow: "span 1",
     minHeight: "clamp(8rem, 16vw, 11rem)",
@@ -34,7 +34,7 @@ const IMPACT_TILES: ImpactTile[] = [
   {
     id: "wecare",
     title: "WeCare",
-    tags: ["HLL MOTION", "HLL GOVERNANCE"],
+    tags: ["HLL AI", "HLL TRUST & GOVERNANCE"],
     gridColumn: "span 1",
     gridRow: "span 2",
     minHeight: "clamp(16rem, 32vw, 24rem)",
@@ -53,7 +53,7 @@ const IMPACT_TILES: ImpactTile[] = [
   {
     id: "big-red",
     title: "The Big Red Group",
-    tags: ["HLL MOMENTUM", "HLL MOTION", "HLL GOVERNANCE"],
+    tags: ["HLL PEOPLE & POLICY", "HLL AI", "HLL TRUST & GOVERNANCE"],
     gridColumn: "span 1",
     gridRow: "span 2",
     minHeight: "clamp(14rem, 28vw, 20rem)",
@@ -61,7 +61,7 @@ const IMPACT_TILES: ImpactTile[] = [
   {
     id: "salt",
     title: "Salt",
-    tags: ["HLL MOTION"],
+    tags: ["HLL AI"],
     gridColumn: "span 1",
     gridRow: "span 1",
     minHeight: "clamp(8rem, 16vw, 11rem)",
@@ -69,7 +69,7 @@ const IMPACT_TILES: ImpactTile[] = [
   {
     id: "zelish",
     title: "Zelish",
-    tags: ["HLL MOTION", "HLL GOVERNANCE"],
+    tags: ["HLL AI", "HLL TRUST & GOVERNANCE"],
     gridColumn: "span 2",
     gridRow: "span 1",
     minHeight: "clamp(10rem, 18vw, 14rem)",

@@ -22,18 +22,18 @@ export const healthcareIndustry: IndustryPageData = {
     eyebrow: "Industry: Banking",
     title: "Capabilities",
     sidebar: [
-      "HLL Kinetic",
-      "HLL Momentum",
-      "HLL Governance & Trust",
+      "HLL Application",
+      "HLL People & Policy",
+      "HLL Trust & Governance",
       "HLL Foundation",
-      "HLL Motion",
+      "HLL AI",
       "HLL Ontology",
     ],
     items: [
       {
         id: "hll-kinetic",
         index: "01/06",
-        title: "HLL Kinetic",
+        title: "HLL Application",
         description:
           "Senior talent deployed across the stack with governed delivery models built for regulated healthcare environments.",
         cards: [
@@ -59,7 +59,7 @@ export const healthcareIndustry: IndustryPageData = {
       {
         id: "hll-momentum",
         index: "02/06",
-        title: "HLL Momentum",
+        title: "HLL People & Policy",
         description:
           "Momentum is the money-maker — product-grade experiences that connect patient, provider, and payer data.",
         cards: [

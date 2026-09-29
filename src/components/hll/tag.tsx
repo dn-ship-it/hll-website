@@ -26,6 +26,6 @@ export function Tag({ children, variant, className }: TagProps) {
 }
 
 export function HLLServiceTag({ label }: { label: string }) {
-  const warm = label.includes("MOMENTUM") || label.includes("MOTION");
+  const warm = label.includes("PEOPLE") || label.includes("HLL AI");
   return <Tag variant={warm ? "warm" : "cool"}>{label}</Tag>;
 }

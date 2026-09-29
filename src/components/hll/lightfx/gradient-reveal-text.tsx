@@ -69,6 +69,8 @@ export type GradientRevealTextProps = {
   replayKey?: unknown;
   fontSize?: string;
   letterSpacing?: string;
+  /** Defaults to the demo's 1.2; Figma's type styles use 1.16. */
+  lineHeight?: string;
   ink?: string;
   duration?: number;
   glow?: boolean;
@@ -90,6 +92,7 @@ export function GradientRevealText({
   replayKey,
   fontSize = "clamp(2rem, 5vw, 3.5rem)",
   letterSpacing = "0.010em",
+  lineHeight = "1.2",
   ink = "#1a1a1a",
   duration,
   glow = true,
@@ -174,7 +177,7 @@ export function GradientRevealText({
           font-weight: 300;
           font-size: ${fontSize};
           letter-spacing: ${letterSpacing};
-          line-height: 1.2;
+          line-height: ${lineHeight};
           color: transparent;
           opacity: 0;
         }
