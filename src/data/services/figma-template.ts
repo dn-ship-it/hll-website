@@ -10,9 +10,11 @@ import type { ServicePageData } from "./types";
  */
 const BODY =
   "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker, it takes center stage.";
-const SHORT = "Senior talent deployed across the stack with a knowledge graph window showing what customers.";
+const SHORT =
+  "Senior talent deployed across the stack with a knowledge graph window showing what customers.";
 const LONG = `${BODY} Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.`;
-const CARD = "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.";
+const CARD =
+  "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.";
 
 const SUB_SERVICES = [1, 2, 3, 4].map((n) => ({ name: `Sub-Service ${n}` }));
 
@@ -20,7 +22,10 @@ const CAPABILITIES = [
   { id: "data-engineering", title: "Data Engineering" },
   { id: "data-analytics", title: "Data Analytics" },
   { id: "data-audit", title: "Data Audit" },
-  { id: "data-infrastructure-assessment", title: "Data Infrastructure Assessment" },
+  {
+    id: "data-infrastructure-assessment",
+    title: "Data Infrastructure Assessment",
+  },
 ];
 
 export function figmaTemplateService({
@@ -67,7 +72,8 @@ export function figmaTemplateService({
     },
     engagement: {
       title: "Engagement",
-      intro: "Senior talent deployed across the stack with a knowledge graph window showing what customers see.",
+      intro:
+        "Senior talent deployed across the stack with a knowledge graph window showing what customers see.",
       cards: [
         {
           id: "mckinsey",

@@ -1,4 +1,11 @@
-import type { Career, Industry, Page, Service, SiteSetting, TeamMember } from "@/payload-types";
+import type {
+  Career,
+  Industry,
+  Page,
+  Service,
+  SiteSetting,
+  TeamMember,
+} from "@/payload-types";
 import type { MarketingContent } from "@/payload-types";
 
 import { getPayloadClient } from "./client";
@@ -66,7 +73,9 @@ export async function getMarketingContent(): Promise<MarketingContent | null> {
   }
 }
 
-export async function getIndustryBySlug(slug: string): Promise<Industry | null> {
+export async function getIndustryBySlug(
+  slug: string,
+): Promise<Industry | null> {
   const payload = await getPayloadClient();
   const result = await payload.find({
     collection: "industries",
@@ -90,5 +99,18 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
     depth: 2,
   });
 
+  return result.docs;
+}
+
+/** Latest published Posts, for the nav menus' "In the News". */
+export async function getLatestPosts(limit = 3) {
+  const payload = await getPayloadClient();
+  const result = await payload.find({
+    collection: "posts",
+    where: { _status: { equals: "published" } },
+    sort: "-publishedAt",
+    limit,
+    depth: 1,
+  });
   return result.docs;
 }

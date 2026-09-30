@@ -9,7 +9,10 @@ import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
 import { getServiceBySlug } from "@/lib/payload/queries";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 import { CapabilitiesSection } from "./capabilities-section";
-import { ExpertVoiceSection, RelatedServicesSection } from "./expert-and-related";
+import {
+  ExpertVoiceSection,
+  RelatedServicesSection,
+} from "./expert-and-related";
 import { EngagementSection } from "./engagement-section";
 import { OutcomeSection } from "./outcome-section";
 import { SERVICE_GUTTER, ServiceBrandHeader } from "./service-chrome";
@@ -36,7 +39,7 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
   const { data, demo } = await loadServicePage(content);
 
   return (
-    <MarketingShell markSrc={getServiceTheme(data.variant).markSrc}>
+    <MarketingShell markTint={getServiceTheme(data.variant).accent}>
       <div className="hll-service-page">
         <div className={`pt-[18px] ${SERVICE_GUTTER}`}>
           <ServiceBrandHeader brand={data.brand} variant={data.variant} />
@@ -49,9 +52,21 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
             breadcrumb={data.breadcrumb}
             variant={data.variant}
           />
-          <OutcomeSection data={data.outcomes} breadcrumb={data.breadcrumb} variant={data.variant} />
-          <EngagementSection data={data.engagement} breadcrumb={data.breadcrumb} variant={data.variant} />
-          <ExpertVoiceSection data={data.expertVoice} breadcrumb={data.breadcrumb} variant={data.variant} />
+          <OutcomeSection
+            data={data.outcomes}
+            breadcrumb={data.breadcrumb}
+            variant={data.variant}
+          />
+          <EngagementSection
+            data={data.engagement}
+            breadcrumb={data.breadcrumb}
+            variant={data.variant}
+          />
+          <ExpertVoiceSection
+            data={data.expertVoice}
+            breadcrumb={data.breadcrumb}
+            variant={data.variant}
+          />
           <RelatedServicesSection items={data.relatedServices} />
         </ServiceReveal>
       </div>

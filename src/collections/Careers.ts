@@ -49,6 +49,20 @@ export const Careers: CollectionConfig = {
       },
     },
     publishStatusField,
+    // Tags shown on the Open Roles list and the JD page.
+    { name: "service", type: "text", admin: { description: "e.g. HLL Ontology" } },
+    { name: "employmentType", type: "text", admin: { description: "e.g. Full time, Contract" } },
+    { name: "location", type: "text", admin: { description: "e.g. Pune, Remote" } },
+    { name: "seniority", type: "text", admin: { description: "e.g. Senior" } },
+    {
+      name: "sections",
+      type: "array",
+      admin: { description: "JD accordion: The role, Responsibilities, Who you are, Process." },
+      fields: [
+        { name: "title", type: "text", required: true },
+        { name: "body", type: "textarea", required: true },
+      ],
+    },
     {
       name: "documents",
       type: "array",

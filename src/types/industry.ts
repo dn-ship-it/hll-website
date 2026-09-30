@@ -10,6 +10,8 @@ export type IndustryCapabilityCard = {
   description: string;
   variant: "navy" | "orange" | "image";
   client?: string;
+  image?: string;
+  logo?: string;
 };
 
 export type IndustryCapability = {
@@ -23,7 +25,9 @@ export type IndustryCapability = {
 export type IndustryExpert = {
   id: string;
   name: string;
+  /** Role, experience and history, one per line in the Functional style. */
   bio: string;
+  photo?: string;
 };
 
 export type IndustryPageData = {
@@ -36,6 +40,7 @@ export type IndustryPageData = {
     headline: string;
     filters: IndustryFilter[];
     overlayLabel: string;
+    image?: string;
   };
   capabilities: {
     eyebrow: string;

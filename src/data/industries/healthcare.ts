@@ -4,7 +4,7 @@ export const healthcareIndustry: IndustryPageData = {
   slug: "healthcare",
   category: "Health & Life Sciences",
   breadcrumb: ["Industries", "Health & Life Sciences"],
-  accentColor: "#0D9488",
+  accentColor: "#09C1B6",
   hero: {
     title: "Healthcare",
     headline: "Audit answers in hours, not weeks",
@@ -17,9 +17,10 @@ export const healthcareIndustry: IndustryPageData = {
       { id: "wealth", label: "Wealth" },
     ],
     overlayLabel: "Healthcare",
+    image: "/assets/industries/healthcare-hero.webp",
   },
   capabilities: {
-    eyebrow: "Industry: Banking",
+    eyebrow: "Industry  Healthcare",
     title: "Capabilities",
     sidebar: [
       "HLL Application",
@@ -45,6 +46,7 @@ export const healthcareIndustry: IndustryPageData = {
             description:
               "Enterprise analytics modernization for a global consulting healthcare practice.",
             variant: "navy",
+            logo: "/assets/engagement/logo-mckinsey.png",
           },
           {
             id: "llm",
@@ -53,6 +55,7 @@ export const healthcareIndustry: IndustryPageData = {
             description:
               "Knowledge graph window showing what clinical and operations teams see in production.",
             variant: "image",
+            image: "/assets/engagement/banking.webp",
           },
         ],
       },
@@ -71,6 +74,7 @@ export const healthcareIndustry: IndustryPageData = {
             description:
               "Unified engagement layer supporting multi-market digital health programs.",
             variant: "orange",
+            logo: "/assets/engagement/logo-ktm.png",
           },
           {
             id: "mobile",
@@ -79,13 +83,14 @@ export const healthcareIndustry: IndustryPageData = {
             description:
               "Mobile-first care coordination prototypes validated with clinical stakeholders.",
             variant: "image",
+            image: "/assets/industries/insight-2.webp",
           },
         ],
       },
     ],
   },
   clientVoice: {
-    eyebrow: "Industry: Healthcare",
+    eyebrow: "Industry  Healthcare",
     quote:
       "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",
     name: "John Doe",
@@ -100,22 +105,26 @@ export const healthcareIndustry: IndustryPageData = {
       {
         id: "1",
         name: "Hannan Hakim",
-        bio: "Chief Operating Officer · 15+ yrs of experience · Previously at McKinsey, SNL",
+        bio: "Chief Operating Officer\n15+ yrs of experience\nPreviously at McKinsey, SNL",
+        photo: "/assets/industries/expert-1.webp",
       },
       {
         id: "2",
         name: "Hannan Hakim",
-        bio: "Chief Operating Officer · 15+ yrs of experience · Previously at McKinsey, SNL",
+        bio: "Chief Operating Officer\n15+ yrs of experience\nPreviously at McKinsey, SNL",
+        photo: "/assets/industries/expert-2.webp",
       },
       {
         id: "3",
         name: "Hannan Hakim",
-        bio: "Chief Operating Officer · 15+ yrs of experience · Previously at McKinsey, SNL",
+        bio: "Chief Operating Officer\n15+ yrs of experience\nPreviously at McKinsey, SNL",
+        photo: "/assets/industries/expert-3.webp",
       },
       {
         id: "4",
         name: "Hannan Hakim",
-        bio: "Chief Operating Officer · 15+ yrs of experience · Previously at McKinsey, SNL",
+        bio: "Chief Operating Officer\n15+ yrs of experience\nPreviously at McKinsey, SNL",
+        photo: "/assets/industries/expert-1.webp",
       },
     ],
   },

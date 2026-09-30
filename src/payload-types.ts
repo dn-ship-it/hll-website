@@ -76,6 +76,8 @@ export interface Config {
     posts: Post;
     careers: Career;
     'team-members': TeamMember;
+    engagements: Engagement;
+    enquiries: Enquiry;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,6 +94,8 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     careers: CareersSelect<false> | CareersSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
+    engagements: EngagementsSelect<false> | EngagementsSelect<true>;
+    enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -456,12 +460,14 @@ export interface Service {
         cloud?:
           | {
               label: string;
+              icon?: (number | null) | Media;
               id?: string | null;
             }[]
           | null;
         data?:
           | {
               label: string;
+              icon?: (number | null) | Media;
               id?: string | null;
             }[]
           | null;
@@ -865,6 +871,32 @@ export interface Career {
    */
   externalApplyUrl?: string | null;
   status?: ('draft' | 'published') | null;
+  /**
+   * e.g. HLL Ontology
+   */
+  service?: string | null;
+  /**
+   * e.g. Full time, Contract
+   */
+  employmentType?: string | null;
+  /**
+   * e.g. Pune, Remote
+   */
+  location?: string | null;
+  /**
+   * e.g. Senior
+   */
+  seniority?: string | null;
+  /**
+   * JD accordion: The role, Responsibilities, Who you are, Process.
+   */
+  sections?:
+    | {
+        title: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
   documents?:
     | {
         label: string;
@@ -889,6 +921,218 @@ export interface TeamMember {
   featured?: boolean | null;
   sortOrder?: number | null;
   photo?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "engagements".
+ */
+export interface Engagement {
+  id: number;
+  client: string;
+  slug: string;
+  status?: ('draft' | 'published') | null;
+  year: number;
+  engagementType: 'insight' | 'client-work' | 'case-study';
+  template: 'case-study' | 'story';
+  services?: ('hll-ai' | 'hll-trust' | 'hll-foundation' | 'hll-ontology' | 'hll-people' | 'hll-application')[] | null;
+  industry?:
+    | (
+        | 'Banking'
+        | 'Insurance'
+        | 'Other Financial Services'
+        | 'Retail Commerce & Brands'
+        | 'Travel & Hospitality'
+        | 'Pet Tech'
+        | 'Healthcare'
+        | 'Pharmaceuticals'
+        | 'Manufacturing'
+        | 'Real Estate'
+        | 'Logistics'
+        | 'Public Sector – External Affairs'
+        | 'Public Sector – Tax & Commerce'
+        | 'International Organization'
+        | 'Consulting Firms'
+      )
+    | null;
+  /**
+   * e.g. 2024-2026
+   */
+  period?: string | null;
+  location?: string | null;
+  /**
+   * Client colour, e.g. #FE5844. Colours the sidebar, subheadings and the Story page.
+   */
+  primaryColor?: string | null;
+  /**
+   * Card image on /engagement; the card takes the image's ratio.
+   */
+  cardImage?: (number | null) | Media;
+  /**
+   * Put in focus: the card spans the full grid width.
+   */
+  featured?: boolean | null;
+  sortOrder?: number | null;
+  stat?: {
+    /**
+     * e.g. Operational Efficiency
+     */
+    label?: string | null;
+    /**
+     * e.g. 58.3
+     */
+    value?: string | null;
+    /**
+     * e.g. %
+     */
+    unit?: string | null;
+    body?: string | null;
+    chart?:
+      | {
+          /**
+           * e.g. Apr 25
+           */
+          label: string;
+          value: number;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  layout?:
+    | (
+        | {
+            image?: (number | null) | Media;
+            /**
+             * Plays in place of the image.
+             */
+            video?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementMedia';
+          }
+        | {
+            quote: string;
+            name?: string | null;
+            role?: string | null;
+            /**
+             * Optional. Without one the quote sits on the textured background in the page colour.
+             */
+            image?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementQuote';
+          }
+        | {
+            /**
+             * Images in a row share one height; widths follow each image's ratio.
+             */
+            rows?:
+              | {
+                  images: (number | Media)[];
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementMediaGrid';
+          }
+        | {
+            /**
+             * e.g. The challenge, Our approach. Leave empty for an intro.
+             */
+            label?: string | null;
+            /**
+             * Leave a blank line between paragraphs.
+             */
+            body: string;
+            /**
+             * The sidebar stat card appears when this section comes up.
+             */
+            showsArtifact?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementText';
+          }
+        | {
+            label?: string | null;
+            display?: ('text' | 'media' | 'demo') | null;
+            /**
+             * Leave a blank line between paragraphs.
+             */
+            body?: string | null;
+            image?: (number | null) | Media;
+            /**
+             * Embedded in the demo window.
+             */
+            demoUrl?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementShowcase';
+          }
+        | {
+            label?: string | null;
+            items?:
+              | {
+                  /**
+                   * e.g. 30+, 65%. Counts up from 0.
+                   */
+                  stat: string;
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementOutcome';
+          }
+        | {
+            label?: string | null;
+            rows?:
+              | {
+                  role: string;
+                  /**
+                   * One name per line.
+                   */
+                  names: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementTeam';
+          }
+        | {
+            label?: string | null;
+            items?:
+              | {
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'engagementLearnings';
+          }
+      )[]
+    | null;
+  /**
+   * Explore related engagements. Empty: engagements sharing a service.
+   */
+  related?: (number | Engagement)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enquiries".
+ */
+export interface Enquiry {
+  id: number;
+  name: string;
+  email: string;
+  message: string;
+  source?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -951,6 +1195,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'team-members';
         value: number | TeamMember;
+      } | null)
+    | ({
+        relationTo: 'engagements';
+        value: number | Engagement;
+      } | null)
+    | ({
+        relationTo: 'enquiries';
+        value: number | Enquiry;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1222,12 +1474,14 @@ export interface ServicesSelect<T extends boolean = true> {
                       | T
                       | {
                           label?: T;
+                          icon?: T;
                           id?: T;
                         };
                     data?:
                       | T
                       | {
                           label?: T;
+                          icon?: T;
                           id?: T;
                         };
                   };
@@ -1560,6 +1814,17 @@ export interface CareersSelect<T extends boolean = true> {
   expiryDate?: T;
   externalApplyUrl?: T;
   status?: T;
+  service?: T;
+  employmentType?: T;
+  location?: T;
+  seniority?: T;
+  sections?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
   documents?:
     | T
     | {
@@ -1583,6 +1848,151 @@ export interface TeamMembersSelect<T extends boolean = true> {
   featured?: T;
   sortOrder?: T;
   photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "engagements_select".
+ */
+export interface EngagementsSelect<T extends boolean = true> {
+  client?: T;
+  slug?: T;
+  status?: T;
+  year?: T;
+  engagementType?: T;
+  template?: T;
+  services?: T;
+  industry?: T;
+  period?: T;
+  location?: T;
+  primaryColor?: T;
+  cardImage?: T;
+  featured?: T;
+  sortOrder?: T;
+  stat?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        unit?: T;
+        body?: T;
+        chart?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+      };
+  layout?:
+    | T
+    | {
+        engagementMedia?:
+          | T
+          | {
+              image?: T;
+              video?: T;
+              id?: T;
+              blockName?: T;
+            };
+        engagementQuote?:
+          | T
+          | {
+              quote?: T;
+              name?: T;
+              role?: T;
+              image?: T;
+              id?: T;
+              blockName?: T;
+            };
+        engagementMediaGrid?:
+          | T
+          | {
+              rows?:
+                | T
+                | {
+                    images?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        engagementText?:
+          | T
+          | {
+              label?: T;
+              body?: T;
+              showsArtifact?: T;
+              id?: T;
+              blockName?: T;
+            };
+        engagementShowcase?:
+          | T
+          | {
+              label?: T;
+              display?: T;
+              body?: T;
+              image?: T;
+              demoUrl?: T;
+              id?: T;
+              blockName?: T;
+            };
+        engagementOutcome?:
+          | T
+          | {
+              label?: T;
+              items?:
+                | T
+                | {
+                    stat?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        engagementTeam?:
+          | T
+          | {
+              label?: T;
+              rows?:
+                | T
+                | {
+                    role?: T;
+                    names?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        engagementLearnings?:
+          | T
+          | {
+              label?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  related?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enquiries_select".
+ */
+export interface EnquiriesSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  message?: T;
+  source?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1689,6 +2099,10 @@ export interface MarketingContent {
   home?: {
     heroHeading?: string | null;
     heroImage?: (number | null) | Media;
+    /**
+     * Plays in the hero window (Figma: window with video playing).
+     */
+    heroVideo?: (number | null) | Media;
     heroCtaLabel?: string | null;
     heroCtaHref?: string | null;
     clientLogos?:
@@ -1762,6 +2176,10 @@ export interface MarketingContent {
       linkedin?: string | null;
       linkedinLabel?: string | null;
       officeImage?: (number | null) | Media;
+      /**
+       * Schedule a call link (e.g. Calendly).
+       */
+      scheduleUrl?: string | null;
     };
     locations?: {
       eyebrow?: string | null;
@@ -1771,7 +2189,16 @@ export interface MarketingContent {
             id: string;
             city: string;
             label?: string | null;
+            /**
+             * e.g. Hyper Lychee Labs
+             */
+            company?: string | null;
             address?: string | null;
+            /**
+             * e.g. EIN No:, GSTIN:
+             */
+            taxLabel?: string | null;
+            taxId?: string | null;
           }[]
         | null;
     };
@@ -1885,6 +2312,7 @@ export interface MarketingContentSelect<T extends boolean = true> {
     | {
         heroHeading?: T;
         heroImage?: T;
+        heroVideo?: T;
         heroCtaLabel?: T;
         heroCtaHref?: T;
         clientLogos?:
@@ -1976,6 +2404,7 @@ export interface MarketingContentSelect<T extends boolean = true> {
               linkedin?: T;
               linkedinLabel?: T;
               officeImage?: T;
+              scheduleUrl?: T;
             };
         locations?:
           | T
@@ -1988,7 +2417,10 @@ export interface MarketingContentSelect<T extends boolean = true> {
                     id?: T;
                     city?: T;
                     label?: T;
+                    company?: T;
                     address?: T;
+                    taxLabel?: T;
+                    taxId?: T;
                   };
             };
       };

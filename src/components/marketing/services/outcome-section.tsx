@@ -1,6 +1,7 @@
 import { Ripple, SERVICE_TO_RIPPLE } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import type { ServicePageData } from "@/data/services/types";
+import { CountUp } from "@/components/marketing/count-up";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
@@ -20,7 +21,8 @@ function Stat({ value }: { value: string }) {
 
   return (
     <p className="text-[clamp(3.5rem,6.88vw,6.5rem)] font-light leading-[1.16] text-black">
-      {main}
+      {/* Figma: "Number counter". */}
+      <CountUp value={main} />
       {unit ? (
         <span className="text-[0.55em] tracking-normal">
           {unit === "%" ? unit : ` ${unit}`}
@@ -57,7 +59,12 @@ export function OutcomeSection({
       />
 
       <div className={`relative ${SERVICE_GUTTER}`}>
-        <ServiceSectionHeading breadcrumb={breadcrumb} title={data.title} variant={variant} tone="dark" />
+        <ServiceSectionHeading
+          breadcrumb={breadcrumb}
+          title={data.title}
+          variant={variant}
+          tone="dark"
+        />
       </div>
 
       {/* Figma: cards run to 10px from the frame edge, 10px apart, and each is

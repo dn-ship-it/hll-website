@@ -6,7 +6,8 @@ export const hllOntology = figmaTemplateService({
   slug: "hll-ontology",
   variant: "hll-ontology",
   brand: "HLL Ontology",
-  headline: "A connected view of the knowledge and relationships in your business",
+  headline:
+    "A connected view of the knowledge and relationships in your business",
   relatedServices: [
     { label: "HLL Foundation", href: "/services/hll-foundation" },
     { label: "HLL Trust & Governance", href: "/services/hll-trust" },

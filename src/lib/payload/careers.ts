@@ -40,6 +40,16 @@ export function mapCareerToNotice(career: Career): CareerNotice {
         label: doc.label,
         url: resolveMediaUrl(doc.file as Media | number | null | undefined) ?? "#",
       })) ?? [],
+    service: career.service ?? undefined,
+    employmentType: career.employmentType ?? undefined,
+    location: career.location ?? undefined,
+    seniority: career.seniority ?? undefined,
+    sections: career.sections?.length
+      ? career.sections.map((section) => ({
+          title: section.title,
+          paragraphs: section.body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean),
+        }))
+      : undefined,
   };
 }
 

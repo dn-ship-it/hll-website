@@ -1,8 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { HLLButton } from "@/components/hll";
+
+import { variantForPath } from "./page-variant";
 
 /**
  * The footer's "Let's start a conversation" band. Figma note: "let's start a
@@ -24,6 +27,7 @@ export function FooterCta({
   poster: string;
   videoSrc?: string;
 }) {
+  const pathname = usePathname();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -34,8 +38,12 @@ export function FooterCta({
   const play = () => {
     setActive(true);
     const video = videoRef.current;
-    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    void video.play().then(() => setPlaying(true)).catch(() => undefined);
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return;
+    void video
+      .play()
+      .then(() => setPlaying(true))
+      .catch(() => undefined);
   };
   const pause = () => {
     setActive(false);
@@ -78,10 +86,42 @@ export function FooterCta({
         onFocusCapture={play}
         onBlurCapture={pause}
       >
-        <HLLButton href={href} variant="contact" size="md">
+        {/* The button's hover shader takes the page's palette, like the
+            footer strip below it; Home keeps Contact's. */}
+        {/* Figma: this Button sits at 50% opacity over the band. */}
+        <HLLButton
+          href={href}
+          variant={variantForPath(pathname) ?? "contact"}
+          size="md"
+          className="opacity-50 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100"
+        >
           {label}
         </HLLButton>
       </span>
     </div>
+  );
+}
+
+/**
+ * Figma footer Email / LinkedIn: the same Button component as every CTA, so
+ * the same LightFX hover, in the page's palette.
+ */
+export function FooterButton({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  return (
+    <HLLButton
+      href={href}
+      variant={variantForPath(pathname) ?? "contact"}
+      size="md"
+      style={{ height: 37 }}
+    >
+      {children}
+    </HLLButton>
   );
 }

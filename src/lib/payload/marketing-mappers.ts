@@ -1,20 +1,49 @@
-import type { Media, Service, TeamMember, Industry, MarketingContent, SiteSetting } from "@/payload-types";
+import type {
+  Media,
+  Service,
+  TeamMember,
+  Industry,
+  MarketingContent,
+  SiteSetting,
+} from "@/payload-types";
 import type { AboutPageData } from "@/data/about";
 import { aboutPage } from "@/data/about";
 import type { CareersPageContent } from "@/data/careers-page";
 import { careersPageContent } from "@/data/careers-page";
 import type { ContactPageContent } from "@/data/contact-page";
 import { contactPageContent } from "@/data/contact-page";
-import type { EngagementCardType, ServicePageData } from "@/data/services/types";
+import type {
+  EngagementCardType,
+  ServicePageData,
+  ServiceTool,
+} from "@/data/services/types";
 import { hllFoundation } from "@/data/services/hll-foundation";
 import type { IndustryPageData } from "@/types/industry";
 import { healthcareIndustry } from "@/data/industries/healthcare";
-import type { TeamMember as UiTeamMember, TeamPageContent } from "@/data/team-page";
+import type {
+  TeamMember as UiTeamMember,
+  TeamPageContent,
+} from "@/data/team-page";
 import { teamPageContent } from "@/data/team-page";
 
 import { resolveMediaUrl } from "./media";
 
 export type CmsImageRef = Media | number | string | null | undefined;
+
+/** CMS tools keep the fallback's logo for a tool of the same name until one is uploaded. */
+function mapTools(
+  cms: { label: string; icon?: CmsImageRef }[] | null | undefined,
+  fallback: readonly ServiceTool[],
+): readonly ServiceTool[] {
+  if (!cms?.length) return fallback;
+  return cms.map((tool) => ({
+    name: tool.label,
+    icon:
+      resolveMediaUrl(tool.icon) ??
+      fallback.find((f) => f.name === tool.label)?.icon ??
+      null,
+  }));
+}
 
 export function mapServiceToPage(
   service: Service | null,
@@ -27,12 +56,14 @@ export function mapServiceToPage(
     slug: service?.slug ?? fallback.slug,
     variant: fallback.variant,
     brand: pc.brand ?? service?.title ?? fallback.brand,
-    breadcrumb: (pc.breadcrumb?.map((b) => b.label) ?? fallback.breadcrumb) as ServicePageData["breadcrumb"],
+    breadcrumb: (pc.breadcrumb?.map((b) => b.label) ??
+      fallback.breadcrumb) as ServicePageData["breadcrumb"],
     hero: {
       headline: pc.hero.headline ?? fallback.hero.headline,
       support: fallback.hero.support,
       tabs:
-        pc.hero.tabs?.map((t) => ({ id: t.id, label: t.label })) ?? fallback.hero.tabs,
+        pc.hero.tabs?.map((t) => ({ id: t.id, label: t.label })) ??
+        fallback.hero.tabs,
     },
     capabilities: {
       eyebrow: pc.capabilities?.eyebrow ?? fallback.capabilities.eyebrow,
@@ -47,12 +78,14 @@ export function mapServiceToPage(
         })) ?? fallback.capabilities.items,
       tools: fallback.capabilities.tools
         ? {
-            cloud:
-              pc.capabilities?.tools?.cloud?.map((c) => c.label) ??
+            cloud: mapTools(
+              pc.capabilities?.tools?.cloud,
               fallback.capabilities.tools.cloud,
-            data:
-              pc.capabilities?.tools?.data?.map((d) => d.label) ??
+            ),
+            data: mapTools(
+              pc.capabilities?.tools?.data,
               fallback.capabilities.tools.data,
+            ),
           }
         : undefined,
     },
@@ -105,19 +138,24 @@ export function mapIndustryPage(
   return {
     slug: industry?.slug ?? fallback.slug,
     category: pc.category ?? industry?.title ?? fallback.category,
-    breadcrumb: (pc.breadcrumb?.map((b) => b.label) ?? fallback.breadcrumb) as IndustryPageData["breadcrumb"],
+    breadcrumb: (pc.breadcrumb?.map((b) => b.label) ??
+      fallback.breadcrumb) as IndustryPageData["breadcrumb"],
     accentColor: pc.accentColor ?? fallback.accentColor,
     hero: {
       title: pc.hero.title ?? fallback.hero.title,
       headline: pc.hero.headline ?? fallback.hero.headline,
       overlayLabel: pc.hero.overlayLabel ?? fallback.hero.overlayLabel,
-      filters: pc.hero.filters?.map((f) => ({ id: f.id, label: f.label })) ?? fallback.hero.filters,
+      image: fallback.hero.image,
+      filters:
+        pc.hero.filters?.map((f) => ({ id: f.id, label: f.label })) ??
+        fallback.hero.filters,
     },
     capabilities: {
       eyebrow: pc.capabilities?.eyebrow ?? fallback.capabilities.eyebrow,
       title: pc.capabilities?.title ?? fallback.capabilities.title,
       sidebar: (pc.capabilities?.sidebar?.map((s) => s.label) ??
-        fallback.capabilities.sidebar) as IndustryPageData["capabilities"]["sidebar"],
+        fallback.capabilities
+          .sidebar) as IndustryPageData["capabilities"]["sidebar"],
       items:
         pc.capabilities?.items?.map((item) => ({
           id: item.id,
@@ -125,14 +163,24 @@ export function mapIndustryPage(
           title: item.title,
           description: item.description ?? "",
           cards:
-            item.cards?.map((card) => ({
-              id: card.id,
-              title: card.title,
-              client: card.client ?? card.title,
-              tag: card.tag ?? "",
-              description: card.description ?? "",
-              variant: (card.variant ?? "image") as "navy" | "orange" | "image",
-            })) ?? [],
+            item.cards?.map((card) => {
+              // The CMS has no media fields for these cards yet, so keep the
+              // static fallback's image / logo for the same card.
+              const media = fallback.capabilities.items
+                .flatMap((i) => i.cards)
+                .find((c) => c.id === card.id);
+              return {
+                id: card.id,
+                title: card.title,
+                client: card.client ?? card.title,
+                tag: card.tag ?? "",
+                description: card.description ?? "",
+                variant: (card.variant ?? "image") as
+                  "navy" | "orange" | "image",
+                image: media?.image,
+                logo: media?.logo,
+              };
+            }) ?? [],
         })) ?? fallback.capabilities.items,
     },
     clientVoice: {
@@ -151,6 +199,7 @@ export function mapIndustryPage(
           id: String(i + 1),
           name: p.name,
           bio: p.bio ?? "",
+          photo: fallback.experts.people[i]?.photo,
         })) ?? fallback.experts.people,
     },
     lab: {
@@ -186,44 +235,25 @@ export function mapAboutPage(
   const cms = marketing?.about;
   if (!cms?.hero?.headline) return fallback;
 
+  const paragraphs = cms.story?.paragraphs?.map((p) => p.text).filter(Boolean);
   return {
-    breadcrumb: fallback.breadcrumb,
-    accentColor: cms.accentColor ?? fallback.accentColor,
+    ...fallback,
     hero: {
-      eyebrow: cms.hero.eyebrow ?? fallback.hero.eyebrow,
-      headline: cms.hero.headline ?? fallback.hero.headline,
-      description: cms.hero.description ?? fallback.hero.description,
-      ctaLabel: cms.hero.ctaLabel ?? fallback.hero.ctaLabel,
-      ctaHref: cms.hero.ctaHref ?? fallback.hero.ctaHref,
-    },
-    story: {
-      eyebrow: cms.story?.eyebrow ?? fallback.story.eyebrow,
-      title: cms.story?.title ?? fallback.story.title,
-      paragraphs:
-        cms.story?.paragraphs?.map((p) => p.text) ?? [...fallback.story.paragraphs],
+      ...fallback.hero,
+      title: cms.hero.headline ?? fallback.hero.title,
+      paragraphs: paragraphs?.length ? paragraphs : fallback.hero.paragraphs,
     },
     values: {
-      eyebrow: cms.values?.eyebrow ?? fallback.values.eyebrow,
-      title: cms.values?.title ?? fallback.values.title,
+      ...fallback.values,
+      // Copy is editable in the CMS; the storyboard media stays with the
+      // static entry in the same position until the CMS has media fields.
       items:
-        cms.values?.items?.map((item) => ({
+        cms.values?.items?.map((item, i) => ({
           id: item.id,
           title: item.title,
           description: item.description ?? "",
-        })) ?? [...fallback.values.items],
-    },
-    process: fallback.process,
-    team: fallback.team,
-    promise: {
-      eyebrow: cms.promise?.eyebrow ?? fallback.promise.eyebrow,
-      line1: cms.promise?.line1 ?? fallback.promise.line1,
-      line2: cms.promise?.line2 ?? fallback.promise.line2,
-    },
-    lab: fallback.lab,
-    clients: {
-      eyebrow: cms.clients?.eyebrow ?? fallback.clients.eyebrow,
-      title: cms.clients?.title ?? fallback.clients.title,
-      slotCount: cms.clients?.logos?.length ?? fallback.clients.slotCount,
+          image: fallback.values.items[i % fallback.values.items.length].image,
+        })) ?? fallback.values.items,
     },
   };
 }
@@ -233,34 +263,37 @@ export function mapContactPage(
   fallback: ContactPageContent = contactPageContent,
 ): ContactPageContent {
   const cms = marketing?.contact;
-  if (!cms?.hero?.headline) return fallback;
+  if (!cms) return fallback;
+
+  const email = cms.details?.email ?? fallback.getInTouch.email;
+  // Offices entered before the company / tax fields existed don't carry the
+  // Figma layout's details, so they fall back to the Figma list.
+  const offices = (cms.locations?.items ?? []).filter((item) => item.company);
 
   return {
-    breadcrumb: fallback.breadcrumb,
-    accentColor: cms.accentColor ?? fallback.accentColor,
-    hero: {
-      eyebrow: cms.hero.eyebrow ?? fallback.hero.eyebrow,
-      headline: cms.hero.headline ?? fallback.hero.headline,
-      description: cms.hero.description ?? fallback.hero.description,
+    ...fallback,
+    image:
+      resolveMediaUrl(cms.details?.officeImage as CmsImageRef) ??
+      fallback.image,
+    offices: {
+      ...fallback.offices,
+      items: offices.length
+        ? offices.map((item) => ({
+            id: item.id,
+            country: item.city,
+            company: item.company ?? "",
+            address: item.address ?? "",
+            taxLabel: item.taxLabel ?? undefined,
+            taxId: item.taxId ?? undefined,
+          }))
+        : fallback.offices.items,
     },
-    form: fallback.form,
-    details: {
-      eyebrow: cms.details?.eyebrow ?? fallback.details.eyebrow,
-      title: cms.details?.title ?? fallback.details.title,
-      email: cms.details?.email ?? fallback.details.email,
-      linkedin: cms.details?.linkedin ?? fallback.details.linkedin,
-      linkedinLabel: cms.details?.linkedinLabel ?? fallback.details.linkedinLabel,
-    },
-    locations: {
-      eyebrow: cms.locations?.eyebrow ?? fallback.locations.eyebrow,
-      title: cms.locations?.title ?? fallback.locations.title,
-      items:
-        cms.locations?.items?.map((item) => ({
-          id: item.id,
-          city: item.city,
-          label: item.label ?? undefined,
-          address: item.address ?? "",
-        })) ?? [...fallback.locations.items],
+    getInTouch: {
+      ...fallback.getInTouch,
+      email,
+      scheduleHref:
+        cms.details?.scheduleUrl ??
+        `mailto:${email}?subject=${encodeURIComponent(fallback.getInTouch.scheduleLabel)}`,
     },
   };
 }
@@ -273,7 +306,7 @@ export function mapCareersPageContent(
   if (!cms?.hero?.headline) return fallback;
 
   return {
-    breadcrumb: fallback.breadcrumb,
+    ...fallback,
     accentColor: cms.accentColor ?? fallback.accentColor,
     hero: {
       eyebrow: cms.hero.eyebrow ?? fallback.hero.eyebrow,
@@ -285,12 +318,11 @@ export function mapCareersPageContent(
       eyebrow: cms.culture?.eyebrow ?? fallback.culture.eyebrow,
       title: cms.culture?.title ?? fallback.culture.title,
       description: cms.culture?.description ?? fallback.culture.description,
-      highlights:
-        cms.culture?.highlights?.map((h) => ({
-          id: h.id,
-          title: h.title,
-          body: h.body ?? "",
-        })) ?? [...fallback.culture.highlights],
+      highlights: cms.culture?.highlights?.map((h) => ({
+        id: h.id,
+        title: h.title,
+        body: h.body ?? "",
+      })) ?? [...fallback.culture.highlights],
     },
   };
 }
@@ -335,17 +367,16 @@ export function mapSiteNav(settings: SiteSetting | null): {
 } {
   return {
     siteName: settings?.siteName ?? "Hyper Lychee Labs",
-    nav:
-      settings?.headerNav?.map((item) => ({
-        label: item.label,
-        href: item.href,
-      })) ?? [
-        { label: "Services", href: "/services" },
-        { label: "Industries", href: "/industries" },
-        { label: "Engagement", href: "/engagement" },
-        { label: "About", href: "/about" },
-        { label: "Contact", href: "/contact" },
-      ],
+    nav: settings?.headerNav?.map((item) => ({
+      label: item.label,
+      href: item.href,
+    })) ?? [
+      { label: "Services", href: "/services" },
+      { label: "Industries", href: "/industries" },
+      { label: "Engagement", href: "/engagement" },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+    ],
     footerLinks:
       settings?.footerLinks?.map((item) => ({
         label: item.label,

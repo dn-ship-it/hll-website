@@ -2,94 +2,112 @@
 
 import { useState } from "react";
 
-import { MediaPlaceholder } from "./primitives";
+import { HLLButton } from "@/components/hll";
+
+import { HOME_GUTTER, HomeHeading } from "./primitives";
 
 const STEPS = [
   {
     id: "shape",
     title: "Shape",
-    body: "",
-    active: false,
+    image: "/assets/home/shape.webp",
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
   },
   {
     id: "build",
     title: "Build",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    active: true,
+    image: "/assets/home/build.webp",
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
   },
   {
     id: "evolve",
     title: "Evolve",
-    body: "",
-    active: false,
+    image: "/assets/home/evolve.webp",
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
   },
 ] as const;
 
+// Figma "How we work": the active stage is a 530px image in the centre with
+// the other two at 250px either side. Offsets are inside the 1452 × 728 stage
+// below the heading.
+const STAGE = { w: 1452, h: 728 };
+const SLOTS = [
+  { x: 110, y: 205, size: 250 },
+  { x: 461, y: 64, size: 530 },
+  { x: 1092, y: 206, size: 250 },
+];
+
+const pct = (v: number, of: number) => `${(v / of) * 100}%`;
+
+function Arrow({ direction, onClick }: { direction: "prev" | "next"; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={direction === "prev" ? "Previous stage" : "Next stage"}
+      onClick={onClick}
+      className="grid size-[17px] place-items-center text-[var(--hll-dark-grey)] hover:opacity-60"
+    >
+      <svg viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden className="size-[17px]">
+        {direction === "prev" ? <path d="M16 8.5H1M8 1.5l-7 7 7 7" /> : <path d="M1 8.5h15M9 1.5l7 7-7 7" />}
+      </svg>
+    </button>
+  );
+}
+
 export function HowWeWork() {
-  const [active, setActive] = useState<(typeof STEPS)[number]["id"]>("build");
-  const activeIndex = STEPS.findIndex((step) => step.id === active);
+  const [active, setActive] = useState(1);
+  const count = STEPS.length;
+  const slotOf = (index: number) => (index - active + 1 + count) % count;
+  const go = (delta: number) => setActive((a) => (a + delta + count) % count);
 
   return (
-    <section className="hll-home-section border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
-      <div className="mx-auto max-w-[90rem]">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-black/45">About</p>
-        <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
-          How we work
-        </h2>
+    <section className={`hll-home-section pb-[154px] ${HOME_GUTTER}`}>
+      <HomeHeading eyebrow="About" title="How we work" />
 
-        <div className="mt-10 grid grid-cols-[auto_1fr_auto] items-center gap-4">
-          <button
-            type="button"
-            className="text-black/30 hover:text-black/60"
-            aria-label="Previous"
-            onClick={() => setActive(STEPS[(activeIndex + STEPS.length - 1) % STEPS.length].id)}
-          >
-            ←
-          </button>
-
-          <div
-            className="grid items-end gap-4"
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 8rem), 1fr))",
-            }}
-          >
-            {STEPS.map((step) => {
-              const isActive = active === step.id;
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => setActive(step.id)}
-                  className={`flex flex-col items-center text-center transition ${
-                    isActive ? "scale-100 opacity-100" : "scale-90 opacity-45 grayscale"
-                  }`}
-                >
-                  <MediaPlaceholder
-                    className={`rounded-full ${
-                      isActive
-                        ? "size-[clamp(5rem,12vw,7.5rem)]"
-                        : "size-[clamp(3.5rem,8vw,5rem)]"
-                    }`}
-                    label={step.title}
-                  />
-                  <p className="mt-4 text-sm font-medium text-black">{step.title}</p>
-                  {isActive && step.body ? (
-                    <p className="mt-3 max-w-xs text-xs leading-6 text-black/55">{step.body}</p>
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
-
-          <button
-            type="button"
-            className="text-black/30 hover:text-black/60"
-            aria-label="Next"
-            onClick={() => setActive(STEPS[(activeIndex + 1) % STEPS.length].id)}
-          >
-            →
-          </button>
+      <div className="relative hidden lg:block" style={{ aspectRatio: `${STAGE.w} / ${STAGE.h}` }}>
+        <div className="absolute" style={{ left: pct(36, STAGE.w), top: pct(317, STAGE.h) }}>
+          <Arrow direction="prev" onClick={() => go(-1)} />
         </div>
+        <div className="absolute" style={{ left: pct(1399, STAGE.w), top: pct(317, STAGE.h) }}>
+          <Arrow direction="next" onClick={() => go(1)} />
+        </div>
+
+        {STEPS.map((step, index) => {
+          const slot = SLOTS[slotOf(index)];
+          const isActive = index === active;
+          return (
+            <button
+              key={step.id}
+              type="button"
+              onClick={() => setActive(index)}
+              aria-current={isActive ? "step" : undefined}
+              className="absolute text-left transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={{ left: pct(slot.x, STAGE.w), top: pct(slot.y, STAGE.h), width: pct(slot.size, STAGE.w) }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={step.image} alt="" className="aspect-square w-full rounded-lg object-cover" />
+              <span className="mt-[6px] block text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black">
+                {step.title}
+              </span>
+              {isActive ? (
+                <span className="mt-[10px] block max-w-[460px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                  {step.body}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-12 grid gap-10 sm:grid-cols-3 lg:hidden">
+        {STEPS.map((step) => (
+          <div key={step.id}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={step.image} alt="" className="aspect-square w-full rounded-lg object-cover" />
+            <p className="mt-2 text-2xl text-black">{step.title}</p>
+            <p className="mt-2 text-base leading-[1.25] text-[var(--hll-dark-grey)]">{step.body}</p>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -103,38 +121,30 @@ export function WhoWeAre() {
   }));
 
   return (
-    <section className="hll-home-section border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
-      <div className="mx-auto max-w-[90rem]">
-        <p className="text-[10px] uppercase tracking-[0.28em] text-black/45">Team</p>
-        <h2 className="hll-display mt-2 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
-          Who are we
-        </h2>
+    <section className="hll-home-section pb-[154px]">
+      <div className={HOME_GUTTER}>
+        <HomeHeading eyebrow="Team" title="Who are we" />
+      </div>
 
-        <div
-          className="mt-10 grid gap-6"
-          style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))",
-          }}
-        >
-          {team.map((person) => (
-            <article key={person.id}>
-              <MediaPlaceholder className="aspect-[3/4] w-full min-h-[clamp(12rem,28vw,18rem)]" />
-              <p className="hll-home-profile-name mt-2">{person.name}</p>
-              <p className="hll-home-profile-role mt-1">
-                {person.role}
-              </p>
-            </article>
-          ))}
-        </div>
+      {/* Figma: four 366px cards, 10px apart and 10px from the frame edges. */}
+      <div className="mt-[84px] grid gap-[10px] px-[10px] sm:grid-cols-2 lg:grid-cols-4">
+        {team.map((person) => (
+          <article key={person.id}>
+            <div className="aspect-square w-full rounded-lg bg-[#D9D9D9]" />
+            <p className="mt-2 text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+              {person.name}
+            </p>
+            <p className="hll-label mt-[2px] text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]">
+              {person.role}
+            </p>
+          </article>
+        ))}
+      </div>
 
-        <div className="mt-10 flex justify-center">
-          <a
-            href="/team"
-            className="inline-flex rounded-full border border-black/20 px-5 py-2 text-[11px] uppercase tracking-[0.18em] text-black/80"
-          >
-            View all team
-          </a>
-        </div>
+      <div className="mt-[138px] flex justify-center">
+        <HLLButton href="/team" variant="about" size="md">
+          View all team
+        </HLLButton>
       </div>
     </section>
   );
@@ -142,26 +152,17 @@ export function WhoWeAre() {
 
 export function InsideTheLab() {
   return (
-    <section className="hll-home-section relative min-h-[982px] overflow-hidden px-[30px] pb-[4rem] pt-[85px]">
+    <section
+      className={`hll-home-section relative min-h-[982px] overflow-hidden pb-[79px] pt-[85px] ${HOME_GUTTER}`}
+      style={{ background: "#F26A2E url(/assets/home/lab-bg.webp) center / cover" }}
+    >
+      <HomeHeading eyebrow="Demo tool" title="Inside the Lab" tone="dark" />
       <div
-        className="lab-shader absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(115deg, #FF5A1E 0%, #FF9126 34%, #F9B535 64%, #2BB4EB 100%)",
-        }}
-      />
-      <div className="relative">
-        <p className="hll-label text-[12px] uppercase text-black/60">Demo tool</p>
-        <h2 className="hll-display mt-3 text-[clamp(1.875rem,4.25vw,4rem)] font-normal text-black">
-          Inside the Lab
-        </h2>
-        <div
-          aria-label="Demo window"
-          className="relative mx-auto mt-[60px] grid aspect-[1171/658] w-full max-w-[73.1875rem] place-items-center overflow-hidden rounded-lg bg-[#d9d9d9]"
-          role="img"
-        >
-          <span className="hll-label text-[12px] uppercase text-black/70">Demo window</span>
-        </div>
+        aria-label="Demo window"
+        role="img"
+        className="mx-auto mt-[60px] grid aspect-[1171/658] w-full max-w-[1171px] place-items-center rounded-lg bg-[var(--hll-bg)]"
+      >
+        <span className="text-[12px] uppercase leading-none tracking-[0.25em] text-black">Demo window</span>
       </div>
     </section>
   );

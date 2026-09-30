@@ -25,6 +25,20 @@ complete-looking site with no CMS content behind it, and only `/admin` returning
 500. The config logs a warning at boot for both cases — check the Vercel
 function logs after the first deploy.
 
+## Database migrations
+
+Production (Postgres) builds its schema from `src/migrations`, not from
+Payload's dev-mode schema push. `prodMigrations` in `src/payload.config.ts`
+applies any pending migration when the app boots, so a deploy needs no
+separate step. After changing a collection, global or field, create one
+against a Postgres database and commit it:
+
+```bash
+DATABASE_URI='postgres://...' npx payload migrate:create <short-name>
+```
+
+Local development on SQLite keeps using the automatic schema push.
+
 ## Required environment variables
 
 Set these on the Vercel project, scoped to the environment you are deploying

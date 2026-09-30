@@ -1,3 +1,5 @@
+export type CareerSection = { title: string; paragraphs: readonly string[] };
+
 export type CareerNotice = {
   id: string;
   slug: string;
@@ -6,6 +8,13 @@ export type CareerNotice = {
   expiryDate: string | null;
   applyUrl: string | null;
   documents: { label: string; url: string }[];
+  /** Tags on the Open Roles row and the JD page (Figma: service, type, location). */
+  service?: string;
+  employmentType?: string;
+  location?: string;
+  seniority?: string;
+  /** JD accordion: The role, Responsibilities, Who you are, Process. */
+  sections?: CareerSection[];
 };
 
 export type CareersPageContent = {
@@ -27,7 +36,24 @@ export type CareersPageContent = {
     description: string;
     highlights: readonly { id: string; title: string; body: string }[];
   };
+  teamVoice: { quote: string; name: string; role: string; slideCount: number };
+  approach: { title: string; items: readonly { id: string; title: string; body: string }[] };
+  process: { title: string; rows: readonly CareerSection[] };
+  aboutHll: { paragraphs: readonly string[] };
 };
+
+// PLACEHOLDER copy from the Figma Careers / JD frames, until real copy lands.
+const FIGMA_LEAD =
+  "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker, it takes center stage.";
+const LOREM_1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet velit, sagittis laoreet neque tincidunt at.";
+const LOREM_2 = "Vestibulum euismod nec lacus vel volutpat. Aenean scelerisque sagittis metus, in luctus nibh rhoncus nec.";
+
+export const placeholderJdSections: CareerSection[] = [
+  { title: "The role", paragraphs: [`${LOREM_1} ${LOREM_2}`, `${LOREM_1} ${LOREM_2}`] },
+  { title: "Responsibilities", paragraphs: [`${LOREM_1} ${LOREM_2}`] },
+  { title: "Who you are", paragraphs: [`${LOREM_1} ${LOREM_2}`] },
+  { title: "Process", paragraphs: [`${LOREM_1} ${LOREM_2}`] },
+];
 
 export const careersPageContent: CareersPageContent = {
   breadcrumb: ["Careers"],
@@ -66,6 +92,31 @@ export const careersPageContent: CareersPageContent = {
       },
     ],
   },
+  teamVoice: {
+    quote:
+      "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",
+    name: "John Doe",
+    role: "CEO, McKinsey",
+    slideCount: 3,
+  },
+  approach: {
+    title: "Approach",
+    items: [
+      { id: "momentum", title: "Collective Momentum", body: FIGMA_LEAD },
+      { id: "learning", title: "Learning Culture", body: FIGMA_LEAD },
+      { id: "cadence", title: "Meeting Cadence", body: FIGMA_LEAD },
+      { id: "learning-2", title: "Learning Culture", body: FIGMA_LEAD },
+    ],
+  },
+  process: {
+    title: "Process",
+    rows: [
+      { title: "Steps", paragraphs: [LOREM_1, LOREM_2, LOREM_1, LOREM_2] },
+      { title: "Timelines", paragraphs: [`${LOREM_1} ${LOREM_2}`, LOREM_1] },
+      { title: "Expectations", paragraphs: [`${LOREM_1} ${LOREM_2}`, LOREM_1] },
+    ],
+  },
+  aboutHll: { paragraphs: [`${LOREM_1} ${LOREM_1}`, `${LOREM_1} ${LOREM_1}`] },
 };
 
 export const defaultCareerNotices: CareerNotice[] = [
@@ -78,6 +129,7 @@ export const defaultCareerNotices: CareerNotice[] = [
     expiryDate: "2026-10-15",
     applyUrl: "mailto:careers@hyperlychee.com?subject=Senior%20Data%20Engineer",
     documents: [{ label: "Job description (PDF)", url: "#" }],
+    sections: placeholderJdSections,
   },
   {
     id: "2",
@@ -88,6 +140,7 @@ export const defaultCareerNotices: CareerNotice[] = [
     expiryDate: "2026-09-30",
     applyUrl: "mailto:careers@hyperlychee.com?subject=Experience%20Design%20Lead",
     documents: [{ label: "Job description (PDF)", url: "#" }],
+    sections: placeholderJdSections,
   },
   {
     id: "3",
@@ -98,5 +151,6 @@ export const defaultCareerNotices: CareerNotice[] = [
     expiryDate: null,
     applyUrl: "mailto:careers@hyperlychee.com?subject=AI%20ML%20Engineer",
     documents: [],
+    sections: placeholderJdSections,
   },
 ];

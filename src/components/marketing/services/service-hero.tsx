@@ -29,7 +29,9 @@ export function ServiceHero({
   const theme = getServiceTheme(variant);
 
   return (
-    <section className={`relative overflow-hidden pb-0 pt-[clamp(8rem,19.64vw,18.5625rem)] ${SERVICE_GUTTER}`}>
+    <section
+      className={`relative overflow-hidden pb-0 pt-[clamp(8rem,19.64vw,18.5625rem)] ${SERVICE_GUTTER}`}
+    >
       <div className="relative">
         <GradientRevealTextSlow
           as="h1"

@@ -138,8 +138,21 @@ export const hllFoundation: ServicePageData = {
       },
     ],
     tools: {
-      cloud: ["AWS", "Azure", "GCP", "Snowflake"],
-      data: ["Databricks", "BigQuery", "Digital Ocean", "dbt", "Airflow", "Spark"],
+      // Logos exported from the Figma pills; the rest get theirs in the CMS.
+      cloud: [
+        { name: "AWS", icon: "/assets/tools/aws.png" },
+        { name: "Azure", icon: "/assets/tools/azure.png" },
+        { name: "GCP", icon: "/assets/tools/gcp.png" },
+        { name: "Snowflake" },
+      ],
+      data: [
+        { name: "Databricks" },
+        { name: "BigQuery" },
+        { name: "Digital Ocean", icon: "/assets/tools/digital-ocean.png" },
+        { name: "dbt" },
+        { name: "Airflow" },
+        { name: "Spark" },
+      ],
     },
   },
   outcomes: {

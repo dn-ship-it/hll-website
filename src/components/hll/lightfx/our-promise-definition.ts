@@ -73,12 +73,15 @@ export const SCROLL_TRIGGER_PX = 1100;
 /** Low alpha: slow, smooth convergence each frame. */
 export const BANDS_EASING = 0.2;
 
-// The text finishes fading at 55% and the image starts there, so they overlap
-// briefly instead of hard-cutting; by 100% — the same point the bands settle —
-// the image is fully scaled in.
-export const TEXT_FADE_END = 0.55;
+// Client feedback: the gradient should give way to a white page before the
+// knowledge graph appears, rather than the graph sitting on the gradient. So
+// the text clears first, the ground then dissolves to white, and only then
+// does the image / graph fade in; by 100% it is fully scaled in.
+export const TEXT_FADE_END = 0.4;
 export const TEXT_SCALE_END = 0.25;
-export const IMAGE_FADE_START = 0.55;
+export const WASH_START = 0.35;
+export const WASH_END = 0.7;
+export const IMAGE_FADE_START = 0.7;
 export const IMAGE_FADE_END = 1.0;
 export const IMAGE_SCALE_START = 0.82;
 

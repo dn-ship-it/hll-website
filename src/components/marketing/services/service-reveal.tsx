@@ -2,13 +2,13 @@
 
 import { useEffect, type ReactNode } from "react";
 
-/** The Services design uses a quiet, one-time fade-up for copy and media. */
+/** Figma glossary: "fade up" on text and assets, a quiet one-time fade-up. */
 export function ServiceReveal({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const elements = document.querySelectorAll<HTMLElement>(
-      ".hll-service-page p, .hll-service-page [data-service-media]",
+    const fades = document.querySelectorAll<HTMLElement>(
+      ".hll-service-page p, .hll-service-page [data-service-media], .hll-service-page [data-fade-up]",
     );
     const observer = new IntersectionObserver(
       (entries) => {
@@ -21,7 +21,7 @@ export function ServiceReveal({ children }: { children: ReactNode }) {
       { threshold: 0.12, rootMargin: "0px 0px -4% 0px" },
     );
 
-    elements.forEach((element) => {
+    fades.forEach((element) => {
       element.classList.add("service-fade-in");
       observer.observe(element);
     });

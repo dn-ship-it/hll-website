@@ -40,6 +40,8 @@ import {
   TAP_RIPPLE_MODE,
   TEXT_FADE_END,
   TEXT_SCALE_END,
+  WASH_END,
+  WASH_START,
   type Look,
   type Rgb,
 } from "./our-promise-definition";
@@ -47,6 +49,15 @@ import { OUR_PROMISE_FRAG_SRC } from "./our-promise-shaders";
 import { RIPPLE_VERT_SRC } from "./ripple-shaders";
 
 const EMPTY_RIPPLE_ARRAY = new Array(MAX_RIPPLES * 2).fill(-10);
+
+function supportsWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
 
 function lerpPaletteInto(out: number[], a: Rgb[], b: Rgb[], t: number) {
   for (let i = 0; i < a.length; i++) {
@@ -74,6 +85,7 @@ type SketchRefs = {
       listener instead forced a synchronous reflow on every scroll event. */
   readScroll: () => void;
   heroText: { current: HTMLDivElement | null };
+  wash: { current: HTMLDivElement | null };
   imageStage: { current: HTMLDivElement | null };
 };
 
@@ -91,6 +103,7 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
   let smoothTextOpacity = 1;
   let smoothTextScale = 1;
   let smoothImageOpacity = 0;
+  let smoothWashOpacity = 0;
   let smoothImageScale = IMAGE_SCALE_START;
 
   p.setup = () => {
@@ -129,8 +142,13 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
       refs.heroText.current.style.transform = `translate(-50%, -50%) scale(${smoothTextScale})`;
     }
 
-    // Image scales up and fades in from IMAGE_FADE_START, overlapping the tail
-    // of the text fade instead of hard-cutting.
+    // The ripple dissolves to the page background between the text fading
+    // out and the image fading in.
+    const washProgress = smoothStep((scrollProgress - WASH_START) / (WASH_END - WASH_START));
+    smoothWashOpacity += (washProgress - smoothWashOpacity) * 0.5;
+    if (refs.wash.current) refs.wash.current.style.opacity = String(smoothWashOpacity);
+
+    // Image scales up and fades in once the ground is white.
     const imageProgress = smoothStep(
       (scrollProgress - IMAGE_FADE_START) / (IMAGE_FADE_END - IMAGE_FADE_START),
     );
@@ -223,6 +241,7 @@ export function OurPromise({
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasHostRef = useRef<HTMLDivElement>(null);
   const heroTextRef = useRef<HTMLDivElement>(null);
+  const washRef = useRef<HTMLDivElement>(null);
   const imageStageRef = useRef<HTMLDivElement>(null);
   const scrollYRef = useRef(0);
 
@@ -244,6 +263,7 @@ export function OurPromise({
       scrollY: scrollYRef,
       readScroll,
       heroText: heroTextRef,
+      wash: washRef,
       imageStage: imageStageRef,
     };
 
@@ -258,6 +278,10 @@ export function OurPromise({
       if (onScreen && !document.hidden) instance.loop();
       else instance.noLoop();
     };
+
+    // Without WebGL, p5's setup() throws "Error creating webgl context" as an
+    // unhandled rejection; the CSS still behind the canvas stands in instead.
+    if (!supportsWebGL()) return undefined;
 
     // p5 touches `window` at import time, so it is loaded here rather than at
     // module scope, which would break server rendering.
@@ -301,6 +325,7 @@ export function OurPromise({
     >
       <div className="our-promise-stage">
         <div ref={canvasHostRef} className="our-promise-canvas-host" />
+        <div ref={washRef} className="our-promise-wash" aria-hidden />
 
         <div ref={heroTextRef} className="our-promise-hero-text">
           <div className="our-promise-eyebrow">{eyebrow}</div>

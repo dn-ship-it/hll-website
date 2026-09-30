@@ -19,5 +19,12 @@ export function getServicePage(slug: string): ServicePageData | null {
   return SERVICE_PAGES[slug] ?? null;
 }
 
-export { hllAi, hllFoundation, hllGovernanceTrust, hllKinetic, hllMomentum, hllOntology };
+export {
+  hllAi,
+  hllFoundation,
+  hllGovernanceTrust,
+  hllKinetic,
+  hllMomentum,
+  hllOntology,
+};
 export type { ServicePageData };

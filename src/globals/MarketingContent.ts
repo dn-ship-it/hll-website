@@ -16,6 +16,12 @@ export const MarketingContent: GlobalConfig = {
       fields: [
         { name: "heroHeading", type: "text" },
         { name: "heroImage", type: "upload", relationTo: "media" },
+        {
+          name: "heroVideo",
+          type: "upload",
+          relationTo: "media",
+          admin: { description: "Plays in the hero window (Figma: window with video playing)." },
+        },
         { name: "heroCtaLabel", type: "text" },
         { name: "heroCtaHref", type: "text" },
         {
@@ -129,6 +135,7 @@ export const MarketingContent: GlobalConfig = {
             { name: "linkedin", type: "text" },
             { name: "linkedinLabel", type: "text" },
             { name: "officeImage", type: "upload", relationTo: "media" },
+            { name: "scheduleUrl", type: "text", admin: { description: "Schedule a call link (e.g. Calendly)." } },
           ],
         },
         {
@@ -144,7 +151,10 @@ export const MarketingContent: GlobalConfig = {
                 { name: "id", type: "text", required: true },
                 { name: "city", type: "text", required: true },
                 { name: "label", type: "text" },
+                { name: "company", type: "text", admin: { description: "e.g. Hyper Lychee Labs" } },
                 { name: "address", type: "textarea" },
+                { name: "taxLabel", type: "text", admin: { description: "e.g. EIN No:, GSTIN:" } },
+                { name: "taxId", type: "text" },
               ],
             },
           ],

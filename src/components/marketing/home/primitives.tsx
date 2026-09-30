@@ -50,6 +50,7 @@ export function SectionTitle({
   ink,
   letterSpacing = "-0.01em",
   lineHeight,
+  fontWeight,
 }: {
   children: React.ReactNode;
   variant?: HLLVariant;
@@ -59,6 +60,7 @@ export function SectionTitle({
   ink?: string;
   letterSpacing?: string;
   lineHeight?: string;
+  fontWeight?: number;
 }) {
   const className = `text-[length:var(--section-title-size)] ${extraClassName}`;
 
@@ -80,6 +82,7 @@ export function SectionTitle({
       fontSize={fontSize}
       letterSpacing={letterSpacing}
       lineHeight={lineHeight}
+      fontWeight={fontWeight}
       ink={ink}
     />
   );
@@ -103,5 +106,51 @@ export function OutlinePillButton({
     <HLLOutlineButton href={href} variant={variant}>
       {children}
     </HLLOutlineButton>
+  );
+}
+
+/** Page gutter from the Figma home frame: 30px at 1512px. */
+export const HOME_GUTTER = "px-[clamp(1.25rem,1.98vw,1.875rem)]";
+
+/** Figma home section heading: Functional eyebrow, then a 64px light title 12px below. */
+export function HomeHeading({
+  eyebrow,
+  title,
+  tone = "light",
+  eyebrowColor,
+  eyebrowMedium = false,
+}: {
+  eyebrow: string;
+  title: string;
+  /** "dark" sits on an image or colour band. */
+  tone?: "light" | "dark";
+  eyebrowColor?: string;
+  /** Industry pages set their coloured eyebrows at weight 500. */
+  eyebrowMedium?: boolean;
+}) {
+  const ink = tone === "dark" ? "#FAFAFA" : "#1A1A1A";
+  return (
+    <div>
+      <p
+        className={`hll-label text-[12px] uppercase leading-[1.2] ${eyebrowMedium ? "font-medium" : ""}`}
+        style={{ color: eyebrowColor ?? ink, fontFamily: "var(--hll-font-functional)" }}
+      >
+        {/* "Industry  Healthcare": Figma sets two-part eyebrows 14px apart. */}
+        {eyebrow.split(/:\s*|\s{2,}/).map((part, i) => (
+          <span key={part} className={i > 0 ? "ml-[14px]" : undefined}>
+            {part}
+          </span>
+        ))}
+      </p>
+      <SectionTitle
+        fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+        letterSpacing="0"
+        lineHeight="1.16"
+        ink={ink}
+        className="hll-display mt-[12px] font-light"
+      >
+        {title}
+      </SectionTitle>
+    </div>
   );
 }

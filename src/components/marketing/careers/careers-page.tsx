@@ -3,62 +3,90 @@ import {
   defaultCareerNotices,
   type CareerNotice,
 } from "@/data/careers-page";
+import { HomeHeading } from "@/components/marketing/home/primitives";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
-import {
-  isNoticeActive,
-  mapCareerToNotice,
-} from "@/lib/payload/careers";
+import { PageHero } from "@/components/marketing/page-hero";
+import { VoiceSection } from "@/components/marketing/services/expert-and-related";
+import { isNoticeActive, mapCareerToNotice } from "@/lib/payload/careers";
 import { mapCareersPageContent } from "@/lib/payload/marketing-mappers";
-import { getMarketingContent, getPublishedCareers } from "@/lib/payload/queries";
-import { CareersBreadcrumb } from "./careers-chrome";
-import { CareersCultureSection } from "./careers-culture";
-import { CareersHero } from "./careers-hero";
-import { CareersNoticesSection } from "./careers-notices";
-import { CareersReveal } from "./careers-reveal";
+import {
+  getMarketingContent,
+  getPublishedCareers,
+} from "@/lib/payload/queries";
 
-async function loadNotices(): Promise<CareerNotice[]> {
+import {
+  CareersApproach,
+  CareersOpenRoles,
+  CareersProcess,
+  SeeOpenRoles,
+} from "./careers-sections";
+
+export async function loadRoles(): Promise<CareerNotice[]> {
   try {
     const careers = await getPublishedCareers();
-    const mapped = careers.map(mapCareerToNotice).filter((notice) => isNoticeActive(notice));
+    const mapped = careers
+      .map(mapCareerToNotice)
+      .filter((notice) => isNoticeActive(notice));
     if (mapped.length > 0) return mapped;
   } catch {
     // fall through
   }
-
   return defaultCareerNotices.filter((notice) => isNoticeActive(notice));
 }
 
-async function loadCareersContent() {
+export async function loadCareersContent() {
   try {
-    const marketing = await getMarketingContent();
-    return mapCareersPageContent(marketing, careersPageContent);
+    return mapCareersPageContent(
+      await getMarketingContent(),
+      careersPageContent,
+    );
   } catch {
     return careersPageContent;
   }
 }
 
+/** Figma Desktop › Careers (1116:7183). */
 export async function CareersPage() {
-  const [content, notices] = await Promise.all([loadCareersContent(), loadNotices()]);
+  const [content, roles] = await Promise.all([
+    loadCareersContent(),
+    loadRoles(),
+  ]);
+  const voice = content.teamVoice;
 
   return (
     <MarketingShell>
-      <CareersReveal>
-        <div className="hll-careers-page">
-          <div className="space-y-4 px-[clamp(1.25rem,4vw,3rem)] pt-6">
-            <div className="mx-auto max-w-[90rem]">
-              <CareersBreadcrumb items={content.breadcrumb} />
-            </div>
+      <div className="hll-home hll-service-page">
+        {/* "see open roles is sticky and takes you to the open roles
+            section": pinned to the bottom of the screen until Open Roles. */}
+        <div className="relative">
+          <PageHero title="Careers" lead={content.hero.headline} />
+
+          <div className="pt-[84px] pb-[61px]">
+            <VoiceSection
+              divider={false}
+              data={{ quote: voice.quote, name: voice.name, role: voice.role }}
+              slideCount={voice.slideCount}
+              timerColor="var(--hll-mid-grey)"
+              heading={
+                <HomeHeading
+                  eyebrow="Careers"
+                  title="Team Voice"
+                  eyebrowColor="var(--hll-mid-grey)"
+                />
+              }
+            />
           </div>
 
-          <CareersHero data={content.hero} accentColor={content.accentColor} />
-          <CareersNoticesSection
-            content={content.notices}
-            notices={notices}
-            accentColor={content.accentColor}
-          />
-          <CareersCultureSection data={content.culture} accentColor={content.accentColor} />
+          <div data-line className="mx-[10px] h-px bg-[var(--hll-mid-grey)]" />
+          <CareersApproach data={content.approach} />
+          <SeeOpenRoles />
         </div>
-      </CareersReveal>
+        <CareersOpenRoles
+          roles={roles}
+          emptyMessage={content.notices.emptyMessage}
+        />
+        <CareersProcess data={content.process} />
+      </div>
     </MarketingShell>
   );
 }

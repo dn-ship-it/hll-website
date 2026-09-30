@@ -1,43 +1,14 @@
+import { HomeHeading } from "@/components/marketing/home/primitives";
+import { CapabilityNav } from "@/components/marketing/services/capability-nav";
+import { EngagementCardView } from "@/components/marketing/services/engagement-section";
+import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { IndustryPageData } from "@/types/industry";
-import { MediaPlaceholder, SectionTitle } from "@/components/marketing/home/primitives";
-import { Tag } from "@/components/hll/tag";
 
-const CARD_STYLES = {
-  navy: "bg-[#1a2744] text-white",
-  orange: "bg-[#FF6302] text-white",
-  image: "bg-white text-black border border-black/8",
-} as const;
-
-function CapabilityCard({ card }: { card: IndustryPageData["capabilities"]["items"][number]["cards"][number] }) {
-  return (
-    <article className={`flex min-h-[clamp(12rem,24vw,16rem)] flex-col p-[clamp(1rem,2vw,1.25rem)] ${CARD_STYLES[card.variant]}`}>
-      {card.variant === "image" ? (
-        <MediaPlaceholder className="mb-3 aspect-[4/3] w-full" label={card.title} />
-      ) : (
-        <p className="text-base font-medium opacity-90">{card.client}</p>
-      )}
-      <div className="mt-2">
-        <Tag variant={card.variant === "navy" ? "cool" : card.variant === "orange" ? "warm" : "neutral"}>
-          {card.tag}
-        </Tag>
-      </div>
-      <h4 className="mt-3 text-lg font-medium">{card.title}</h4>
-      <p
-        className={`mt-2 flex-1 text-sm leading-6 ${
-          card.variant === "image" ? "text-black/55" : "text-white/80"
-        }`}
-      >
-        {card.description}
-      </p>
-      {card.variant !== "image" ? (
-        <span className="mt-4 text-[10px] uppercase tracking-[0.18em] text-white/90 underline decoration-white/40 underline-offset-4">
-          Learn more
-        </span>
-      ) : null}
-    </article>
-  );
-}
-
+/**
+ * Figma Industry "Capabilities": a service list on the left and, per service,
+ * a row of number + hairline, title, body and two engagement cards. Columns at
+ * the 1512px frame: list 436 | number 51 | title 493 | body/card 490.
+ */
 export function IndustryCapabilitiesSection({
   data,
   accentColor,
@@ -46,65 +17,61 @@ export function IndustryCapabilitiesSection({
   accentColor: string;
 }) {
   return (
-    <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
-      <div className="mx-auto max-w-[90rem]">
-        <p
-          className="text-[10px] font-medium uppercase tracking-[0.24em]"
-          style={{ color: accentColor }}
-        >
-          {data.eyebrow}
-        </p>
+    <section className="pt-[clamp(5.375rem,10.19vw,9.625rem)]">
+      <div className={SERVICE_GUTTER}>
+        <HomeHeading eyebrow={data.eyebrow} title={data.title} />
+      </div>
 
-        <div className="mt-10 grid gap-[clamp(2rem,5vw,4rem)] lg:grid-cols-[minmax(0,14rem)_1fr]">
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <SectionTitle>{data.title}</SectionTitle>
-            <ul className="mt-8 hidden space-y-3 lg:block">
-              {data.sidebar.map((item) => (
-                <li key={item}>
-                  <span className="text-[10px] uppercase tracking-[0.16em] text-black/40">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="mt-[72px] grid gap-10 px-[clamp(1.25rem,1.98vw,1.875rem)] lg:grid-cols-[436fr_1036fr] lg:gap-0 lg:pr-[10px]">
+        {/* Figma: "as you scroll it highlights according to the section you
+            are in". Labels without a capability row yet stay unlinked. */}
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <CapabilityNav
+            accent={accentColor}
+            items={data.sidebar.map((label) => ({
+              id: data.items.find((item) => item.title === label)?.id ?? "",
+              title: label,
+            }))}
+          />
+        </div>
 
-          <div className="space-y-[clamp(3rem,7vw,5rem)]">
-            {data.items.map((item) => (
-              <article key={item.id} id={item.id} className="scroll-mt-28">
-                <div
-                  className="grid gap-6 border-b border-black/6 pb-[clamp(2rem,5vw,3rem)]"
+        <div>
+          {data.items.map((item) => (
+            <article
+              key={item.id}
+              id={item.id}
+              className="grid scroll-mt-28 grid-cols-1 pb-[72px] lg:grid-cols-[51fr_493fr_490fr]"
+            >
+              <div className="flex items-center gap-3 lg:col-span-3 lg:grid lg:grid-cols-subgrid lg:gap-0">
+                <span
+                  className="text-[12px] font-medium leading-[1.2]"
                   style={{
-                    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 16rem), 1fr))",
+                    color: accentColor,
+                    fontFamily: "var(--hll-font-functional)",
                   }}
+                  data-service-label
                 >
-                  <div>
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-black/35">
-                      {item.index}
-                    </span>
-                    <h3
-                      className="mt-2 font-normal text-black"
-                      style={{ fontSize: "clamp(1.25rem, 2vw, 1.75rem)" }}
-                    >
-                      {item.title}
-                    </h3>
-                  </div>
-                  <p className="text-sm leading-7 text-black/55">{item.description}</p>
-                </div>
-
-                <div
-                  className="mt-6 grid gap-4"
-                  style={{
-                    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 14rem), 1fr))",
-                  }}
-                >
-                  {item.cards.map((card) => (
-                    <CapabilityCard key={card.id} card={card} />
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
+                  {item.index}
+                </span>
+                <span
+                  aria-hidden
+                  data-line
+                  className="h-px flex-1 bg-[var(--hll-mid-grey)] lg:col-span-2"
+                />
+              </div>
+              <h3 className="mt-9 text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2">
+                {item.title}
+              </h3>
+              <p className="mt-4 max-w-[368px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)] lg:col-start-3 lg:mt-9">
+                {item.description}
+              </p>
+              <div className="mt-12 grid gap-8 sm:grid-cols-2 sm:gap-2 lg:col-span-2 lg:col-start-2 lg:-ml-[5px] lg:mt-[64px]">
+                {item.cards.map((card) => (
+                  <EngagementCardView key={card.id} card={card} />
+                ))}
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
