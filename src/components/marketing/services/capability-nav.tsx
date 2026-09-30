@@ -18,7 +18,7 @@ export function CapabilityNav({
 
   useEffect(() => {
     const targets = items
-      .map((item) => document.getElementById(item.id))
+      .map((item) => (item.id ? document.getElementById(item.id) : null))
       .filter((el): el is HTMLElement => el !== null);
     if (targets.length === 0) return undefined;
 
@@ -41,7 +41,7 @@ export function CapabilityNav({
       {items.map((item) => {
         const active = item.id === activeId;
         return (
-          <li key={item.id} className="relative">
+          <li key={item.title} className="relative">
             {/* Figma marks the active row with a small Dark Grey square
                 hanging in the gutter, so the labels stay left-aligned. */}
             <span
@@ -49,14 +49,20 @@ export function CapabilityNav({
               className="absolute -left-[9px] top-1/2 size-[4px] -translate-y-1/2 bg-[var(--hll-dark-grey)] transition-opacity duration-300"
               style={{ opacity: active ? 1 : 0 }}
             />
-            <a
-              href={`#${item.id}`}
-              aria-current={active ? "true" : undefined}
-              className="block text-[12px] uppercase leading-[24px] transition-colors duration-300"
-              style={{ color: active ? accent : "var(--hll-mid-grey)" }}
-            >
-              {item.title}
-            </a>
+            {item.id ? (
+              <a
+                href={`#${item.id}`}
+                aria-current={active ? "true" : undefined}
+                className="block text-[12px] uppercase leading-[24px] transition-colors duration-300"
+                style={{ color: active ? accent : "var(--hll-mid-grey)" }}
+              >
+                {item.title}
+              </a>
+            ) : (
+              <span className="block text-[12px] uppercase leading-[24px] text-[var(--hll-mid-grey)]">
+                {item.title}
+              </span>
+            )}
           </li>
         );
       })}

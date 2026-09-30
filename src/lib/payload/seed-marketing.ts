@@ -27,8 +27,8 @@ function foundationPageContentSeed() {
         subServices: item.subServices?.map((sub) => ({ label: sub.name })) ?? [],
       })),
       tools: {
-        cloud: (f.capabilities.tools?.cloud ?? []).map((label) => ({ label })),
-        data: (f.capabilities.tools?.data ?? []).map((label) => ({ label })),
+        cloud: (f.capabilities.tools?.cloud ?? []).map((tool) => ({ label: tool.name })),
+        data: (f.capabilities.tools?.data ?? []).map((tool) => ({ label: tool.name })),
       },
     },
     outcomes: {
@@ -127,21 +127,16 @@ export async function seedMarketingContent(payload: Payload) {
             heroHeading:
               "We champion future-facing initiatives for an accelerated advancement.",
             heroCtaLabel: "See our work",
-            heroCtaHref: "/#impact",
+            heroCtaHref: "/engagement",
           },
+          // The About page's hero title / paragraphs live in hero.headline and
+          // story.paragraphs; see mapAboutPage.
           about: {
-            accentColor: aboutPage.accentColor,
             hero: {
-              eyebrow: aboutPage.hero.eyebrow,
-              headline: aboutPage.hero.headline,
-              description: aboutPage.hero.description,
-              ctaLabel: aboutPage.hero.ctaLabel,
-              ctaHref: aboutPage.hero.ctaHref,
+              headline: aboutPage.hero.title,
             },
             story: {
-              eyebrow: aboutPage.story.eyebrow,
-              title: aboutPage.story.title,
-              paragraphs: aboutPage.story.paragraphs.map((text) => ({ text })),
+              paragraphs: aboutPage.hero.paragraphs.map((text) => ({ text })),
             },
             values: {
               eyebrow: aboutPage.values.eyebrow,
@@ -152,24 +147,21 @@ export async function seedMarketingContent(payload: Payload) {
                 description: item.description,
               })),
             },
-            promise: aboutPage.promise,
-            clients: {
-              eyebrow: aboutPage.clients.eyebrow,
-              title: aboutPage.clients.title,
-            },
           },
           contact: {
-            accentColor: contactPageContent.accentColor,
-            hero: contactPageContent.hero,
-            details: contactPageContent.details,
+            details: {
+              email: contactPageContent.getInTouch.email,
+            },
             locations: {
-              eyebrow: contactPageContent.locations.eyebrow,
-              title: contactPageContent.locations.title,
-              items: contactPageContent.locations.items.map((item) => ({
+              eyebrow: contactPageContent.offices.eyebrow,
+              title: contactPageContent.offices.title,
+              items: contactPageContent.offices.items.map((item) => ({
                 id: item.id,
-                city: item.city,
-                label: item.label,
+                city: item.country,
+                company: item.company,
                 address: item.address,
+                taxLabel: item.taxLabel,
+                taxId: item.taxId,
               })),
             },
           },
@@ -199,10 +191,10 @@ export async function seedMarketingContent(payload: Payload) {
           footerServices: [
             { label: "HLL Application" },
             { label: "HLL People & Policy" },
-            { label: "HLL AI" },
-            { label: "HLL Foundation" },
-            { label: "HLL Ontology" },
             { label: "HLL Trust & Governance" },
+            { label: "HLL Foundation" },
+            { label: "HLL AI" },
+            { label: "HLL Ontology" },
           ],
           footerIndustries: [
             { label: "Financial Services" },

@@ -1,128 +1,92 @@
 export type ContactFormField = {
-  id: string;
+  id: "name" | "email" | "message" | "source";
   label: string;
-  type: "text" | "email" | "select" | "textarea";
+  type: "text" | "email" | "textarea";
   required?: boolean;
-  placeholder?: string;
-  options?: readonly string[];
 };
 
-export type ContactLocation = {
+export type ContactOffice = {
   id: string;
-  city: string;
+  country: string;
+  company: string;
   address: string;
-  label?: string;
+  taxLabel?: string;
+  taxId?: string;
 };
 
+/** Figma Desktop › Contact (1341:11841). */
 export type ContactPageContent = {
-  breadcrumb: readonly string[];
-  accentColor: string;
-  hero: {
-    eyebrow: string;
-    headline: string;
-    description: string;
-  };
+  title: string;
   form: {
-    title: string;
+    fields: ContactFormField[];
     submitLabel: string;
     successMessage: string;
     errorMessage: string;
-    fields: ContactFormField[];
   };
-  details: {
+  /** The 1452 × 396 image between the form and the offices. */
+  image?: string | null;
+  offices: {
     eyebrow: string;
     title: string;
+    items: ContactOffice[];
+  };
+  getInTouch: {
+    eyebrow: string;
     email: string;
-    linkedin: string;
-    linkedinLabel: string;
-  };
-  locations: {
-    eyebrow: string;
-    title: string;
-    items: ContactLocation[];
+    scheduleLabel: string;
+    scheduleHref: string;
   };
 };
 
 export const contactPageContent: ContactPageContent = {
-  breadcrumb: ["Contact"],
-  accentColor: "#076EB8",
-  hero: {
-    eyebrow: "Contact",
-    headline: "Let's start a conversation",
-    description:
-      "Share your project timeline, design references, or integration constraints. We'll respond with a delivery plan and next steps.",
-  },
+  title: "Contact",
   form: {
-    title: "Write to us",
-    submitLabel: "Send message",
-    successMessage: "Thanks — your message has been received. We'll be in touch shortly.",
-    errorMessage: "Something went wrong. Please check the form and try again.",
     fields: [
-      {
-        id: "name",
-        label: "Full name",
-        type: "text",
-        required: true,
-        placeholder: "Your name",
-      },
-      {
-        id: "email",
-        label: "Work email",
-        type: "email",
-        required: true,
-        placeholder: "you@company.com",
-      },
-      {
-        id: "company",
-        label: "Company",
-        type: "text",
-        placeholder: "Organization",
-      },
-      {
-        id: "topic",
-        label: "Topic",
-        type: "select",
-        required: true,
-        options: [
-          "General enquiry",
-          "Services",
-          "Engagement model",
-          "Careers",
-          "Partnership",
-        ],
-      },
-      {
-        id: "message",
-        label: "Message",
-        type: "textarea",
-        required: true,
-        placeholder: "Tell us about your project or question…",
-      },
-    ] satisfies ContactFormField[],
+      { id: "name", label: "Your name", type: "text", required: true },
+      { id: "email", label: "Your company email", type: "email", required: true },
+      { id: "message", label: "How can we help?", type: "textarea", required: true },
+      { id: "source", label: "How did you hear about us?", type: "text" },
+    ],
+    submitLabel: "Submit",
+    successMessage: "Thanks — your message has reached us. We'll be in touch shortly.",
+    errorMessage: "Something went wrong sending your message. Please try again, or email us directly.",
   },
-  details: {
-    eyebrow: "Reach us",
-    title: "Direct channels",
-    email: "hello@hyperlychee.com",
-    linkedin: "https://linkedin.com/company/hyper-lychee-labs",
-    linkedinLabel: "LinkedIn",
-  },
-  locations: {
-    eyebrow: "Offices",
-    title: "Find us",
+  image: null,
+  offices: {
+    eyebrow: "Contact",
+    title: "Our offices",
     items: [
       {
-        id: "santa-clara",
-        city: "Santa Clara",
-        label: "HQ",
-        address: "Laird Circle, Santa Clara, CA 95054, USA",
+        id: "us",
+        country: "United States",
+        company: "Hyper Lychee Labs",
+        address: "Laird Circle,\nSanta Clara – 95054, US",
+        taxLabel: "EIN No:",
+        taxId: "85-0798460",
       },
       {
-        id: "global",
-        city: "Global delivery",
-        address: "India · Netherlands · Bangladesh",
+        id: "india-pune",
+        country: "India",
+        company: "Alpha OBS LLP",
+        address: "Baner,\nPune – 411045, India",
+        taxLabel: "GSTIN:",
+        taxId: "27ABKFA6790L1ZS",
       },
-    ] satisfies ContactLocation[],
+      {
+        id: "india-goa",
+        country: "India",
+        company: "Studio Poppy",
+        address: "Parra,\nGoa 403517, India",
+        taxLabel: "GSTIN:",
+        taxId: "27ADNPH4729D1ZJ",
+      },
+    ],
+  },
+  getInTouch: {
+    eyebrow: "Get in touch",
+    email: "hannan@hyperlycheelabs.com",
+    scheduleLabel: "Schedule a call",
+    // No booking link yet: opens an email asking for a call.
+    scheduleHref: "mailto:hannan@hyperlycheelabs.com?subject=Schedule%20a%20call",
   },
 };
-

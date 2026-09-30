@@ -313,6 +313,23 @@ body {
   text-decoration: none;
 }
 
+/* Figma Button rest state: Light Grey fill. The shader canvas paints a pale
+   plate even at rest, so it only shows on hover / focus, where it blooms. */
+.hll-button {
+  background: var(--hll-light-grey, #e6e6e6);
+  border-radius: 4px;
+}
+
+.hll-button canvas {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hll-button:hover canvas,
+.hll-button:focus-visible canvas {
+  opacity: 1;
+}
+
 .hll-button:focus-visible,
 .hll-outline-button:focus-visible {
   outline: 2px solid var(--hll-label-color, #808080);
@@ -527,6 +544,18 @@ body {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  /* Figma's still of the ripple, shown until (or instead of, without WebGL)
+     the live canvas. */
+  background: #f25a2a url(/assets/home/promise-bg.webp) center / cover;
+}
+
+.our-promise-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #fafafa;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .our-promise-canvas-host canvas {
@@ -549,9 +578,10 @@ body {
 }
 
 .our-promise-eyebrow {
+  font-family: var(--hll-font-functional);
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.15em;
+  font-weight: 400;
+  line-height: 1.2;
   text-transform: uppercase;
   margin-bottom: 12px;
 }
@@ -559,8 +589,8 @@ body {
 .our-promise-headline {
   margin: 0;
   font-weight: 300;
-  font-size: clamp(28px, 5.5vw, 64px);
-  line-height: 1.15;
+  font-size: clamp(28px, 4.23vw, 64px);
+  line-height: 1.16;
 }
 
 .our-promise-question-mark {
@@ -656,34 +686,6 @@ body {
 .hll-home .hll-display {
   font-family: var(--hll-display-font);
   font-weight: 300;
-  letter-spacing: -0.035em;
-}
-
-.hll-home .hll-home-profile-name {
-  color: #1a1a1a;
-  font-family: var(--hll-display-font);
-  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: normal;
-}
-
-.hll-home .hll-home-profile-role {
-  color: #1a1a1a;
-  font-family: var(--hll-label-font);
-  font-size: clamp(10px, 0.8vw, 12px);
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: normal;
-  text-transform: uppercase;
-}
-
-.hll-home .hll-home-section h2 {
-  font-family: var(--hll-display-font);
-  font-size: clamp(1.875rem, 4.25vw, 4rem);
-  font-weight: 300;
-  letter-spacing: -0.035em;
-  line-height: 1.16;
 }
 
 .hll-home .hll-label,
@@ -699,6 +701,47 @@ body {
   background: #fafafa;
   color: #1a1a1a;
   font-family: var(--hll-service-font);
+}
+
+/* Page intro: until the <h1> finishes its reveal, only the title (and the
+   chain of elements containing it) is shown; its siblings at every level are
+   held back, then fade in together. See PageIntro. */
+main[data-intro="pending"] :has(h1) > :not(:has(h1)):not(h1) {
+  visibility: hidden;
+}
+
+main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
+  animation: page-intro-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes page-intro-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) { animation: none; }
+}
+
+@keyframes values-saturate {
+  from { filter: grayscale(1); opacity: 0; }
+  to { filter: grayscale(0); opacity: 1; }
+}
+
+@keyframes voice-timer {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Home "Our Clients" logo marquee; the track holds the logos twice so a
+   -50% shift loops seamlessly. */
+@keyframes home-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hll-home [class*="home-marquee"] { animation: none !important; }
 }
 
 /* Footer CTA: while "write to us" is hovered, the still drifts slowly — the
@@ -759,392 +802,27 @@ body {
   transform: translateY(0);
 }
 
+.line-draw-in {
+  /* Not exactly 0: a zero-width box never reports as on screen. */
+  transform: scaleX(0.001);
+  transform-origin: left center;
+  transition: transform 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.line-draw-in.is-visible {
+  transform: scaleX(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .line-draw-in {
+    transform: none;
+    transition: none;
+  }
   .hll-service-page .service-fade-in,
   .hll-service-page .service-fade-in.is-visible {
     opacity: 1;
     transform: none;
     transition: none;
-  }
-}
-
-.hll-team-page {
-  --hll-team-font: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
-  --hll-team-mono: var(--font-sometype-mono), "Courier New", monospace;
-}
-
-.hll-team-page .hll-team-display {
-  font-family: var(--hll-team-font);
-}
-
-.hll-team-page .hll-team-name {
-  color: #1a1a1a;
-  font-family: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
-  font-size: 36px;
-  font-style: normal;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: normal;
-}
-
-.hll-team-page .hll-team-label {
-  font-family: var(--hll-team-mono);
-  font-weight: 400;
-}
-
-.hll-team-page h1,
-.hll-team-page h2 {
-  font-weight: 300;
-}
-
-.engagement-page {
-  --hll-engagement-font: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
-  --hll-engagement-label: var(--font-sometype-mono), "Courier New", monospace;
-  padding: 351px 10px 191px;
-  background: #fafafa;
-  color: #1a1a1a;
-}
-
-.engagement-page__heading {
-  margin: 0 20px 104px;
-}
-
-.engagement-page__heading h1 {
-  max-width: none;
-  font-family: var(--hll-engagement-font);
-  font-size: 64px;
-  font-weight: 300;
-  letter-spacing: 0;
-  line-height: 74px;
-}
-
-.engagement-projects {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows:
-    calc(var(--engagement-tile) + 72px)
-    calc(var(--engagement-tile) + 129px)
-    calc(56.5vw + 78.7px)
-    calc(var(--engagement-tile) + 90px);
-  --engagement-tile: calc(33.333333vw - 13.333333px);
-  grid-auto-flow: row;
-  align-items: start;
-  column-gap: 10px;
-}
-
-.engagement-project {
-  min-width: 0;
-}
-
-.engagement-project__image {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
-  background: #dedede;
-}
-
-.engagement-project__meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 50px;
-  padding-top: 8px;
-}
-
-.engagement-project--bajaj .engagement-project__meta {
-  min-height: 72px;
-}
-
-.engagement-project__meta h2 {
-  font-family: var(--hll-engagement-font);
-  font-size: 36px;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 42px;
-}
-
-.engagement-project__meta p {
-  color: rgb(26 26 26 / 52%);
-  font-family: var(--hll-engagement-label);
-  font-size: 12px;
-  line-height: 14px;
-}
-
-.engagement-project--bajaj {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.engagement-project--ktm {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.engagement-project--ktm .engagement-project__image {
-  aspect-ratio: 490 / 317;
-}
-
-.engagement-project--wecare {
-  grid-column: 3;
-  grid-row: 1;
-}
-
-.engagement-project--salt-middle-left,
-.engagement-project--big-red-top,
-.engagement-project--salt-middle-right {
-  grid-row: 2;
-  margin-top: 79px;
-}
-
-.engagement-project--salt-middle-left,
-.engagement-project--salt-bottom-left {
-  grid-column: 1;
-}
-
-.engagement-project--big-red-top,
-.engagement-project--big-red-bottom {
-  grid-column: 2;
-}
-
-.engagement-project--salt-middle-right,
-.engagement-project--salt-bottom-right {
-  grid-column: 3;
-}
-
-.engagement-project--zelish {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  margin-top: 40px;
-}
-
-.engagement-project--zelish .engagement-project__image {
-  aspect-ratio: 1492 / 843;
-}
-
-.engagement-project--salt-bottom-left,
-.engagement-project--big-red-bottom,
-.engagement-project--salt-bottom-right {
-  grid-row: 4;
-  margin-top: 40px;
-}
-
-@media (max-width: 1100px) {
-  .engagement-page {
-    padding-top: clamp(14rem, 24vw, 21rem);
-    padding-bottom: clamp(5rem, 12vw, 9rem);
-  }
-
-  .engagement-page__heading {
-    margin-bottom: clamp(3rem, 8vw, 6rem);
-  }
-
-  .engagement-page__heading h1 {
-    font-size: clamp(2.75rem, 7vw, 4rem);
-    line-height: 1.15;
-  }
-
-  .engagement-project__meta h2 {
-    font-size: clamp(1.5rem, 4vw, 2.25rem);
-    line-height: 1.16;
-  }
-
-  .engagement-projects {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: none;
-    grid-auto-rows: auto;
-    gap: 32px 12px;
-  }
-
-  .engagement-project,
-  .engagement-project--bajaj,
-  .engagement-project--ktm,
-  .engagement-project--wecare,
-  .engagement-project--salt-middle-left,
-  .engagement-project--big-red-top,
-  .engagement-project--salt-middle-right,
-  .engagement-project--zelish,
-  .engagement-project--salt-bottom-left,
-  .engagement-project--big-red-bottom,
-  .engagement-project--salt-bottom-right {
-    grid-column: auto;
-    grid-row: auto;
-    margin-top: 0;
-  }
-
-  .engagement-project--zelish {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 600px) {
-  .engagement-page__heading {
-    margin-inline: 8px;
-  }
-
-  .engagement-projects {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 28px;
-  }
-
-.engagement-project--zelish {
-  grid-column: 1;
-}
-}
-
-.hll-careers-page {
-  --careers-font: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
-  --careers-mono: var(--font-sometype-mono), "Courier New", monospace;
-  background: #fafafa;
-  color: #1a1a1a;
-  font-family: var(--careers-font);
-}
-
-.hll-careers-page h1,
-.hll-careers-page h2,
-.hll-careers-page h3 {
-  color: #1a1a1a;
-  font-family: var(--careers-font);
-  font-weight: 300;
-  letter-spacing: 0;
-}
-
-.hll-careers-page h1 {
-  line-height: 1;
-  font-size: clamp(1.875rem, 4.25vw, 4rem) !important;
-}
-
-.hll-careers-page h2 {
-  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
-  line-height: 1.16;
-}
-
-.hll-careers-page h3 {
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
-  line-height: 1.2;
-}
-
-.hll-careers-page p {
-  font-family: var(--careers-font);
-}
-
-.hll-careers-page .careers-body-copy {
-  font-size: 20px;
-  line-height: 1.25;
-}
-
-.hll-careers-page .careers-section-label,
-.hll-careers-page nav[aria-label="Breadcrumb"] {
-  font-family: var(--careers-mono);
-  font-weight: 400;
-}
-
-.careers-fade-in {
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity 600ms ease,
-    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.careers-fade-in.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.careers-notice__icon {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid rgb(26 26 26 / 18%);
-  border-radius: 999px;
-  color: rgb(26 26 26 / 75%);
-  font-size: 18px;
-  line-height: 1;
-  transition:
-    color 180ms ease,
-    background-color 180ms ease,
-    border-color 180ms ease;
-}
-
-.careers-notice button:hover .careers-notice__icon {
-  border-color: #1a1a1a;
-  background: #1a1a1a;
-  color: white;
-}
-
-.careers-notice__panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    grid-template-rows 260ms ease,
-    opacity 200ms ease,
-    visibility 0s linear 260ms;
-}
-
-.careers-notice__panel.is-open {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  visibility: visible;
-  transition:
-    grid-template-rows 260ms ease,
-    opacity 200ms ease,
-    visibility 0s;
-}
-
-.careers-notice__panel-inner {
-  min-height: 0;
-  overflow: hidden;
-}
-
-@media (max-width: 767px) {
-  .hll-careers-page h1 {
-    font-size: 30px !important;
-    line-height: 1.05;
-  }
-
-  .hll-careers-page h2 {
-    font-size: 24px;
-  }
-
-  .hll-careers-page p {
-    line-height: 1.25;
-  }
-
-  .hll-careers-page .careers-body-copy {
-    font-size: 14px;
-  }
-}
-
-.careers-open-roles-cta a {
-  background: #fafafa;
-  box-shadow: 0 5px 20px rgb(0 0 0 / 12%);
-}
-
-@media (max-width: 600px) {
-  .careers-open-roles-cta {
-    bottom: 1rem;
-    right: 1rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .careers-fade-in,
-  .careers-notice__panel,
-  .careers-notice__icon {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-@media (max-width: 767px) {
-  .hll-team-page .hll-team-name {
-    font-size: clamp(1.5rem, 7vw, 2.25rem);
   }
 }
 

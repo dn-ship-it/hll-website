@@ -15,6 +15,7 @@ export default async function HomePage() {
   let heroCtaLabel: string | undefined;
   let heroCtaHref: string | undefined;
   let heroImageUrl: string | null = null;
+  let heroVideoUrl: string | null = null;
 
   try {
     const marketing = await getMarketingContent();
@@ -22,6 +23,7 @@ export default async function HomePage() {
     heroCtaLabel = marketing?.home?.heroCtaLabel ?? undefined;
     heroCtaHref = marketing?.home?.heroCtaHref ?? undefined;
     heroImageUrl = getCmsImageUrl(marketing?.home?.heroImage);
+    heroVideoUrl = getCmsImageUrl(marketing?.home?.heroVideo);
   } catch {
     // defaults in HomeHero
   }
@@ -34,6 +36,7 @@ export default async function HomePage() {
           ctaLabel={heroCtaLabel}
           ctaHref={heroCtaHref}
           heroImageUrl={heroImageUrl}
+          heroVideoUrl={heroVideoUrl}
         />
         <WhatWeDo />
         <OurClients />

@@ -59,12 +59,18 @@ export const servicePageContentFields: Field[] = [
           {
             name: "cloud",
             type: "array",
-            fields: [{ name: "label", type: "text", required: true }],
+            fields: [
+              { name: "label", type: "text", required: true },
+              { name: "icon", type: "upload", relationTo: "media" },
+            ],
           },
           {
             name: "data",
             type: "array",
-            fields: [{ name: "label", type: "text", required: true }],
+            fields: [
+              { name: "label", type: "text", required: true },
+              { name: "icon", type: "upload", relationTo: "media" },
+            ],
           },
         ],
       },

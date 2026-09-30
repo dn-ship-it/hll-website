@@ -1,14 +1,11 @@
-import { aboutPage } from "@/data/about";
+import { HowWeWork } from "@/components/marketing/home/sections-bottom";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { aboutPage } from "@/data/about";
 import { mapAboutPage } from "@/lib/payload/marketing-mappers";
 import { getMarketingContent } from "@/lib/payload/queries";
-import { AboutBreadcrumb } from "./about-chrome";
-import { AboutClientsSection } from "./about-clients";
+
 import { AboutHero } from "./about-hero";
-import { AboutLabSection, AboutPromiseSection } from "./about-promise-lab";
-import { AboutProcessSection } from "./about-process";
-import { AboutStorySection } from "./about-story";
-import { AboutTeamSection } from "./about-team";
+import { AboutCareersSection, AboutLeaderSection, AboutReachSection } from "./about-sections";
 import { AboutValuesSection } from "./about-values";
 
 async function loadAboutData() {
@@ -20,25 +17,22 @@ async function loadAboutData() {
   }
 }
 
+/** Figma Desktop › About_02 (About_01 differs only in the hero collage). */
 export async function AboutPage() {
   const data = await loadAboutData();
 
   return (
     <MarketingShell>
-      <div className="space-y-4 px-[clamp(1.25rem,4vw,3rem)] pt-6">
-        <div className="mx-auto max-w-[90rem]">
-          <AboutBreadcrumb items={data.breadcrumb} />
+      <div className="hll-home hll-service-page">
+        <AboutHero data={data.hero} />
+        <AboutValuesSection data={data.values} />
+        <AboutLeaderSection data={data.leader} />
+        <div className="pt-[214px]">
+          <HowWeWork />
         </div>
+        <AboutReachSection data={data.reach} />
+        <AboutCareersSection data={data.careers} />
       </div>
-
-      <AboutHero data={data.hero} accentColor={data.accentColor} />
-      <AboutStorySection data={data.story} accentColor={data.accentColor} />
-      <AboutValuesSection data={data.values} accentColor={data.accentColor} />
-      <AboutProcessSection data={data.process} accentColor={data.accentColor} />
-      <AboutTeamSection data={data.team} />
-      <AboutClientsSection data={data.clients} accentColor={data.accentColor} />
-      <AboutPromiseSection data={data.promise} />
-      <AboutLabSection data={data.lab} />
     </MarketingShell>
   );
 }

@@ -1,5 +1,5 @@
 import type { ServiceVariant } from "@/components/hll/variants";
-import type { ServicePageData } from "@/data/services/types";
+import type { ServicePageData, ServiceTool } from "@/data/services/types";
 
 import { CapabilityNav } from "./capability-nav";
 import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
@@ -10,10 +10,15 @@ import { getServiceTheme } from "./service-theme";
 // hold at other desktop widths.
 const ROW_GRID = "lg:grid-cols-[45fr_500fr_366fr_105fr]";
 
-function ToolPill({ label }: { label: string }) {
+/** Figma pill: Mid Grey hairline, 18px radius, logo then name, 12px in. */
+function ToolPill({ tool }: { tool: ServiceTool }) {
   return (
-    <span className="inline-flex rounded-full border border-black/10 bg-white px-3 py-1 text-[11px] text-black/70">
-      {label}
+    <span className="inline-flex h-[33px] items-center gap-[11px] rounded-[18px] border border-[var(--hll-mid-grey)] px-3 text-[18.6px] leading-[1.25] text-[var(--hll-dark-grey)]">
+      {tool.icon ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={tool.icon} alt="" className="h-5 max-w-6 object-contain" />
+      ) : null}
+      {tool.name}
     </span>
   );
 }
@@ -34,7 +39,11 @@ export function CapabilitiesSection({
       id="capabilities"
       className={`pt-[clamp(5.375rem,10.32vw,9.75rem)] pb-[clamp(3rem,5.75vw,5.4375rem)] ${SERVICE_GUTTER}`}
     >
-      <ServiceSectionHeading breadcrumb={breadcrumb} title={data.title} variant={variant} />
+      <ServiceSectionHeading
+        breadcrumb={breadcrumb}
+        title={data.title}
+        variant={variant}
+      />
 
       <div className="mt-[clamp(2.5rem,4.76vw,4.5rem)] grid gap-[clamp(2rem,5vw,4rem)] lg:grid-cols-[436fr_1016fr] lg:gap-0">
         <div className="lg:sticky lg:top-24 lg:self-start">
@@ -62,12 +71,14 @@ export function CapabilitiesSection({
           ))}
 
           {data.tools ? (
-            <article className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,4.43vw,4.1875rem)] ${ROW_GRID}`}>
+            <article
+              className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,4.43vw,4.1875rem)] ${ROW_GRID}`}
+            >
               <CapabilityRule accent={accent} />
               <h3 className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2">
                 Tools and Technologies
               </h3>
-              <div className="mt-6 space-y-6 lg:col-start-3 lg:mt-[clamp(0.8125rem,1.59vw,1.5rem)]">
+              <div className="mt-6 space-y-9 lg:col-start-3 lg:mt-[clamp(0.8125rem,1.59vw,1.5rem)]">
                 <ToolGroup label="Cloud" tools={data.tools.cloud} />
                 <ToolGroup label="Data" tools={data.tools.data} />
               </div>
@@ -90,20 +101,31 @@ function CapabilityRule({ index, accent }: { index?: string; accent: string }) {
       >
         {index}
       </span>
-      <span aria-hidden className="h-px flex-1 bg-[var(--hll-mid-grey)] lg:col-span-2" />
+      <span
+        aria-hidden
+        data-line
+        className="h-px flex-1 bg-[var(--hll-mid-grey)] lg:col-span-2"
+      />
     </div>
   );
 }
 
-function ToolGroup({ label, tools }: { label: string; tools: readonly string[] }) {
+/** Figma: the group name at 20px, then its pills 11px apart. */
+function ToolGroup({
+  label,
+  tools,
+}: {
+  label: string;
+  tools: readonly ServiceTool[];
+}) {
   return (
     <div>
-      <p className="text-[12px] uppercase text-[var(--hll-mid-grey)]" data-service-label>
+      <p className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
         {label}
       </p>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {tools.map((t) => (
-          <ToolPill key={t} label={t} />
+      <div className="mt-4 flex flex-wrap gap-[11px]">
+        {tools.map((tool) => (
+          <ToolPill key={tool.name} tool={tool} />
         ))}
       </div>
     </div>
@@ -112,7 +134,11 @@ function ToolGroup({ label, tools }: { label: string; tools: readonly string[] }
 
 /** Foundation's sub-services carry a body, so they render as a two-column list;
     the other verticals are name-only and render as Figma's bulleted list. */
-function SubServices({ items }: { items?: ServicePageData["capabilities"]["items"][number]["subServices"] }) {
+function SubServices({
+  items,
+}: {
+  items?: ServicePageData["capabilities"]["items"][number]["subServices"];
+}) {
   if (!items || items.length === 0) return null;
 
   const hasDescriptions = items.some((sub) => sub.description);
@@ -134,9 +160,13 @@ function SubServices({ items }: { items?: ServicePageData["capabilities"]["items
     <dl className="mt-6 grid gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-5 sm:grid-cols-2">
       {items.map((sub) => (
         <div key={sub.name}>
-          <dt className="text-[11px] uppercase tracking-[0.16em] text-black/70">{sub.name}</dt>
+          <dt className="text-[11px] uppercase tracking-[0.16em] text-black/70">
+            {sub.name}
+          </dt>
           {sub.description ? (
-            <dd className="mt-2 text-sm leading-6 text-black/50">{sub.description}</dd>
+            <dd className="mt-2 text-sm leading-6 text-black/50">
+              {sub.description}
+            </dd>
           ) : null}
         </div>
       ))}

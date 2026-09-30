@@ -14,6 +14,9 @@ export type CapabilityItem = {
   subServices?: SubService[];
 };
 
+/** Figma "Tools and Technologies" pill: a logo and a name, both set in the CMS. */
+export type ServiceTool = { name: string; icon?: string | null };
+
 export type OutcomeCard = {
   stat: string;
   description: string;
@@ -63,8 +66,8 @@ export type ServicePageData = {
     title: string;
     items: CapabilityItem[];
     tools?: {
-      cloud: readonly string[];
-      data: readonly string[];
+      cloud: readonly ServiceTool[];
+      data: readonly ServiceTool[];
     };
   };
   outcomes: {

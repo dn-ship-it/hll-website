@@ -9,6 +9,8 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Careers } from "./collections/Careers";
+import { Engagements } from "./collections/Engagements";
+import { Enquiries } from "./collections/Enquiries";
 import { Industries } from "./collections/Industries";
 import { Media } from "./collections/Media";
 import { Pages } from "./collections/Pages";
@@ -20,6 +22,7 @@ import { Users } from "./collections/Users";
 import { MarketingContent } from "./globals/MarketingContent";
 import { SiteSettings } from "./globals/SiteSettings";
 import { seedMarketingContent } from "./lib/payload/seed-marketing";
+import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -60,7 +63,7 @@ export default buildConfig({
       titleSuffix: "— HLL CMS",
     },
   },
-  collections: [Users, Media, Pages, Services, Industries, Tenders, Posts, Careers, TeamMembers],
+  collections: [Users, Media, Pages, Services, Industries, Tenders, Posts, Careers, TeamMembers, Engagements, Enquiries],
   globals: [SiteSettings, MarketingContent],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
@@ -72,6 +75,10 @@ export default buildConfig({
         pool: {
           connectionString: process.env.DATABASE_URI,
         },
+        // Applies any pending migrations (src/migrations) when production
+        // boots, since Vercel has no separate migrate step. Create a new one
+        // with `npx payload migrate:create <name>` after changing the schema.
+        prodMigrations: migrations,
       })
     : sqliteAdapter({
         client: {

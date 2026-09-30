@@ -10,8 +10,6 @@ export type ServiceTheme = {
   accent: string;
   /** Icon tile (gradient square + glyph) as exported from Figma. */
   iconSrc: string;
-  /** Navbar logo mark, pre-tinted with the service colour. */
-  markSrc: string;
   /** Stops fed to the LightFX outline button on the hero tabs. */
   tabGradient: string[];
   /** Background of the demo window frame. */
@@ -53,7 +51,6 @@ export function getServiceTheme(variant: ServiceVariant): ServiceTheme {
   return {
     accent,
     iconSrc: `${base}-icon.svg`,
-    markSrc: `${base}-mark.png`,
     tabGradient: RIPPLE_GRADIENTS[SERVICE_TO_RIPPLE[variant]],
     demoBackground: `${demoBase} url(${base}-demo.webp) center / cover`,
     outcomeBackground: `${outcomeBase} url(${base}-outcome.webp) center / cover`,

@@ -34,7 +34,12 @@ function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
   };
 }
 
-export function ServiceDemoWindow({ config, activeTabKey, background, ripple }: ServiceDemoWindowProps) {
+export function ServiceDemoWindow({
+  config,
+  activeTabKey,
+  background,
+  ripple,
+}: ServiceDemoWindowProps) {
   const safeConfig = useMemo(
     () => ({
       ...config,
@@ -88,7 +93,8 @@ export function ServiceDemoWindow({ config, activeTabKey, background, ripple }: 
   }, [srcKey]);
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
-  const iframeHeight = "h-[clamp(20rem,42.2vw,39.9rem)] min-h-[clamp(20rem,42.2vw,39.9rem)]";
+  const iframeHeight =
+    "h-[clamp(20rem,42.2vw,39.9rem)] min-h-[clamp(20rem,42.2vw,39.9rem)]";
 
   return (
     <div
@@ -99,10 +105,15 @@ export function ServiceDemoWindow({ config, activeTabKey, background, ripple }: 
         className="relative px-[clamp(1.25rem,6.35vw,6rem)] py-[clamp(2rem,8.99vw,8.5rem)]"
         style={{ background }}
       >
-        {ripple ? <CornerRipple variant={ripple} contained className={RIPPLE_FILL} style={{ opacity: RIPPLE_OPACITY }} /> : null}
-        <div
-          className="relative mx-auto w-full rounded-lg bg-[var(--hll-bg)] p-[clamp(0.75rem,2vw,1rem)] shadow-none"
-        >
+        {ripple ? (
+          <CornerRipple
+            variant={ripple}
+            contained
+            className={RIPPLE_FILL}
+            style={{ opacity: RIPPLE_OPACITY }}
+          />
+        ) : null}
+        <div className="relative mx-auto w-full rounded-lg bg-[var(--hll-bg)] p-[clamp(0.75rem,2vw,1rem)] shadow-none">
           <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2">
             <span className="inline-flex h-9 items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)]">
               {safeConfig.selectorLabel}
@@ -123,9 +134,13 @@ export function ServiceDemoWindow({ config, activeTabKey, background, ripple }: 
             </span>
           </div>
 
-          <div className={`relative mt-10 overflow-hidden rounded-sm bg-white ${iframeHeight}`}>
+          <div
+            className={`relative mt-10 overflow-hidden rounded-sm bg-white ${iframeHeight}`}
+          >
             {!hasContent ? (
-              <div className={`flex items-center justify-center bg-[#fafafa] ${iframeHeight}`}>
+              <div
+                className={`flex items-center justify-center bg-[#fafafa] ${iframeHeight}`}
+              >
                 <p className="text-[10px] uppercase tracking-[0.28em] text-black/30">
                   Demo window
                 </p>

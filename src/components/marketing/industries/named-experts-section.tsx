@@ -1,29 +1,50 @@
+import { HomeHeading } from "@/components/marketing/home/primitives";
+import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { IndustryPageData } from "@/types/industry";
-import { MediaPlaceholder, SectionEyebrow, SectionTitle } from "@/components/marketing/home/primitives";
 
-export function NamedExpertsSection({ data }: { data: IndustryPageData["experts"] }) {
+/** Figma: four 366px cards 10px apart, name then a three-line Functional bio. */
+export function NamedExpertsSection({
+  data,
+  accentColor,
+}: {
+  data: IndustryPageData["experts"];
+  accentColor: string;
+}) {
   return (
-    <section className="border-t border-black/6 px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
-      <div className="mx-auto max-w-[90rem]">
-        <SectionEyebrow>{data.eyebrow}</SectionEyebrow>
-        <SectionTitle>{data.title}</SectionTitle>
-
-        <div
-          className="mt-10 grid gap-6"
-          style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 10rem), 1fr))",
-          }}
-        >
-          {data.people.map((person) => (
-            <article key={person.id}>
-              <MediaPlaceholder className="aspect-[3/4] w-full min-h-[clamp(12rem,28vw,18rem)]" />
-              <p className="mt-4 text-sm font-medium text-black">{person.name}</p>
-              <p className="mt-2 text-[10px] uppercase leading-5 tracking-[0.12em] text-black/45">
-                {person.bio}
-              </p>
-            </article>
-          ))}
+    <section className="pb-[clamp(5.375rem,10.19vw,9.625rem)]">
+      <div className={SERVICE_GUTTER}>
+        <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
+        <div className="pt-[84px]">
+          <HomeHeading
+            eyebrow={data.eyebrow}
+            title={data.title}
+            eyebrowColor={accentColor}
+            eyebrowMedium
+          />
         </div>
+      </div>
+
+      <div className="mt-[84px] grid gap-[10px] px-[10px] sm:grid-cols-2 lg:grid-cols-4">
+        {data.people.map((person) => (
+          <article key={person.id}>
+            <div
+              className="aspect-square w-full rounded-lg bg-[#D9D9D9]"
+              style={
+                person.photo
+                  ? {
+                      background: `#D9D9D9 url(${person.photo}) center / cover`,
+                    }
+                  : undefined
+              }
+            />
+            <p className="mt-2 text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+              {person.name}
+            </p>
+            <p className="hll-label mt-[2px] whitespace-pre-line text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]">
+              {person.bio.split(/\s*·\s*|\n/).join("\n")}
+            </p>
+          </article>
+        ))}
       </div>
     </section>
   );

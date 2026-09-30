@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
-import { FooterCta } from "./footer-cta";
+import { FooterButton, FooterCta } from "./footer-cta";
 
 /*
  * Figma "Footer" component (1341:23164, 1512 × 980), used on every page:
@@ -35,15 +35,31 @@ type IndustryGroup = { title: string; items: string[] };
 // "industry" heading, so it starts one line lower.
 const INDUSTRY_COLUMNS: IndustryGroup[][] = [
   [
-    { title: "Financial Services", items: ["Banking", "Insurance", "Other Financial Services"] },
-    { title: "Commerce & Consumer", items: ["Retail Commerce & Brands", "Travel & Hospitality", "Pet Tech"] },
-    { title: "Health & Life Sciences", items: ["Healthcare", "Pharmaceuticals"] },
+    {
+      title: "Financial Services",
+      items: ["Banking", "Insurance", "Other Financial Services"],
+    },
+    {
+      title: "Commerce & Consumer",
+      items: ["Retail Commerce & Brands", "Travel & Hospitality", "Pet Tech"],
+    },
+    {
+      title: "Health & Life Sciences",
+      items: ["Healthcare", "Pharmaceuticals"],
+    },
   ],
   [
-    { title: "Built Environment & Industry", items: ["Manufacturing", "Real Estate", "Logistics"] },
+    {
+      title: "Built Environment & Industry",
+      items: ["Manufacturing", "Real Estate", "Logistics"],
+    },
     {
       title: "Government & Public Institutions",
-      items: ["Public Sector – External Affairs", "Public Sector – Tax & Commerce", "International Organization"],
+      items: [
+        "Public Sector – External Affairs",
+        "Public Sector – Tax & Commerce",
+        "International Organization",
+      ],
     },
     { title: "Professional Services", items: ["Consulting Firms"] },
   ],
@@ -51,18 +67,8 @@ const INDUSTRY_COLUMNS: IndustryGroup[][] = [
 
 // Figma sets every list line on one line (e.g. "Government & Public
 // Institutions" fills its 305px column exactly), so lines never wrap on desktop.
-const LIST = "text-[12px] uppercase leading-[28px] tracking-[0.25em] lg:whitespace-nowrap";
-
-function FooterButton({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      className="inline-flex h-[36.5px] items-center rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] transition-colors hover:bg-[#d9d9d9]"
-    >
-      {children}
-    </a>
-  );
-}
+const LIST =
+  "text-[12px] uppercase leading-[28px] tracking-[0.25em] lg:whitespace-nowrap";
 
 type SiteFooterProps = {
   siteName?: string;
@@ -84,8 +90,12 @@ export function SiteFooter({
   ctaHref = "/contact",
   ctaVideo,
 }: SiteFooterProps) {
-  const emailLink = socialLinks.find((s) => s.platform === "email")?.url ?? "mailto:hello@hyperlychee.com";
-  const linkedInLink = socialLinks.find((s) => s.platform === "linkedin")?.url ?? "https://linkedin.com";
+  const emailLink =
+    socialLinks.find((s) => s.platform === "email")?.url ??
+    "mailto:hello@hyperlychee.com";
+  const linkedInLink =
+    socialLinks.find((s) => s.platform === "linkedin")?.url ??
+    "https://linkedin.com";
 
   return (
     <footer className="bg-[var(--hll-bg)]">
@@ -108,12 +118,23 @@ export function SiteFooter({
             backgroundSize: "129.7% 457.9%",
             backgroundPosition: "100% 60.5%",
           }}
-        />
+        ></div>
 
-        <Link href="/" aria-label={siteName} className="relative inline-flex items-center gap-[22px]">
+        <Link
+          href="/"
+          aria-label={siteName}
+          className="relative inline-flex items-center gap-[22px]"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/hll-mark.png" alt="" aria-hidden className="h-[66px] w-[48px]" />
-          <span className="text-[32.7px] leading-none text-[#535353]">{siteName}</span>
+          <img
+            src="/assets/hll-mark.png"
+            alt=""
+            aria-hidden
+            className="h-[66px] w-[48px]"
+          />
+          <span className="text-[32.7px] leading-none text-[#535353]">
+            {siteName}
+          </span>
         </Link>
 
         <div className="relative mt-[22px] grid gap-10 sm:grid-cols-2 lg:grid-cols-[455fr_151fr_260fr_281fr_305fr] lg:gap-0">
@@ -137,10 +158,18 @@ export function SiteFooter({
           </ul>
 
           {INDUSTRY_COLUMNS.map((groups, col) => (
-            <div key={col} className={`${LIST} text-[var(--hll-dark-grey)] ${col === 1 ? "lg:pt-[28px]" : ""}`}>
-              {col === 0 ? <p className="text-[var(--hll-mid-grey)]">Industry</p> : null}
+            <div
+              key={col}
+              className={`${LIST} text-[var(--hll-dark-grey)] ${col === 1 ? "lg:pt-[28px]" : ""}`}
+            >
+              {col === 0 ? (
+                <p className="text-[var(--hll-mid-grey)]">Industry</p>
+              ) : null}
               {groups.map((group, i) => (
-                <ul key={group.title} className={i > 0 ? "mt-[28px]" : undefined}>
+                <ul
+                  key={group.title}
+                  className={i > 0 ? "mt-[28px]" : undefined}
+                >
                   <li className="text-[var(--hll-mid-grey)]">{group.title}</li>
                   {group.items.map((item) => (
                     <li key={item}>{item}</li>
@@ -151,7 +180,10 @@ export function SiteFooter({
           ))}
         </div>
 
-        <div className="relative mt-16 flex flex-wrap items-start justify-between gap-4 pb-12 lg:absolute lg:inset-x-0 lg:bottom-[48px] lg:mt-0 lg:pb-0 lg:pl-[23px] lg:pr-[30px]">
+        <div
+          data-footer-row
+          className="relative z-[31] mt-16 flex flex-wrap items-start justify-between gap-4 pb-12 lg:absolute lg:inset-x-0 lg:bottom-[48px] lg:mt-0 lg:pb-0 lg:pl-[23px] lg:pr-[30px]"
+        >
           <p className="mt-[18px] text-[12px] uppercase leading-none tracking-[0.25em] text-black">
             ©{siteName} {new Date().getFullYear()}
           </p>

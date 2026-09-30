@@ -71,6 +71,8 @@ export type GradientRevealTextProps = {
   letterSpacing?: string;
   /** Defaults to the demo's 1.2; Figma's type styles use 1.16. */
   lineHeight?: string;
+  /** Figma's headers are Light (300); some (client names, card titles) are Regular or Medium. */
+  fontWeight?: number;
   ink?: string;
   duration?: number;
   glow?: boolean;
@@ -93,6 +95,7 @@ export function GradientRevealText({
   fontSize = "clamp(2rem, 5vw, 3.5rem)",
   letterSpacing = "0.010em",
   lineHeight = "1.2",
+  fontWeight = 300,
   ink = "#1a1a1a",
   duration,
   glow = true,
@@ -174,7 +177,7 @@ export function GradientRevealText({
         .gtr-${rawId} {
           position: relative;
           display: inline-block;
-          font-weight: 300;
+          font-weight: ${fontWeight};
           font-size: ${fontSize};
           letter-spacing: ${letterSpacing};
           line-height: ${lineHeight};

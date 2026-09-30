@@ -7,7 +7,13 @@ import { getServiceTheme } from "./service-theme";
 export const SERVICE_GUTTER = "px-[clamp(1.25rem,1.98vw,1.875rem)]";
 
 /** Service icon + name, as in the Figma service template (no breadcrumb). */
-export function ServiceBrandHeader({ brand, variant }: { brand: string; variant: ServiceVariant }) {
+export function ServiceBrandHeader({
+  brand,
+  variant,
+}: {
+  brand: string;
+  variant: ServiceVariant;
+}) {
   const { iconSrc } = getServiceTheme(variant);
 
   return (
@@ -53,10 +59,17 @@ export function ServiceSectionHeading({
         style={{ fontFamily: "var(--hll-font-functional)" }}
         data-service-label
       >
-        <span style={{ color: tone === "dark" ? "rgba(250,250,250,0.7)" : "var(--hll-mid-grey)" }}>
+        <span
+          style={{
+            color:
+              tone === "dark" ? "rgba(250,250,250,0.7)" : "var(--hll-mid-grey)",
+          }}
+        >
           {section}
         </span>
-        <span style={{ color: tone === "dark" ? "#fafafa" : accent }}>{rest.join(" ")}</span>
+        <span style={{ color: tone === "dark" ? "#fafafa" : accent }}>
+          {rest.join(" ")}
+        </span>
       </p>
       <SectionTitle
         variant={variant}

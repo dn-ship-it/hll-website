@@ -87,6 +87,14 @@ export type HLLButtonProps = {
   children: ReactNode;
 };
 
+/**
+ * Figma "Button" component (every CTA in the Desktop frames): at rest a Light
+ * Grey #E6E6E6 box, 36px tall, with a 12px Dark Grey label tracked 3px and
+ * 21px padding. The Studio preset's own label (14px #808080, 16px padding) is
+ * left in hll-button-definition.ts; the shader still takes over on hover.
+ */
+const FIGMA_LABEL = { fontSize: 12, letterSpacing: 3, color: "#1A1A1A", padding: 21 };
+
 export function HLLButton({
   variant = "services",
   gradient,
@@ -116,7 +124,8 @@ export function HLLButton({
   );
 
   const isInert = disabled || isLoading;
-  const { text, box } = BASE_DEFINITION;
+  const { box } = BASE_DEFINITION;
+  const text = { ...BASE_DEFINITION.text, ...FIGMA_LABEL };
   const scale = SIZE_SCALE[size] ?? 1;
   // Width follows the label rather than a fixed px value: an inline-flex box
   // sized by its content, with equal left/right padding around the label, so
