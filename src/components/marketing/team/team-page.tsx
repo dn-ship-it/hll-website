@@ -40,7 +40,7 @@ function PersonCard({ person }: { person: TeamMember }) {
             : undefined
         }
       />
-      <h3 className="mt-2 text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black">
+      <h3 className="mt-2 text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
         {person.name}
       </h3>
       <p
@@ -50,7 +50,7 @@ function PersonCard({ person }: { person: TeamMember }) {
         {person.role}
       </p>
       {person.bio ? (
-        <p className="mt-3 max-w-[470px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+        <p className="mt-3 max-w-[470px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
           {person.bio}
         </p>
       ) : null}

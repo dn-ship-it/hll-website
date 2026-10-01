@@ -135,14 +135,14 @@ export function HomeHero({
 
   return (
     <section
-      className={`hll-home-section pt-[clamp(8rem,23.2vw,21.9rem)] ${HOME_GUTTER}`}
+      className={`hll-home-section pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${HOME_GUTTER}`}
     >
       <GradientRevealTextSlow
         as="h1"
         text={title}
         variant="hll-ai"
         className="hll-display block max-w-[1040px] font-light text-[var(--hll-dark-grey)]"
-        fontSize="clamp(2rem, 4.23vw, 4rem)"
+        fontSize="clamp(2rem, calc(4.23*var(--vw)), 4rem)"
         letterSpacing="0"
         lineHeight="1.16"
       />
@@ -174,7 +174,7 @@ export function WhatWeDo() {
     const sticky = stickyRef.current;
     if (!section || !sticky) return;
 
-    const scrollRange = section.offsetHeight - sticky.offsetHeight;
+    const scrollRange = section.getBoundingClientRect().height - sticky.getBoundingClientRect().height;
     if (scrollRange <= 0) return;
 
     const progress = Math.min(
@@ -207,7 +207,7 @@ export function WhatWeDo() {
     const sticky = stickyRef.current;
     if (!section || !sticky) return;
 
-    const scrollRange = section.offsetHeight - sticky.offsetHeight;
+    const scrollRange = section.getBoundingClientRect().height - sticky.getBoundingClientRect().height;
     const top =
       window.scrollY +
       section.getBoundingClientRect().top +
@@ -249,12 +249,12 @@ export function WhatWeDo() {
     <section
       ref={sectionRef}
       className="hll-home-section"
-      style={{ height: `${count * 100}svh` }}
+      style={{ height: `calc(${count * 60} * var(--svh))` }}
       aria-label="Our services"
     >
       <div
         ref={stickyRef}
-        className={`sticky top-[66px] flex h-[calc(100svh-66px)] flex-col justify-center ${HOME_GUTTER}`}
+        className={`sticky top-[66px] flex h-[calc(calc(100*var(--svh))-66px)] flex-col justify-center ${HOME_GUTTER}`}
       >
         <HomeHeading eyebrow="Services" title="What we do" />
 
@@ -267,7 +267,7 @@ export function WhatWeDo() {
             </ul>
             <a
               href={selected.href}
-              className="mb-3 mt-[21px] block text-[clamp(2rem,4.23vw,4rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]"
+              className="mb-3 mt-[21px] block text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]"
             >
               {selected.name}
             </a>
@@ -295,7 +295,7 @@ export function WhatWeDo() {
                 />
               </span>
             </div>
-            <p className="mt-6 max-w-[509px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+            <p className="mt-6 max-w-[509px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
               {selected.description}
             </p>
           </div>

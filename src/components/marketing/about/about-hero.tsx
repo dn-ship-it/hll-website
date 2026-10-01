@@ -40,14 +40,14 @@ export function AboutHero({ data }: { data: AboutPageData["hero"] }) {
         text={data.title}
         variant="about"
         className="mt-[109px] block font-light text-[var(--hll-dark-grey)]"
-        fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+        fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
         letterSpacing="0"
         lineHeight="1.16"
       />
 
       <div className="mt-[-14px] space-y-[50px] lg:ml-[45.2%] lg:max-w-[682px]">
         {data.paragraphs.map((text) => (
-          <p key={text} className="text-[clamp(1.125rem,1.59vw,1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+          <p key={text} className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
             {text}
           </p>
         ))}

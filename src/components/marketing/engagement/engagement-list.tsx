@@ -137,7 +137,7 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
           height so the grid doesn't jump. */}
       <div
         data-fade-up
-        className="mt-[19px] flex min-h-[38px] flex-wrap gap-2 px-[clamp(1.25rem,1.98vw,1.875rem)] lg:pl-[31px]"
+        className="mt-[19px] flex min-h-[38px] flex-wrap gap-2 px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pl-[31px]"
       >
         {chips.map((chip) => (
           <button
@@ -166,7 +166,7 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
           </div>
         ))}
         {shown.length === 0 ? (
-          <p className="col-span-full py-20 text-center text-[clamp(1rem,1.32vw,1.25rem)] text-[var(--hll-dark-grey)]">
+          <p className="col-span-full py-20 text-center text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] text-[var(--hll-dark-grey)]">
             No engagements match these filters yet.
           </p>
         ) : null}
@@ -180,7 +180,7 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
             <div
               role="dialog"
               aria-label="Filter engagements"
-              className="absolute bottom-[calc(100%+8px)] left-1/2 w-[min(1004px,calc(100vw-32px))] -translate-x-1/2 rounded-lg bg-[var(--hll-light-grey)] px-[28px] pb-[40px] pt-[33px] [animation:page-intro-in_300ms_cubic-bezier(0.22,1,0.36,1)_both]"
+              className="absolute bottom-[calc(100%+8px)] left-1/2 w-[min(1004px,calc(calc(100*var(--vw))-32px))] -translate-x-1/2 rounded-lg bg-[var(--hll-light-grey)] px-[28px] pb-[40px] pt-[33px] [animation:page-intro-in_300ms_cubic-bezier(0.22,1,0.36,1)_both]"
             >
               <div className="grid gap-8 md:grid-cols-[211fr_591fr_146fr] md:gap-0">
                 <div>

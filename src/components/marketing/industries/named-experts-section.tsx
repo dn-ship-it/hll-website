@@ -11,7 +11,7 @@ export function NamedExpertsSection({
   accentColor: string;
 }) {
   return (
-    <section className="pb-[clamp(5.375rem,10.19vw,9.625rem)]">
+    <section className="pb-[clamp(5.375rem,calc(10.19*var(--vw)),9.625rem)]">
       <div className={SERVICE_GUTTER}>
         <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
         <div className="pt-[84px]">
@@ -37,7 +37,7 @@ export function NamedExpertsSection({
                   : undefined
               }
             />
-            <p className="mt-2 text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+            <p className="mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
               {person.name}
             </p>
             <p className="hll-label mt-[2px] whitespace-pre-line text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]">

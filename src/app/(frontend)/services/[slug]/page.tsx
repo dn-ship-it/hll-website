@@ -25,12 +25,12 @@ export default async function ServiceVerticalPage({
 
   return (
     <MarketingShell>
-      <section className="px-[clamp(1.25rem,4vw,3rem)] py-[clamp(3rem,8vw,5rem)]">
+      <section className="px-[clamp(1.25rem,calc(4*var(--vw)),3rem)] py-[clamp(3rem,calc(8*var(--vw)),5rem)]">
         <div className="mx-auto max-w-3xl">
           <p className="text-[10px] uppercase tracking-[0.24em] text-black/45">Service vertical</p>
           <h1
             className="mt-4 font-light capitalize text-black"
-            style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
+            style={{ fontSize: "clamp(2rem, calc(4*var(--vw)), 3rem)" }}
           >
             {label}
           </h1>

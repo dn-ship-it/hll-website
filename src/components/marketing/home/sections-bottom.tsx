@@ -86,11 +86,11 @@ export function HowWeWork() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={step.image} alt="" className="aspect-square w-full rounded-lg object-cover" />
-              <span className="mt-[6px] block text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black">
+              <span className="mt-[6px] block text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
                 {step.title}
               </span>
               {isActive ? (
-                <span className="mt-[10px] block max-w-[460px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                <span className="mt-[10px] block max-w-[460px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                   {step.body}
                 </span>
               ) : null}
@@ -131,7 +131,7 @@ export function WhoWeAre() {
         {team.map((person) => (
           <article key={person.id}>
             <div className="aspect-square w-full rounded-lg bg-[#D9D9D9]" />
-            <p className="mt-2 text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+            <p className="mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
               {person.name}
             </p>
             <p className="hll-label mt-[2px] text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]">

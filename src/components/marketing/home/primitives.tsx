@@ -45,7 +45,7 @@ export function SectionEyebrow({ children }: { children: React.ReactNode }) {
 export function SectionTitle({
   children,
   variant = "hll-ai",
-  fontSize = "clamp(1.5rem, 3vw, 2rem)",
+  fontSize = "clamp(1.5rem, calc(3*var(--vw)), 2rem)",
   className: extraClassName = "mt-2 font-normal tracking-tight text-black",
   ink,
   letterSpacing = "-0.01em",
@@ -110,7 +110,7 @@ export function OutlinePillButton({
 }
 
 /** Page gutter from the Figma home frame: 30px at 1512px. */
-export const HOME_GUTTER = "px-[clamp(1.25rem,1.98vw,1.875rem)]";
+export const HOME_GUTTER = "px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]";
 
 /** Figma home section heading: Functional eyebrow, then a 64px light title 12px below. */
 export function HomeHeading({
@@ -143,7 +143,7 @@ export function HomeHeading({
         ))}
       </p>
       <SectionTitle
-        fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+        fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
         letterSpacing="0"
         lineHeight="1.16"
         ink={ink}

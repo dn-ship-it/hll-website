@@ -94,7 +94,7 @@ export function EngagementCard({
         ) : null}
       </EngagementMediaBox>
       <span className="mt-2 flex items-start justify-between gap-4">
-        <span className="text-[clamp(1.5rem,2.38vw,2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
+        <span className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
           {engagement.client}
         </span>
         {showYear ? (

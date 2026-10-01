@@ -23,7 +23,7 @@ import { EngagementSidebar } from "./engagement-sidebar";
 type Tone = { accent: string | null; story: boolean };
 
 const BODY =
-  "text-[clamp(1.125rem,1.59vw,1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]";
+  "text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]";
 const MEDIA_KINDS = new Set<EngagementBlock["kind"]>(["media", "mediaGrid"]);
 
 // Offsets inside the 1117px main column (Figma x 385–1502): labels at 636,
@@ -113,11 +113,11 @@ function QuoteBlock({
         </>
       )}
       <div className="absolute inset-x-0 top-[32.4%] pl-[22.47%] pr-[22%]">
-        <blockquote className="text-[clamp(1.5rem,2.38vw,2.25rem)] leading-[1.16] text-[#FAFAFA]">
+        <blockquote className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[#FAFAFA]">
           {block.quote}
         </blockquote>
         {block.name || block.role ? (
-          <p className="mt-[clamp(2rem,9.26vw,8.75rem)] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-black">
+          <p className="mt-[clamp(2rem,calc(9.26*var(--vw)),8.75rem)] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-black">
             {block.name}
             {block.role ? <span className="block">{block.role}</span> : null}
           </p>
@@ -232,7 +232,7 @@ function Block({
                 >
                   <CountUp
                     value={item.stat}
-                    className="pl-[6px] text-[clamp(2.5rem,4.23vw,4rem)] font-light leading-[1.16] text-black"
+                    className="pl-[6px] text-[clamp(2.5rem,calc(4.23*var(--vw)),4rem)] font-light leading-[1.16] text-black"
                   />
                   <p
                     className={`${i === 0 ? "pt-[10px]" : "pt-[6px]"} ${BODY}`}
@@ -256,7 +256,7 @@ function Block({
                 className="grid grid-cols-[375fr_220fr] gap-4"
               >
                 <dt
-                  className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25]"
+                  className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25]"
                   style={{
                     color:
                       tone.story && tone.accent
@@ -266,7 +266,7 @@ function Block({
                 >
                   {row.role}
                 </dt>
-                <dd className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                <dd className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                   {row.names.map((name) => (
                     <span key={name} className="block">
                       {name}
@@ -325,13 +325,13 @@ function Spacer({
   if (story && !MEDIA_KINDS.has(prev.kind)) {
     return (
       <div
-        className={`py-[clamp(3rem,6vw,5.25rem)] lg:ml-px lg:pb-[84px] lg:pt-[154px] ${MEDIA_INSET}`}
+        className={`py-[clamp(3rem,calc(6*var(--vw)),5.25rem)] lg:ml-px lg:pb-[84px] lg:pt-[154px] ${MEDIA_INSET}`}
       >
         <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
       </div>
     );
   }
-  return <div className="h-[clamp(5rem,10.2vw,9.625rem)]" />;
+  return <div className="h-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)]" />;
 }
 
 /**
@@ -352,7 +352,7 @@ function RelatedBand({ items, color }: { items: Engagement[]; color: string }) {
       <div className="px-[20px]">
         <SectionTitle
           variant="engagement"
-          fontSize="clamp(1.75rem, 2.38vw, 2.25rem)"
+          fontSize="clamp(1.75rem, calc(2.38*var(--vw)), 2.25rem)"
           letterSpacing="0"
           lineHeight="1.16"
           ink="#000000"
@@ -397,7 +397,7 @@ export async function EngagementDetail({ slug }: { slug: string }) {
         <div className="hll-home hll-service-page">
           <div className="lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
             <EngagementSidebar engagement={engagement} accent={accent} />
-            <div className="px-[clamp(1.25rem,1.98vw,1.875rem)] pb-[clamp(5rem,10.2vw,9.625rem)] pt-10 lg:pl-0 lg:pr-[10px] lg:pt-16">
+            <div className="px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] pt-10 lg:pl-0 lg:pr-[10px] lg:pt-16">
               {blocks.map((block, i) => (
                 <div key={block.id}>
                   {i > 0 ? (

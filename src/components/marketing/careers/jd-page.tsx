@@ -24,7 +24,7 @@ export async function JdPage({ slug }: { slug: string }) {
   return (
     <MarketingShell>
       <div className="hll-home hll-service-page">
-        <section className={`pt-[clamp(8rem,23.2vw,21.9rem)] ${SERVICE_GUTTER}`}>
+        <section className={`pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
           <div className="grid gap-6 lg:grid-cols-[653fr_799fr] lg:gap-0">
             <div>
               <GradientRevealTextSlow
@@ -32,7 +32,7 @@ export async function JdPage({ slug }: { slug: string }) {
                 text={role.title}
                 variant="contact"
                 className="block font-light text-[var(--hll-dark-grey)]"
-                fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+                fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
                 letterSpacing="0"
                 lineHeight="1.16"
               />
@@ -44,7 +44,7 @@ export async function JdPage({ slug }: { slug: string }) {
                 </div>
               ) : null}
             </div>
-            <p className="max-w-[721px] text-[clamp(1.5rem,2.38vw,2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)] lg:pt-[19px]">
+            <p className="max-w-[721px] text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)] lg:pt-[19px]">
               {role.summary}
             </p>
           </div>
@@ -73,7 +73,7 @@ export async function JdPage({ slug }: { slug: string }) {
           />
           <div className="mt-16 space-y-[56px] lg:ml-[45.2%] lg:max-w-[693px]">
             {content.aboutHll.paragraphs.map((text, i) => (
-              <p key={i} className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+              <p key={i} className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                 {text}
               </p>
             ))}

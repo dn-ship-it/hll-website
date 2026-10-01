@@ -30,7 +30,7 @@ export function ServiceHero({
 
   return (
     <section
-      className={`relative overflow-hidden pb-0 pt-[clamp(8rem,19.64vw,18.5625rem)] ${SERVICE_GUTTER}`}
+      className={`relative overflow-hidden pb-0 pt-[clamp(8rem,calc(19.64*var(--vw)),18.5625rem)] ${SERVICE_GUTTER}`}
     >
       <div className="relative">
         <GradientRevealTextSlow
@@ -38,7 +38,7 @@ export function ServiceHero({
           text={data.headline}
           variant={variant}
           className="block max-w-none font-light text-[var(--hll-dark-grey)]"
-          fontSize="clamp(2rem, 4.23vw, 4rem)"
+          fontSize="clamp(2rem, calc(4.23*var(--vw)), 4rem)"
           letterSpacing="0"
           lineHeight="1.16"
         />
@@ -50,7 +50,7 @@ export function ServiceHero({
         <div
           role="tablist"
           aria-label="Service demos"
-          className="mt-[clamp(1.1875rem,2.25vw,2.125rem)] flex flex-wrap gap-2"
+          className="mt-[clamp(1.1875rem,calc(2.25*var(--vw)),2.125rem)] flex flex-wrap gap-2"
         >
           {data.tabs.map((tab) => (
             <HLLOutlineButton

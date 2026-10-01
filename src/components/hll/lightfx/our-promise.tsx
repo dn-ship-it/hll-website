@@ -16,6 +16,7 @@
 // that section's own scroll progress. `mode="fixed"` is the demo's original
 // behavior, for when this is the page.
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { pageZoom } from "@/lib/page-zoom";
 
 import { cn } from "@/lib/utils";
 
@@ -110,7 +111,7 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
     // Capped for the same reason as the ripple: p5 would otherwise render this
     // full-viewport shader at the phone's full pixel ratio.
     p.pixelDensity(Math.min(p.displayDensity(), 2));
-    p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+    p.createCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom(), p.WEBGL);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, OUR_PROMISE_FRAG_SRC);
   };
@@ -197,7 +198,7 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
   };
 
   p.windowResized = () => {
-    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    p.resizeCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom());
   };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -320,7 +321,7 @@ export function OurPromise({
     <div
       ref={rootRef}
       className={cn("our-promise", isSection && "our-promise--section", className)}
-      style={{ ...(isSection ? { height: `${scrollSpacerVh}vh` } : null), ...style }}
+      style={{ ...(isSection ? { height: `calc(${scrollSpacerVh} * var(--vh))` } : null), ...style }}
       aria-label="Our promise"
     >
       <div className="our-promise-stage">
@@ -356,7 +357,7 @@ export function OurPromise({
       </div>
 
       {!isSection ? (
-        <div className="our-promise-scroll-spacer" style={{ height: `${scrollSpacerVh}vh` }} />
+        <div className="our-promise-scroll-spacer" style={{ height: `calc(${scrollSpacerVh} * var(--vh))` }} />
       ) : null}
     </div>
   );

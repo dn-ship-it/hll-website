@@ -20,7 +20,7 @@ function Stat({ value }: { value: string }) {
   const unit = match ? match[2] : "";
 
   return (
-    <p className="text-[clamp(3.5rem,6.88vw,6.5rem)] font-light leading-[1.16] text-black">
+    <p className="text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)] font-light leading-[1.16] text-black">
       {/* Figma: "Number counter". */}
       <CountUp value={main} />
       {unit ? (
@@ -45,7 +45,7 @@ export function OutcomeSection({
 
   return (
     <section
-      className="relative overflow-hidden pt-[clamp(2.875rem,5.56vw,5.25rem)] pb-[clamp(5.9375rem,11.38vw,10.75rem)]"
+      className="relative overflow-hidden pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] pb-[clamp(5.9375rem,calc(11.38*var(--vw)),10.75rem)]"
       style={{ background: outcomeBackground }}
     >
       {/* Figma: "Live centered ripple animation in the back according to the
@@ -69,7 +69,7 @@ export function OutcomeSection({
 
       {/* Figma: cards run to 10px from the frame edge, 10px apart, and each is
           only as tall as its content — the uneven heights are intentional. */}
-      <div className="relative mt-[clamp(2.8125rem,5.42vw,5.125rem)] grid grid-cols-1 items-start gap-[10px] px-[10px] sm:grid-cols-2 lg:grid-cols-4">
+      <div className="relative mt-[clamp(2.8125rem,calc(5.42*var(--vw)),5.125rem)] grid grid-cols-1 items-start gap-[10px] px-[10px] sm:grid-cols-2 lg:grid-cols-4">
         {data.cards.map((card) => (
           <article
             key={card.stat}
@@ -80,7 +80,7 @@ export function OutcomeSection({
               <MediaPlaceholder className="aspect-[320/234] w-full rounded-[4px] bg-[#d9d9d9]" />
             ) : null}
             <p
-              className={`text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)] ${
+              className={`text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)] ${
                 card.hasMedia ? "mt-[17px]" : "mt-[14px]"
               }`}
             >

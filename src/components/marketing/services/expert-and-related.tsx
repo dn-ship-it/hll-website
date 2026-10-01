@@ -59,14 +59,14 @@ export function VoiceSection({
 
   return (
     <section
-      className={`pb-[clamp(2.875rem,5.56vw,5.25rem)] ${SERVICE_GUTTER}`}
+      className={`pb-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] ${SERVICE_GUTTER}`}
     >
       {divider ? (
         <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
       ) : null}
 
       <div
-        className={divider ? "pt-[clamp(2.875rem,5.56vw,5.25rem)]" : undefined}
+        className={divider ? "pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]" : undefined}
       >
         {heading}
       </div>
@@ -74,7 +74,7 @@ export function VoiceSection({
       {/* Figma: counter + arrows | 300×400 portrait | 115px logo tile, with the
           quote starting at 60% of the frame. One quote per service today, so
           the carousel controls render in their resting state. */}
-      <div className="mt-[clamp(2.875rem,5.56vw,5.25rem)] grid gap-[clamp(2rem,4vw,3rem)] lg:grid-cols-[878fr_574fr] lg:gap-0">
+      <div className="mt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] grid gap-[clamp(2rem,calc(4*var(--vw)),3rem)] lg:grid-cols-[878fr_574fr] lg:gap-0">
         <div className="flex items-start gap-[10px]">
           <div className="hidden w-9 shrink-0 sm:block" data-service-label>
             <p className="text-[12px] leading-none" style={{ color: accent }}>
@@ -88,7 +88,7 @@ export function VoiceSection({
               <span>&gt;</span>
             </p>
           </div>
-          <div className="w-[clamp(10rem,19.8vw,18.75rem)] shrink-0">
+          <div className="w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] shrink-0">
             {data.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -114,7 +114,7 @@ export function VoiceSection({
             ) : null}
           </div>
           {data.company ? (
-            <div className="grid aspect-square w-[clamp(4.5rem,7.6vw,7.2rem)] shrink-0 place-items-center rounded-[4px] bg-[#24477F] p-2 text-center text-[11px] text-white">
+            <div className="grid aspect-square w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] shrink-0 place-items-center rounded-[4px] bg-[#24477F] p-2 text-center text-[11px] text-white">
               {data.companyLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -130,10 +130,10 @@ export function VoiceSection({
         </div>
 
         <blockquote className="flex flex-col justify-between gap-10 lg:pr-[20px]">
-          <p className="text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.17] text-[var(--hll-dark-grey)]">
+          <p className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.17] text-[var(--hll-dark-grey)]">
             &ldquo;{data.quote}&rdquo;
           </p>
-          <footer className="pb-[9px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25]">
+          <footer className="pb-[9px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25]">
             {data.name ? (
               <cite className="block not-italic text-black">{data.name}</cite>
             ) : null}
@@ -161,13 +161,13 @@ export function RelatedServicesSection({
   // what lifts the light buttons off the page.
   return (
     <section
-      className={`relative overflow-hidden pt-[clamp(5.1875rem,9.99vw,9.4375rem)] pb-[clamp(5.125rem,9.85vw,9.3125rem)] ${SERVICE_GUTTER}`}
+      className={`relative overflow-hidden pt-[clamp(5.1875rem,calc(9.99*var(--vw)),9.4375rem)] pb-[clamp(5.125rem,calc(9.85*var(--vw)),9.3125rem)] ${SERVICE_GUTTER}`}
       style={{
         background: `linear-gradient(0deg, ${washFrom} 0%, #FAFAFA 100%)`,
       }}
     >
       <div className="relative text-center">
-        <h2 className="text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black">
+        <h2 className="text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
           {title}
         </h2>
         <div className="mx-auto mt-9 flex max-w-[37rem] flex-wrap justify-center gap-2">

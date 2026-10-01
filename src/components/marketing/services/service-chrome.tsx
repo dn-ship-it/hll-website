@@ -4,7 +4,7 @@ import { SectionTitle } from "@/components/marketing/home/primitives";
 import { getServiceTheme } from "./service-theme";
 
 /** Page gutter from the Figma service template: 30px at the 1512px frame. */
-export const SERVICE_GUTTER = "px-[clamp(1.25rem,1.98vw,1.875rem)]";
+export const SERVICE_GUTTER = "px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]";
 
 /** Service icon + name, as in the Figma service template (no breadcrumb). */
 export function ServiceBrandHeader({
@@ -23,9 +23,9 @@ export function ServiceBrandHeader({
         src={iconSrc}
         alt=""
         aria-hidden="true"
-        className="size-[clamp(1.75rem,2.38vw,2.25rem)] shrink-0"
+        className="size-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] shrink-0"
       />
-      <span className="text-[clamp(1.5rem,2.38vw,2.25rem)] font-medium leading-[1.16] text-[var(--hll-dark-grey)]">
+      <span className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-medium leading-[1.16] text-[var(--hll-dark-grey)]">
         {brand}
       </span>
     </div>
@@ -73,7 +73,7 @@ export function ServiceSectionHeading({
       </p>
       <SectionTitle
         variant={variant}
-        fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+        fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
         letterSpacing="0"
         lineHeight="1.16"
         ink={tone === "dark" ? "#FAFAFA" : "#1A1A1A"}

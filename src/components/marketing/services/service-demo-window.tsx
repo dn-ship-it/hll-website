@@ -94,15 +94,15 @@ export function ServiceDemoWindow({
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
   const iframeHeight =
-    "h-[clamp(20rem,42.2vw,39.9rem)] min-h-[clamp(20rem,42.2vw,39.9rem)]";
+    "h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]";
 
   return (
     <div
-      className="service-demo-window relative mt-[clamp(1.125rem,2.18vw,2.0625rem)] overflow-hidden rounded-lg"
+      className="service-demo-window relative mt-[clamp(1.125rem,calc(2.18*var(--vw)),2.0625rem)] overflow-hidden rounded-lg"
       data-service-media
     >
       <div
-        className="relative px-[clamp(1.25rem,6.35vw,6rem)] py-[clamp(2rem,8.99vw,8.5rem)]"
+        className="relative px-[clamp(1.25rem,calc(6.35*var(--vw)),6rem)] py-[clamp(2rem,calc(8.99*var(--vw)),8.5rem)]"
         style={{ background }}
       >
         {ripple ? (
@@ -113,7 +113,7 @@ export function ServiceDemoWindow({
             style={{ opacity: RIPPLE_OPACITY }}
           />
         ) : null}
-        <div className="relative mx-auto w-full rounded-lg bg-[var(--hll-bg)] p-[clamp(0.75rem,2vw,1rem)] shadow-none">
+        <div className="relative mx-auto w-full rounded-lg bg-[var(--hll-bg)] p-[clamp(0.75rem,calc(2*var(--vw)),1rem)] shadow-none">
           <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2">
             <span className="inline-flex h-9 items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)]">
               {safeConfig.selectorLabel}

@@ -19,14 +19,14 @@ const VARIANT_BLURB: Record<NavVariant, string> = {
 export default function LightFXPreviewPage() {
   return (
     <MenuTriggerOverlay variant="services" layer="under">
-      <main className="min-h-[220vh] px-[clamp(1.25rem,5vw,4rem)] py-24 text-black">
+      <main className="min-h-[calc(220*var(--vh))] px-[clamp(1.25rem,calc(5*var(--vw)),4rem)] py-24 text-black">
         <div className="mx-auto max-w-3xl">
           <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-black/45">
             LightFX kit
           </p>
           <h1
             className="mt-5 font-medium tracking-tight"
-            style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", lineHeight: 1.08 }}
+            style={{ fontSize: "clamp(2rem, calc(5*var(--vw)), 3.5rem)", lineHeight: 1.08 }}
           >
             MenuTriggerOverlay, services variant
           </h1>

@@ -10,7 +10,7 @@ type GridOptions = {
 export function fluidGridStyle({
   min = "16rem",
   max = "1fr",
-  gap = "clamp(0.75rem, 2vw, 1.25rem)",
+  gap = "clamp(0.75rem, calc(2*var(--vw)), 1.25rem)",
 }: GridOptions = {}): CSSProperties {
   return {
     display: "grid",
@@ -22,16 +22,16 @@ export function fluidGridStyle({
 /** Dense card grid for service tiles — slightly wider minimum on large screens. */
 export function serviceGridStyle(): CSSProperties {
   return fluidGridStyle({
-    min: "clamp(16rem, 28vw, 22rem)",
-    gap: "clamp(0.75rem, 1.5vw, 1.25rem)",
+    min: "clamp(16rem, calc(28*var(--vw)), 22rem)",
+    gap: "clamp(0.75rem, calc(1.5*var(--vw)), 1.25rem)",
   });
 }
 
 /** Stat / proof strip — 1 col mobile, auto-fit from ~12rem. */
 export function statGridStyle(): CSSProperties {
   return fluidGridStyle({
-    min: "clamp(12rem, 30vw, 16rem)",
-    gap: "clamp(1rem, 2.5vw, 1.5rem)",
+    min: "clamp(12rem, calc(30*var(--vw)), 16rem)",
+    gap: "clamp(1rem, calc(2.5*var(--vw)), 1.5rem)",
   });
 }
 
@@ -40,14 +40,14 @@ export function splitGridStyle(): CSSProperties {
   return {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 22rem), 1fr))",
-    gap: "clamp(1.5rem, 4vw, 3rem)",
+    gap: "clamp(1.5rem, calc(4*var(--vw)), 3rem)",
     alignItems: "end",
   };
 }
 
 export function sectionPaddingStyle(): CSSProperties {
   return {
-    paddingInline: "clamp(1.25rem, 4vw, 2.5rem)",
-    paddingBlock: "clamp(3rem, 8vw, 5rem)",
+    paddingInline: "clamp(1.25rem, calc(4*var(--vw)), 2.5rem)",
+    paddingBlock: "clamp(3rem, calc(8*var(--vw)), 5rem)",
   };
 }

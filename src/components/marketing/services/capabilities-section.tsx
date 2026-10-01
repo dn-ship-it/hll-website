@@ -37,7 +37,7 @@ export function CapabilitiesSection({
   return (
     <section
       id="capabilities"
-      className={`pt-[clamp(5.375rem,10.32vw,9.75rem)] pb-[clamp(3rem,5.75vw,5.4375rem)] ${SERVICE_GUTTER}`}
+      className={`pt-[clamp(5.375rem,calc(10.32*var(--vw)),9.75rem)] pb-[clamp(3rem,calc(5.75*var(--vw)),5.4375rem)] ${SERVICE_GUTTER}`}
     >
       <ServiceSectionHeading
         breadcrumb={breadcrumb}
@@ -45,7 +45,7 @@ export function CapabilitiesSection({
         variant={variant}
       />
 
-      <div className="mt-[clamp(2.5rem,4.76vw,4.5rem)] grid gap-[clamp(2rem,5vw,4rem)] lg:grid-cols-[436fr_1016fr] lg:gap-0">
+      <div className="mt-[clamp(2.5rem,calc(4.76*var(--vw)),4.5rem)] grid gap-[clamp(2rem,calc(5*var(--vw)),4rem)] lg:grid-cols-[436fr_1016fr] lg:gap-0">
         <div className="lg:sticky lg:top-24 lg:self-start">
           <CapabilityNav items={data.items} accent={accent} />
         </div>
@@ -55,14 +55,14 @@ export function CapabilitiesSection({
             <article
               key={item.id}
               id={item.id}
-              className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,4.43vw,4.1875rem)] ${ROW_GRID}`}
+              className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,calc(4.43*var(--vw)),4.1875rem)] ${ROW_GRID}`}
             >
               <CapabilityRule index={item.index} accent={accent} />
-              <h3 className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2 lg:pr-8">
+              <h3 className="mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)] text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2 lg:pr-8">
                 {item.title}
               </h3>
-              <div className="mt-4 lg:col-start-3 lg:mt-[clamp(0.8125rem,1.59vw,1.5rem)]">
-                <p className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+              <div className="mt-4 lg:col-start-3 lg:mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)]">
+                <p className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                   {item.description}
                 </p>
                 <SubServices items={item.subServices} />
@@ -72,13 +72,13 @@ export function CapabilitiesSection({
 
           {data.tools ? (
             <article
-              className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,4.43vw,4.1875rem)] ${ROW_GRID}`}
+              className={`grid scroll-mt-28 grid-cols-1 pb-[clamp(2.3125rem,calc(4.43*var(--vw)),4.1875rem)] ${ROW_GRID}`}
             >
               <CapabilityRule accent={accent} />
-              <h3 className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2">
+              <h3 className="mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)] text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black lg:col-start-2">
                 Tools and Technologies
               </h3>
-              <div className="mt-6 space-y-9 lg:col-start-3 lg:mt-[clamp(0.8125rem,1.59vw,1.5rem)]">
+              <div className="mt-6 space-y-9 lg:col-start-3 lg:mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)]">
                 <ToolGroup label="Cloud" tools={data.tools.cloud} />
                 <ToolGroup label="Data" tools={data.tools.data} />
               </div>
@@ -120,7 +120,7 @@ function ToolGroup({
 }) {
   return (
     <div>
-      <p className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+      <p className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
         {label}
       </p>
       <div className="mt-4 flex flex-wrap gap-[11px]">
@@ -145,7 +145,7 @@ function SubServices({
 
   if (!hasDescriptions) {
     return (
-      <ul className="mt-[clamp(0.8125rem,1.59vw,1.5rem)] text-[14px] leading-[28px] text-[var(--hll-mid-grey)]">
+      <ul className="mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)] text-[14px] leading-[28px] text-[var(--hll-mid-grey)]">
         {items.map((sub) => (
           <li key={sub.name} className="flex gap-[9px]">
             <span aria-hidden>•</span>
@@ -157,7 +157,7 @@ function SubServices({
   }
 
   return (
-    <dl className="mt-6 grid gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-5 sm:grid-cols-2">
+    <dl className="mt-6 grid gap-x-[clamp(1.5rem,calc(3*var(--vw)),2.5rem)] gap-y-5 sm:grid-cols-2">
       {items.map((sub) => (
         <div key={sub.name}>
           <dt className="text-[11px] uppercase tracking-[0.16em] text-black/70">

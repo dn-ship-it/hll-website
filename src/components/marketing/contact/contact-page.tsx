@@ -25,14 +25,14 @@ function Office({ office }: { office: ContactOffice }) {
   return (
     <li className="pt-[54px] first:pt-0">
       <div className="grid gap-4 pb-[54px] sm:grid-cols-[377fr_299fr] sm:gap-0">
-        <p className="pt-[6px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-mid-grey)]">
+        <p className="pt-[6px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-mid-grey)]">
           {office.country}
         </p>
         <div>
-          <p className="text-[clamp(1.5rem,1.92vw,1.8125rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+          <p className="text-[clamp(1.5rem,calc(1.92*var(--vw)),1.8125rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
             {office.company}
           </p>
-          <p className="mt-12 whitespace-pre-line text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+          <p className="mt-12 whitespace-pre-line text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
             {office.address}
           </p>
           {office.taxId ? (
@@ -43,7 +43,7 @@ function Office({ office }: { office: ContactOffice }) {
               >
                 {office.taxLabel}
               </p>
-              <p className="mt-2 text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+              <p className="mt-2 text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                 {office.taxId}
               </p>
             </div>
@@ -66,14 +66,14 @@ export async function ContactPage() {
         <div className="hll-home hll-service-page">
           {/* Title (slow anim) with the form beside it, 70px lower. */}
           <section
-            className={`grid gap-12 pt-[clamp(8rem,23.2vw,21.9rem)] lg:grid-cols-[472fr_864fr_116fr] lg:gap-0 ${SERVICE_GUTTER}`}
+            className={`grid gap-12 pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] lg:grid-cols-[472fr_864fr_116fr] lg:gap-0 ${SERVICE_GUTTER}`}
           >
             <GradientRevealTextSlow
               as="h1"
               text={content.title}
               variant="contact"
               className="block font-light text-[var(--hll-dark-grey)]"
-              fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+              fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
               letterSpacing="0"
               lineHeight="1.16"
             />

@@ -92,7 +92,7 @@ export function GradientRevealText({
   autoPlay = true,
   playOnView = false,
   replayKey,
-  fontSize = "clamp(2rem, 5vw, 3.5rem)",
+  fontSize = "clamp(2rem, calc(5*var(--vw)), 3.5rem)",
   letterSpacing = "0.010em",
   lineHeight = "1.2",
   fontWeight = 300,

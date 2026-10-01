@@ -216,11 +216,11 @@ export function AboutValuesSection({
                 variant="about"
                 className="block text-black"
                 fontWeight={400}
-                fontSize="clamp(2rem, 3.04vw, 2.875rem)"
+                fontSize="clamp(2rem, calc(3.04*var(--vw)), 2.875rem)"
                 letterSpacing="0"
                 lineHeight="1.16"
               />
-              <p className="mt-8 max-w-[592px] text-[clamp(1.125rem,1.59vw,1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)] [animation:page-intro-in_700ms_200ms_cubic-bezier(0.22,1,0.36,1)_both]">
+              <p className="mt-8 max-w-[592px] text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)] [animation:page-intro-in_700ms_200ms_cubic-bezier(0.22,1,0.36,1)_both]">
                 {item.description}
               </p>
             </div>

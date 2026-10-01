@@ -52,7 +52,7 @@ export function FooterCta({
   };
 
   return (
-    <div className="relative flex min-h-[237px] flex-wrap items-center justify-between gap-6 overflow-hidden bg-[#FFFBD6] px-[clamp(1.25rem,11.3vw,10.7rem)] py-10">
+    <div className="relative flex min-h-[237px] flex-wrap items-center justify-between gap-6 overflow-hidden bg-[#FFFBD6] px-[clamp(1.25rem,calc(11.3*var(--vw)),10.7rem)] py-10">
       <div
         aria-hidden
         className={`footer-cta-still pointer-events-none absolute inset-0 ${active && !videoSrc ? "is-active" : ""}`}
@@ -74,7 +74,7 @@ export function FooterCta({
         />
       ) : null}
 
-      <p className="relative text-[clamp(2rem,4.23vw,4rem)] font-light leading-[1.16] text-[var(--hll-dark-grey)]">
+      <p className="relative text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] font-light leading-[1.16] text-[var(--hll-dark-grey)]">
         {headline}
       </p>
       {/* The Figma "Button" component: the LightFX button, which blooms

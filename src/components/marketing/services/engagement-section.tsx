@@ -44,7 +44,7 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
             className="max-h-[24%] max-w-[72%] object-contain"
           />
         ) : card.tag === "Client work" && card.variant !== "image" ? (
-          <p className="text-[clamp(1.5rem,2.4vw,2.25rem)] font-medium">
+          <p className="text-[clamp(1.5rem,calc(2.4*var(--vw)),2.25rem)] font-medium">
             {card.client}
           </p>
         ) : null}
@@ -61,10 +61,10 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
         </span>
       </div>
 
-      <h3 className="mt-2 text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+      <h3 className="mt-2 text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
         {card.title}
       </h3>
-      <p className="mt-3 text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+      <p className="mt-3 text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
         {card.description}
       </p>
     </article>
@@ -81,21 +81,21 @@ export function EngagementSection({
   variant: ServiceVariant;
 }) {
   return (
-    <section className="pt-[clamp(5.3125rem,10.19vw,9.625rem)] pb-[clamp(5.3125rem,10.19vw,9.625rem)]">
+    <section className="pt-[clamp(5.3125rem,calc(10.19*var(--vw)),9.625rem)] pb-[clamp(5.3125rem,calc(10.19*var(--vw)),9.625rem)]">
       <div className={SERVICE_GUTTER}>
         <ServiceSectionHeading
           breadcrumb={breadcrumb}
           title={data.title}
           variant={variant}
         />
-        <p className="mt-[25px] max-w-[23rem] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+        <p className="mt-[25px] max-w-[23rem] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
           {data.intro}
         </p>
       </div>
 
       {/* Figma: two columns starting a third of the way across, running to
           10px from the right edge of the frame. */}
-      <div className="mt-[clamp(2.625rem,5.09vw,4.8125rem)] grid grid-cols-1 gap-x-[14px] gap-y-[clamp(1.625rem,3.17vw,3rem)] px-[clamp(1.25rem,1.98vw,1.875rem)] sm:grid-cols-2 lg:ml-[33.66%] lg:px-0 lg:pr-[10px]">
+      <div className="mt-[clamp(2.625rem,calc(5.09*var(--vw)),4.8125rem)] grid grid-cols-1 gap-x-[14px] gap-y-[clamp(1.625rem,calc(3.17*var(--vw)),3rem)] px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] sm:grid-cols-2 lg:ml-[33.66%] lg:px-0 lg:pr-[10px]">
         {data.cards.map((card) => (
           <EngagementCardView key={card.id} card={card} />
         ))}
