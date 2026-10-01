@@ -91,7 +91,7 @@ type SketchRefs = {
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
+function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
   let shaderProgram: any;
 
   let smoothPaletteMix = 0;
@@ -122,7 +122,7 @@ function sketch(p: any, refs: SketchRefs, scrollTriggerPx: number) {
     p.background(0);
     p.shader(shaderProgram);
 
-    const scrollProgress = Math.min(1, Math.max(0, refs.scrollY.current / scrollTriggerPx));
+    const scrollProgress = Math.min(1, Math.max(0, refs.scrollY.current / scrollTrigger()));
 
     const targetBands = BANDS_AT_TOP + (BANDS_AT_BOTTOM - BANDS_AT_TOP) * scrollProgress;
     smoothBands += (targetBands - smoothBands) * BANDS_EASING;
@@ -291,8 +291,13 @@ export function OurPromise({
       const root = rootRef.current;
       if (cancelled || !host || !root) return;
 
+      // Mobile runs the section over two screens (Figma Home mobile), so the
+      // change completes within its one screen of pinned scroll.
+      const mobile = window.matchMedia("(width < 64rem)");
+      const trigger = () =>
+        mode === "section" && mobile.matches ? window.innerHeight * 0.7 : scrollTriggerPx;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      instance = new p5((p: any) => sketch(p, refs, scrollTriggerPx), host);
+      instance = new p5((p: any) => sketch(p, refs, trigger), host);
       instance.noLoop();
 
       observer = new IntersectionObserver(
@@ -321,7 +326,12 @@ export function OurPromise({
     <div
       ref={rootRef}
       className={cn("our-promise", isSection && "our-promise--section", className)}
-      style={{ ...(isSection ? { height: `calc(${scrollSpacerVh} * var(--vh))` } : null), ...style }}
+      style={{
+        ...(isSection
+          ? { height: `calc(var(--promise-spacer, ${scrollSpacerVh}) * var(--vh))` }
+          : null),
+        ...style,
+      }}
       aria-label="Our promise"
     >
       <div className="our-promise-stage">

@@ -58,15 +58,18 @@ export function VoiceSection({
   const affiliation = [data.role, data.company].filter(Boolean).join(", ");
 
   return (
+    // Figma Services mobile: an 8px gutter, the counter at x 34, a 245 × 253
+    // portrait at x 79 and a 57px logo tile on the right edge, the quote
+    // indented under the portrait.
     <section
-      className={`pb-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] ${SERVICE_GUTTER}`}
+      className="px-2 pb-[11px] lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pb-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]"
     >
       {divider ? (
         <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
       ) : null}
 
       <div
-        className={divider ? "pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]" : undefined}
+        className={divider ? "pt-[87px] lg:pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]" : undefined}
       >
         {heading}
       </div>
@@ -74,31 +77,31 @@ export function VoiceSection({
       {/* Figma: counter + arrows | 300×400 portrait | 115px logo tile, with the
           quote starting at 60% of the frame. One quote per service today, so
           the carousel controls render in their resting state. */}
-      <div className="mt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] grid gap-[clamp(2rem,calc(4*var(--vw)),3rem)] lg:grid-cols-[878fr_574fr] lg:gap-0">
-        <div className="flex items-start gap-[10px]">
-          <div className="hidden w-9 shrink-0 sm:block" data-service-label>
-            <p className="text-[12px] leading-none" style={{ color: accent }}>
+      <div className="mt-6 grid gap-4 lg:mt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] lg:grid-cols-[878fr_574fr] lg:gap-0">
+        <div className="relative h-[253px] lg:flex lg:h-auto lg:items-start lg:gap-[10px]">
+          <div className="absolute left-[26px] top-1 w-[30px] lg:static lg:w-9 lg:shrink-0" data-service-label>
+            <p className="text-[10px] leading-[12px] lg:text-[12px] lg:leading-none" style={{ color: accent }}>
               01/{String(slideCount).padStart(2, "0")}
             </p>
             <p
-              className="mt-1 flex justify-between text-[12px] leading-none text-[var(--hll-dark-grey)]"
+              className="flex justify-between text-[10px] leading-[12px] text-[var(--hll-dark-grey)] lg:mt-1 lg:text-[12px] lg:leading-none"
               aria-hidden
             >
               <span>&lt;</span>
               <span>&gt;</span>
             </p>
           </div>
-          <div className="w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] shrink-0">
+          <div className="absolute left-[71px] top-0 w-[245px] lg:static lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:shrink-0">
             {data.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={data.portrait}
                 alt={data.name ?? data.role}
-                className="aspect-[3/4] w-full rounded-[4px] object-cover"
+                className="aspect-[245/253] w-full rounded-[6px] object-cover lg:aspect-[3/4] lg:rounded-[4px]"
               />
             ) : (
               <MediaPlaceholder
-                className="aspect-[3/4] w-full rounded-[4px]"
+                className="aspect-[245/253] w-full rounded-[6px] lg:aspect-[3/4] lg:rounded-[4px]"
                 label="Expert portrait"
               />
             )}
@@ -114,7 +117,7 @@ export function VoiceSection({
             ) : null}
           </div>
           {data.company ? (
-            <div className="grid aspect-square w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] shrink-0 place-items-center rounded-[4px] bg-[#24477F] p-2 text-center text-[11px] text-white">
+            <div className="absolute right-0 top-0 grid aspect-square w-[57px] place-items-center rounded-[6px] bg-[#24477F] p-1 text-center text-[9px] text-white lg:static lg:w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] lg:shrink-0 lg:rounded-[4px] lg:p-2 lg:text-[11px]">
               {data.companyLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -129,11 +132,11 @@ export function VoiceSection({
           ) : null}
         </div>
 
-        <blockquote className="flex flex-col justify-between gap-10 lg:pr-[20px]">
-          <p className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.17] text-[var(--hll-dark-grey)]">
+        <blockquote className="ml-[67px] flex max-w-[311px] flex-col justify-between gap-4 lg:ml-0 lg:max-w-none lg:gap-10 lg:pr-[20px]">
+          <p className="text-[24px] font-normal leading-[27.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.17]">
             &ldquo;{data.quote}&rdquo;
           </p>
-          <footer className="pb-[9px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25]">
+          <footer className="text-[14px] leading-[1.25] lg:pb-[9px] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
             {data.name ? (
               <cite className="block not-italic text-black">{data.name}</cite>
             ) : null}
@@ -161,21 +164,22 @@ export function RelatedServicesSection({
   // what lifts the light buttons off the page.
   return (
     <section
-      className={`relative overflow-hidden pt-[clamp(5.1875rem,calc(9.99*var(--vw)),9.4375rem)] pb-[clamp(5.125rem,calc(9.85*var(--vw)),9.3125rem)] ${SERVICE_GUTTER}`}
+      className={`relative overflow-hidden pb-[163px] pt-[193px] lg:pb-[clamp(5.125rem,calc(9.85*var(--vw)),9.3125rem)] lg:pt-[clamp(5.1875rem,calc(9.99*var(--vw)),9.4375rem)] ${SERVICE_GUTTER}`}
       style={{
         background: `linear-gradient(0deg, ${washFrom} 0%, #FAFAFA 100%)`,
       }}
     >
       <div className="relative text-center">
-        <h2 className="text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
+        <h2 className="text-[24px] font-normal leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
           {title}
         </h2>
-        <div className="mx-auto mt-9 flex max-w-[37rem] flex-wrap justify-center gap-2">
+        {/* Mobile: "Button Mobile" pills, 34px and 6px apart. */}
+        <div className="mx-auto mt-3 flex max-w-[37rem] flex-wrap justify-center gap-[6px] lg:mt-9 lg:gap-2">
           {items.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="inline-flex h-9 items-center rounded-[4px] bg-[var(--hll-bg)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] transition hover:bg-white"
+              className="inline-flex h-[34px] items-center rounded-[3px] bg-[var(--hll-bg)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] transition hover:bg-white lg:h-9 lg:rounded-[4px] lg:text-[12px]"
             >
               {item.label}
             </Link>

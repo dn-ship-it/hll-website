@@ -15,7 +15,7 @@ import {
 } from "./expert-and-related";
 import { EngagementSection } from "./engagement-section";
 import { OutcomeSection } from "./outcome-section";
-import { SERVICE_GUTTER, ServiceBrandHeader } from "./service-chrome";
+import { ServiceBrandHeader } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
 import { getServiceTheme } from "./service-theme";
 import { ServiceReveal } from "./service-reveal";
@@ -41,7 +41,8 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
   return (
     <MarketingShell markTint={getServiceTheme(data.variant).accent}>
       <div className="hll-service-page">
-        <div className={`pt-[18px] ${SERVICE_GUTTER}`}>
+        {/* Figma Services mobile: the brand row 8px under the nav, at x 16. */}
+        <div className="pl-4 pr-5 pt-2 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pt-[18px]">
           <ServiceBrandHeader brand={data.brand} variant={data.variant} />
         </div>
 

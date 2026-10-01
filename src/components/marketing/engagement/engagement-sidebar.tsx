@@ -271,7 +271,7 @@ export function EngagementSidebar({
   const strip = accent ?? "#444444";
 
   return (
-    <aside className="relative lg:sticky lg:top-[66px] lg:h-[calc(calc(100*var(--vh))-66px)]">
+    <aside className="relative lg:sticky lg:top-[var(--nav-h)] lg:h-[calc(calc(100*var(--vh))-var(--nav-h))]">
       <div
         aria-hidden
         className="absolute inset-y-0 left-0 w-full lg:w-[97.4%]"

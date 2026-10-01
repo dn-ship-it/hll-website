@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
 import { HLLButton } from "@/components/hll";
+import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { CountUp } from "@/components/marketing/count-up";
 
 import { HOME_GUTTER, HomeHeading } from "./primitives";
@@ -12,6 +13,8 @@ type Card = {
   tags: string[];
   /** Media height in px at the 490px card width (Figma). */
   mediaH: number;
+  /** Figma Home mobile: media height at its 386px card width. */
+  mobileH?: number;
   wide?: boolean;
 };
 type Stat = { kind: "stat"; id: string; stat: string; label: string };
@@ -28,6 +31,7 @@ const TILES: Tile[] = [
     title: "Bajaj",
     tags: ["HLL People & Policy"],
     mediaH: 490,
+    mobileH: 385,
     x: 1,
     y: 0,
   },
@@ -37,6 +41,7 @@ const TILES: Tile[] = [
     title: "KTM",
     tags: ["HLL Trust & Governance"],
     mediaH: 317,
+    mobileH: 280,
     x: 501,
     y: 0,
   },
@@ -46,6 +51,7 @@ const TILES: Tile[] = [
     title: "WeCare",
     tags: ["HLL AI", "HLL Trust & Governance"],
     mediaH: 551,
+    mobileH: 380,
     x: 1001,
     y: 0,
   },
@@ -55,6 +61,7 @@ const TILES: Tile[] = [
     title: "The Big Red Group",
     tags: ["HLL People & Policy", "HLL AI", "HLL Trust & Governance"],
     mediaH: 490,
+    mobileH: 380,
     x: 501,
     y: 641,
   },
@@ -95,15 +102,32 @@ const TILES: Tile[] = [
   },
 ];
 
+// Figma Home mobile reading order: the clients counter follows WeCare.
+const MOBILE_ORDER = [
+  "bajaj",
+  "ktm",
+  "wecare",
+  "clients",
+  "big-red",
+  "salt",
+  "zelish",
+  "satisfaction",
+];
+const MOBILE_TILES = MOBILE_ORDER.map((id) => TILES.find((t) => t.id === id)!);
+
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
-function ImpactCard({ tile }: { tile: Card }) {
+function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) {
   const width = tile.wide ? 991 : 490;
+  const ratio =
+    mobile && tile.mobileH
+      ? `386 / ${tile.mobileH}`
+      : `${width} / ${tile.mediaH}`;
   return (
     <article className="group">
       <div
-        className="relative overflow-hidden rounded-lg bg-[#D9D9D9]"
-        style={{ aspectRatio: `${width} / ${tile.mediaH}` }}
+        className="relative overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:rounded-lg"
+        style={{ aspectRatio: ratio }}
       >
         <span
           aria-hidden
@@ -111,11 +135,12 @@ function ImpactCard({ tile }: { tile: Card }) {
         >
           <ArrowUpRight className="size-4" strokeWidth={1.4} />
         </span>
-        <div className="absolute bottom-2 left-2 right-2 flex flex-wrap-reverse gap-2">
+        {/* Mobile tags are the "Button Mobile" pill: 34px, 10px label. */}
+        <div className="absolute bottom-[6px] left-[6px] right-[6px] flex flex-wrap-reverse gap-[6px] lg:bottom-2 lg:left-2 lg:right-2 lg:gap-2">
           {tile.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex h-9 items-center rounded-[4px] bg-[var(--hll-bg)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)]"
+              className="inline-flex h-[34px] items-center rounded-[3px] bg-[var(--hll-bg)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]"
             >
               {tag}
             </span>
@@ -133,7 +158,7 @@ function ImpactStat({ tile }: { tile: Stat }) {
   return (
     <div className="text-black">
       {/* Figma: "Number counter". */}
-      <p className="hll-display text-[clamp(4rem,calc(8.47*var(--vw)),8rem)] font-light leading-[1.16]">
+      <p className="hll-display text-[128px] font-light leading-[1.16] lg:text-[clamp(4rem,calc(8.47*var(--vw)),8rem)]">
         <CountUp value={tile.stat} />
       </p>
       <p className="mt-[-12px] text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-light leading-[1.16]">
@@ -146,7 +171,7 @@ function ImpactStat({ tile }: { tile: Stat }) {
 export function OurImpact() {
   return (
     <section id="impact" className="hll-home-section">
-      <div data-line className="h-[2px] bg-[#D9D9D9]" />
+      <div data-line className="h-px bg-[#D9D9D9] lg:h-[2px]" />
 
       <div className={`pt-[154px] ${HOME_GUTTER}`}>
         <HomeHeading eyebrow="Work" title="Our Impact" />
@@ -179,31 +204,36 @@ export function OurImpact() {
         ))}
       </div>
 
-      {/* Smaller screens: the same tiles in reading order. */}
-      <div
-        className={`mt-12 grid gap-8 sm:grid-cols-2 lg:hidden ${HOME_GUTTER}`}
-      >
-        {TILES.map((tile) => (
-          <div
-            key={tile.id}
-            className={
-              tile.kind === "card" && tile.wide ? "sm:col-span-2" : undefined
-            }
-          >
-            {tile.kind === "card" ? (
-              <ImpactCard tile={tile} />
-            ) : (
-              <ImpactStat tile={tile} />
-            )}
-          </div>
-        ))}
+      {/* Figma Home mobile: one 386px column, 8px from the edges; cards 32px
+          apart, 84px around a counter. */}
+      <div className="mt-8 px-2 lg:hidden">
+        {MOBILE_TILES.map((tile, i) => {
+          const prev = MOBILE_TILES[i - 1];
+          const gap =
+            i === 0
+              ? undefined
+              : tile.kind === "stat" || prev?.kind === "stat"
+                ? "mt-[84px]"
+                : "mt-8";
+          return (
+            <div key={tile.id} className={gap}>
+              {tile.kind === "card" ? (
+                <ImpactCard tile={tile} mobile />
+              ) : (
+                <div className="pl-px">
+                  <ImpactStat tile={tile} />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Figma: "View All work button will be sticky and leads to the
           engagements page". */}
-      <div className="pointer-events-none sticky bottom-8 z-10 my-[59px] flex justify-center">
+      <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-center lg:my-[59px]">
         <span className="pointer-events-auto">
-          <HLLButton href="/engagement" variant="engagement" size="md">
+          <HLLButton href="/engagement" variant="engagement" size="md" className={BUTTON_MOBILE}>
             View all work
           </HLLButton>
         </span>

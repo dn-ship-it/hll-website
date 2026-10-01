@@ -112,7 +112,10 @@ export function OutlinePillButton({
 /** Page gutter from the Figma home frame: 30px at 1512px. */
 export const HOME_GUTTER = "px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]";
 
-/** Figma home section heading: Functional eyebrow, then a 64px light title 12px below. */
+/**
+ * Figma home section heading: Functional eyebrow, then a 64px light title 12px
+ * below. Mobile frames set it at 10px and 30px, 6px apart.
+ */
 export function HomeHeading({
   eyebrow,
   title,
@@ -132,7 +135,7 @@ export function HomeHeading({
   return (
     <div>
       <p
-        className={`hll-label text-[12px] uppercase leading-[1.2] ${eyebrowMedium ? "font-medium" : ""}`}
+        className={`hll-label text-[10px] uppercase leading-[1.2] lg:text-[12px] ${eyebrowMedium ? "font-medium" : ""}`}
         style={{ color: eyebrowColor ?? ink, fontFamily: "var(--hll-font-functional)" }}
       >
         {/* "Industry  Healthcare": Figma sets two-part eyebrows 14px apart. */}
@@ -143,11 +146,11 @@ export function HomeHeading({
         ))}
       </p>
       <SectionTitle
-        fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
+        fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
         letterSpacing="0"
         lineHeight="1.16"
         ink={ink}
-        className="hll-display mt-[12px] font-light"
+        className="hll-display mt-[6px] font-light lg:mt-[12px]"
       >
         {title}
       </SectionTitle>
