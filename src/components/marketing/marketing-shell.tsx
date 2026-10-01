@@ -17,13 +17,11 @@ import type { NewsData } from "@/components/marketing/nav-menu";
 export async function MarketingShell({
   children,
   showFooter = true,
-  compactHeader = false,
   markTint,
   ctaVideo,
 }: {
   children: React.ReactNode;
   showFooter?: boolean;
-  compactHeader?: boolean;
   markTint?: string;
   /** Background video for the footer's CTA band on this page. */
   ctaVideo?: string;
@@ -64,7 +62,6 @@ export async function MarketingShell({
       <SiteHeader
         siteName={siteName}
         nav={nav}
-        compact={compactHeader}
         markTint={markTint}
         news={news}
       />

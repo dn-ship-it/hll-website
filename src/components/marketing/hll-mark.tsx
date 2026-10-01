@@ -39,7 +39,15 @@ export function HllMark({ tint, className }: { tint?: string; className?: string
   const id = `hll-mark-${tint?.slice(1) ?? "grey"}`;
 
   return (
-    <svg viewBox="0 0 25.5054 50.9556" fill="none" aria-hidden className={className}>
+    // "slice": the mobile Nav and Footer crop the mark to a 25 × 34 box
+    // (Figma image fill), keeping its middle; the desktop box shows it whole.
+    <svg
+      viewBox="0 0 25.5054 50.9556"
+      preserveAspectRatio="xMidYMid slice"
+      fill="none"
+      aria-hidden
+      className={className}
+    >
       <path
         d="M13.5273 25.4796C20.21 25.0785 25.5054 19.5366 25.5054 12.7545C25.5054 5.97248 19.7942 0 12.7508 0C5.70752 0 0 5.70752 0 12.7508C0 19.5329 5.29537 25.0785 11.9781 25.4759C5.29537 25.8807 0 31.4227 0 38.2047C0 44.9868 5.70752 50.9556 12.7508 50.9556C19.7942 50.9556 25.5017 45.248 25.5017 38.2047C25.5017 31.4227 20.2063 25.877 13.5236 25.4796H13.5273Z"
         fill={`url(#${id})`}

@@ -11,14 +11,24 @@ import { pageZoom } from "@/lib/page-zoom";
  * page to covering the viewport once its centre reaches the viewport's
  * centre, rounding its corners off on the way.
  */
-export function useScaleToViewport(ref: RefObject<HTMLElement | null>) {
+export function useScaleToViewport(
+  ref: RefObject<HTMLElement | null>,
+  { desktopOnly = false }: { desktopOnly?: boolean } = {},
+) {
   useEffect(() => {
     const node = ref.current;
     if (!node || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
       return undefined;
+    // The Home mobile frame keeps its window at rest, "See our work" below it.
+    const mobile = window.matchMedia("(width < 64rem)");
     let frame = 0;
     const update = () => {
       frame = 0;
+      if (desktopOnly && mobile.matches) {
+        node.style.transform = "";
+        node.style.borderRadius = "";
+        return;
+      }
       let top = 0;
       for (
         let el: HTMLElement | null = node;
@@ -53,5 +63,5 @@ export function useScaleToViewport(ref: RefObject<HTMLElement | null>) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [ref]);
+  }, [ref, desktopOnly]);
 }

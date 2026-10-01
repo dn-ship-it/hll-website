@@ -132,10 +132,13 @@ export function HLLButton({
   // the space either side of the text is the same at any label length.
   const hPadding = Math.round(text.padding * scale);
 
+  // Size and label type read CSS variables first, so a page can restyle the
+  // button per breakpoint from a class (the Figma "Button Mobile" is 34px
+  // tall with a 10px label) without rendering a second button.
   const hostStyle = {
-    height: Math.round(box.height * scale),
-    paddingLeft: hPadding,
-    paddingRight: hPadding,
+    height: `var(--hll-button-h, ${Math.round(box.height * scale)}px)`,
+    paddingLeft: `var(--hll-button-px, ${hPadding}px)`,
+    paddingRight: `var(--hll-button-px, ${hPadding}px)`,
     whiteSpace: "nowrap",
     "--hll-label-color": text.color,
     "--hll-label-hover-color": text.hoverColor,
@@ -148,9 +151,9 @@ export function HLLButton({
         className="hll-button__label"
         style={{
           fontFamily: text.fontFamily || "inherit",
-          fontSize: text.fontSize,
+          fontSize: `var(--hll-label-size, ${text.fontSize}px)`,
           fontWeight: 400,
-          letterSpacing: text.letterSpacing,
+          letterSpacing: `var(--hll-label-tracking, ${text.letterSpacing}px)`,
         }}
       >
         {children}

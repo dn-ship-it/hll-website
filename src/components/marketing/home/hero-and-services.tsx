@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 
+import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { useScaleToViewport } from "@/components/marketing/use-scale-to-viewport";
 
 import { HomeHeading, HOME_GUTTER } from "./primitives";
@@ -82,12 +83,13 @@ function HeroWindow({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useScaleToViewport(ref);
+  useScaleToViewport(ref, { desktopOnly: true });
 
   return (
+    <>
     <div
       ref={ref}
-      className="relative z-10 mt-[31px] aspect-[1452/982] w-full origin-center overflow-hidden rounded-lg bg-[#D9D9D9] will-change-transform"
+      className="relative z-10 mt-3 aspect-[362/244] w-full origin-center overflow-hidden rounded-[6px] bg-[#D9D9D9] will-change-transform lg:mt-[31px] lg:aspect-[1452/982] lg:rounded-lg"
     >
       {videoUrl ? (
         <video
@@ -107,12 +109,19 @@ function HeroWindow({
           className="absolute inset-0 size-full object-cover"
         />
       ) : null}
-      <div className="absolute inset-x-0 bottom-9 flex justify-center">
+      <div className="absolute inset-x-0 bottom-9 hidden justify-center lg:flex">
         <HLLButton href={ctaHref} variant="engagement" size="md">
           {ctaLabel}
         </HLLButton>
       </div>
     </div>
+    {/* Figma Home mobile: the button sits 54px under the window. */}
+    <div className="mt-[54px] flex justify-center lg:hidden">
+      <HLLButton href={ctaHref} variant="engagement" size="md" className={BUTTON_MOBILE}>
+        {ctaLabel}
+      </HLLButton>
+    </div>
+    </>
   );
 }
 
@@ -135,14 +144,16 @@ export function HomeHero({
 
   return (
     <section
-      className={`hll-home-section pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${HOME_GUTTER}`}
+      className={`hll-home-section flex min-h-[calc(100*var(--svh)-var(--nav-h))] flex-col justify-end pb-10 lg:block lg:min-h-0 lg:pb-0 lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${HOME_GUTTER}`}
     >
+      {/* Mobile: the first screen, its content set on the bottom edge
+          (button 40px up), as the 874px Figma Hero frame. */}
       <GradientRevealTextSlow
         as="h1"
         text={title}
         variant="hll-ai"
-        className="hll-display block max-w-[1040px] font-light text-[var(--hll-dark-grey)]"
-        fontSize="clamp(2rem, calc(4.23*var(--vw)), 4rem)"
+        className="hll-display block max-w-[355px] font-light text-[var(--hll-dark-grey)] lg:max-w-[1040px]"
+        fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
         letterSpacing="0"
         lineHeight="1.16"
       />
@@ -163,6 +174,136 @@ export function HomeHero({
  * small above and below it, as a wheel.
  */
 export function WhatWeDo() {
+  return (
+    <>
+      <WhatWeDoMobile />
+      <WhatWeDoWheel />
+    </>
+  );
+}
+
+const CARD = 253;
+const CARD_GAP = 10;
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+/**
+ * Figma Home mobile › What we do: the services as a row of 253px cards from
+ * x 74, a "01/06" counter with "<  >" arrows at x 30, and the card in front's
+ * name and line under it. "On pressing the arrows the services change
+ * shifting through the list of names … the content and icon changes too";
+ * the row also swipes.
+ */
+function WhatWeDoMobile() {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const count = HOME_SERVICES.length;
+  const selected = HOME_SERVICES[active];
+
+  const onScroll = () => {
+    const row = rowRef.current;
+    if (!row) return;
+    const next = Math.round(row.scrollLeft / (CARD + CARD_GAP));
+    setActive(Math.min(count - 1, Math.max(0, next)));
+  };
+
+  const go = (delta: number) => {
+    const row = rowRef.current;
+    if (!row) return;
+    const index = (active + delta + count) % count;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    row.scrollTo({
+      left: index * (CARD + CARD_GAP),
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  };
+
+  return (
+    <section
+      className="hll-home-section pt-[114px] lg:hidden"
+      aria-label="Our services"
+    >
+      <div className={HOME_GUTTER}>
+        <HomeHeading eyebrow="Services" title="What we do" />
+      </div>
+
+      <div className="relative mt-8">
+        <div
+          className="absolute left-[30px] top-0 z-10 text-[10px] uppercase leading-[12px] text-[var(--hll-dark-grey)]"
+          style={{ fontFamily: "var(--hll-font-functional)" }}
+        >
+          <p aria-live="polite">
+            {pad2(active + 1)}/{pad2(count)}
+          </p>
+          <div className="-ml-1 flex">
+            <button
+              type="button"
+              aria-label="Previous service"
+              onClick={() => go(-1)}
+              className="px-1"
+            >
+              &lt;
+            </button>
+            <button
+              type="button"
+              aria-label="Next service"
+              onClick={() => go(1)}
+              className="ml-[10px] px-1"
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
+
+        <div
+          ref={rowRef}
+          onScroll={onScroll}
+          className="flex snap-x snap-mandatory gap-[10px] overflow-x-auto scroll-pl-[74px] pl-[74px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {HOME_SERVICES.map((service) => (
+            <a
+              key={service.variant}
+              href={service.href}
+              aria-label={service.name}
+              className="relative h-[252px] w-[253px] shrink-0 snap-start overflow-hidden rounded-[6px] bg-[#D9D9D9]"
+              style={{
+                background: `#D9D9D9 url(/assets/services/${service.variant}-demo.webp) center / cover`,
+              }}
+            >
+              <span className="absolute left-[6px] top-[6px] grid size-[34px] place-items-center rounded-[3px] bg-[var(--hll-bg)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/assets/services/${service.variant}-glyph.svg`}
+                  alt=""
+                  aria-hidden
+                  className="size-[34px]"
+                />
+              </span>
+            </a>
+          ))}
+          {/* Lets the last card come to rest at x 74. */}
+          <span aria-hidden className="w-[calc(100%-327px)] shrink-0" />
+        </div>
+
+        <div className="ml-[74px] w-[253px]">
+          <a
+            href={selected.href}
+            className="mt-2 block text-[24px] leading-[27.8px] text-[var(--hll-dark-grey)]"
+          >
+            {selected.name}
+          </a>
+          <p className="mt-2 text-[14px] leading-[17.5px] text-[var(--hll-dark-grey)]">
+            {selected.description}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Desktop: the pinned wheel. */
+function WhatWeDoWheel() {
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -248,13 +389,13 @@ export function WhatWeDo() {
   return (
     <section
       ref={sectionRef}
-      className="hll-home-section"
+      className="hll-home-section hidden lg:block"
       style={{ height: `calc(${count * 60} * var(--svh))` }}
       aria-label="Our services"
     >
       <div
         ref={stickyRef}
-        className={`sticky top-[66px] flex h-[calc(calc(100*var(--svh))-66px)] flex-col justify-center ${HOME_GUTTER}`}
+        className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col justify-center ${HOME_GUTTER}`}
       >
         <HomeHeading eyebrow="Services" title="What we do" />
 
@@ -310,11 +451,11 @@ export function OurClients() {
   const slots = Array.from({ length: 8 }, (_, i) => i);
 
   return (
-    <section className="hll-home-section overflow-hidden bg-[var(--hll-bg)] pt-[76px] pb-[104px]">
+    <section className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
       <div className={HOME_GUTTER}>
         <HomeHeading eyebrow="Clients" title="Our Clients" />
       </div>
-      <div className="mt-[76px] flex w-max gap-[10px] [animation:home-marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
+      <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
         {[...slots, ...slots].map((i, n) => (
           <div
             key={n}

@@ -40,11 +40,20 @@
   --vh: 1vh;
   --svh: 1svh;
 
+  /* Sticky nav height: Figma Nav Mobile is 74px, the desktop Nav Bar 66px. */
+  --nav-h: 74px;
+
   --hll-bg: #fafafa;
   --hll-dark-grey: #1a1a1a;
   --hll-mid-grey: #949494;
   --hll-light-grey: #e6e6e6;
   --hll-font-aeonik: "Aeonik TRIAL", "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (width >= 64rem) {
+  :root {
+    --nav-h: 66px;
+  }
 }
 
 /* Declared on body, not :root: next/font puts --font-sometype-mono on <body>,
@@ -324,7 +333,7 @@ body {
    plate even at rest, so it only shows on hover / focus, where it blooms. */
 .hll-button {
   background: var(--hll-light-grey, #e6e6e6);
-  border-radius: 4px;
+  border-radius: var(--hll-button-radius, 4px);
 }
 
 .hll-button canvas {
@@ -648,6 +657,27 @@ body {
   width: 1px;
 }
 
+/* Figma Home mobile: the section spans two screens (1744px of an 874px
+   frame), eyebrow 10px and headline 30px, 8px apart. */
+@media (width < 64rem) {
+  .our-promise--section {
+    --promise-spacer: 200;
+  }
+
+  .our-promise-hero-text {
+    width: calc(100% - 16px);
+  }
+
+  .our-promise-eyebrow {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+
+  .our-promise-headline {
+    font-size: 30px;
+  }
+}
+
 /* Ripple / CornerRipple — ported from HLL-UI-Demo's ripple.css and
    corner-ripple.css. A full-viewport backdrop sitting behind page content;
    the sketch paints an opaque black base, so this belongs on dark sections. */
@@ -780,7 +810,7 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
   inset: 0;
   z-index: 2;
   border: 1px solid var(--service-tab-accent);
-  border-radius: 4px;
+  border-radius: var(--tab-r, 4px);
   pointer-events: none;
 }
 

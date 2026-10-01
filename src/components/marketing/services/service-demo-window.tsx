@@ -93,16 +93,18 @@ export function ServiceDemoWindow({
   }, [srcKey]);
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
+  // Figma Services mobile: a 362 × 244 frame around a 337 × 215 window.
   const iframeHeight =
-    "h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]";
+    "h-[215px] min-h-[215px] lg:h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] lg:min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]";
 
   return (
+    <>
     <div
-      className="service-demo-window relative mt-[clamp(1.125rem,calc(2.18*var(--vw)),2.0625rem)] overflow-hidden rounded-lg"
+      className="service-demo-window relative mt-8 overflow-hidden rounded-[6px] lg:mt-[clamp(1.125rem,calc(2.18*var(--vw)),2.0625rem)] lg:rounded-lg"
       data-service-media
     >
       <div
-        className="relative px-[clamp(1.25rem,calc(6.35*var(--vw)),6rem)] py-[clamp(2rem,calc(8.99*var(--vw)),8.5rem)]"
+        className="relative px-3 pb-[15px] pt-[14px] lg:px-[clamp(1.25rem,calc(6.35*var(--vw)),6rem)] lg:py-[clamp(2rem,calc(8.99*var(--vw)),8.5rem)]"
         style={{ background }}
       >
         {ripple ? (
@@ -113,35 +115,19 @@ export function ServiceDemoWindow({
             style={{ opacity: RIPPLE_OPACITY }}
           />
         ) : null}
-        <div className="relative mx-auto w-full rounded-lg bg-[var(--hll-bg)] p-[clamp(0.75rem,calc(2*var(--vw)),1rem)] shadow-none">
-          <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2">
-            <span className="inline-flex h-9 items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)]">
-              {safeConfig.selectorLabel}
-              <svg
-                aria-hidden
-                className="size-3 text-black/45"
-                viewBox="0 0 12 12"
-                fill="none"
-              >
-                <path
-                  d="M3 4.5 6 7.5 9 4.5"
-                  stroke="currentColor"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
+        <div className="relative mx-auto w-full overflow-hidden rounded-[3px] bg-[var(--hll-bg)] shadow-none lg:overflow-visible lg:rounded-lg lg:p-[clamp(0.75rem,calc(2*var(--vw)),1rem)]">
+          <div className="pointer-events-none absolute left-1/2 top-3 z-10 hidden -translate-x-1/2 lg:block">
+            <SelectorPill label={safeConfig.selectorLabel} />
           </div>
 
           <div
-            className={`relative mt-10 overflow-hidden rounded-sm bg-white ${iframeHeight}`}
+            className={`relative overflow-hidden bg-white lg:mt-10 lg:rounded-sm ${iframeHeight}`}
           >
             {!hasContent ? (
               <div
                 className={`flex items-center justify-center bg-[#fafafa] ${iframeHeight}`}
               >
-                <p className="text-[10px] uppercase tracking-[0.28em] text-black/30">
+                <p className="text-[12px] uppercase tracking-[3px] text-black lg:text-[10px] lg:tracking-[0.28em] lg:text-black/30">
                   Demo window
                 </p>
               </div>
@@ -178,5 +164,28 @@ export function ServiceDemoWindow({
         </div>
       </div>
     </div>
+    {/* Figma Services mobile: the demo selector sits 54px under the window. */}
+    <div className="pointer-events-none mt-[54px] flex justify-center lg:hidden">
+      <SelectorPill label={safeConfig.selectorLabel} />
+    </div>
+    </>
+  );
+}
+
+/** The demo's service selector: "HLL FOUNDATION ⌄" on a Light Grey pill. */
+function SelectorPill({ label }: { label: string }) {
+  return (
+    <span className="inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]">
+      {label}
+      <svg aria-hidden className="size-3 text-black/45" viewBox="0 0 12 12" fill="none">
+        <path
+          d="M3 4.5 6 7.5 9 4.5"
+          stroke="currentColor"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
   );
 }

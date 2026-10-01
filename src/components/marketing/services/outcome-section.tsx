@@ -20,7 +20,7 @@ function Stat({ value }: { value: string }) {
   const unit = match ? match[2] : "";
 
   return (
-    <p className="text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)] font-light leading-[1.16] text-black">
+    <p className="text-[104px] font-light leading-[1.16] text-black lg:text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)]">
       {/* Figma: "Number counter". */}
       <CountUp value={main} />
       {unit ? (
@@ -45,7 +45,7 @@ export function OutcomeSection({
 
   return (
     <section
-      className="relative overflow-hidden pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] pb-[clamp(5.9375rem,calc(11.38*var(--vw)),10.75rem)]"
+      className="relative overflow-hidden py-10 lg:pb-[clamp(5.9375rem,calc(11.38*var(--vw)),10.75rem)] lg:pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]"
       style={{ background: outcomeBackground }}
     >
       {/* Figma: "Live centered ripple animation in the back according to the
@@ -68,20 +68,21 @@ export function OutcomeSection({
       </div>
 
       {/* Figma: cards run to 10px from the frame edge, 10px apart, and each is
-          only as tall as its content — the uneven heights are intentional. */}
-      <div className="relative mt-[clamp(2.8125rem,calc(5.42*var(--vw)),5.125rem)] grid grid-cols-1 items-start gap-[10px] px-[10px] sm:grid-cols-2 lg:grid-cols-4">
+          only as tall as its content — the uneven heights are intentional.
+          Mobile: one column in the 20px gutter, 9px between the parts. */}
+      <div className="relative mt-8 grid grid-cols-1 items-start gap-[10px] px-5 lg:mt-[clamp(2.8125rem,calc(5.42*var(--vw)),5.125rem)] lg:grid-cols-4 lg:px-[10px]">
         {data.cards.map((card) => (
           <article
             key={card.stat}
-            className="flex flex-col rounded-lg bg-[var(--hll-bg)] pb-7 pl-5 pr-6 pt-[27px]"
+            className="flex flex-col rounded-[6px] bg-[var(--hll-bg)] pb-[17px] pl-[22px] pr-[18px] pt-[27px] lg:rounded-lg lg:pb-7 lg:pl-5 lg:pr-6"
           >
             <Stat value={card.stat} />
             {card.hasMedia ? (
-              <MediaPlaceholder className="aspect-[320/234] w-full rounded-[4px] bg-[#d9d9d9]" />
+              <MediaPlaceholder className="mt-[9px] aspect-[320/234] w-full rounded-[4px] bg-[#d9d9d9] lg:mt-0" />
             ) : null}
             <p
-              className={`text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)] ${
-                card.hasMedia ? "mt-[17px]" : "mt-[14px]"
+              className={`text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] ${
+                card.hasMedia ? "mt-[9px] lg:mt-[17px]" : "lg:mt-[14px]"
               }`}
             >
               {card.description}

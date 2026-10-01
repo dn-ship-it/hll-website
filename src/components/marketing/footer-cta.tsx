@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { HLLButton } from "@/components/hll";
 
+import { BUTTON_MOBILE } from "./button-sizes";
 import { variantForPath } from "./page-variant";
 
 /**
@@ -52,11 +53,15 @@ export function FooterCta({
   };
 
   return (
-    <div className="relative flex min-h-[237px] flex-wrap items-center justify-between gap-6 overflow-hidden bg-[#FFFBD6] px-[clamp(1.25rem,calc(11.3*var(--vw)),10.7rem)] py-10">
+    // Figma Footer Mobile: a 228px band, headline and button centred from
+    // y 84. Desktop: 237px, headline left and button right.
+    <div className="relative flex h-[228px] flex-col items-center overflow-hidden bg-[#FFFBD6] px-5 pt-[84px] text-center lg:h-auto lg:min-h-[237px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:px-[clamp(1.25rem,calc(11.3*var(--vw)),10.7rem)] lg:py-10 lg:text-left">
+      {/* Mobile crops the still to its middle (Figma image fill at 155.5%
+          of the band's height); desktop covers. */}
       <div
         aria-hidden
-        className={`footer-cta-still pointer-events-none absolute inset-0 ${active && !videoSrc ? "is-active" : ""}`}
-        style={{ background: `url(${poster}) center / cover` }}
+        className={`footer-cta-still pointer-events-none absolute inset-0 bg-[length:auto_155.5%] bg-[position:50%_39.6%] lg:bg-cover lg:bg-center ${active && !videoSrc ? "is-active" : ""}`}
+        style={{ backgroundImage: `url(${poster})` }}
       />
       {videoSrc ? (
         <video
@@ -74,13 +79,13 @@ export function FooterCta({
         />
       ) : null}
 
-      <p className="relative text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] font-light leading-[1.16] text-[var(--hll-dark-grey)]">
+      <p className="relative text-[30px] font-light leading-[34.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] lg:leading-[1.16]">
         {headline}
       </p>
       {/* The Figma "Button" component: the LightFX button, which blooms
           into its gradient on hover (see the "Buttons" motion reference). */}
       <span
-        className="relative mt-3 inline-flex"
+        className="relative mt-[13px] inline-flex lg:mt-3"
         onMouseEnter={play}
         onMouseLeave={pause}
         onFocusCapture={play}
@@ -88,12 +93,13 @@ export function FooterCta({
       >
         {/* The button's hover shader takes the page's palette, like the
             footer strip below it; Home keeps Contact's. */}
-        {/* Figma: this Button sits at 50% opacity over the band. */}
+        {/* Figma: this Button sits at 50% opacity over the desktop band;
+            the mobile "Button Mobile" is opaque, 34px tall, 10px label. */}
         <HLLButton
           href={href}
           variant={variantForPath(pathname) ?? "contact"}
           size="md"
-          className="opacity-50 transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100"
+          className={`${BUTTON_MOBILE} transition-opacity duration-300 hover:opacity-100 focus-visible:opacity-100 lg:opacity-50`}
         >
           {label}
         </HLLButton>
@@ -104,7 +110,8 @@ export function FooterCta({
 
 /**
  * Figma footer Email / LinkedIn: the same Button component as every CTA, so
- * the same LightFX hover, in the page's palette.
+ * the same LightFX hover, in the page's palette. Footer Mobile scales it to
+ * 81%: 29px tall, 17px padding, a 9.73px label.
  */
 export function FooterButton({
   href,
@@ -119,7 +126,7 @@ export function FooterButton({
       href={href}
       variant={variantForPath(pathname) ?? "contact"}
       size="md"
-      style={{ height: 37 }}
+      className="[--hll-button-h:29px] [--hll-button-px:17px] [--hll-button-radius:3.24px] [--hll-label-size:9.73px] [--hll-label-tracking:2.43px] lg:[--hll-button-h:37px] lg:[--hll-button-px:21px] lg:[--hll-button-radius:4px] lg:[--hll-label-size:12px] lg:[--hll-label-tracking:3px]"
     >
       {children}
     </HLLButton>

@@ -18,7 +18,7 @@ const NAV_FONT = {
 };
 
 // Figma Nav Bar order and the palette each button takes on hover / click.
-const VARIANT_BY_HREF: Record<string, NavVariant> = {
+export const VARIANT_BY_HREF: Record<string, NavVariant> = {
   "/services": "services",
   "/industries": "industries",
   "/engagement": "engagement",
@@ -28,7 +28,7 @@ const VARIANT_BY_HREF: Record<string, NavVariant> = {
 
 // Figma Services Menu order (Kinetic, Momentum, Governance & Trust,
 // Foundation, Motion, Foundation → today's names).
-const MENU_SERVICES: ServiceVariant[] = [
+export const MENU_SERVICES: ServiceVariant[] = [
   "hll-application",
   "hll-people",
   "hll-trust",
@@ -38,7 +38,7 @@ const MENU_SERVICES: ServiceVariant[] = [
 ];
 
 // Figma Industries Menu: two rows of three groups.
-const MENU_INDUSTRIES = [
+export const MENU_INDUSTRIES = [
   {
     title: "Financial services",
     items: ["Banking", "Insurance", "Other Financial Services"],
@@ -63,7 +63,7 @@ const MENU_INDUSTRIES = [
   { title: "Professional Services", items: ["Consulting Firms"] },
 ];
 
-const industryHref = (label: string) => {
+export const industryHref = (label: string) => {
   const slug = label
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -105,12 +105,19 @@ const ITEM =
   "text-[12px] text-[var(--hll-dark-grey)] underline-offset-[3px] hover:underline";
 
 /** Figma "In the News": image slot, then three headlines split by hairlines. */
-function NewsPanel({ news, opacity }: { news: NewsData; opacity: number }) {
+export function NewsPanel({
+  news,
+  opacity,
+  className = "w-[250px] px-[10px]",
+  dividerClassName = "my-[11px]",
+}: {
+  news: NewsData;
+  opacity: number;
+  className?: string;
+  dividerClassName?: string;
+}) {
   return (
-    <Panel
-      className="h-[242px] w-[250px] px-[10px] pt-[19px]"
-      opacity={opacity}
-    >
+    <Panel className={`h-[242px] pt-[19px] ${className}`} opacity={opacity}>
       <p
         className="hll-label text-[12px] uppercase leading-[1.2] text-black"
         style={{ fontFamily: "var(--hll-font-functional)" }}
@@ -129,7 +136,9 @@ function NewsPanel({ news, opacity }: { news: NewsData; opacity: number }) {
         {news.items.slice(0, 3).map((item, i) => (
           <li key={`${item.title}-${i}`}>
             {i > 0 ? (
-              <div className="my-[11px] h-px bg-[var(--hll-mid-grey)]" />
+              <div
+                className={`h-px bg-[var(--hll-mid-grey)] ${dividerClassName}`}
+              />
             ) : null}
             {item.href ? (
               <Link
@@ -340,7 +349,7 @@ export function NavMenu({ nav, news }: { nav: SiteNavItem[]; news: NewsData }) {
         <div
           onPointerEnter={() => show(open)}
           onPointerLeave={hide}
-          className="fixed top-[66px] flex items-start gap-[6px] pt-2 [animation:page-intro-in_300ms_cubic-bezier(0.22,1,0.36,1)_both]"
+          className="fixed top-[var(--nav-h)] flex items-start gap-[6px] pt-2 [animation:page-intro-in_300ms_cubic-bezier(0.22,1,0.36,1)_both]"
           style={{ right: PANEL_RIGHT[open] }}
         >
           {panels}

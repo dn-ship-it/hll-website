@@ -160,7 +160,7 @@ export function AllCapabilities({
       >
         <div
           ref={stickyRef}
-          className="sticky top-[66px] h-[calc(calc(100*var(--svh))-66px)] overflow-hidden pt-[58px]"
+          className="sticky top-[var(--nav-h)] h-[calc(calc(100*var(--svh))-var(--nav-h))] overflow-hidden pt-[58px]"
         >
           <div
             className="relative mx-auto"
@@ -168,7 +168,7 @@ export function AllCapabilities({
             // than the screen below the Nav Bar, so the whole wheel shows.
             style={{
               aspectRatio: `${STAGE.w} / ${STAGE.h}`,
-              width: `min(100%, calc((calc(100*var(--svh)) - 66px - 58px - 40px) * ${STAGE.w / STAGE.h}))`,
+              width: `min(100%, calc((calc(100*var(--svh)) - var(--nav-h) - 58px - 40px) * ${STAGE.w / STAGE.h}))`,
             }}
           >
             <div
