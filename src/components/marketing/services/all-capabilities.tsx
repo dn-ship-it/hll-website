@@ -102,7 +102,7 @@ export function AllCapabilities({
     const section = sectionRef.current;
     const sticky = stickyRef.current;
     if (!section || !sticky) return;
-    const range = section.offsetHeight - sticky.offsetHeight;
+    const range = section.getBoundingClientRect().height - sticky.getBoundingClientRect().height;
     if (range <= 0) return;
     const progress = Math.min(
       1,
@@ -134,7 +134,7 @@ export function AllCapabilities({
     const section = sectionRef.current;
     const sticky = stickyRef.current;
     if (!section || !sticky) return;
-    const range = section.offsetHeight - sticky.offsetHeight;
+    const range = section.getBoundingClientRect().height - sticky.getBoundingClientRect().height;
     const step = (index - startIndex + count) % count;
     const top =
       window.scrollY +
@@ -156,11 +156,11 @@ export function AllCapabilities({
         ref={sectionRef}
         aria-label="Capabilities"
         className="hidden lg:block"
-        style={{ height: `${count * 60}svh` }}
+        style={{ height: `calc(${count * 60} * var(--vh))` }}
       >
         <div
           ref={stickyRef}
-          className="sticky top-[66px] h-[calc(100svh-66px)] overflow-hidden pt-[58px]"
+          className="sticky top-[66px] h-[calc(calc(100*var(--vh))-66px)] overflow-hidden pt-[58px]"
         >
           <div
             className="relative mx-auto"
@@ -168,7 +168,7 @@ export function AllCapabilities({
             // than the screen below the Nav Bar, so the whole wheel shows.
             style={{
               aspectRatio: `${STAGE.w} / ${STAGE.h}`,
-              width: `min(100%, calc((100svh - 66px - 58px - 40px) * ${STAGE.w / STAGE.h}))`,
+              width: `min(100%, calc((calc(100*var(--vh)) - 66px - 58px - 40px) * ${STAGE.w / STAGE.h}))`,
             }}
           >
             <div
@@ -180,7 +180,7 @@ export function AllCapabilities({
                 text="Capabilities"
                 variant="services"
                 className="block font-light text-[var(--hll-dark-grey)]"
-                fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+                fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
                 letterSpacing="0"
                 lineHeight="1.16"
               />
@@ -232,8 +232,8 @@ export function AllCapabilities({
                       tabIndex={visible && !isFocus ? 0 : -1}
                       className={`whitespace-nowrap text-left font-medium leading-[1.16] transition-[color,font-size] duration-500 ${
                         isFocus
-                          ? "text-[clamp(1.5rem,2.15vw,2.03rem)] text-[var(--hll-dark-grey)]"
-                          : "text-[clamp(1.25rem,1.72vw,1.625rem)] text-[var(--hll-mid-grey)] hover:text-[var(--hll-dark-grey)]"
+                          ? "text-[clamp(1.5rem,calc(2.15*var(--vw)),2.03rem)] text-[var(--hll-dark-grey)]"
+                          : "text-[clamp(1.25rem,calc(1.72*var(--vw)),1.625rem)] text-[var(--hll-mid-grey)] hover:text-[var(--hll-dark-grey)]"
                       }`}
                     >
                       {service.name}
@@ -280,7 +280,7 @@ export function AllCapabilities({
 
       {/* Every service as a card: 300 × 198 tile, name, body and the
           sub-service list, split by hairlines. */}
-      <section className="px-[clamp(1.25rem,1.98vw,1.875rem)] pb-[154px] pt-[154px] lg:pl-[29px] lg:pr-[37px] lg:pt-[192px]">
+      <section className="px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] pt-[154px] lg:pl-[29px] lg:pr-[37px] lg:pt-[192px]">
         <h2 className="sr-only lg:hidden">All capabilities</h2>
         <div className="grid gap-y-[53px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-[83px]">
           {cards.map((service, i) => {
@@ -300,7 +300,7 @@ export function AllCapabilities({
                     </span>
                   ) : null}
                 </span>
-                <span className="mt-[9px] block text-[clamp(1.375rem,1.83vw,1.725rem)] font-medium leading-[1.16] text-[var(--hll-dark-grey)]">
+                <span className="mt-[9px] block text-[clamp(1.375rem,calc(1.83*var(--vw)),1.725rem)] font-medium leading-[1.16] text-[var(--hll-dark-grey)]">
                   {service.name}
                 </span>
                 <span className="mt-[19px] block max-w-[289px] pl-[3px] text-[15.35px] leading-[1.25] text-[var(--hll-dark-grey)]">

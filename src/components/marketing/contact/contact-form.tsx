@@ -10,7 +10,7 @@ import { sendEnquiry, type EnquiryState } from "./actions";
 const LABEL =
   "block text-[14px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)]";
 const FIELD =
-  "block w-full bg-transparent text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)] outline-none";
+  "block w-full bg-transparent text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)] outline-none";
 
 /**
  * Figma Contact form: uppercase labels 13px in from a Mid Grey hairline that
@@ -26,7 +26,7 @@ export function ContactForm({ data }: { data: ContactPageContent["form"] }) {
     return (
       <p
         role="status"
-        className="text-[clamp(1.5rem,2.38vw,2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]"
+        className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]"
       >
         {data.successMessage}
       </p>

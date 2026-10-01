@@ -18,7 +18,7 @@ export function PageHero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className={`pt-[clamp(8rem,23.2vw,21.9rem)] ${SERVICE_GUTTER}`}>
+    <section className={`pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
       {/* The media sits 104px under the title or 32px under the lead,
           whichever is lower (Figma: 32px under a three-line lead). */}
       <div className="grid items-start gap-6 lg:grid-cols-[731fr_721fr] lg:gap-0">
@@ -28,12 +28,12 @@ export function PageHero({
             text={title}
             variant="about"
             className="block font-light text-[var(--hll-dark-grey)]"
-            fontSize="clamp(2.5rem, 4.23vw, 4rem)"
+            fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
             letterSpacing="0"
             lineHeight="1.16"
           />
         </div>
-        <p className="text-[clamp(1.5rem,2.38vw,2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)] lg:pt-5">{lead}</p>
+        <p className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)] lg:pt-5">{lead}</p>
       </div>
       <div
         className="relative mt-8 aspect-[1452/982] w-full overflow-hidden rounded-lg bg-[#D9D9D9]"

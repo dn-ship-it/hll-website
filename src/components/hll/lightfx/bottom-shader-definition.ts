@@ -10,7 +10,7 @@
 // (vignette, sine warp, shatter, bokeh) is computed from the canvas's own
 // resolution and aspect ratio, so a canvas sized to anything else renders a
 // visibly different pattern, not a crop of the same one.
-export const CANVAS_HEIGHT = "100vh";
+export const CANVAS_HEIGHT = "calc(100*var(--vh))";
 
 // How far into the host's visible window the soft top-edge fade runs before
 // the effect is fully solid. The one real tuning knob for the fade's look;
@@ -31,7 +31,7 @@ export function makeBottomShaderLayout(
   { fadeColor = "#ffffff" }: { fadeColor?: string } = {},
 ): BottomShaderLayout {
   return {
-    HOST_HEIGHT: `${hostHeightPercent}vh`,
+    HOST_HEIGHT: `calc(${hostHeightPercent} * var(--vh))`,
     CANVAS_HEIGHT,
     // The fade gradient is sized to the HOST's own box, so these two values
     // stay on that host-relative scale: 0% is the top of the visible host,

@@ -34,18 +34,18 @@ export function IndustryHero({
   return (
     <>
       <div className={`pt-[18px] ${SERVICE_GUTTER}`}>
-        <p className="text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+        <p className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
           {category}
         </p>
       </div>
 
       <section
-        className={`pt-[clamp(8rem,19.25vw,18.1875rem)] ${SERVICE_GUTTER}`}
+        className={`pt-[clamp(8rem,calc(19.25*var(--vw)),18.1875rem)] ${SERVICE_GUTTER}`}
       >
         {/* Figma: the industry name in its own colour at Regular weight
             ("colour of Industry name will be a colour set to the industry"),
             the claim below it in the Light H1. */}
-        <h1 className="text-[clamp(2rem,4.23vw,4rem)] leading-[1.16]">
+        <h1 className="text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] leading-[1.16]">
           <span className="block font-normal" style={{ color: accentColor }}>
             {data.title}
           </span>
@@ -53,7 +53,7 @@ export function IndustryHero({
             text={data.headline}
             variant="industries"
             className="block max-w-none font-light text-[var(--hll-dark-grey)]"
-            fontSize="clamp(2rem, 4.23vw, 4rem)"
+            fontSize="clamp(2rem, calc(4.23*var(--vw)), 4rem)"
             letterSpacing="0"
             lineHeight="1.16"
           />

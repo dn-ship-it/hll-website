@@ -11,6 +11,7 @@
 // p5 touches `window` at import time, so it is loaded dynamically inside the
 // effect instead of at module scope, which would break server rendering.
 import { useEffect, useRef, type CSSProperties } from "react";
+import { pageZoom } from "@/lib/page-zoom";
 
 import { cn } from "@/lib/utils";
 
@@ -62,7 +63,7 @@ function sketch(
     // means nine times the fragment work for a backdrop that sits under a
     // scrim. The WebGL runtimes already cap at 2; match them.
     p.pixelDensity(Math.min(p.displayDensity(), 2));
-    p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+    p.createCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom(), p.WEBGL);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, RIPPLE_FRAG_SRC);
   };
@@ -128,7 +129,7 @@ function sketch(
   };
 
   p.windowResized = () => {
-    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    p.resizeCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom());
   };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

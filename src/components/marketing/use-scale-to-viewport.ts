@@ -2,6 +2,8 @@
 
 import { useEffect, type RefObject } from "react";
 
+import { pageZoom } from "@/lib/page-zoom";
+
 /**
  * Figma (Home and Industry heroes): "window starts at given ratio with video
  * playing and then smoothly scales to viewport width and height to cover the
@@ -24,7 +26,10 @@ export function useScaleToViewport(ref: RefObject<HTMLElement | null>) {
         el = el.offsetParent as HTMLElement | null
       )
         top += el.offsetTop;
-      const rest = { w: node.offsetWidth, h: node.offsetHeight };
+      // Layout pixels to screen pixels under the desktop design zoom.
+      const z = pageZoom();
+      top *= z;
+      const rest = { w: node.offsetWidth * z, h: node.offsetHeight * z };
       // 0 at the top of the page, 1 once the window's centre reaches the
       // viewport's centre.
       const end = Math.max(1, top - (window.innerHeight - rest.h) / 2);

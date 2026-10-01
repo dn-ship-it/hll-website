@@ -107,7 +107,7 @@ export function SiteFooter({
         videoSrc={ctaVideo}
       />
 
-      <div className="relative overflow-hidden px-[clamp(1.25rem,1.98vw,1.875rem)] pt-[52px] lg:min-h-[743px]">
+      <div className="relative overflow-hidden px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pt-[52px] lg:min-h-[743px]">
         {/* Shader strip behind the copyright row: Figma crops the image to
             its middle band (x 22.9–100%, y 47.3–69.1%) and stretches it. */}
         <div

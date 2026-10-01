@@ -18,10 +18,10 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
           style={data.portrait ? { background: `#D9D9D9 url(${data.portrait}) center / cover` } : undefined}
         />
         <blockquote className="flex flex-col justify-between gap-8">
-          <p className="text-[clamp(1.5rem,2.38vw,2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
+          <p className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
             &ldquo;{data.quote}&rdquo;
           </p>
-          <footer className="text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-black">
+          <footer className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-black">
             <cite className="block not-italic">{data.name}</cite>
             <span className="block">{data.role}</span>
           </footer>
@@ -64,7 +64,7 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
 
       <div className="mt-[26px] flex flex-wrap items-start justify-between gap-8 px-[10px] pb-[29px]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-        <p className="text-[clamp(3rem,6.35vw,6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:w-[592px]">
+        <p className="text-[clamp(3rem,calc(6.35*var(--vw)),6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:w-[592px]">
           {data.stats.map((line) => (
             <span key={line} className="block">
               {/* Figma: "Number counter". */}
@@ -123,7 +123,7 @@ export function AboutCareersSection({
               <span className="hll-label hidden pt-[3px] text-[12px] leading-[1.2] text-black lg:block" style={{ fontFamily: "var(--hll-font-functional)" }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <p className="text-[clamp(1.125rem,1.59vw,1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+              <p className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                 <span className="text-black">{point.title}.</span> {point.body}
               </p>
             </li>

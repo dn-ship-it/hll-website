@@ -37,7 +37,7 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
             <div id={id} hidden={!isOpen}>
               <div className="space-y-[30px] py-[54px] lg:pl-[30%]">
                 {section.paragraphs.map((text, p) => (
-                  <p key={p} className="text-[clamp(1.125rem,1.59vw,1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                  <p key={p} className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                     {text}
                   </p>
                 ))}

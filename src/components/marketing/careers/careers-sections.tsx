@@ -35,10 +35,10 @@ export function CareersApproach({
             >
               {String(i + 1).padStart(2, "0")}/{total}
             </p>
-            <h3 className="mt-[10px] text-[clamp(1.75rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-black">
+            <h3 className="mt-[10px] text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
               {item.title}
             </h3>
-            <p className="mt-8 max-w-[341px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+            <p className="mt-8 max-w-[341px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
               {item.body}
             </p>
           </article>
@@ -150,7 +150,7 @@ export function CareersOpenRoles({
               className="h-px bg-[var(--hll-mid-grey)]"
             />
             {shown.length === 0 ? (
-              <li className="py-8 text-[clamp(1rem,1.32vw,1.25rem)] text-[var(--hll-dark-grey)]">
+              <li className="py-8 text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] text-[var(--hll-dark-grey)]">
                 {emptyMessage}
               </li>
             ) : null}
@@ -163,7 +163,7 @@ export function CareersOpenRoles({
                     className="group flex items-start justify-between gap-6 pt-[21px] pb-[23px]"
                   >
                     <span>
-                      <span className="block text-[clamp(1.75rem,2.38vw,2.25rem)] leading-[1.16] text-black">
+                      <span className="block text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-black">
                         {role.title}
                       </span>
                       {tags.length ? (
@@ -173,7 +173,7 @@ export function CareersOpenRoles({
                           ))}
                         </span>
                       ) : (
-                        <span className="mt-3 block max-w-[560px] text-[clamp(1rem,1.32vw,1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                        <span className="mt-3 block max-w-[560px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                           {role.summary}
                         </span>
                       )}
@@ -228,7 +228,7 @@ export function LabelledRows({
                   >
                     {numbered && r === 0 ? String(i + 1).padStart(2, "0") : ""}
                   </span>
-                  <p className="text-[clamp(1.125rem,1.59vw,1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                  <p className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                     {text}
                   </p>
                 </li>

@@ -126,7 +126,7 @@ function ShaderSectionBlock({
   }
 
   return (
-    <div className="relative h-[50vh] overflow-hidden border-y border-white/10">
+    <div className="relative h-[calc(50*var(--vh))] overflow-hidden border-y border-white/10">
       <Shader variant={variant} contained passthrough style={{ opacity }} />
     </div>
   );

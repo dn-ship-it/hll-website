@@ -122,7 +122,7 @@ function ImpactCard({ tile }: { tile: Card }) {
           ))}
         </div>
       </div>
-      <h3 className="mt-2 text-[clamp(1.5rem,2.38vw,2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+      <h3 className="mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
         {tile.title}
       </h3>
     </article>
@@ -133,10 +133,10 @@ function ImpactStat({ tile }: { tile: Stat }) {
   return (
     <div className="text-black">
       {/* Figma: "Number counter". */}
-      <p className="hll-display text-[clamp(4rem,8.47vw,8rem)] font-light leading-[1.16]">
+      <p className="hll-display text-[clamp(4rem,calc(8.47*var(--vw)),8rem)] font-light leading-[1.16]">
         <CountUp value={tile.stat} />
       </p>
-      <p className="mt-[-12px] text-[clamp(1.5rem,2.38vw,2.25rem)] font-light leading-[1.16]">
+      <p className="mt-[-12px] text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-light leading-[1.16]">
         {tile.label}
       </p>
     </div>

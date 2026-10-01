@@ -271,7 +271,7 @@ export function EngagementSidebar({
   const strip = accent ?? "#444444";
 
   return (
-    <aside className="relative lg:sticky lg:top-[66px] lg:h-[calc(100vh-66px)]">
+    <aside className="relative lg:sticky lg:top-[66px] lg:h-[calc(calc(100*var(--vh))-66px)]">
       <div
         aria-hidden
         className="absolute inset-y-0 left-0 w-full lg:w-[97.4%]"
@@ -279,14 +279,14 @@ export function EngagementSidebar({
           background: `linear-gradient(180deg, ${withAlpha(strip, 0.2)}, ${withAlpha(strip, 0.05)})`,
         }}
       />
-      <div className="relative px-[clamp(1.25rem,2.1vw,2rem)] pb-8 pt-[52px] lg:h-full lg:pb-0">
+      <div className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pb-8 pt-[52px] lg:h-full lg:pb-0">
         <GradientRevealTextNormal
           as="h1"
           text={engagement.client}
           variant="engagement"
           className="block max-w-[8ch] text-[var(--hll-dark-grey)]"
           fontWeight={500}
-          fontSize="clamp(1.75rem, 2.38vw, 2.25rem)"
+          fontSize="clamp(1.75rem, calc(2.38*var(--vw)), 2.25rem)"
           letterSpacing="0"
           lineHeight="1.16"
         />

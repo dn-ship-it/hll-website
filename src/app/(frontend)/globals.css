@@ -33,6 +33,12 @@
 
 /* Figma variables (Final › Desktop). Sizes are the 1512px desktop values. */
 :root {
+  /* Viewport units that stay true under the desktop design zoom (see the
+     DESIGN_SCALE script in layout.tsx); plain viewport units until it runs. */
+  --zoom: 1;
+  --vw: 1vw;
+  --vh: 1vh;
+
   --hll-bg: #fafafa;
   --hll-dark-grey: #1a1a1a;
   --hll-mid-grey: #949494;
@@ -235,8 +241,8 @@ body {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  width: 100vw;
-  height: 100vh;
+  width: calc(100*var(--vw));
+  height: calc(100*var(--vh));
   background: #ffffff;
 }
 
@@ -460,8 +466,8 @@ body {
   bottom: 0;
   left: 0;
   overflow: hidden;
-  width: 100vw;
-  height: var(--bottom-shader-height, 25vh);
+  width: calc(100*var(--vw));
+  height: var(--bottom-shader-height, calc(25*var(--vh)));
   background: transparent;
 
   /* The soft top edge. Masking the WebGL canvas itself hits a Chromium bug
@@ -500,7 +506,7 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: var(--bottom-shader-canvas-height, 100vh);
+  height: var(--bottom-shader-canvas-height, calc(100*var(--vh)));
 }
 
 /* Deliberately on the host, not the canvas: mix-blend-mode only mixes with
@@ -536,7 +542,7 @@ body {
   inset: auto;
   top: 0;
   z-index: 0;
-  height: 100vh;
+  height: calc(100*var(--vh));
   width: 100%;
 }
 
@@ -570,7 +576,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  width: min(90vw, 900px);
+  width: min(calc(90*var(--vw)), 900px);
   text-align: center;
   color: #1a1a1a;
   /* Purely decorative — never block the page underneath. */
@@ -589,7 +595,7 @@ body {
 .our-promise-headline {
   margin: 0;
   font-weight: 300;
-  font-size: clamp(28px, 4.23vw, 64px);
+  font-size: clamp(28px, calc(4.23*var(--vw)), 64px);
   line-height: 1.16;
 }
 
@@ -604,7 +610,7 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 80vw;
+  width: calc(80*var(--vw));
   height: 100%;
   z-index: 0;
   opacity: 0;
@@ -626,7 +632,7 @@ body {
 }
 
 .our-promise-image-stage--impact {
-  width: 100vw;
+  width: calc(100*var(--vw));
 }
 
 .our-promise-impact-frame {
