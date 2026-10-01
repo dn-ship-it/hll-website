@@ -249,12 +249,12 @@ export function WhatWeDo() {
     <section
       ref={sectionRef}
       className="hll-home-section"
-      style={{ height: `calc(${count * 60} * var(--vh))` }}
+      style={{ height: `calc(${count * 60} * var(--svh))` }}
       aria-label="Our services"
     >
       <div
         ref={stickyRef}
-        className={`sticky top-[66px] flex h-[calc(calc(100*var(--vh))-66px)] flex-col justify-center ${HOME_GUTTER}`}
+        className={`sticky top-[66px] flex h-[calc(calc(100*var(--svh))-66px)] flex-col justify-center ${HOME_GUTTER}`}
       >
         <HomeHeading eyebrow="Services" title="What we do" />
 
