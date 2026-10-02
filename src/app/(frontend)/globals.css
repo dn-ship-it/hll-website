@@ -341,7 +341,8 @@ body {
   transition: opacity 0.3s ease;
 }
 
-.hll-button:hover canvas,
+/* Hover only where there is a real pointer: a phone keeps :hover after a tap,
+   which would leave the bloom on and the label in its hover colour. */
 .hll-button:focus-visible canvas {
   opacity: 1;
 }
@@ -381,9 +382,15 @@ body {
   transition: color 0.25s ease;
 }
 
-.hll-button:hover .hll-button__label,
-.hll-outline-button:hover .hll-outline-button__label {
-  color: var(--hll-label-hover-color, var(--hll-label-color, #808080));
+@media (hover: hover) {
+  .hll-button:hover canvas {
+    opacity: 1;
+  }
+
+  .hll-button:hover .hll-button__label,
+  .hll-outline-button:hover .hll-outline-button__label {
+    color: var(--hll-label-hover-color, var(--hll-label-color, #808080));
+  }
 }
 
 .hll-button__spinner,
@@ -863,8 +870,3 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
   }
 }
 
-@media (max-width: 767px) {
-  .hll-home > section:first-child {
-    padding-top: 20rem;
-  }
-}

@@ -63,7 +63,12 @@ function Arrow({ direction, onClick }: { direction: "prev" | "next"; onClick: ()
   );
 }
 
-export function HowWeWork() {
+export function HowWeWork({
+  dividerClassName = "mb-8",
+}: {
+  /** Space under the mobile hairline (Home 32px, About 84px). */
+  dividerClassName?: string;
+} = {}) {
   const [active, setActive] = useState(1);
   const count = STEPS.length;
   const slotOf = (index: number) => (index - active + 1 + count) % count;
@@ -75,7 +80,7 @@ export function HowWeWork() {
   return (
     <section className={`hll-home-section pb-[154px] ${HOME_GUTTER}`}>
       {/* Figma Home mobile: a hairline 8px in from each edge, 32px above. */}
-      <div data-line className="-mx-3 mb-8 h-px bg-[var(--hll-mid-grey)] lg:hidden" />
+      <div data-line className={`-mx-3 h-px bg-[var(--hll-mid-grey)] lg:hidden ${dividerClassName}`} />
       <HomeHeading eyebrow="About" title="How we work" />
 
       <div

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock, Factory, MapPin, MonitorCog } from "lucide-react";
+import { createPortal } from "react-dom";
+import { ArrowUpRight, Clock, Factory, MapPin, MonitorCog } from "lucide-react";
 
 import { GradientRevealTextNormal } from "@/components/hll";
 import { CountUp } from "@/components/marketing/count-up";
@@ -14,7 +15,7 @@ import {
 import { FUNCTIONAL_STYLE, withAlpha } from "./engagement-card";
 
 const META =
-  "hll-label text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]";
+  "hll-label text-[10px] uppercase leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]";
 const AXIS = "#8B8A8A";
 
 function MetaRow({
@@ -243,9 +244,12 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
 export function EngagementSidebar({
   engagement,
   accent,
+  mobileHero,
 }: {
   engagement: Engagement;
   accent: string | null;
+  /** Figma mobile: the hero media sits between the name and the details. */
+  mobileHero?: React.ReactNode;
 }) {
   const [artifactShown, setArtifactShown] = useState(false);
 
@@ -271,26 +275,29 @@ export function EngagementSidebar({
   const strip = accent ?? "#444444";
 
   return (
-    <aside className="relative lg:sticky lg:top-[var(--nav-h)] lg:h-[calc(calc(100*var(--vh))-var(--nav-h))]">
+    <aside className="relative [--eng-name-size:24px] lg:sticky lg:top-[var(--nav-h)] lg:h-[calc(calc(100*var(--vh))-var(--nav-h))] lg:[--eng-name-size:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
       <div
         aria-hidden
-        className="absolute inset-y-0 left-0 w-full lg:w-[97.4%]"
+        className="absolute inset-y-0 left-0 hidden w-full lg:block lg:w-[97.4%]"
         style={{
           background: `linear-gradient(180deg, ${withAlpha(strip, 0.2)}, ${withAlpha(strip, 0.05)})`,
         }}
       />
-      <div className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pb-8 pt-[52px] lg:h-full lg:pb-0">
+      {/* Figma Case Study mobile: name 8px under the nav, the hero 32px
+          below, then the details 32px below that. */}
+      <div className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pt-2 lg:h-full lg:pt-[52px]">
         <GradientRevealTextNormal
           as="h1"
           text={engagement.client}
           variant="engagement"
           className="block max-w-[8ch] text-[var(--hll-dark-grey)]"
           fontWeight={500}
-          fontSize="clamp(1.75rem, calc(2.38*var(--vw)), 2.25rem)"
+          fontSize="var(--eng-name-size)"
           letterSpacing="0"
           lineHeight="1.16"
         />
-        <ul data-fade-up className="mt-9 space-y-3">
+        {mobileHero ? <div className="-mx-3 mt-8 lg:hidden">{mobileHero}</div> : null}
+        <ul data-fade-up className="mt-8 space-y-3 pl-[2px] lg:mt-9 lg:pl-0">
           {engagement.period ? (
             <MetaRow icon={Clock}>{engagement.period}</MetaRow>
           ) : null}
@@ -312,11 +319,106 @@ export function EngagementSidebar({
         </ul>
 
         {engagement.stat ? (
-          <div className="mt-10 lg:absolute lg:bottom-[10px] lg:left-4 lg:right-[6.5%] lg:mt-0">
+          <div className="hidden lg:absolute lg:bottom-[10px] lg:left-4 lg:right-[6.5%] lg:block">
             <StatCard stat={engagement.stat} shown={artifactShown} />
           </div>
         ) : null}
       </div>
+      {engagement.stat ? (
+        <MobileArtifact stat={engagement.stat} available={artifactShown} />
+      ) : null}
     </aside>
+  );
+}
+
+/**
+ * Figma Case Study mobile + Artifact Expanded View: the stat card folds into a
+ * sticky "Operational Efficiency ↗" pill at the bottom left. "An artifact
+ * shows up when the sticky button is pressed"; "clicking anywhere on screen
+ * closes it or when it reaches a related section".
+ */
+function MobileArtifact({
+  stat,
+  available,
+}: {
+  stat: EngagementStat;
+  available: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [atRelated, setAtRelated] = useState(false);
+  // Rendered into <body>: the page intro transforms the sidebar, which would
+  // otherwise trap this fixed pill under the content that follows it.
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  useEffect(() => setHost(document.body), []);
+
+  // Hidden from the related band on, through the footer below it. Read from
+  // the scroll position so a jump (anchor, back to top) can't leave it stale.
+  useEffect(() => {
+    const band = document.querySelector("[data-related-band]");
+    if (!band) return undefined;
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const reached = band.getBoundingClientRect().top < window.innerHeight;
+      setAtRelated(reached);
+      if (reached) setOpen(false);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = () => setOpen(false);
+    const onKey = (event: KeyboardEvent) => event.key === "Escape" && close();
+    // Next tick, so the tap that opened it doesn't close it again.
+    const id = window.setTimeout(() => {
+      window.addEventListener("pointerdown", close);
+      window.addEventListener("keydown", onKey);
+    });
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("pointerdown", close);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const visible = available && !atRelated;
+
+  if (!host) return null;
+  return createPortal(
+    <div
+      className={`fixed bottom-[27px] left-5 z-40 transition-opacity duration-500 lg:hidden ${
+        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      }`}
+      // Taps on the pill or the card don't count as "anywhere on screen".
+      onPointerDown={(event) => event.stopPropagation()}
+    >
+      <div
+        className={`absolute bottom-[calc(100%+8px)] -left-[5px] w-[344px] max-w-[calc(100vw-30px)] ${open ? "" : "pointer-events-none"}`}
+      >
+        <StatCard stat={stat} shown={open} />
+      </div>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="inline-flex h-7 items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] pl-[7px] pr-2 text-[11px] uppercase leading-none text-[var(--hll-dark-grey)]"
+        style={FUNCTIONAL_STYLE}
+      >
+        {stat.label}
+        <ArrowUpRight className="size-[10px]" strokeWidth={1.5} aria-hidden />
+      </button>
+    </div>,
+    host,
   );
 }

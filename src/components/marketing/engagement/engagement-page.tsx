@@ -14,13 +14,14 @@ export async function EngagementPage() {
     <MarketingShell>
       <ServiceReveal>
         <div className="hll-home hll-service-page pb-[154px]">
-          <div className={`pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
+          {/* Figma Engagements mobile: the title at y 385 of the first screen. */}
+          <div className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
             <GradientRevealTextSlow
               as="h1"
               text="Engagements/ Work"
               variant="engagement"
               className="block font-light text-[var(--hll-dark-grey)]"
-              fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
+              fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
               letterSpacing="0"
               lineHeight="1.16"
             />

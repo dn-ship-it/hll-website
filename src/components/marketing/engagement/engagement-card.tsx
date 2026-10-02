@@ -99,7 +99,7 @@ export function EngagementCard({
         </span>
         {showYear ? (
           <span
-            className="hll-label shrink-0 text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]"
+            className="hll-label shrink-0 text-[10px] uppercase leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]"
             style={FUNCTIONAL_STYLE}
           >
             {engagement.year}

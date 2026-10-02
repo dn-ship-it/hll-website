@@ -18,31 +18,33 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
         const isOpen = open === i;
         const id = `jd-section-${i}`;
         return (
-          <div key={section.title} className={i > 0 ? "pt-[57px]" : undefined}>
+          <div key={section.title} className={i > 0 ? "pt-[27px] lg:pt-[57px]" : undefined}>
             <button
               type="button"
               aria-expanded={isOpen}
               aria-controls={id}
               onClick={() => setOpen(isOpen ? null : i)}
-              className="flex w-full items-start justify-between px-[23px] text-left"
+              className="flex w-full items-center justify-between text-left lg:items-start lg:px-[23px]"
             >
-              <span className="pt-[3px] text-[14px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)]">
+              <span className="text-[10px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:pt-[3px] lg:text-[14px]">
                 {section.title}
               </span>
-              <span aria-hidden className="text-[20px] leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)]">
+              <span aria-hidden className="text-[18px] leading-[12px] text-[var(--hll-dark-grey)] lg:text-[20px] lg:leading-[1.16] lg:tracking-[0.25em]">
                 {isOpen ? "−" : "+"}
               </span>
             </button>
-            <div data-line className={`h-px bg-[var(--hll-mid-grey)] ${isOpen ? "mt-[26px]" : "mt-[51px]"}`} />
+            {/* Mobile: hairlines out to 8px from the edges, 18px under an open
+                header, 27px under a closed one. */}
+            <div data-line className={`-mx-3 h-px bg-[var(--hll-mid-grey)] lg:mx-0 ${isOpen ? "mt-[18px] lg:mt-[26px]" : "mt-[27px] lg:mt-[51px]"}`} />
             <div id={id} hidden={!isOpen}>
-              <div className="space-y-[30px] py-[54px] lg:pl-[30%]">
+              <div className="space-y-[18px] py-[54px] lg:space-y-[30px] lg:pl-[30%]">
                 {section.paragraphs.map((text, p) => (
-                  <p key={p} className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                  <p key={p} className="text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]">
                     {text}
                   </p>
                 ))}
               </div>
-              <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
+              <div data-line className="-mx-3 h-px bg-[var(--hll-mid-grey)] lg:mx-0" />
             </div>
           </div>
         );

@@ -143,6 +143,14 @@ const SUBMENUS: Partial<
 
 // Figma Menu Mobile: services' list starts 1px under its button and ends 32px
 // above the next; industries' window sits 20px under and 31px above.
+// Each opened list ends with a way to its own page, which the button itself
+// no longer goes to on mobile (it opens the list instead).
+const VIEW_ALL: Partial<Record<NavVariant, { label: string; inset: string }>> = {
+  services: { label: "View all services", inset: "ml-[17px]" },
+  industries: { label: "View all industries", inset: "ml-[38px]" },
+  engagement: { label: "View all work", inset: "ml-px" },
+};
+
 const SUBMENU_SPACING: Partial<Record<NavVariant, string>> = {
   services: "pt-px pb-8",
   industries: "pt-5 pb-[31px]",
@@ -302,6 +310,17 @@ export function MobileMenu({
                         <div className="overflow-hidden" inert={!isOpen}>
                           <div className={SUBMENU_SPACING[variant]}>
                             <Submenu news={news} />
+                            {VIEW_ALL[variant] ? (
+                              <Link
+                                href={item.href}
+                                onClick={close}
+                                className={`mt-4 inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] ${VIEW_ALL[variant].inset}`}
+                                style={NAV_FONT}
+                              >
+                                {VIEW_ALL[variant].label}
+                                <span aria-hidden>→</span>
+                              </Link>
+                            ) : null}
                           </div>
                         </div>
                       </div>

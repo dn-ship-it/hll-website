@@ -27,8 +27,8 @@ export async function AboutPage() {
         <AboutHero data={data.hero} />
         <AboutValuesSection data={data.values} />
         <AboutLeaderSection data={data.leader} />
-        <div className="pt-[214px]">
-          <HowWeWork />
+        <div className="pt-[84px] lg:pt-[214px]">
+          <HowWeWork dividerClassName="mb-[84px]" />
         </div>
         <AboutReachSection data={data.reach} />
         <AboutCareersSection data={data.careers} />

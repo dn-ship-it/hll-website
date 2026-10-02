@@ -1,4 +1,5 @@
 import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
+import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { HomeHeading } from "@/components/marketing/home/primitives";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
@@ -18,21 +19,24 @@ async function loadContactData() {
 }
 
 const FUNCTIONAL =
-  "hll-label text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]";
+  "hll-label text-[10px] uppercase leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]";
+const BODY14 =
+  "text-[14px] leading-[1.25] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]";
 
-/** Figma office row: country in Mid Grey, then company, address and tax ID. */
+/** Figma office row: country in Mid Grey, then company, address and tax ID.
+ *  Mobile stacks them 32px apart, a hairline to 8px from the edges between. */
 function Office({ office }: { office: ContactOffice }) {
   return (
-    <li className="pt-[54px] first:pt-0">
-      <div className="grid gap-4 pb-[54px] sm:grid-cols-[377fr_299fr] sm:gap-0">
-        <p className="pt-[6px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-mid-grey)]">
+    <li className="pt-8 first:pt-0 lg:pt-[54px]">
+      <div className="grid gap-8 pb-8 lg:grid-cols-[377fr_299fr] lg:gap-0 lg:pb-[54px]">
+        <p className={`text-[var(--hll-mid-grey)] lg:pt-[6px] ${BODY14}`}>
           {office.country}
         </p>
         <div>
-          <p className="text-[clamp(1.5rem,calc(1.92*var(--vw)),1.8125rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+          <p className="text-[20px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(1.92*var(--vw)),1.8125rem)]">
             {office.company}
           </p>
-          <p className="mt-12 whitespace-pre-line text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+          <p className={`mt-8 whitespace-pre-line text-[var(--hll-dark-grey)] lg:mt-12 ${BODY14}`}>
             {office.address}
           </p>
           {office.taxId ? (
@@ -43,14 +47,14 @@ function Office({ office }: { office: ContactOffice }) {
               >
                 {office.taxLabel}
               </p>
-              <p className="mt-2 text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+              <p className={`mt-[6px] text-[var(--hll-dark-grey)] lg:mt-2 ${BODY14}`}>
                 {office.taxId}
               </p>
             </div>
           ) : null}
         </div>
       </div>
-      <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
+      <div data-line className="-mx-3 h-px bg-[var(--hll-mid-grey)] lg:mx-0" />
     </li>
   );
 }
@@ -66,14 +70,14 @@ export async function ContactPage() {
         <div className="hll-home hll-service-page">
           {/* Title (slow anim) with the form beside it, 70px lower. */}
           <section
-            className={`grid gap-12 pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] lg:grid-cols-[472fr_864fr_116fr] lg:gap-0 ${SERVICE_GUTTER}`}
+            className={`grid gap-[55px] pt-[311px] lg:grid-cols-[472fr_864fr_116fr] lg:gap-0 lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}
           >
             <GradientRevealTextSlow
               as="h1"
               text={content.title}
               variant="contact"
               className="block font-light text-[var(--hll-dark-grey)]"
-              fontSize="clamp(2.5rem, calc(4.23*var(--vw)), 4rem)"
+              fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
               letterSpacing="0"
               lineHeight="1.16"
             />
@@ -83,10 +87,10 @@ export async function ContactPage() {
           </section>
 
           {/* Figma "image": an image-only slot, 1452 × 396. */}
-          <div className={`pt-[214px] ${SERVICE_GUTTER}`}>
+          <div className={`pt-[84px] lg:pt-[214px] ${SERVICE_GUTTER}`}>
             <div
               data-service-media
-              className="aspect-[1452/396] w-full rounded-[6px] bg-[#D9D9D9]"
+              className="-mx-3 aspect-[386/194] rounded-[6px] bg-[#D9D9D9] lg:mx-0 lg:aspect-[1452/396] lg:w-full"
               style={
                 content.image
                   ? {
@@ -97,20 +101,20 @@ export async function ContactPage() {
             />
           </div>
 
-          <section className={`pt-[85px] ${SERVICE_GUTTER}`}>
+          <section className={`pt-[84px] lg:pt-[85px] ${SERVICE_GUTTER}`}>
             <HomeHeading
               eyebrow={content.offices.eyebrow}
               title={content.offices.title}
             />
-            <ul className="mt-1 lg:ml-[46.6%] lg:mr-[6.9%]">
+            <ul className="mt-[67px] lg:ml-[46.6%] lg:mr-[6.9%] lg:mt-1">
               {content.offices.items.map((office) => (
                 <Office key={office.id} office={office} />
               ))}
             </ul>
           </section>
 
-          <section className={`pt-[214px] pb-[152px] ${SERVICE_GUTTER}`}>
-            <div className="flex flex-wrap items-end justify-between gap-8 lg:pr-[129px]">
+          <section className={`pb-[84px] pt-[84px] lg:pb-[152px] lg:pt-[214px] ${SERVICE_GUTTER}`}>
+            <div className="flex flex-wrap items-start justify-between gap-8 lg:items-end lg:pr-[129px]">
               <a
                 href={`mailto:${getInTouch.email}`}
                 className="min-w-0 break-words hover:opacity-80"
@@ -118,6 +122,7 @@ export async function ContactPage() {
                 <HomeHeading
                   eyebrow={getInTouch.eyebrow}
                   title={getInTouch.email}
+                  titleSize="clamp(25px, calc(4.23*var(--vw)), 4rem)"
                 />
               </a>
               <div className="lg:pb-[18px]">
@@ -125,6 +130,7 @@ export async function ContactPage() {
                   href={getInTouch.scheduleHref}
                   variant="contact"
                   size="md"
+                  className={BUTTON_MOBILE}
                 >
                   {getInTouch.scheduleLabel}
                 </HLLButton>

@@ -137,7 +137,7 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
           height so the grid doesn't jump. */}
       <div
         data-fade-up
-        className="mt-[19px] flex min-h-[38px] flex-wrap gap-2 px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pl-[31px]"
+        className="mt-3 flex min-h-[38px] flex-wrap gap-2 px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:mt-[19px] lg:pl-[31px]"
       >
         {chips.map((chip) => (
           <button
@@ -153,14 +153,14 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
         ))}
       </div>
 
-      <div className="mt-[47px] grid grid-cols-1 items-start gap-x-[10px] gap-y-[40px] px-[10px] sm:grid-cols-2 lg:grid-cols-3">
+      {/* Figma Engagements mobile: "Layout becomes linear" — one 386px column,
+          8px from the edges, cards 34px apart. */}
+      <div className="mt-8 grid grid-cols-1 items-start gap-x-[10px] gap-y-[34px] px-2 lg:mt-[47px] lg:grid-cols-3 lg:gap-y-[40px] lg:px-[10px]">
         {shown.map((engagement) => (
           <div
             key={engagement.id}
             data-fade-up
-            className={
-              engagement.featured ? "sm:col-span-2 lg:col-span-3" : undefined
-            }
+            className={engagement.featured ? "lg:col-span-3" : undefined}
           >
             <EngagementCard engagement={engagement} />
           </div>
@@ -172,17 +172,18 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
         ) : null}
       </div>
 
-      {/* Sticky Filter button, 37px off the bottom, opening the expanded view
-          8px above it. */}
-      <div className="pointer-events-none sticky bottom-[37px] z-30 mt-[60px] flex justify-center">
+      {/* Sticky Filter button, 37px off the bottom (mobile 23px, the 34px
+          "Button Mobile"), opening the expanded view 8px above it. */}
+      <div className="pointer-events-none sticky bottom-[23px] z-30 mt-[60px] flex justify-center lg:bottom-[37px]">
         <div ref={panelRef} className="pointer-events-auto relative">
           {open ? (
             <div
               role="dialog"
               aria-label="Filter engagements"
-              className="absolute bottom-[calc(100%+8px)] left-1/2 w-[min(1004px,calc(calc(100*var(--vw))-32px))] -translate-x-1/2 rounded-lg bg-[var(--hll-light-grey)] px-[28px] pb-[40px] pt-[33px] [animation:page-intro-in_300ms_cubic-bezier(0.22,1,0.36,1)_both]"
+              className="absolute bottom-[calc(100%+8px)] left-1/2 max-h-[calc(100*var(--svh)-var(--nav-h)-80px)] w-[calc(calc(100*var(--vw))-16px)] -translate-x-1/2 overflow-y-auto rounded-lg bg-[var(--hll-light-grey)] px-5 pb-8 pt-6 [animation:page-intro-in_300ms_cubic-bezier(0.22,1,0.36,1)_both] lg:max-h-none lg:w-[min(1004px,calc(calc(100*var(--vw))-32px))] lg:overflow-visible lg:px-[28px] lg:pb-[40px] lg:pt-[33px]"
             >
-              <div className="grid gap-8 md:grid-cols-[211fr_591fr_146fr] md:gap-0">
+              {/* Mobile stacks the four lists in one scrolling panel. */}
+              <div className="grid gap-8 lg:grid-cols-[211fr_591fr_146fr] lg:gap-0">
                 <div>
                   <p className={HEADER}>Services</p>
                   <ul className="mt-[25px]">
@@ -294,7 +295,7 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
             type="button"
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            className={`inline-flex h-9 items-center gap-[10px] rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] ${BUTTON}`}
+            className="inline-flex h-[34px] items-center gap-[10px] rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]"
           >
             Filter
             <ChevronDown

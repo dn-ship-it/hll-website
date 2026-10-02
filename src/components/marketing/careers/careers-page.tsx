@@ -61,9 +61,10 @@ export async function CareersPage() {
         <div className="relative">
           <PageHero title="Careers" lead={content.hero.headline} />
 
-          <div className="pt-[84px] pb-[61px]">
+          <div className="pt-[84px] lg:pb-[61px]">
             <VoiceSection
               divider={false}
+              headingInset
               data={{ quote: voice.quote, name: voice.name, role: voice.role }}
               slideCount={voice.slideCount}
               timerColor="var(--hll-mid-grey)"
@@ -77,7 +78,7 @@ export async function CareersPage() {
             />
           </div>
 
-          <div data-line className="mx-[10px] h-px bg-[var(--hll-mid-grey)]" />
+          <div data-line className="mx-2 h-px bg-[var(--hll-mid-grey)] lg:mx-[10px]" />
           <CareersApproach data={content.approach} />
           <SeeOpenRoles />
         </div>

@@ -44,6 +44,8 @@ export function VoiceSection({
   timerColor,
   slideCount = 1,
   divider = true,
+  wide = false,
+  headingInset = false,
 }: {
   data: ExpertVoice;
   heading: React.ReactNode;
@@ -53,6 +55,10 @@ export function VoiceSection({
   divider?: boolean;
   /** Industry pages show the carousel's timer bar under the portrait. */
   timerColor?: string;
+  /** Figma Industry mobile: a 253px square portrait at x 75 (Services: 245 × 253 at x 79). */
+  wide?: boolean;
+  /** Industry / Careers mobile set the heading in the 20px gutter (Services: 8px). */
+  headingInset?: boolean;
 }) {
   const accent = counterColor;
   const affiliation = [data.role, data.company].filter(Boolean).join(", ");
@@ -60,16 +66,17 @@ export function VoiceSection({
   return (
     // Figma Services mobile: an 8px gutter, the counter at x 34, a 245 × 253
     // portrait at x 79 and a 57px logo tile on the right edge, the quote
-    // indented under the portrait.
+    // indented under the portrait. On narrower phones the portrait gives way
+    // so it always clears the logo tile by 8px.
     <section
-      className="px-2 pb-[11px] lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pb-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]"
+      className={`px-2 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pb-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] ${timerColor ? "pb-[84px]" : "pb-[11px]"}`}
     >
       {divider ? (
         <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
       ) : null}
 
       <div
-        className={divider ? "pt-[87px] lg:pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]" : undefined}
+        className={`${divider ? "pt-[87px] lg:pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]" : ""} ${headingInset ? "px-3 lg:px-0" : ""}`}
       >
         {heading}
       </div>
@@ -91,29 +98,24 @@ export function VoiceSection({
               <span>&gt;</span>
             </p>
           </div>
-          <div className="absolute left-[71px] top-0 w-[245px] lg:static lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:shrink-0">
+          <div
+            className={`absolute top-0 lg:static lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:shrink-0 ${wide ? "left-[67px] w-[min(253px,calc(100%-132px))]" : "left-[71px] w-[min(245px,calc(100%-136px))]"}`}
+          >
             {data.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={data.portrait}
                 alt={data.name ?? data.role}
-                className="aspect-[245/253] w-full rounded-[6px] object-cover lg:aspect-[3/4] lg:rounded-[4px]"
+                className={`w-full rounded-[6px] object-cover lg:aspect-[3/4] lg:rounded-[4px] ${wide ? "aspect-square" : "aspect-[245/253]"}`}
               />
             ) : (
               <MediaPlaceholder
-                className="aspect-[245/253] w-full rounded-[6px] lg:aspect-[3/4] lg:rounded-[4px]"
+                className={`w-full rounded-[6px] lg:aspect-[3/4] lg:rounded-[4px] ${wide ? "aspect-square" : "aspect-[245/253]"}`}
                 label="Expert portrait"
               />
             )}
             {timerColor ? (
-              // Figma: "carousel with timer delay" — 103 × 2 track, filling
-              // in the page colour until the next testimonial.
-              <div className="mt-2 h-[2px] w-[103px] overflow-hidden rounded bg-black/20">
-                <div
-                  className="h-full [animation:voice-timer_6s_linear_infinite]"
-                  style={{ background: timerColor }}
-                />
-              </div>
+              <VoiceTimer color={timerColor} className="mt-2 hidden lg:block" />
             ) : null}
           </div>
           {data.company ? (
@@ -145,8 +147,25 @@ export function VoiceSection({
             </span>
           </footer>
         </blockquote>
+        {/* Figma Industry mobile: the timer sits 54px under the name. */}
+        {timerColor ? (
+          <VoiceTimer color={timerColor} className="ml-[67px] mt-[38px] lg:hidden" />
+        ) : null}
       </div>
     </section>
+  );
+}
+
+/** Figma: "carousel with timer delay" — a 103 × 2 track filling in the page
+ *  colour until the next testimonial. */
+function VoiceTimer({ color, className }: { color: string; className: string }) {
+  return (
+    <div className={`h-[2px] w-[103px] overflow-hidden rounded bg-black/20 ${className}`}>
+      <div
+        className="h-full [animation:voice-timer_6s_linear_infinite]"
+        style={{ background: color }}
+      />
+    </div>
   );
 }
 
