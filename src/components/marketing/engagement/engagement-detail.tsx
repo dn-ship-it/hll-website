@@ -87,10 +87,14 @@ function QuoteBlock({
   accent: string;
 }) {
   return (
+    // Mobile: the box keeps Figma's 386 × 244 shape but grows with the quote
+    // (an aspect-ratio box only grows when it doesn't clip, so the clipping
+    // and corners live on the background layer instead).
     <div
       data-service-media
-      className="relative aspect-[386/244] overflow-hidden rounded-lg lg:aspect-[1118/617]"
+      className="relative aspect-[386/244] rounded-lg lg:aspect-[1118/617] lg:overflow-hidden"
     >
+      <div className="absolute inset-0 overflow-hidden rounded-lg">
       {block.media?.src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -116,9 +120,10 @@ function QuoteBlock({
           />
         </>
       )}
+      </div>
       {/* Figma Story mobile: a 14px quote 90px down, 12px in, the name
-          50px under it. */}
-      <div className="absolute inset-x-0 top-[36.9%] px-3 lg:top-[32.4%] lg:pl-[22.47%] lg:pr-[22%]">
+          50px under it and 14px off the bottom. */}
+      <div className="relative px-3 pb-[14px] pt-[90px] lg:absolute lg:inset-x-0 lg:top-[32.4%] lg:p-0 lg:pl-[22.47%] lg:pr-[22%]">
         <blockquote className="text-[14px] leading-[1.25] text-[#FAFAFA] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]">
           {block.quote}
         </blockquote>

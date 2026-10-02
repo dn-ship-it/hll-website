@@ -347,6 +347,16 @@ body {
   opacity: 1;
 }
 
+/* Without a mouse the LightFX canvas isn't mounted (use-light-component.ts),
+   so the resting hairline it would draw is a plain border: Figma "Button
+   Mobile" outline, 1px Light Grey. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .hll-outline-button {
+    border: 1px solid var(--hll-light-grey, #e6e6e6);
+    border-radius: var(--tab-r, 4px);
+  }
+}
+
 .hll-button:focus-visible,
 .hll-outline-button:focus-visible {
   outline: 2px solid var(--hll-label-color, #808080);

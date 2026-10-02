@@ -85,8 +85,11 @@ export function VoiceSection({
           quote starting at 60% of the frame. One quote per service today, so
           the carousel controls render in their resting state. */}
       <div className="mt-6 grid gap-4 lg:mt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] lg:grid-cols-[878fr_574fr] lg:gap-0">
-        <div className="relative h-[253px] lg:flex lg:h-auto lg:items-start lg:gap-[10px]">
-          <div className="absolute left-[26px] top-1 w-[30px] lg:static lg:w-9 lg:shrink-0" data-service-label>
+        {/* Mobile: counter from x 26, portrait from x 71 (67 wide), logo on
+            the right edge; the row is as tall as the portrait, which gives
+            way on narrow phones to keep 8px clear of the logo. */}
+        <div className="flex items-start lg:gap-[10px]">
+          <div className="ml-[26px] mt-1 w-[30px] shrink-0 lg:ml-0 lg:mt-0 lg:w-9" data-service-label>
             <p className="text-[10px] leading-[12px] lg:text-[12px] lg:leading-none" style={{ color: accent }}>
               01/{String(slideCount).padStart(2, "0")}
             </p>
@@ -99,7 +102,7 @@ export function VoiceSection({
             </p>
           </div>
           <div
-            className={`absolute top-0 lg:static lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:shrink-0 ${wide ? "left-[67px] w-[min(253px,calc(100%-132px))]" : "left-[71px] w-[min(245px,calc(100%-136px))]"}`}
+            className={`mr-2 min-w-0 flex-1 lg:ml-0 lg:mr-0 lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:max-w-none lg:flex-none lg:shrink-0 ${wide ? "ml-[11px] max-w-[253px]" : "ml-[15px] max-w-[245px]"}`}
           >
             {data.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -119,7 +122,7 @@ export function VoiceSection({
             ) : null}
           </div>
           {data.company ? (
-            <div className="absolute right-0 top-0 grid aspect-square w-[57px] place-items-center rounded-[6px] bg-[#24477F] p-1 text-center text-[9px] text-white lg:static lg:w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] lg:shrink-0 lg:rounded-[4px] lg:p-2 lg:text-[11px]">
+            <div className="ml-auto grid aspect-square w-[57px] shrink-0 place-items-center rounded-[6px] bg-[#24477F] p-1 text-center text-[9px] text-white lg:ml-0 lg:w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] lg:rounded-[4px] lg:p-2 lg:text-[11px]">
               {data.companyLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

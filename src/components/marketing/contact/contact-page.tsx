@@ -115,14 +115,16 @@ export async function ContactPage() {
 
           <section className={`pb-[84px] pt-[84px] lg:pb-[152px] lg:pt-[214px] ${SERVICE_GUTTER}`}>
             <div className="flex flex-wrap items-start justify-between gap-8 lg:items-end lg:pr-[129px]">
+              {/* Figma mobile sets the email at 25px (402px frame); it scales
+                  down on narrower phones so it stays on one line. */}
               <a
                 href={`mailto:${getInTouch.email}`}
-                className="min-w-0 break-words hover:opacity-80"
+                className="min-w-0 break-words [--email-size:min(25px,calc(6.2*var(--vw)))] hover:opacity-80 lg:[--email-size:clamp(25px,calc(4.23*var(--vw)),4rem)]"
               >
                 <HomeHeading
                   eyebrow={getInTouch.eyebrow}
                   title={getInTouch.email}
-                  titleSize="clamp(25px, calc(4.23*var(--vw)), 4rem)"
+                  titleSize="var(--email-size)"
                 />
               </a>
               <div className="lg:pb-[18px]">
