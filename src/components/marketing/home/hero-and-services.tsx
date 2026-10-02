@@ -236,12 +236,14 @@ function WhatWeDoMobile() {
           <p aria-live="polite">
             {pad2(active + 1)}/{pad2(count)}
           </p>
-          <div className="-ml-1 flex">
+          {/* 32px tap areas around the 10px glyphs, pulled back so the
+              glyphs keep their Figma places. */}
+          <div className="-mb-[10px] -ml-[11px] -mt-[10px] flex">
             <button
               type="button"
               aria-label="Previous service"
               onClick={() => go(-1)}
-              className="px-1"
+              className="grid size-8 place-items-center"
             >
               &lt;
             </button>
@@ -249,7 +251,7 @@ function WhatWeDoMobile() {
               type="button"
               aria-label="Next service"
               onClick={() => go(1)}
-              className="ml-[10px] px-1"
+              className="-ml-[10px] grid size-8 place-items-center"
             >
               &gt;
             </button>
