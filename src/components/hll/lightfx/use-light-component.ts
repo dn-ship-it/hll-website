@@ -25,6 +25,13 @@ export function useLightComponent(
   useEffect(() => {
     const host = ref.current;
     if (!host) return undefined;
+    // These are hover effects. Touch screens can't hover, and phones allow
+    // only a few WebGL contexts per page: past that the browser drops canvases
+    // (a sad-face placeholder) and some mobile GPUs paint the oversized canvas
+    // solid white over nearby text. So without a real mouse the button stays
+    // plain CSS (see .hll-outline-button in globals.css).
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return undefined;
 
     let fx: { dispose: () => void } | null = null;
     let onScreen = false;
