@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 
@@ -31,6 +31,17 @@ export function IndustryHero({
   const windowRef = useRef<HTMLDivElement>(null);
   useScaleToViewport(windowRef, { desktopOnly: true });
 
+  // A tap or click anywhere outside the switcher closes its menu.
+  useEffect(() => {
+    if (!switcherOpen) return undefined;
+    const close = (event: PointerEvent) => {
+      if (!(event.target as Element).closest("[data-industry-switcher]"))
+        setSwitcherOpen(false);
+    };
+    window.addEventListener("pointerdown", close);
+    return () => window.removeEventListener("pointerdown", close);
+  }, [switcherOpen]);
+
   return (
     <>
       <div className={`pt-2 lg:pt-[18px] ${SERVICE_GUTTER}`}>
@@ -40,7 +51,8 @@ export function IndustryHero({
       </div>
 
       <section
-        className={`pt-[154px] lg:pt-[clamp(8rem,calc(19.25*var(--vw)),18.1875rem)] ${SERVICE_GUTTER}`}
+        // z-10: the switcher's menu opens over the section below it.
+        className={`relative z-10 pt-[154px] lg:pt-[clamp(8rem,calc(19.25*var(--vw)),18.1875rem)] ${SERVICE_GUTTER}`}
       >
         {/* Figma: the industry name in its own colour at Regular weight
             ("colour of Industry name will be a colour set to the industry"),
@@ -108,7 +120,7 @@ export function IndustryHero({
         >
           {/* Figma: "Clicking on the sticky button opens an expanded view of
               the industries page to switch between them". */}
-          <div className="absolute left-1/2 top-[44.8%] hidden -translate-x-1/2 lg:block">
+          <div data-industry-switcher className="absolute left-1/2 top-[44.8%] hidden -translate-x-1/2 lg:block">
             <Switcher
               label={data.overlayLabel}
               open={switcherOpen}
@@ -118,8 +130,8 @@ export function IndustryHero({
         </div>
 
         {/* Figma Industry mobile: the switcher sits 54px under the window. */}
-        <div className="mt-[54px] flex justify-center lg:hidden">
-          <div className="relative">
+        <div className="relative z-20 mt-[54px] flex justify-center lg:hidden">
+          <div data-industry-switcher className="relative">
             <Switcher
               label={data.overlayLabel}
               open={switcherOpen}
