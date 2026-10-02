@@ -152,6 +152,20 @@ export function AllCapabilities({
 
   return (
     <>
+      {/* No mobile frame in Figma: phones get the other pages' title (y 385)
+          and go straight to the cards; the scroll wheel is desktop-only. */}
+      <div className="px-5 pt-[311px] lg:hidden">
+        <GradientRevealTextSlow
+          as="h1"
+          text="Capabilities"
+          variant="services"
+          className="block font-light text-[var(--hll-dark-grey)]"
+          fontSize="30px"
+          letterSpacing="0"
+          lineHeight="1.16"
+        />
+      </div>
+
       <section
         ref={sectionRef}
         aria-label="Capabilities"
@@ -280,9 +294,9 @@ export function AllCapabilities({
 
       {/* Every service as a card: 300 × 198 tile, name, body and the
           sub-service list, split by hairlines. */}
-      <section className="px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] pt-[154px] lg:pl-[29px] lg:pr-[37px] lg:pt-[192px]">
-        <h2 className="sr-only lg:hidden">All capabilities</h2>
-        <div className="grid gap-y-[53px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-[83px]">
+      {/* Mobile: one column, 32px either side of a full-width hairline. */}
+      <section className="px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[84px] pt-[54px] lg:pb-[154px] lg:pl-[29px] lg:pr-[37px] lg:pt-[192px]">
+        <div className="grid lg:grid-cols-4 lg:gap-x-[83px] lg:gap-y-[53px]">
           {cards.map((service, i) => {
             const card = (
               <>
@@ -294,23 +308,24 @@ export function AllCapabilities({
                     radius={4.6}
                   />
                   {service.href ? (
-                    <span className="absolute right-[6px] top-[7px] flex h-[29px] items-center gap-[9px] rounded-[5.4px] bg-[var(--hll-light-grey)] px-[17px] text-[9.9px] uppercase leading-none tracking-[2.46px] text-[var(--hll-dark-grey)] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    // Shown on hover on desktop; always shown on phones.
+                    <span className="absolute right-[6px] top-[7px] flex h-[29px] items-center gap-[9px] rounded-[5.4px] bg-[var(--hll-light-grey)] px-[17px] text-[9.9px] uppercase leading-none tracking-[2.46px] text-[var(--hll-dark-grey)] transition-opacity duration-300 group-hover:opacity-100 lg:opacity-0">
                       Learn more
                       <OpenIcon />
                     </span>
                   ) : null}
                 </span>
-                <span className="mt-[9px] block text-[clamp(1.375rem,calc(1.83*var(--vw)),1.725rem)] font-medium leading-[1.16] text-[var(--hll-dark-grey)]">
+                <span className="mt-[9px] block text-[24px] font-medium leading-[1.16] text-[var(--hll-dark-grey)] lg:text-[clamp(1.375rem,calc(1.83*var(--vw)),1.725rem)]">
                   {service.name}
                 </span>
-                <span className="mt-[19px] block max-w-[289px] pl-[3px] text-[15.35px] leading-[1.25] text-[var(--hll-dark-grey)]">
+                <span className="mt-3 block text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:mt-[19px] lg:max-w-[289px] lg:pl-[3px] lg:text-[15.35px]">
                   {service.description}
                 </span>
-                <span className="mt-5 block pl-[3px]">
+                <span className="mt-3 block lg:mt-5 lg:pl-[3px]">
                   {service.subServices.map((sub) => (
                     <span
                       key={sub}
-                      className="hll-label block text-[9.2px] uppercase leading-[2] text-[var(--hll-mid-grey)]"
+                      className="hll-label block text-[10px] uppercase leading-[2] text-[var(--hll-mid-grey)] lg:text-[9.2px]"
                       style={{ fontFamily: "var(--hll-font-functional)" }}
                     >
                       {sub}
@@ -323,8 +338,11 @@ export function AllCapabilities({
               <div
                 key={service.id}
                 data-fade-up
-                className="relative min-h-[467px]"
+                className={`relative lg:mt-0 lg:min-h-[467px] ${i > 0 ? "mt-8" : ""}`}
               >
+                {i > 0 ? (
+                  <span aria-hidden className="-mx-3 mb-8 block h-px bg-[var(--hll-mid-grey)] lg:hidden" />
+                ) : null}
                 {/* Hairline between columns, 42px into the gap. */}
                 {i % 4 !== 0 ? (
                   <span

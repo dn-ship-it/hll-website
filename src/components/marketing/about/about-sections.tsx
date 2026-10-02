@@ -2,26 +2,30 @@ import { ArrowUpRight, Plus } from "lucide-react";
 import Link from "next/link";
 
 import { HLLButton } from "@/components/hll";
+import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { CountUp } from "@/components/marketing/count-up";
 import { HomeHeading } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
-/** Figma "HLL": 198 × 264 portrait from 35% across, quote beside it. */
+/** Figma "HLL": 198 × 264 portrait from 35% across, quote beside it.
+ *  Mobile: a hairline, then a 245 × 253 portrait at x 79 with the quote
+ *  indented under it (as the service Expert Voice). */
 export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) {
   return (
-    <section className={`pt-[221px] ${SERVICE_GUTTER}`}>
+    <section className={`pt-[84px] lg:pt-[221px] ${SERVICE_GUTTER}`}>
+      <div data-line className="-mx-3 mb-[84px] h-px bg-[var(--hll-mid-grey)] lg:hidden" />
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      <div className="mt-[-26px] grid gap-8 lg:ml-[34.5%] lg:grid-cols-[198fr_721fr] lg:gap-[33px]">
+      <div className="mt-[47px] grid gap-3 lg:ml-[34.5%] lg:mt-[-26px] lg:grid-cols-[198fr_721fr] lg:gap-[33px]">
         <div
-          className="aspect-[198/264] w-[198px] rounded-[4px] bg-[#D9D9D9]"
+          className="ml-[59px] aspect-[245/253] w-[245px] rounded-[6px] bg-[#D9D9D9] lg:ml-0 lg:aspect-[198/264] lg:w-[198px] lg:rounded-[4px]"
           style={data.portrait ? { background: `#D9D9D9 url(${data.portrait}) center / cover` } : undefined}
         />
-        <blockquote className="flex flex-col justify-between gap-8">
-          <p className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
+        <blockquote className="ml-[55px] flex max-w-[311px] flex-col justify-between gap-6 lg:ml-0 lg:max-w-none lg:gap-8">
+          <p className="text-[24px] leading-[27.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]">
             &ldquo;{data.quote}&rdquo;
           </p>
-          <footer className="text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-black">
+          <footer className="text-[14px] leading-[1.25] text-black lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
             <cite className="block not-italic">{data.name}</cite>
             <span className="block">{data.role}</span>
           </footer>
@@ -39,16 +43,24 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
  */
 export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
   return (
-    // How we work ends with its own 154px; Figma puts the map 223px below.
-    <section className="pt-[69px]">
-      <div className="relative mx-[10px] aspect-[1492/636] overflow-hidden rounded-lg bg-[#E6E6E6]">
+    // How we work ends with its own 154px; Figma puts the map 223px below
+    // (mobile: 84px).
+    <section className="-mt-[70px] lg:mt-0 lg:pt-[69px]">
+      {/* Mobile: a 386 × 551 crop of the same map, over the Americas (Figma
+          image fill x 2–26%, y 15–93%); the pins follow the crop. */}
+      <div className="relative mx-[6px] aspect-[386/551] overflow-hidden rounded-lg bg-[#E6E6E6] lg:mx-[10px] lg:aspect-[1492/636]">
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[length:414.3%_127.6%] bg-[position:2.71%_69.1%] bg-no-repeat lg:hidden"
+          style={{ backgroundImage: `url(${data.map})` }}
+        />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={data.map} alt="" className="absolute inset-0 size-full object-cover" />
+        <img src={data.map} alt="" className="absolute inset-0 hidden size-full object-cover lg:block" />
         {data.pins.map((pin) => (
           <div
             key={pin.id}
-            className="group absolute"
-            style={{ left: `${pin.x * 100}%`, top: `${pin.y * 100}%` }}
+            className="group absolute left-[calc((var(--pin-x)_-_0.0206)/0.2413*100%)] top-[calc((var(--pin-y)_-_0.1493)/0.784*100%)] lg:left-[calc(var(--pin-x)*100%)] lg:top-[calc(var(--pin-y)*100%)]"
+            style={{ ["--pin-x" as string]: pin.x, ["--pin-y" as string]: pin.y }}
           >
             {pin.title ? (
               <PinCard pin={pin} />
@@ -62,9 +74,9 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
         ))}
       </div>
 
-      <div className="mt-[26px] flex flex-wrap items-start justify-between gap-8 px-[10px] pb-[29px]">
+      <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:gap-8 lg:px-[10px] lg:pb-[29px]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-        <p className="text-[clamp(3rem,calc(6.35*var(--vw)),6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:w-[592px]">
+        <p className="hidden text-[clamp(3rem,calc(6.35*var(--vw)),6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:block lg:w-[592px]">
           {data.stats.map((line) => (
             <span key={line} className="block">
               {/* Figma: "Number counter". */}
@@ -72,6 +84,18 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
             </span>
           ))}
         </p>
+        {/* Figma About mobile: a 96px number with its 30px label under it. */}
+        <div className="w-full space-y-3 lg:hidden">
+          {data.stats.map((line) => {
+            const [number, ...label] = line.split(" ");
+            return (
+              <div key={line} className="font-light text-black">
+                <CountUp value={number} className="block text-[96px] leading-[128px]" />
+                <p className="-mt-[18px] text-[30px] leading-[34.8px]">{label.join(" ")}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -100,7 +124,7 @@ function PinCard({ pin }: { pin: AboutPageData["reach"]["pins"][number] }) {
 /** Figma "Careers": 1096 × 551 image, "why work at HLL?" with numbered points. */
 export function AboutCareersSection({
   data,
-  className = "pt-[214px]",
+  className = "pt-[154px] lg:pt-[214px]",
 }: {
   data: AboutPageData["careers"];
   className?: string;
@@ -112,18 +136,19 @@ export function AboutCareersSection({
       <img
         src={data.image}
         alt=""
-        className="mt-[84px] aspect-[1096/551] w-full object-cover lg:ml-[24.5%] lg:w-[75.5%]"
+        className="-mx-3 mt-8 aspect-[386/194] w-[calc(100%+24px)] max-w-none rounded-[6px] object-cover lg:mx-0 lg:ml-[24.5%] lg:mt-[84px] lg:aspect-[1096/551] lg:w-[75.5%] lg:rounded-none"
       />
 
-      <div className="mt-[67px] grid gap-6 lg:ml-[41.7%] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
-        <p className="text-[12px] uppercase leading-[1.15] tracking-[0.25em] text-[var(--hll-dark-grey)]">{data.label}</p>
-        <ol className="space-y-[30px] lg:col-span-2 lg:grid lg:grid-cols-subgrid">
+      {/* Mobile: the numbers at x 51, the points at x 75, 18px apart. */}
+      <div className="mt-8 grid gap-[37px] lg:ml-[41.7%] lg:mt-[67px] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
+        <p className="text-[10px] uppercase leading-[1.15] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[12px]">{data.label}</p>
+        <ol className="space-y-[18px] lg:col-span-2 lg:grid lg:grid-cols-subgrid lg:space-y-[30px]">
           {data.points.map((point, i) => (
-            <li key={point.id} className="contents">
-              <span className="hll-label hidden pt-[3px] text-[12px] leading-[1.2] text-black lg:block" style={{ fontFamily: "var(--hll-font-functional)" }}>
+            <li key={point.id} className="flex gap-[9px] pl-[31px] lg:contents">
+              <span className="hll-label block w-[15px] shrink-0 pt-[2px] text-[12px] leading-[1.2] text-black lg:pt-[3px]" style={{ fontFamily: "var(--hll-font-functional)" }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <p className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+              <p className="text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]">
                 <span className="text-black">{point.title}.</span> {point.body}
               </p>
             </li>
@@ -131,8 +156,8 @@ export function AboutCareersSection({
         </ol>
       </div>
 
-      <div className="mt-[84px] lg:ml-[58.95%]">
-        <HLLButton href={data.ctaHref} variant="about" size="md">
+      <div className="ml-[55px] mt-[54px] lg:ml-[58.95%] lg:mt-[84px]">
+        <HLLButton href={data.ctaHref} variant="about" size="md" className={BUTTON_MOBILE}>
           {data.ctaLabel}
         </HLLButton>
       </div>

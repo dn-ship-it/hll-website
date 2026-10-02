@@ -67,14 +67,18 @@ export function AboutValuesSection({
   const [active, setActive] = useState(0);
   const [cycle, setCycle] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
+  const mobileRef = useRef<HTMLDivElement>(null);
   const count = data.items.length;
   const next = (active + 1) % count;
   const item = data.items[active];
 
-  // Run the storyboard the first time the stage is on screen.
+  // Run the storyboard the first time the stage (desktop or mobile) is on
+  // screen.
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return undefined;
+    const stages = [stageRef.current, mobileRef.current].filter(
+      (el): el is HTMLDivElement => el !== null,
+    );
+    if (!stages.length) return undefined;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setPhase("settled");
       return undefined;
@@ -90,7 +94,7 @@ export function AboutValuesSection({
       },
       { threshold: 0.35 },
     );
-    observer.observe(stage);
+    stages.forEach((stage) => observer.observe(stage));
     return () => {
       observer.disconnect();
       timers.forEach(window.clearTimeout);
@@ -117,7 +121,7 @@ export function AboutValuesSection({
   };
 
   return (
-    <section className={`pt-[214px] ${SERVICE_GUTTER}`}>
+    <section className={`pt-[154px] lg:pt-[214px] ${SERVICE_GUTTER}`}>
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
 
       <div
@@ -228,22 +232,62 @@ export function AboutValuesSection({
         </div>
       </div>
 
-      {/* Below desktop the storyboard reads as a simple list. */}
-      <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:hidden">
-        {data.items.map((value) => (
-          <div key={value.id}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={value.image}
-              alt=""
-              className="aspect-square w-full rounded-[10px] object-cover"
+      {/* Figma About mobile: the value in focus at 376px, the 42px "up next"
+          thumbnails 5px under it, then its title and body. */}
+      <div
+        ref={mobileRef}
+        className={`-mx-[5px] mt-3 transition-opacity duration-700 lg:hidden ${phase === "hidden" ? "opacity-0" : "opacity-100"}`}
+      >
+        <div className="relative aspect-square w-full max-w-[376px] overflow-hidden rounded-lg bg-[#D9D9D9]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img key={item.id} src={item.image} alt="" className="size-full object-cover [animation:page-intro-in_700ms_cubic-bezier(0.22,1,0.36,1)_both]" />
+          {item.video ? (
+            <video
+              key={`${item.id}-video`}
+              src={item.video}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 size-full object-cover"
             />
-            <h3 className="mt-4 text-3xl text-black">{value.title}</h3>
-            <p className="mt-3 text-lg leading-[1.25] text-[var(--hll-dark-grey)]">
-              {value.description}
-            </p>
-          </div>
-        ))}
+          ) : null}
+        </div>
+        <div className="mt-[5px] flex gap-[9px]">
+          {data.items.map((value, index) => {
+            const isFocus = index === active;
+            const isNext = settled && index === next && count > 1;
+            return (
+              <button
+                key={value.id}
+                type="button"
+                aria-label={value.title}
+                aria-pressed={isFocus}
+                onClick={() => pick(index)}
+                className={`relative size-[42px] shrink-0 overflow-hidden rounded-[4px] bg-[#D9D9D9] ${isFocus ? "outline outline-1 outline-offset-2 outline-[var(--hll-dark-grey)]" : ""}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={value.image} alt="" className={`size-full object-cover ${isFocus ? "" : "grayscale"}`} />
+                {isNext ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={`${active}-${cycle}`}
+                    src={value.image}
+                    alt=""
+                    className="absolute inset-0 size-full object-cover [animation:values-saturate_linear_forwards]"
+                    style={{ animationDuration: `${HOLD_MS}ms` }}
+                  />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+        <div key={item.id} className="mt-[69px] max-w-[321px]" aria-live="polite">
+          <h3 className="text-[24px] leading-[1.16] text-black">{item.title}</h3>
+          <p className="mt-[9px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] [animation:page-intro-in_700ms_200ms_cubic-bezier(0.22,1,0.36,1)_both]">
+            {item.description}
+          </p>
+        </div>
       </div>
     </section>
   );

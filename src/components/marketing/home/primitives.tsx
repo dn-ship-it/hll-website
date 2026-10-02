@@ -122,6 +122,7 @@ export function HomeHeading({
   tone = "light",
   eyebrowColor,
   eyebrowMedium = false,
+  titleSize = "clamp(30px, calc(4.23*var(--vw)), 4rem)",
 }: {
   eyebrow: string;
   title: string;
@@ -130,6 +131,8 @@ export function HomeHeading({
   eyebrowColor?: string;
   /** Industry pages set their coloured eyebrows at weight 500. */
   eyebrowMedium?: boolean;
+  /** Title size; Contact's email runs smaller on mobile (25px) to fit. */
+  titleSize?: string;
 }) {
   const ink = tone === "dark" ? "#FAFAFA" : "#1A1A1A";
   return (
@@ -146,7 +149,7 @@ export function HomeHeading({
         ))}
       </p>
       <SectionTitle
-        fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
+        fontSize={titleSize}
         letterSpacing="0"
         lineHeight="1.16"
         ink={ink}

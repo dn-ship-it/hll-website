@@ -49,6 +49,8 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
           }}
           slideCount={voice.slideCount}
           timerColor={accent}
+          wide
+          headingInset
           heading={<HomeHeading eyebrow={voice.eyebrow} title="Client Voice" />}
         />
         <NamedExpertsSection data={data.experts} accentColor={accent} />

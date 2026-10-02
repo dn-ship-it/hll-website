@@ -24,21 +24,22 @@ export function CareersApproach({
 }) {
   const total = String(data.items.length).padStart(2, "0");
   return (
-    <section className={`pt-[154px] pb-[214px] ${SERVICE_GUTTER}`}>
+    <section className={`pb-[84px] pt-[84px] lg:pb-[214px] lg:pt-[154px] ${SERVICE_GUTTER}`}>
       <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
-      <div className="mt-[14px] grid gap-x-[120px] gap-y-[155px] sm:grid-cols-2 lg:ml-[36.8%] lg:mr-[90px]">
+      {/* Mobile: one column from x 74, 32px between items. */}
+      <div className="mt-[54px] grid gap-y-8 pl-[54px] lg:ml-[36.8%] lg:mr-[90px] lg:mt-[14px] lg:grid-cols-2 lg:gap-x-[120px] lg:gap-y-[155px] lg:pl-0">
         {data.items.map((item, i) => (
           <article key={item.id}>
             <p
-              className="hll-label text-[12px] leading-[1.2] text-[var(--hll-dark-grey)]"
+              className="hll-label text-[10px] leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]"
               style={{ fontFamily: "var(--hll-font-functional)" }}
             >
               {String(i + 1).padStart(2, "0")}/{total}
             </p>
-            <h3 className="mt-[10px] text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
+            <h3 className="mt-3 text-[24px] font-normal leading-[1.16] text-black lg:mt-[10px] lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
               {item.title}
             </h3>
-            <p className="mt-8 max-w-[341px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+            <p className="mt-3 max-w-[341px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:mt-8 lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
               {item.body}
             </p>
           </article>
@@ -66,7 +67,7 @@ function FilterMenu({
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className={`inline-flex h-9 items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] ${BUTTON_TYPE}`}
+        className="inline-flex h-[34px] items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:text-[12px]"
       >
         {value ?? label}
         <ChevronDown className="size-3.5" strokeWidth={1.4} aria-hidden />
@@ -122,13 +123,14 @@ export function CareersOpenRoles({
 
   return (
     <section id="open-roles" className="scroll-mt-24">
-      <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
-      <div className={`pt-[154px] pb-[214px] ${SERVICE_GUTTER}`}>
+      <div data-line className="mx-2 h-px bg-[var(--hll-mid-grey)] lg:mx-0" />
+      <div className={`pb-[84px] pt-[84px] lg:pb-[214px] lg:pt-[154px] ${SERVICE_GUTTER}`}>
         <HomeHeading eyebrow="Team" title="Open Roles" />
 
-        <div className="mt-[72px] grid items-start gap-10 lg:grid-cols-[600fr_852fr] lg:gap-0">
+        {/* Mobile: the filters 12px under the title, the rows 54px below. */}
+        <div className="mt-3 grid items-start gap-[54px] lg:mt-[72px] lg:grid-cols-[600fr_852fr] lg:gap-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={`mr-[13px] ${BUTTON_TYPE}`}>Filter by</span>
+            <span className={`mr-[13px] hidden lg:inline ${BUTTON_TYPE}`}>Filter by</span>
             <FilterMenu
               label="Service"
               options={services}
@@ -143,7 +145,7 @@ export function CareersOpenRoles({
             />
           </div>
 
-          <ul className="lg:mr-[100px]">
+          <ul className="-mx-3 lg:mx-0 lg:mr-[100px]">
             <li
               aria-hidden
               data-line
@@ -160,27 +162,27 @@ export function CareersOpenRoles({
                 <li key={role.id}>
                   <Link
                     href={`/careers/${role.slug}`}
-                    className="group flex items-start justify-between gap-6 pt-[21px] pb-[23px]"
+                    className="group flex items-start justify-between gap-6 pb-[10px] pl-[13px] pr-1 pt-[10px] lg:pb-[23px] lg:pl-0 lg:pr-0 lg:pt-[21px]"
                   >
                     <span>
-                      <span className="block text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-black">
+                      <span className="block text-[24px] leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
                         {role.title}
                       </span>
                       {tags.length ? (
-                        <span className="mt-3 flex flex-wrap gap-2">
+                        <span className="mt-[26px] flex flex-wrap gap-[7px] lg:mt-3 lg:gap-2">
                           {tags.map((tag) => (
                             <OutlineTag key={tag}>{tag}</OutlineTag>
                           ))}
                         </span>
                       ) : (
-                        <span className="mt-3 block max-w-[560px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                        <span className="mt-3 block max-w-[560px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
                           {role.summary}
                         </span>
                       )}
                     </span>
-                    <span className="grid size-9 shrink-0 place-items-center rounded-[4px] bg-[var(--hll-light-grey)] text-[var(--hll-dark-grey)] transition-colors group-hover:bg-[#d9d9d9]">
+                    <span className="mt-[3px] grid size-6 shrink-0 place-items-center rounded-[2.6px] bg-[var(--hll-light-grey)] text-[var(--hll-dark-grey)] transition-colors group-hover:bg-[#d9d9d9] lg:mt-0 lg:size-9 lg:rounded-[4px]">
                       <ArrowUpRight
-                        className="size-4"
+                        className="size-3 lg:size-4"
                         strokeWidth={1.4}
                         aria-hidden
                       />
@@ -209,30 +211,37 @@ export function LabelledRows({
     <div>
       {rows.map((row, r) => (
         <div key={row.title}>
+          {/* Mobile: no hairline, the next block 54px down. */}
           {r > 0 ? (
             <div
               data-line
-              className="mt-[154px] h-px bg-[var(--hll-mid-grey)]"
+              className="mt-[154px] hidden h-px bg-[var(--hll-mid-grey)] lg:block"
             />
           ) : null}
           <div
-            className={`grid gap-4 lg:grid-cols-[250fr_705fr] ${r > 0 ? "pt-[84px]" : ""}`}
+            className={`grid lg:grid-cols-[250fr_705fr] lg:gap-4 ${r > 0 ? "pt-[54px] lg:pt-[84px]" : ""} ${numbered && r === 0 ? "gap-[35px]" : "gap-4"}`}
           >
-            <p className={`pt-[3px] ${BUTTON_TYPE}`}>{row.title}</p>
-            <ol className="space-y-[30px]">
-              {row.paragraphs.map((text, i) => (
-                <li key={i} className="grid grid-cols-[25fr_595fr] gap-0">
+            <p className={`pt-[3px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[12px]`}>{row.title}</p>
+            <ol className="space-y-[18px] lg:space-y-[30px]">
+              {row.paragraphs.map((text, i) => {
+                const num = numbered && r === 0;
+                return (
+                <li
+                  key={i}
+                  className={`grid lg:grid-cols-[25fr_595fr] lg:gap-0 lg:pl-0 ${num ? "grid-cols-[15px_1fr] gap-[9px] pl-[31px]" : "grid-cols-1"}`}
+                >
                   <span
-                    className="hll-label pt-[3px] text-[12px] leading-[1.2] text-black"
+                    className={`hll-label pt-[2px] text-[12px] leading-[1.2] text-black lg:block lg:pt-[3px] ${num ? "" : "hidden"}`}
                     style={{ fontFamily: "var(--hll-font-functional)" }}
                   >
-                    {numbered && r === 0 ? String(i + 1).padStart(2, "0") : ""}
+                    {num ? String(i + 1).padStart(2, "0") : ""}
                   </span>
-                  <p className="text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                  <p className="text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]">
                     {text}
                   </p>
                 </li>
-              ))}
+                );
+              })}
             </ol>
           </div>
         </div>
@@ -248,9 +257,10 @@ export function CareersProcess({
 }) {
   return (
     <section>
-      <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
+      {/* Figma Careers mobile runs Process straight on from the roles. */}
+      <div data-line className="hidden h-px bg-[var(--hll-mid-grey)] lg:block" />
       <div
-        className={`grid gap-10 pt-[154px] pb-[151px] lg:grid-cols-[529fr_960fr] lg:gap-0 ${SERVICE_GUTTER}`}
+        className={`grid gap-[54px] pb-[84px] lg:grid-cols-[529fr_960fr] lg:gap-0 lg:pb-[151px] lg:pt-[154px] ${SERVICE_GUTTER}`}
       >
         <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
         <div className="lg:pt-[63px]">
@@ -269,7 +279,7 @@ export function SeeOpenRoles() {
     <div className="pointer-events-none sticky bottom-8 z-20 flex h-0 justify-center">
       <a
         href="#open-roles"
-        className={`pointer-events-auto inline-flex h-9 -translate-y-full items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] ${BUTTON_TYPE}`}
+        className="pointer-events-auto inline-flex h-[34px] -translate-y-full items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]"
       >
         See open roles
         <ChevronDown className="size-3.5" strokeWidth={1.4} aria-hidden />
