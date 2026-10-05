@@ -99,7 +99,9 @@ function HeroWindow({
           muted
           loop
           playsInline
-          className="absolute inset-0 size-full object-cover"
+          controls
+          controlsList="nodownload"
+          className="absolute inset-0 size-full bg-[#111] object-contain"
         />
       ) : imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -109,8 +111,11 @@ function HeroWindow({
           className="absolute inset-0 size-full object-cover"
         />
       ) : null}
-      <div className="absolute inset-x-0 bottom-9 hidden justify-center lg:flex">
-        <HLLButton href={ctaHref} variant="engagement" size="md">
+      {/* Raised over a video so it clears the native controls bar. */}
+      <div
+        className={`pointer-events-none absolute inset-x-0 hidden justify-center lg:flex ${videoUrl ? "bottom-24" : "bottom-9"}`}
+      >
+        <HLLButton href={ctaHref} variant="engagement" size="md" className="pointer-events-auto">
           {ctaLabel}
         </HLLButton>
       </div>
@@ -125,6 +130,10 @@ function HeroWindow({
   );
 }
 
+/** Placeholder until the CMS supplies a hero: the old site's video loop. */
+const PLACEHOLDER_HERO_VIDEO = "/video/home-hero.mp4";
+const PLACEHOLDER_HERO_POSTER = "/video/home-hero-poster.jpg";
+
 export function HomeHero({
   heading,
   ctaLabel = "See our work",
@@ -138,6 +147,7 @@ export function HomeHero({
   heroImageUrl?: string | null;
   heroVideoUrl?: string | null;
 }) {
+  const usePlaceholder = !heroVideoUrl && !heroImageUrl;
   const title =
     heading ??
     "We champion future-facing initiatives for an accelerated advancement.";
@@ -158,8 +168,8 @@ export function HomeHero({
         lineHeight="1.16"
       />
       <HeroWindow
-        imageUrl={heroImageUrl}
-        videoUrl={heroVideoUrl}
+        imageUrl={usePlaceholder ? PLACEHOLDER_HERO_POSTER : heroImageUrl}
+        videoUrl={usePlaceholder ? PLACEHOLDER_HERO_VIDEO : heroVideoUrl}
         ctaLabel={ctaLabel}
         ctaHref={ctaHref}
       />
