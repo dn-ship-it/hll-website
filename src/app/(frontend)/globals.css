@@ -658,8 +658,12 @@ body {
   object-position: center;
 }
 
+/* The Impact graph covers the whole screen below the sticky Nav Bar, so none
+   of it sits under the bar and no page shows around it. */
 .our-promise-image-stage--impact {
   width: calc(100*var(--vw));
+  top: calc(50% + var(--nav-h) / 2);
+  height: calc(100% - var(--nav-h));
 }
 
 .our-promise-impact-frame {
@@ -775,6 +779,13 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
 
 @media (prefers-reduced-motion: reduce) {
   main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) { animation: none; }
+}
+
+/* Home "How we work": a card wrapping from one end to the other fades in at
+   its new slot instead of sliding across the middle card. */
+@keyframes hww-wrap-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes values-saturate {

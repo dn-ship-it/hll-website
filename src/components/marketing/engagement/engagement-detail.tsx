@@ -128,7 +128,7 @@ function QuoteBlock({
           {block.quote}
         </blockquote>
         {block.name || block.role ? (
-          <p className="mt-[50px] text-[14px] leading-[1.25] text-black lg:mt-[clamp(2rem,calc(9.26*var(--vw)),8.75rem)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
+          <p className="mt-[50px] text-[14px] leading-[1.25] text-[#FAFAFA] lg:mt-[clamp(2rem,calc(9.26*var(--vw)),8.75rem)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] lg:text-black">
             {block.name}
             {block.role ? <span className="block">{block.role}</span> : null}
           </p>
@@ -387,8 +387,9 @@ function RelatedBand({ items, color }: { items: Engagement[]; color: string }) {
           Explore related engagements
         </SectionTitle>
       </div>
-      {/* Mobile: the cards swipe, 289px wide, from the 20px gutter. */}
-      <div className="mt-8 flex snap-x snap-mandatory scroll-pl-5 gap-[10px] overflow-x-auto px-5 [scrollbar-width:none] lg:mt-[64px] lg:grid lg:grid-cols-3 lg:gap-[11px] lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
+      {/* Mobile: the cards swipe, 289px wide, from the 20px gutter. Desktop:
+          inset as the title, so both share a left and right edge. */}
+      <div className="mt-8 flex snap-x snap-mandatory scroll-pl-5 gap-[10px] overflow-x-auto px-5 [scrollbar-width:none] lg:mt-[64px] lg:grid lg:grid-cols-3 lg:gap-[11px] lg:overflow-visible lg:px-[20px] [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (
           <div key={item.id} data-fade-up className="w-[289px] shrink-0 snap-start lg:w-auto">
             <EngagementCard

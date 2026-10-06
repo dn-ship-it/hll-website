@@ -37,7 +37,7 @@ export function AllCapabilitiesPage() {
     id === "hll-cloud"
       ? HLL_CLOUD
       : serviceEntry(id as keyof typeof SERVICE_LABELS);
-  // Figma wheel, top to bottom (Application in focus), and the card grid order.
+  // Figma wheel, top to bottom (Application in focus).
   const wheel = [
     "hll-foundation",
     "hll-cloud",
@@ -47,21 +47,12 @@ export function AllCapabilitiesPage() {
     "hll-people",
     "hll-ontology",
   ].map(entry);
-  const cards = [
-    "hll-application",
-    "hll-trust",
-    "hll-ai",
-    "hll-ontology",
-    "hll-people",
-    "hll-foundation",
-    "hll-cloud",
-  ].map(entry);
 
   return (
     <MarketingShell>
       <ServiceReveal>
         <div className="hll-home hll-service-page">
-          <AllCapabilities services={wheel} cards={cards} startIndex={3} />
+          <AllCapabilities services={wheel} startIndex={3} />
         </div>
       </ServiceReveal>
     </MarketingShell>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { HLLButton } from "@/components/hll";
 
@@ -48,6 +48,40 @@ const MOBILE_SLOTS = [
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
+/** How long each stage holds before the carousel turns on its own. */
+const STAGE_MS = 6000;
+
+/**
+ * Figma "carousel with timer delay": a 103 × 2 track that fills while the
+ * stage holds, then turns the carousel. Keyed per stage, so a manual turn
+ * starts it over; `paused` holds it where it is.
+ */
+function StageTimer({
+  paused,
+  onDone,
+  className = "",
+}: {
+  paused: boolean;
+  onDone: () => void;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={`block h-[2px] w-[103px] overflow-hidden rounded bg-black/15 ${className}`}
+    >
+      <span
+        className="block h-full bg-[var(--hll-dark-grey)]"
+        style={{
+          animation: `voice-timer ${STAGE_MS}ms linear both`,
+          animationPlayState: paused ? "paused" : "running",
+        }}
+        onAnimationEnd={onDone}
+      />
+    </span>
+  );
+}
+
 function Arrow({ direction, onClick }: { direction: "prev" | "next"; onClick: () => void }) {
   return (
     <button
@@ -71,11 +105,102 @@ export function HowWeWork({
 } = {}) {
   const [active, setActive] = useState(1);
   const count = STEPS.length;
-  const slotOf = (index: number) => (index - active + 1 + count) % count;
-  const go = (delta: number) => setActive((a) => (a + delta + count) % count);
+  const slotOf = (index: number, at = active) => (index - at + 1 + count) % count;
+  // With three stages in three slots, a turn sends one card from one end to
+  // the other. Rather than slide it across the middle card, it's remounted at
+  // its new slot (a new key) and fades in there.
+  const [wraps, setWraps] = useState<number[]>(() => STEPS.map(() => 0));
+  const select = (next: number) => {
+    if (next === active) return;
+    setWraps((current) =>
+      current.map((n, index) =>
+        Math.abs(slotOf(index, next) - slotOf(index)) === 2 ? n + 1 : n,
+      ),
+    );
+    setActive(next);
+  };
+  const go = (delta: number) => select((active + delta + count) % count);
 
-  // Mobile: swipe left / right to bring the next stage to the middle.
+  // Drag (desktop) or swipe (mobile) left / right to bring the next stage to
+  // the middle; the click that ends a drag doesn't also pick a card.
   const swipeX = useRef<number | null>(null);
+  const swiped = useRef(false);
+  const swipeHandlers = {
+    onPointerDown: (e: React.PointerEvent) => {
+      swipeX.current = e.clientX;
+      swiped.current = false;
+      setHeld(true);
+      // A drag released outside the carousel never reaches onPointerUp here.
+      const release = () => {
+        swipeX.current = null;
+        setHeld(false);
+        window.removeEventListener("pointerup", release);
+        window.removeEventListener("pointercancel", release);
+      };
+      window.addEventListener("pointerup", release);
+      window.addEventListener("pointercancel", release);
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      setHeld(false);
+      if (swipeX.current === null) return;
+      const dx = e.clientX - swipeX.current;
+      swipeX.current = null;
+      if (Math.abs(dx) <= 40) return;
+      swiped.current = true;
+      go(dx < 0 ? 1 : -1);
+    },
+    onPointerCancel: () => {
+      swipeX.current = null;
+      setHeld(false);
+    },
+    // Keyboard focus in the carousel holds the timer; a click's focus doesn't.
+    onFocus: (e: React.FocusEvent) => setFocused(e.target.matches(":focus-visible")),
+    onBlur: (e: React.FocusEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
+    },
+    onClickCapture: (e: React.MouseEvent) => {
+      if (!swiped.current) return;
+      swiped.current = false;
+      e.preventDefault();
+      e.stopPropagation();
+    },
+  };
+  // The carousel turns itself every STAGE_MS while it's on screen, unless
+  // held by a drag or keyboard focus — and never under reduced motion.
+  const mobileRef = useRef<HTMLDivElement>(null);
+  const desktopRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [held, setHeld] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [autoplay, setAutoplay] = useState(false);
+  useEffect(() => {
+    setAutoplay(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    // Only the carousel shown at this width has a size, so only it reports.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.boundingClientRect.height) setInView(entry.isIntersecting);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    for (const el of [mobileRef.current, desktopRef.current]) {
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, []);
+  const timer = (className?: string) =>
+    autoplay ? (
+      <StageTimer
+        key={active}
+        paused={!inView || held || focused}
+        onDone={() => go(1)}
+        className={className}
+      />
+    ) : null;
+
+  const wrapIn = (index: number) =>
+    wraps[index] ? "hww-wrap-in 500ms 250ms cubic-bezier(0.22,1,0.36,1) both" : undefined;
 
   return (
     <section className={`hll-home-section pb-[154px] ${HOME_GUTTER}`}>
@@ -84,34 +209,25 @@ export function HowWeWork({
       <HomeHeading eyebrow="About" title="How we work" />
 
       <div
-        className="relative mt-[54px] h-[432px] touch-pan-y lg:hidden"
-        onPointerDown={(e) => {
-          swipeX.current = e.clientX;
-        }}
-        onPointerUp={(e) => {
-          if (swipeX.current === null) return;
-          const dx = e.clientX - swipeX.current;
-          swipeX.current = null;
-          if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
-        }}
-        onPointerCancel={() => {
-          swipeX.current = null;
-        }}
+        ref={mobileRef}
+        className="relative mt-[54px] h-[452px] touch-pan-y lg:hidden"
+        {...swipeHandlers}
       >
         {STEPS.map((step, index) => {
           const slot = MOBILE_SLOTS[slotOf(index)];
           const isActive = index === active;
           return (
             <button
-              key={step.id}
+              key={`${step.id}-${wraps[index]}`}
               type="button"
-              onClick={() => setActive(index)}
+              onClick={() => select(index)}
               aria-current={isActive ? "step" : undefined}
               className="absolute text-left transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={{
                 left: `calc(50% + ${slot.x}px)`,
                 top: slot.y,
                 width: slot.size,
+                animation: wrapIn(index),
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -124,6 +240,7 @@ export function HowWeWork({
                   <span className="mt-3 block max-w-[312px] text-[14px] leading-[17.5px] text-[var(--hll-dark-grey)]">
                     {step.body}
                   </span>
+                  {timer("mt-4")}
                 </>
               ) : null}
             </button>
@@ -131,7 +248,12 @@ export function HowWeWork({
         })}
       </div>
 
-      <div className="relative hidden lg:block" style={{ aspectRatio: `${STAGE.w} / ${STAGE.h}` }}>
+      <div
+        ref={desktopRef}
+        className="relative hidden cursor-grab select-none active:cursor-grabbing lg:block"
+        style={{ aspectRatio: `${STAGE.w} / ${STAGE.h}` }}
+        {...swipeHandlers}
+      >
         <div className="absolute" style={{ left: pct(36, STAGE.w), top: pct(317, STAGE.h) }}>
           <Arrow direction="prev" onClick={() => go(-1)} />
         </div>
@@ -144,22 +266,30 @@ export function HowWeWork({
           const isActive = index === active;
           return (
             <button
-              key={step.id}
+              key={`${step.id}-${wraps[index]}`}
               type="button"
-              onClick={() => setActive(index)}
+              onClick={() => select(index)}
               aria-current={isActive ? "step" : undefined}
               className="absolute text-left transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
-              style={{ left: pct(slot.x, STAGE.w), top: pct(slot.y, STAGE.h), width: pct(slot.size, STAGE.w) }}
+              style={{
+                left: pct(slot.x, STAGE.w),
+                top: pct(slot.y, STAGE.h),
+                width: pct(slot.size, STAGE.w),
+                animation: wrapIn(index),
+              }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={step.image} alt="" className="aspect-square w-full rounded-lg object-cover" />
+              <img src={step.image} alt="" draggable={false} className="aspect-square w-full rounded-lg object-cover" />
               <span className="mt-[6px] block text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
                 {step.title}
               </span>
               {isActive ? (
-                <span className="mt-[10px] block max-w-[460px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
-                  {step.body}
-                </span>
+                <>
+                  <span className="mt-[10px] block max-w-[460px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+                    {step.body}
+                  </span>
+                  {timer("mt-5")}
+                </>
               ) : null}
             </button>
           );
@@ -216,7 +346,8 @@ export function WhoWeAre() {
         ))}
       </div>
 
-      <div className="mt-[54px] flex justify-center lg:mt-[138px]">
+      {/* Phones set it on the team list's left edge. */}
+      <div className="mt-[54px] flex justify-start px-[18px] lg:mt-[138px] lg:justify-center lg:px-0">
         <HLLButton href="/team" variant="about" size="md">
           View all team
         </HLLButton>
@@ -232,10 +363,11 @@ export function InsideTheLab() {
       style={{ background: "#F26A2E url(/assets/home/lab-bg.webp) center / cover" }}
     >
       <HomeHeading eyebrow="Demo tool" title="Inside the Lab" tone="dark" />
+      {/* Desktop: edge to edge within the gutter, in line with the heading. */}
       <div
         aria-label="Demo window"
         role="img"
-        className="mx-auto mt-9 grid aspect-[312/238] w-full max-w-[312px] place-items-center rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:max-w-[1171px] lg:rounded-lg"
+        className="mx-auto mt-9 grid aspect-[312/238] w-full max-w-[312px] place-items-center rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:max-w-none lg:rounded-lg"
       >
         <span className="text-[12px] uppercase leading-none tracking-[0.25em] text-black">Demo window</span>
       </div>
