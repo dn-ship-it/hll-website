@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 
-import { HLLButton } from "@/components/hll";
+import { BottomShader, DEFAULT_LAYOUT, HLLButton } from "@/components/hll";
 
 import { BUTTON_MOBILE } from "./button-sizes";
 import { variantForPath } from "./page-variant";
@@ -53,9 +53,11 @@ export function FooterCta({
   };
 
   return (
-    // Figma Footer Mobile: a 228px band, headline and button centred from
-    // y 84. Desktop: 237px, headline left and button right.
-    <div className="relative flex h-[228px] flex-col items-center overflow-hidden bg-[#FFFBD6] px-5 pt-[84px] text-center lg:h-auto lg:min-h-[237px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:px-[clamp(1.25rem,calc(11.3*var(--vw)),10.7rem)] lg:py-10 lg:text-left">
+    // Figma Footer Mobile: a 228px band, headline and button centred in it
+    // with equal space above and below, so a wrapped headline grows the band
+    // evenly. Desktop: 237px, headline left and button right, on the home
+    // sections' gutter.
+    <div className="relative flex flex-col items-center overflow-hidden bg-[#FFFBD6] px-5 py-[73px] text-center lg:min-h-[237px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:py-10 lg:text-left">
       {/* Mobile crops the still to its middle (Figma image fill at 155.5%
           of the band's height); desktop covers. */}
       <div
@@ -130,5 +132,80 @@ export function FooterButton({
     >
       {children}
     </HLLButton>
+  );
+}
+
+/** BottomShader filling the strip it sits in, rather than 25% of the screen. */
+const STRIP_LAYOUT = { ...DEFAULT_LAYOUT, HOST_HEIGHT: "100%" };
+
+function supportsWebGL2() {
+  try {
+    const gl = document.createElement("canvas").getContext("webgl2");
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    return Boolean(gl);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The footer's shader strip: the live LightFX BottomShader in the page's
+ * palette, like the footer buttons. It's created when the footer first comes
+ * near the screen — phones allow few WebGL contexts and pay for every frame
+ * (see use-light-component.ts) — and then kept: the runtime pauses itself off
+ * screen, and remounting would leak a context each time. The Figma still
+ * shows until it's running, and wherever it can't: reduced motion or no
+ * WebGL2.
+ */
+export function FooterShaderStrip({
+  className,
+  stillClassName = "",
+  stillStyle,
+}: {
+  className: string;
+  stillClassName?: string;
+  stillStyle: CSSProperties;
+}) {
+  const pathname = usePathname();
+  const ref = useRef<HTMLDivElement>(null);
+  const [reached, setReached] = useState(false);
+  const [able, setAble] = useState(false);
+
+  useEffect(() => {
+    setAble(
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+        supportsWebGL2(),
+    );
+    const strip = ref.current;
+    if (!strip) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setReached(true);
+        observer.disconnect();
+      },
+      { rootMargin: "200px 0px" },
+    );
+    observer.observe(strip);
+    return () => observer.disconnect();
+  }, []);
+
+  const live = able && reached;
+
+  return (
+    <div ref={ref} aria-hidden className={`pointer-events-none absolute ${className}`}>
+      <div
+        className={`absolute inset-0 transition-opacity duration-700 ${stillClassName}`}
+        style={{ ...stillStyle, opacity: live ? 0 : 1 }}
+      />
+      {live ? (
+        <BottomShader
+          variant={variantForPath(pathname) ?? "contact"}
+          contained
+          passthrough
+          layout={STRIP_LAYOUT}
+        />
+      ) : null}
+    </div>
   );
 }

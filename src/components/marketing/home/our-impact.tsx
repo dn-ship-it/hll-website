@@ -230,8 +230,8 @@ export function OurImpact() {
       </div>
 
       {/* Figma: "View All work button will be sticky and leads to the
-          engagements page". */}
-      <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-center lg:my-[59px]">
+          engagements page". Phones set it on the cards' left edge. */}
+      <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-start px-2 lg:my-[59px] lg:justify-center lg:px-0">
         <span className="pointer-events-auto">
           <HLLButton href="/engagement" variant="engagement" size="md" className={BUTTON_MOBILE}>
             View all work

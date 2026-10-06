@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
-import { FooterButton, FooterCta } from "./footer-cta";
+import { FooterButton, FooterCta, FooterShaderStrip } from "./footer-cta";
 import { HllMark } from "./hll-mark";
 
 /*
@@ -121,17 +121,17 @@ export function SiteFooter({
       />
 
       <div className="relative hidden min-h-[743px] overflow-hidden px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pt-[52px] lg:block">
-        {/* Shader strip behind the copyright row: Figma crops the image to
-            its middle band (x 22.9–100%, y 47.3–69.1%) and stretches it. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-[514px] h-[241px]"
-          style={{
+        {/* Shader strip behind the copyright row. Its still: Figma crops the
+            image to its middle band (x 22.9–100%, y 47.3–69.1%) and
+            stretches it. */}
+        <FooterShaderStrip
+          className="inset-x-0 top-[514px] h-[241px]"
+          stillStyle={{
             backgroundImage: "url(/assets/footer/footer-strip.webp)",
             backgroundSize: "129.7% 457.9%",
             backgroundPosition: "100% 60.5%",
           }}
-        ></div>
+        />
 
         <Link
           href="/"
@@ -229,12 +229,12 @@ function MobileFooterBody({
   const groups = INDUSTRY_COLUMNS.flat();
   return (
     <div className="relative overflow-hidden px-5 pb-[26px] pt-[35px] lg:hidden">
-      {/* The strip's image fill, cropped to its centre band and under a 34px
-          Figma layer blur, behind the copyright row. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-3 h-[241px] blur-[17px]"
-        style={{
+      {/* Shader strip behind the copyright row. Its still: the image fill,
+          cropped to its centre band and under a 34px Figma layer blur. */}
+      <FooterShaderStrip
+        className="inset-x-0 bottom-3 h-[241px]"
+        stillClassName="blur-[17px]"
+        stillStyle={{
           backgroundImage: "url(/assets/footer/footer-strip.webp)",
           backgroundSize: "489.3% 457.9%",
           backgroundPosition: "51.9% 60.5%",
