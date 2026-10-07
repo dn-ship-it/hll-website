@@ -21,6 +21,7 @@ import { Tenders } from "./collections/Tenders";
 import { Users } from "./collections/Users";
 import { MarketingContent } from "./globals/MarketingContent";
 import { SiteSettings } from "./globals/SiteSettings";
+import { withGlobalRevalidation, withSiteRevalidation } from "./lib/payload/revalidate";
 import { seedMarketingContent } from "./lib/payload/seed-marketing";
 import { migrations } from "./migrations";
 
@@ -63,8 +64,16 @@ export default buildConfig({
       titleSuffix: "— HLL CMS",
     },
   },
-  collections: [Users, Media, Pages, Services, Industries, Tenders, Posts, Careers, TeamMembers, Engagements, Enquiries],
-  globals: [SiteSettings, MarketingContent],
+  // Content the site shows refreshes the live pages when saved; Users and
+  // Enquiries (contact-form submissions) never appear on it.
+  collections: [
+    Users,
+    ...[Media, Pages, Services, Industries, Tenders, Posts, Careers, TeamMembers, Engagements].map(
+      withSiteRevalidation,
+    ),
+    Enquiries,
+  ],
+  globals: [SiteSettings, MarketingContent].map(withGlobalRevalidation),
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
