@@ -114,7 +114,7 @@ export async function ContactPage() {
           </section>
 
           <section className={`pb-[84px] pt-[84px] lg:pb-[152px] lg:pt-[214px] ${SERVICE_GUTTER}`}>
-            <div className="flex flex-wrap items-start justify-between gap-8 lg:items-end lg:pr-[129px]">
+            <div className="flex flex-wrap items-start justify-between gap-8 lg:items-end">
               {/* Figma mobile sets the email at 25px (402px frame); it scales
                   down on narrower phones so it stays on one line. */}
               <a

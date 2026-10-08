@@ -145,7 +145,9 @@ export function CareersOpenRoles({
             />
           </div>
 
-          <ul className="-mx-3 lg:mx-0 lg:mr-[100px]">
+          {/* Mobile: the hairlines on the gutter, in line with the heading,
+              with 20px around each role so the list can breathe. */}
+          <ul className="lg:mr-[100px]">
             <li
               aria-hidden
               data-line
@@ -162,7 +164,7 @@ export function CareersOpenRoles({
                 <li key={role.id}>
                   <Link
                     href={`/careers/${role.slug}`}
-                    className="group flex items-start justify-between gap-6 pb-[10px] pl-[13px] pr-1 pt-[10px] lg:pb-[23px] lg:pl-0 lg:pr-0 lg:pt-[21px]"
+                    className="group flex items-start justify-between gap-6 pb-5 pt-5 lg:pb-[23px] lg:pt-[21px]"
                   >
                     <span>
                       <span className="block text-[24px] leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">

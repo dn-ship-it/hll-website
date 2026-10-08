@@ -19,6 +19,7 @@ import {
   type NewsData,
 } from "./nav-menu";
 
+/** QA N-03: every menu size here is 2px over Figma, which read too small. */
 const NAV_FONT = {
   fontFamily: '"Aeonik TRIAL", var(--font-geist-sans), sans-serif',
 };
@@ -34,7 +35,7 @@ function ServicesList() {
         <li key={service}>
           <Link
             href={`/services/${service}`}
-            className="group/svc flex h-9 items-center gap-[10px] text-[12px] text-[var(--hll-dark-grey)]"
+            className="group/svc flex h-9 items-center gap-[10px] text-[14px] text-[var(--hll-dark-grey)]"
           >
             {/* The service's own palette fills its icon tile on hover / tap. */}
             <span className="relative grid size-6 place-items-center overflow-hidden rounded-[4px] bg-[var(--hll-bg)]">
@@ -95,7 +96,7 @@ function IndustriesList() {
       >
         {MENU_INDUSTRIES.map((group, i) => (
           <div key={group.title} className={i > 0 ? "mt-[29px]" : undefined}>
-            <p className="text-[12px] leading-[15px] text-[var(--hll-mid-grey)]">
+            <p className="text-[14px] leading-[17px] text-[var(--hll-mid-grey)]">
               {group.title}
             </p>
             <ul className="mt-2">
@@ -104,7 +105,7 @@ function IndustriesList() {
                 return (
                   <li
                     key={label}
-                    className="text-[12px] leading-[19.8px] text-[var(--hll-dark-grey)]"
+                    className="text-[14px] leading-[23px] text-[var(--hll-dark-grey)]"
                   >
                     {href ? <Link href={href}>{label}</Link> : label}
                   </li>
@@ -281,7 +282,7 @@ export function MobileMenu({
                 </>
               );
               const buttonClass =
-                "group relative flex h-[38px] items-center rounded-[4px] pl-[21px] pr-[21px] text-[14px] uppercase leading-none tracking-[3.5px]";
+                "group relative flex h-[38px] items-center rounded-[4px] pl-[21px] pr-[21px] text-[16px] uppercase leading-none tracking-[3.5px]";
 
               return (
                 <li
@@ -314,7 +315,7 @@ export function MobileMenu({
                               <Link
                                 href={item.href}
                                 onClick={close}
-                                className={`mt-4 inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] ${VIEW_ALL[variant].inset}`}
+                                className={`mt-4 inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] ${VIEW_ALL[variant].inset}`}
                                 style={NAV_FONT}
                               >
                                 {VIEW_ALL[variant].label}

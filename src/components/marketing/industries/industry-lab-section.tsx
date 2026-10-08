@@ -20,7 +20,8 @@ export function IndustryLabSection({
       <div className="[&_p:first-child]:!text-[var(--hll-light-grey)]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} tone="dark" />
       </div>
-      <div className="mx-auto mt-8 aspect-[312/238] w-full max-w-[312px] overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:max-w-[1171px] lg:rounded-lg">
+      {/* Edge to edge within the gutter, in line with the heading. */}
+      <div className="mt-8 aspect-[312/238] w-full overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:rounded-lg">
         <iframe
           title={`${data.selectorLabel} lab demo`}
           src={data.demoUrl}

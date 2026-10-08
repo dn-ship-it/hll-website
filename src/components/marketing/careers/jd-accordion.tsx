@@ -33,11 +33,15 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
                 {isOpen ? "−" : "+"}
               </span>
             </button>
-            {/* Mobile: hairlines out to 8px from the edges, 18px under an open
-                header, 27px under a closed one. */}
-            <div data-line className={`-mx-3 h-px bg-[var(--hll-mid-grey)] lg:mx-0 ${isOpen ? "mt-[18px] lg:mt-[26px]" : "mt-[27px] lg:mt-[51px]"}`} />
+            {/* Hairlines only between sections: a closed header has its own,
+                27px under it; an open one's comes after its body, so none sits
+                between the title and its text. Mobile: out to 8px from the
+                edges. */}
+            {isOpen ? null : (
+              <div data-line className="-mx-3 mt-[27px] h-px bg-[var(--hll-mid-grey)] lg:mx-0 lg:mt-[51px]" />
+            )}
             <div id={id} hidden={!isOpen}>
-              <div className="space-y-[18px] py-[54px] lg:space-y-[30px] lg:pl-[30%]">
+              <div className="space-y-[18px] pb-[54px] pt-[27px] lg:space-y-[30px] lg:pl-[30%] lg:pt-[51px]">
                 {section.paragraphs.map((text, p) => (
                   <p key={p} className="text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]">
                     {text}

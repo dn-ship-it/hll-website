@@ -26,9 +26,9 @@ export async function JdPage({ slug }: { slug: string }) {
     <MarketingShell>
       <div className="hll-home hll-service-page">
         {/* Figma JD mobile: title at y 385, tags 12px under it, the summary
-            54px below, Apply 84px under that. */}
+            24px below, Apply 84px under that on the text's left edge. */}
         <section className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
-          <div className="grid gap-[54px] lg:grid-cols-[653fr_799fr] lg:gap-0">
+          <div className="grid gap-6 lg:grid-cols-[653fr_799fr] lg:gap-0">
             <div>
               <GradientRevealTextSlow
                 as="h1"
@@ -52,7 +52,7 @@ export async function JdPage({ slug }: { slug: string }) {
             </p>
           </div>
 
-          <div className="mt-[84px] flex justify-center lg:mt-[202px]">
+          <div className="mt-[84px] flex justify-start lg:mt-[202px] lg:justify-center">
             <HLLButton href={applyHref} variant="contact" size="md" className={BUTTON_MOBILE}>
               Apply
             </HLLButton>

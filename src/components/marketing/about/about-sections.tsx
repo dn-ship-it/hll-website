@@ -156,7 +156,8 @@ export function AboutCareersSection({
         </ol>
       </div>
 
-      <div className="ml-[55px] mt-[54px] lg:ml-[58.95%] lg:mt-[84px]">
+      {/* Phones set it on the section's left edge, in line with the heading. */}
+      <div className="mt-[54px] lg:ml-[58.95%] lg:mt-[84px]">
         <HLLButton href={data.ctaHref} variant="about" size="md" className={BUTTON_MOBILE}>
           {data.ctaLabel}
         </HLLButton>

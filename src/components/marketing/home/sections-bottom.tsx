@@ -363,11 +363,11 @@ export function InsideTheLab() {
       style={{ background: "#F26A2E url(/assets/home/lab-bg.webp) center / cover" }}
     >
       <HomeHeading eyebrow="Demo tool" title="Inside the Lab" tone="dark" />
-      {/* Desktop: edge to edge within the gutter, in line with the heading. */}
+      {/* Edge to edge within the gutter, in line with the heading. */}
       <div
         aria-label="Demo window"
         role="img"
-        className="mx-auto mt-9 grid aspect-[312/238] w-full max-w-[312px] place-items-center rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:max-w-none lg:rounded-lg"
+        className="mt-9 grid aspect-[312/238] w-full place-items-center rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:rounded-lg"
       >
         <span className="text-[12px] uppercase leading-none tracking-[0.25em] text-black">Demo window</span>
       </div>
