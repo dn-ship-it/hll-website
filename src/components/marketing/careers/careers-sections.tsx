@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 
@@ -49,24 +49,32 @@ export function CareersApproach({
   );
 }
 
+/** One filter dropdown. Its parent owns which menu is open, so opening one
+ *  closes the other (QA TM-05). */
 function FilterMenu({
   label,
+  allLabel,
   options,
   value,
   onChange,
+  open,
+  onOpenChange,
 }: {
   label: string;
+  /** The "show everything" option, e.g. "All capabilities". */
+  allLabel: string;
   options: string[];
   value: string | null;
   onChange: (value: string | null) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
   return (
-    <div className="relative">
+    <div data-filter-menu className="relative">
       <button
         type="button"
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => onOpenChange(!open)}
         className="inline-flex h-[34px] items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:text-[12px]"
       >
         {value ?? label}
@@ -80,11 +88,11 @@ function FilterMenu({
                 type="button"
                 onClick={() => {
                   onChange(option);
-                  setOpen(false);
+                  onOpenChange(false);
                 }}
                 className={`block w-full whitespace-nowrap px-[21px] py-2 text-left hover:bg-[var(--hll-light-grey)] ${BUTTON_TYPE}`}
               >
-                {option ?? `All ${label.toLowerCase()}s`}
+                {option ?? allLabel}
               </button>
             </li>
           ))}
@@ -107,6 +115,22 @@ export function CareersOpenRoles({
 }) {
   const [service, setService] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<"service" | "location" | null>(null);
+
+  // A click outside the filters, or Escape, closes the open menu.
+  useEffect(() => {
+    if (!openMenu) return undefined;
+    const onPointer = (event: PointerEvent) => {
+      if (!(event.target as Element).closest("[data-filter-menu]")) setOpenMenu(null);
+    };
+    const onKey = (event: KeyboardEvent) => event.key === "Escape" && setOpenMenu(null);
+    window.addEventListener("pointerdown", onPointer);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("pointerdown", onPointer);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [openMenu]);
   const unique = (values: (string | undefined)[]) => [
     ...new Set(values.filter(Boolean) as string[]),
   ];
@@ -132,16 +156,22 @@ export function CareersOpenRoles({
           <div className="flex flex-wrap items-center gap-2">
             <span className={`mr-[13px] hidden lg:inline ${BUTTON_TYPE}`}>Filter by</span>
             <FilterMenu
-              label="Service"
+              label="Capability"
+              allLabel="All capabilities"
               options={services}
               value={service}
               onChange={setService}
+              open={openMenu === "service"}
+              onOpenChange={(open) => setOpenMenu(open ? "service" : null)}
             />
             <FilterMenu
               label="Location"
+              allLabel="All locations"
               options={locations}
               value={location}
               onChange={setLocation}
+              open={openMenu === "location"}
+              onOpenChange={(open) => setOpenMenu(open ? "location" : null)}
             />
           </div>
 
@@ -273,14 +303,54 @@ export function CareersProcess({
   );
 }
 
-/** Figma: "see open roles is sticky and takes you to the open roles section." */
+/** How far before its resting place the sticky button has faded out. */
+const SEE_ROLES_FADE_PX = 160;
+
+/**
+ * Figma: "see open roles is sticky and takes you to the open roles section."
+ * QA TM-03: rather than coming to rest on the divider above Open Roles, it
+ * fades away with the scroll over its last 160px, gone as Open Roles arrives.
+ */
 export function SeeOpenRoles() {
+  const [opacity, setOpacity] = useState(1);
+
+  useEffect(() => {
+    const target = document.getElementById("open-roles");
+    if (!target) return undefined;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      // The row stays stuck 32px (bottom-8) off the bottom of the screen
+      // until Open Roles' top reaches that line; fade out on the way there.
+      const gap = target.getBoundingClientRect().top - (window.innerHeight - 32);
+      setOpacity(Math.min(1, Math.max(0, gap / SEE_ROLES_FADE_PX)));
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
+
+  const hidden = opacity === 0;
+
   return (
     // A zero-height sticky row at the end of the sections above Open Roles:
     // the button hangs above it, 32px off the bottom of the screen.
+    // The fade sits on the link: the row itself runs the page's intro
+    // animation, whose fill would hold its opacity at 1.
     <div className="pointer-events-none sticky bottom-8 z-20 flex h-0 justify-center">
       <a
         href="#open-roles"
+        aria-hidden={hidden || undefined}
+        tabIndex={hidden ? -1 : undefined}
+        style={{ opacity, visibility: hidden ? "hidden" : undefined }}
         className="pointer-events-auto inline-flex h-[34px] -translate-y-full items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]"
       >
         See open roles

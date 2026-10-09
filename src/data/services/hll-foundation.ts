@@ -4,7 +4,7 @@ export const hllFoundation: ServicePageData = {
   slug: "hll-foundation",
   variant: "hll-foundation",
   brand: "HLL Foundation",
-  breadcrumb: ["Services", "HLL Foundation"],
+  breadcrumb: ["Capabilities", "HLL Foundation"],
   hero: {
     headline: "Data your business can finally trust",
     support:

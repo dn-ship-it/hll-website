@@ -119,6 +119,14 @@ export function mapServiceToPage(
           company: pc.expertVoice.company ?? undefined,
         }
       : fallback.expertVoice,
+    moreExpertVoices:
+      pc.expertVoice?.moreQuotes?.map((q) => ({
+        quote: q.quote,
+        name: q.name ?? undefined,
+        role: q.role ?? "",
+        company: q.company ?? undefined,
+        portrait: resolveMediaUrl(q.portrait as CmsImageRef) ?? undefined,
+      })) ?? fallback.moreExpertVoices,
     relatedServices:
       pc.relatedServices?.map((link) => ({
         label: link.label,
@@ -190,6 +198,13 @@ export function mapIndustryPage(
       role: pc.clientVoice?.role ?? fallback.clientVoice.role,
       company: pc.clientVoice?.company ?? fallback.clientVoice.company,
       slideCount: pc.clientVoice?.slideCount ?? fallback.clientVoice.slideCount,
+      more:
+        pc.clientVoice?.moreQuotes?.map((q) => ({
+          quote: q.quote,
+          name: q.name ?? undefined,
+          role: q.role ?? "",
+          company: q.company ?? undefined,
+        })) ?? fallback.clientVoice.more,
     },
     experts: {
       eyebrow: pc.experts?.eyebrow ?? fallback.experts.eyebrow,
@@ -303,10 +318,17 @@ export function mapCareersPageContent(
   fallback: CareersPageContent = careersPageContent,
 ): CareersPageContent {
   const cms = marketing?.careers;
-  if (!cms?.hero?.headline) return fallback;
+  const teamVoices =
+    cms?.teamVoices?.map((v) => ({
+      quote: v.quote,
+      name: v.name ?? undefined,
+      role: v.role ?? "",
+    })) ?? fallback.teamVoices;
+  if (!cms?.hero?.headline) return { ...fallback, teamVoices };
 
   return {
     ...fallback,
+    teamVoices,
     accentColor: cms.accentColor ?? fallback.accentColor,
     hero: {
       eyebrow: cms.hero.eyebrow ?? fallback.hero.eyebrow,
@@ -371,7 +393,7 @@ export function mapSiteNav(settings: SiteSetting | null): {
       label: item.label,
       href: item.href,
     })) ?? [
-      { label: "Services", href: "/services" },
+      { label: "Capabilities", href: "/services" },
       { label: "Industries", href: "/industries" },
       { label: "Engagement", href: "/engagement" },
       { label: "About", href: "/about" },

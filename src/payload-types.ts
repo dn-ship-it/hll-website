@@ -506,6 +506,19 @@ export interface Service {
       role?: string | null;
       company?: string | null;
       portrait?: (number | null) | Media;
+      /**
+       * Further slides after the quote above. The arrows, swipe and timer move between them.
+       */
+      moreQuotes?:
+        | {
+            quote: string;
+            name?: string | null;
+            role?: string | null;
+            company?: string | null;
+            portrait?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
     };
     relatedServices?:
       | {
@@ -732,8 +745,23 @@ export interface Industry {
       name?: string | null;
       role?: string | null;
       company?: string | null;
+      /**
+       * No longer used: the counter now counts the testimonials.
+       */
       slideCount?: number | null;
       galleryImage?: (number | null) | Media;
+      /**
+       * Further slides after the quote above. The arrows, swipe and timer move between them.
+       */
+      moreQuotes?:
+        | {
+            quote: string;
+            name?: string | null;
+            role?: string | null;
+            company?: string | null;
+            id?: string | null;
+          }[]
+        | null;
     };
     experts?: {
       eyebrow?: string | null;
@@ -1525,6 +1553,16 @@ export interface ServicesSelect<T extends boolean = true> {
               role?: T;
               company?: T;
               portrait?: T;
+              moreQuotes?:
+                | T
+                | {
+                    quote?: T;
+                    name?: T;
+                    role?: T;
+                    company?: T;
+                    portrait?: T;
+                    id?: T;
+                  };
             };
         relatedServices?:
           | T
@@ -1709,6 +1747,15 @@ export interface IndustriesSelect<T extends boolean = true> {
               company?: T;
               slideCount?: T;
               galleryImage?: T;
+              moreQuotes?:
+                | T
+                | {
+                    quote?: T;
+                    name?: T;
+                    role?: T;
+                    company?: T;
+                    id?: T;
+                  };
             };
         experts?:
           | T
@@ -2224,6 +2271,17 @@ export interface MarketingContent {
           }[]
         | null;
     };
+    /**
+     * The Team Voice carousel's slides, in order. The arrows, swipe and timer move between them.
+     */
+    teamVoices?:
+      | {
+          quote: string;
+          name?: string | null;
+          role?: string | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   team?: {
     accentColor?: string | null;
@@ -2450,6 +2508,14 @@ export interface MarketingContentSelect<T extends boolean = true> {
                     title?: T;
                     body?: T;
                   };
+            };
+        teamVoices?:
+          | T
+          | {
+              quote?: T;
+              name?: T;
+              role?: T;
+              id?: T;
             };
       };
   team?:

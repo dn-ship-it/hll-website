@@ -180,6 +180,17 @@ export function AllCapabilities({
         row.style.visibility = hidden(d) ? "hidden" : "";
         row.setAttribute("aria-hidden", String(slot >= count || Math.abs(d) > REACH));
       });
+    // The focused service's details (tags, open button) travel with its
+    // name and are only shown once it has settled: fully in within a quarter
+    // row of the focus, gone by the halfway point where the focus changes
+    // (QA C-06, C-07).
+    const offset = Math.round(pos.current) - pos.current;
+    const root = rootRef.current;
+    if (root) {
+      root.style.setProperty("--settle", Math.min(1, Math.max(0, 1 - Math.abs(offset) * 4)).toFixed(3));
+      root.style.setProperty("--fy-desktop", offsetFor("desktop", offset).toFixed(2));
+      root.style.setProperty("--fy-phone", offsetFor("phone", offset, below.current).toFixed(2));
+    }
     const next = wrap(Math.round(pos.current), count);
     setActive((current) => (current === next ? current : next));
     frame.current =
@@ -425,11 +436,12 @@ export function AllCapabilities({
           <div
             key={focus.id}
             ref={pillsRef}
-            className="absolute flex flex-wrap items-center gap-[6px] [animation:page-intro-in_500ms_150ms_cubic-bezier(0.22,1,0.36,1)_both]"
+            className="absolute flex flex-wrap items-center gap-[6px]"
             style={{
               left: PHONE.gutter,
               right: PHONE.gutter,
-              top: `calc(var(--center) + ${PHONE.tileMax / 2 + 12}px)`,
+              top: `calc(var(--center) + ${PHONE.tileMax / 2 + 12}px + var(--fy-phone, 0) * 1px)`,
+              opacity: "var(--settle, 1)",
             }}
           >
             {pills("rounded-[3px] border-[0.6px] px-[6px] py-[4px] text-[9px]")}
@@ -538,28 +550,36 @@ export function AllCapabilities({
             ))}
 
             {/* The focused service: its sub-services as outlined pills and the
-                open tile to its page. */}
-            <div
-              key={focus.id}
-              className="absolute flex items-center gap-2 [animation:page-intro-in_500ms_150ms_cubic-bezier(0.22,1,0.36,1)_both]"
-              style={{
-                left: pct(815, STAGE.w),
-                top: pct(365, STAGE.h),
-                width: pct(447, STAGE.w),
-              }}
-            >
-              {pills("rounded-[3.8px] border-[0.64px] px-[7px] py-[5px] text-[10.7px]")}
-            </div>
-            {focus.href ? (
-              <Link
-                href={focus.href}
-                aria-label={`Open ${focus.name}`}
-                className="absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] bg-[var(--hll-light-grey)] transition-colors hover:bg-white"
-                style={{ left: pct(1229, STAGE.w), top: pct(316, STAGE.h) }}
+                open tile to its page. A full-stage wrapper like the rows':
+                the stage's intro fade would otherwise hold their opacity. */}
+            <div className="pointer-events-none absolute inset-0 [&_a]:pointer-events-auto">
+              <div
+                key={focus.id}
+                className="absolute flex items-center gap-2"
+                style={{
+                  left: pct(815, STAGE.w),
+                  top: `calc((365 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
+                  width: pct(447, STAGE.w),
+                  opacity: "var(--settle, 1)",
+                }}
               >
-                <OpenIcon />
-              </Link>
-            ) : null}
+                {pills("rounded-[3.8px] border-[0.64px] px-[7px] py-[5px] text-[10.7px]")}
+              </div>
+              {focus.href ? (
+                <Link
+                  href={focus.href}
+                  aria-label={`Open ${focus.name}`}
+                  className="absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] bg-[var(--hll-light-grey)] transition-colors hover:bg-white"
+                  style={{
+                    left: pct(1229, STAGE.w),
+                    top: `calc((316 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
+                    opacity: "var(--settle, 1)",
+                  }}
+                >
+                  <OpenIcon />
+                </Link>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>

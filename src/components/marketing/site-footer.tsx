@@ -164,7 +164,7 @@ export function SiteFooter({
           </ul>
 
           <ul className={`${LIST} text-[var(--hll-dark-grey)]`}>
-            <li className="text-[var(--hll-mid-grey)]">Services</li>
+            <li className="text-[var(--hll-mid-grey)]">Capabilities</li>
             {services.map((label) => (
               <li key={label}>{label}</li>
             ))}
@@ -265,7 +265,7 @@ function MobileFooterBody({
           </ul>
           <ul className="mt-[37px]">
             <li className={`${MOBILE_ITEM} text-[var(--hll-mid-grey)]`}>
-              Services
+              Capabilities
             </li>
             {services.map((label) => (
               <li key={label} className={MOBILE_ITEM}>

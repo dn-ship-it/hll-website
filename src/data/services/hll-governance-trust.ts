@@ -4,7 +4,7 @@ export const hllGovernanceTrust: ServicePageData = {
   slug: "hll-trust",
   variant: "hll-trust",
   brand: "HLL Trust & Governance",
-  breadcrumb: ["Services", "HLL Trust & Governance"],
+  breadcrumb: ["Capabilities", "HLL Trust & Governance"],
   hero: {
     headline: "Could you show a regulator where that number came from?",
     support:

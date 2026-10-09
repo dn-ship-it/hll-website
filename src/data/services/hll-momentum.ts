@@ -4,7 +4,7 @@ export const hllMomentum: ServicePageData = {
   slug: "hll-people",
   variant: "hll-people",
   brand: "HLL People & Policy",
-  breadcrumb: ["Services", "HLL People & Policy"],
+  breadcrumb: ["Capabilities", "HLL People & Policy"],
   hero: {
     headline: "The talent gap closed for you in under a week",
     support:

@@ -81,6 +81,8 @@ export type ServicePageData = {
   };
   /** Null where the copy spec flagged the quote as undrafted. */
   expertVoice: ExpertVoice | null;
+  /** Further testimonials after `expertVoice` (CMS "More testimonials"). */
+  moreExpertVoices?: readonly ExpertVoice[];
   relatedServices: readonly { label: string; href: string }[];
   cta: {
     headline: string;

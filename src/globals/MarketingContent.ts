@@ -196,6 +196,20 @@ export const MarketingContent: GlobalConfig = {
             },
           ],
         },
+        {
+          name: "teamVoices",
+          label: "Team Voice testimonials",
+          type: "array",
+          admin: {
+            description:
+              "The Team Voice carousel's slides, in order. The arrows, swipe and timer move between them.",
+          },
+          fields: [
+            { name: "quote", type: "textarea", required: true },
+            { name: "name", type: "text" },
+            { name: "role", type: "text" },
+          ],
+        },
       ],
     },
     {

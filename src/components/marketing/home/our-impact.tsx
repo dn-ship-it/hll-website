@@ -171,8 +171,8 @@ function ImpactStat({ tile }: { tile: Stat }) {
 export function OurImpact() {
   return (
     <section id="impact" className="hll-home-section">
-      <div data-line className="h-px bg-[#D9D9D9] lg:h-[2px]" />
-
+      {/* No divider on top (QA H-15): the knowledge graph above fades into
+          the page, and a line here read as a divider under the graph. */}
       <div className={`pt-[154px] ${HOME_GUTTER}`}>
         <HomeHeading eyebrow="Work" title="Our Impact" />
       </div>

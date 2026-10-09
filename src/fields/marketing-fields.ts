@@ -132,6 +132,22 @@ export const servicePageContentFields: Field[] = [
       { name: "role", type: "text" },
       { name: "company", type: "text" },
       { name: "portrait", type: "upload", relationTo: "media" },
+      {
+        name: "moreQuotes",
+        label: "More testimonials",
+        type: "array",
+        admin: {
+          description:
+            "Further slides after the quote above. The arrows, swipe and timer move between them.",
+        },
+        fields: [
+          { name: "quote", type: "textarea", required: true },
+          { name: "name", type: "text" },
+          { name: "role", type: "text" },
+          { name: "company", type: "text" },
+          { name: "portrait", type: "upload", relationTo: "media" },
+        ],
+      },
     ],
   },
   {
@@ -218,8 +234,30 @@ export const industryPageContentFields: Field[] = [
       { name: "name", type: "text" },
       { name: "role", type: "text" },
       { name: "company", type: "text" },
-      { name: "slideCount", type: "number", defaultValue: 3 },
+      {
+        name: "slideCount",
+        type: "number",
+        defaultValue: 3,
+        admin: {
+          description: "No longer used: the counter now counts the testimonials.",
+        },
+      },
       { name: "galleryImage", type: "upload", relationTo: "media" },
+      {
+        name: "moreQuotes",
+        label: "More testimonials",
+        type: "array",
+        admin: {
+          description:
+            "Further slides after the quote above. The arrows, swipe and timer move between them.",
+        },
+        fields: [
+          { name: "quote", type: "textarea", required: true },
+          { name: "name", type: "text" },
+          { name: "role", type: "text" },
+          { name: "company", type: "text" },
+        ],
+      },
     ],
   },
   {

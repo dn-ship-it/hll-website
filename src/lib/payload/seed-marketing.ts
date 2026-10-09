@@ -303,7 +303,7 @@ export async function seedMarketingContent(payload: Payload) {
         data: {
           siteName: "Hyper Lychee Labs",
           headerNav: [
-            { label: "Services", href: "/services", variant: "services" },
+            { label: "Capabilities", href: "/services", variant: "services" },
             { label: "Industries", href: "/industries", variant: "industries" },
             { label: "Engagement", href: "/engagement", variant: "engagement" },
             { label: "About", href: "/about", variant: "about" },

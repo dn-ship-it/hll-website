@@ -7,7 +7,7 @@ import { MobileMenu } from "./mobile-menu";
 import { NavMenu, type NewsData } from "./nav-menu";
 
 const DEFAULT_NAV: SiteNavItem[] = [
-  { label: "Services", href: "/services" },
+  { label: "Capabilities", href: "/services" },
   { label: "Industries", href: "/industries" },
   { label: "Engagement", href: "/engagement" },
   { label: "About", href: "/about" },

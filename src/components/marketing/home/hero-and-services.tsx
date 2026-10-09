@@ -232,10 +232,10 @@ function WhatWeDoMobile() {
   return (
     <section
       className="hll-home-section pt-[114px] lg:hidden"
-      aria-label="Our services"
+      aria-label="Our capabilities"
     >
       <div className={HOME_GUTTER}>
-        <HomeHeading eyebrow="Services" title="What we do" />
+        <HomeHeading eyebrow="Capabilities" title="What we do" />
       </div>
 
       <div className="relative mt-8">
@@ -251,7 +251,7 @@ function WhatWeDoMobile() {
           <div className="-mb-[10px] -ml-[11px] -mt-[10px] flex">
             <button
               type="button"
-              aria-label="Previous service"
+              aria-label="Previous capability"
               onClick={() => go(-1)}
               className="grid size-8 place-items-center"
             >
@@ -259,7 +259,7 @@ function WhatWeDoMobile() {
             </button>
             <button
               type="button"
-              aria-label="Next service"
+              aria-label="Next capability"
               onClick={() => go(1)}
               className="-ml-[10px] grid size-8 place-items-center"
             >
@@ -403,13 +403,13 @@ function WhatWeDoWheel() {
       ref={sectionRef}
       className="hll-home-section hidden lg:block"
       style={{ height: `calc(${count * 60} * var(--svh))` }}
-      aria-label="Our services"
+      aria-label="Our capabilities"
     >
       <div
         ref={stickyRef}
         className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col justify-center ${HOME_GUTTER}`}
       >
-        <HomeHeading eyebrow="Services" title="What we do" />
+        <HomeHeading eyebrow="Capabilities" title="What we do" />
 
         <div className="mt-[84px] grid gap-8 md:grid-cols-[731fr_721fr] md:gap-0">
           <div className="md:pt-[75px]" aria-live="polite">

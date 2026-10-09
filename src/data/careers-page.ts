@@ -37,6 +37,8 @@ export type CareersPageContent = {
     highlights: readonly { id: string; title: string; body: string }[];
   };
   teamVoice: { quote: string; name: string; role: string; slideCount: number };
+  /** The Team Voice slides from the CMS; empty means just `teamVoice`. */
+  teamVoices?: { quote: string; name?: string; role: string }[];
   approach: { title: string; items: readonly { id: string; title: string; body: string }[] };
   process: { title: string; rows: readonly CareerSection[] };
   aboutHll: { paragraphs: readonly string[] };

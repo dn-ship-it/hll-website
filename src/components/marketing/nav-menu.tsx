@@ -257,8 +257,11 @@ function AboutPanel() {
  * covers the screen upon interacting with or clicking on any options in the
  * navbar". Hovering a button lights it with its palette; clicking opens its
  * menu over the shader in that palette. Clicking the open button again goes
- * to its page.
+ * to its page, except Industries, which has no page (see MENU_ONLY).
  */
+/** Nav buttons with no landing page of their own: they only open their menu. */
+const MENU_ONLY = new Set(["/industries"]);
+
 export function NavMenu({ nav, news }: { nav: SiteNavItem[]; news: NewsData }) {
   const [open, setOpen] = useState<NavVariant | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -304,18 +307,17 @@ export function NavMenu({ nav, news }: { nav: SiteNavItem[]; news: NewsData }) {
           const variant = VARIANT_BY_HREF[item.href];
           const active = open === variant;
           const colors = variant ? VARIANT_GRADIENTS[variant].colors : null;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-expanded={variant ? active : undefined}
-              onPointerEnter={() => variant && show(variant)}
-              onPointerLeave={hide}
-              onFocus={() => variant && show(variant)}
-
-              className="group relative flex h-9 items-center rounded-[4px] pl-[21px] pr-[18px] text-[12px] uppercase leading-none tracking-[3px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#949494]"
-              style={NAV_FONT}
-            >
+          const triggerProps = {
+            "aria-expanded": variant ? active : undefined,
+            onPointerEnter: () => variant && show(variant),
+            onPointerLeave: hide,
+            onFocus: () => variant && show(variant),
+            className:
+              "group relative flex h-9 items-center rounded-[4px] pl-[21px] pr-[18px] text-[12px] uppercase leading-none tracking-[3px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#949494]",
+            style: NAV_FONT,
+          };
+          const content = (
+            <>
               {/* Figma: the button's palette as a gradient fill under a 12px
                   layer blur (CSS blur 6px renders the same softness), the
                   label turning white over it. */}
@@ -339,6 +341,23 @@ export function NavMenu({ nav, news }: { nav: SiteNavItem[]; news: NewsData }) {
               >
                 {item.label}
               </span>
+            </>
+          );
+          // QA N-01: there's no general Industries page, so Industries only
+          // opens its menu and the visitor picks an industry from it.
+          return MENU_ONLY.has(item.href) ? (
+            <button
+              key={item.href}
+              type="button"
+              aria-haspopup="true"
+              onClick={() => variant && show(variant)}
+              {...triggerProps}
+            >
+              {content}
+            </button>
+          ) : (
+            <Link key={item.href} href={item.href} {...triggerProps}>
+              {content}
             </Link>
           );
         })}

@@ -65,6 +65,7 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
           />
           <ExpertVoiceSection
             data={data.expertVoice}
+            more={data.moreExpertVoices}
             breadcrumb={data.breadcrumb}
             variant={data.variant}
           />

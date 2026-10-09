@@ -55,6 +55,8 @@ export type IndustryPageData = {
     role: string;
     company: string;
     slideCount: number;
+    /** Further testimonials after the main one (CMS "More testimonials"). */
+    more?: { quote: string; name?: string; role: string; company?: string }[];
   };
   experts: {
     eyebrow: string;

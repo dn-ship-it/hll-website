@@ -26,7 +26,6 @@ export function IndustryHero({
   category: string;
   accentColor: string;
 }) {
-  const [activeFilter, setActiveFilter] = useState(data.filters[0]?.id ?? "");
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
   useScaleToViewport(windowRef, { desktopOnly: true });
@@ -71,33 +70,32 @@ export function IndustryHero({
           />
         </h1>
 
+        {/* QA I-01: the sub-industry chips are labels with a hover glow
+            only, with no selected or pressed state. Mobile: the 36px
+            "Button Mobile" outline chips, 12px under the claim and 6px
+            apart (see the service hero). */}
         <div
-          role="tablist"
+          role="list"
           aria-label="Sub-industries"
-          // Mobile: the 36px "Button Mobile" outline tabs, 12px under the
-          // claim and 6px apart (see the service hero).
           className="mt-3 flex flex-wrap gap-[6px] [--tab-h:36px] [--tab-r:3px] [--tab-size:10px] [--tab-track:2.5px] lg:mt-8 lg:gap-2 lg:[--tab-h:38px] lg:[--tab-r:4px] lg:[--tab-size:12px] lg:[--tab-track:0.25em]"
         >
           {data.filters.map((filter) => (
             <HLLOutlineButton
               key={filter.id}
-              as="button"
-              type="button"
-              role="tab"
-              aria-selected={activeFilter === filter.id}
-              onClick={() => setActiveFilter(filter.id)}
+              as="span"
+              role="listitem"
               variant="industries"
               size="md"
               radius={0.21}
               shapeSize={1}
               strokeWidth={0.028}
-              className="service-tab shrink-0"
+              className="shrink-0"
               style={{
                 width: "max-content",
                 height: "var(--tab-h)",
                 padding: "0 21px",
                 borderRadius: "var(--tab-r)",
-                ["--service-tab-accent" as string]: accentColor,
+                cursor: "default",
               }}
               labelStyle={{
                 fontSize: "var(--tab-size)",

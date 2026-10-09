@@ -45,7 +45,7 @@ export function figmaTemplateService({
     slug,
     variant,
     brand,
-    breadcrumb: ["Services", brand],
+    breadcrumb: ["Capabilities", brand],
     hero: {
       headline,
       tabs: CAPABILITIES.map(({ id, title }) => ({ id, label: title })),

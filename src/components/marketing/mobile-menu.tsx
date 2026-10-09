@@ -147,7 +147,7 @@ const SUBMENUS: Partial<
 // Each opened list ends with a way to its own page, which the button itself
 // no longer goes to on mobile (it opens the list instead).
 const VIEW_ALL: Partial<Record<NavVariant, { label: string; inset: string }>> = {
-  services: { label: "View all services", inset: "ml-[17px]" },
+  services: { label: "View all capabilities", inset: "ml-[17px]" },
   industries: { label: "View all industries", inset: "ml-[38px]" },
   engagement: { label: "View all work", inset: "ml-px" },
 };

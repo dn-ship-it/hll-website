@@ -10,6 +10,7 @@ import { placeholderJdSections } from "@/data/careers-page";
 import { loadCareersContent, loadRoles } from "./careers-page";
 import { OutlineTag, roleTags } from "./role-tags";
 import { JdAccordion } from "./jd-accordion";
+import { JdApply } from "./jd-apply";
 
 /** Figma Desktop › JD (1116:7340): the detail page of one open role. */
 export async function JdPage({ slug }: { slug: string }) {
@@ -26,7 +27,7 @@ export async function JdPage({ slug }: { slug: string }) {
     <MarketingShell>
       <div className="hll-home hll-service-page">
         {/* Figma JD mobile: title at y 385, tags 12px under it, the summary
-            24px below, Apply 84px under that on the text's left edge. */}
+            24px below, Apply 84px under that (see JdApply). */}
         <section className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
           <div className="grid gap-6 lg:grid-cols-[653fr_799fr] lg:gap-0">
             <div>
@@ -52,11 +53,7 @@ export async function JdPage({ slug }: { slug: string }) {
             </p>
           </div>
 
-          <div className="mt-[84px] flex justify-start lg:mt-[202px] lg:justify-center">
-            <HLLButton href={applyHref} variant="contact" size="md" className={BUTTON_MOBILE}>
-              Apply
-            </HLLButton>
-          </div>
+          <JdApply href={applyHref} />
         </section>
 
         <section className={`grid gap-[54px] pt-[54px] lg:grid-cols-[534fr_864fr_54fr] lg:gap-0 lg:pt-[131px] ${SERVICE_GUTTER}`}>

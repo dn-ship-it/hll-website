@@ -49,7 +49,8 @@ export function NamedExpertsSection({
         ))}
       </ul>
 
-      <div className="mt-[84px] hidden grid-cols-4 gap-[10px] px-[10px] lg:grid">
+      {/* On the page gutter, in line with the heading and the other sections. */}
+      <div className={`mt-[84px] hidden grid-cols-4 gap-[10px] lg:grid ${SERVICE_GUTTER}`}>
         {data.people.map((person) => (
           <article key={person.id}>
             <div

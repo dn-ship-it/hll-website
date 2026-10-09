@@ -185,7 +185,7 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
               {/* Mobile stacks the four lists in one scrolling panel. */}
               <div className="grid gap-8 lg:grid-cols-[211fr_591fr_146fr] lg:gap-0">
                 <div>
-                  <p className={HEADER}>Services</p>
+                  <p className={HEADER}>Capabilities</p>
                   <ul className="mt-[25px]">
                     {(Object.keys(SERVICE_LABELS) as ServiceVariant[]).map(
                       (service) => {

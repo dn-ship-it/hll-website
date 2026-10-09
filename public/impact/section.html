@@ -127,6 +127,15 @@
     opacity: 0.7;
   }
 
+  /* No edge at the bottom: the tinted field and the grid fade into the page's
+     background (#FAFAFA) over the last 120px, so neither the last grid line
+     nor the end of the tint reads as a divider under the graph. */
+  .hll-www::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 120px;
+    z-index: 0; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(250, 250, 250, 0), #FAFAFA);
+  }
+
   .hll-www-inner { position: relative; z-index: 1; width: 100%; max-width: var(--hll-max); margin: 0 auto; padding: 48px var(--hll-gutter); }
 
   /* ===== Stage: the graph ===== */

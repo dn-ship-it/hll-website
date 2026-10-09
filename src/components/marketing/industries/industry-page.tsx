@@ -41,13 +41,10 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
           accentColor={accent}
         />
         <VoiceSection
-          data={{
-            quote: voice.quote,
-            name: voice.name,
-            role: voice.role,
-            company: voice.company,
-          }}
-          slideCount={voice.slideCount}
+          slides={[
+            { quote: voice.quote, name: voice.name, role: voice.role, company: voice.company },
+            ...(voice.more ?? []),
+          ]}
           timerColor={accent}
           wide
           headingInset

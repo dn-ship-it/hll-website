@@ -4,7 +4,7 @@ export const hllKinetic: ServicePageData = {
   slug: "hll-application",
   variant: "hll-application",
   brand: "HLL Application",
-  breadcrumb: ["Services", "HLL Application"],
+  breadcrumb: ["Capabilities", "HLL Application"],
   hero: {
     headline: "We build applications that are a delight to use",
     tabs: [

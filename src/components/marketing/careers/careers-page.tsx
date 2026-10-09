@@ -65,8 +65,11 @@ export async function CareersPage() {
             <VoiceSection
               divider={false}
               headingInset
-              data={{ quote: voice.quote, name: voice.name, role: voice.role }}
-              slideCount={voice.slideCount}
+              slides={
+                content.teamVoices?.length
+                  ? content.teamVoices
+                  : [{ quote: voice.quote, name: voice.name, role: voice.role }]
+              }
               timerColor="var(--hll-mid-grey)"
               heading={
                 <HomeHeading
