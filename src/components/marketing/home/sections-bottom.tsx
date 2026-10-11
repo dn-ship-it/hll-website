@@ -4,28 +4,9 @@ import { useEffect, useRef, useState } from "react";
 
 import { HLLButton } from "@/components/hll";
 
-import { HOME_GUTTER, HomeHeading } from "./primitives";
+import { homePageContent, type HomePageContent } from "@/data/home";
 
-const STEPS = [
-  {
-    id: "shape",
-    title: "Shape",
-    image: "/assets/home/shape.webp",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
-  },
-  {
-    id: "build",
-    title: "Build",
-    image: "/assets/home/build.webp",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
-  },
-  {
-    id: "evolve",
-    title: "Evolve",
-    image: "/assets/home/evolve.webp",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
-  },
-] as const;
+import { HOME_GUTTER, HomeHeading } from "./primitives";
 
 // Figma "How we work": the active stage is a 530px image in the centre with
 // the other two at 250px either side. Offsets are inside the 1452 × 728 stage
@@ -98,18 +79,23 @@ function Arrow({ direction, onClick }: { direction: "prev" | "next"; onClick: ()
 }
 
 export function HowWeWork({
+  data = homePageContent.howWeWork,
   dividerClassName = "mb-8",
 }: {
+  /** The Home page's copy; About shows the same section. */
+  data?: HomePageContent["howWeWork"];
   /** Space under the mobile hairline (Home 32px, About 84px). */
   dividerClassName?: string;
 } = {}) {
-  const [active, setActive] = useState(1);
-  const count = STEPS.length;
+  // Figma's carousel has three stages: the middle one large, one either side.
+  const steps = data.steps.slice(0, 3);
+  const [active, setActive] = useState(Math.min(1, steps.length - 1));
+  const count = steps.length;
   const slotOf = (index: number, at = active) => (index - at + 1 + count) % count;
   // With three stages in three slots, a turn sends one card from one end to
   // the other. Rather than slide it across the middle card, it's remounted at
   // its new slot (a new key) and fades in there.
-  const [wraps, setWraps] = useState<number[]>(() => STEPS.map(() => 0));
+  const [wraps, setWraps] = useState<number[]>(() => steps.map(() => 0));
   const select = (next: number) => {
     if (next === active) return;
     setWraps((current) =>
@@ -206,14 +192,14 @@ export function HowWeWork({
     <section className={`hll-home-section pb-[154px] ${HOME_GUTTER}`}>
       {/* Figma Home mobile: a hairline 8px in from each edge, 32px above. */}
       <div data-line className={`-mx-3 h-px bg-[var(--hll-mid-grey)] lg:hidden ${dividerClassName}`} />
-      <HomeHeading eyebrow="About" title="How we work" />
+      <HomeHeading eyebrow={data.eyebrow} title={data.title} />
 
       <div
         ref={mobileRef}
         className="relative mt-[54px] h-[452px] touch-pan-y lg:hidden"
         {...swipeHandlers}
       >
-        {STEPS.map((step, index) => {
+        {steps.map((step, index) => {
           const slot = MOBILE_SLOTS[slotOf(index)];
           const isActive = index === active;
           return (
@@ -261,7 +247,7 @@ export function HowWeWork({
           <Arrow direction="next" onClick={() => go(1)} />
         </div>
 
-        {STEPS.map((step, index) => {
+        {steps.map((step, index) => {
           const slot = SLOTS[slotOf(index)];
           const isActive = index === active;
           return (
@@ -300,24 +286,20 @@ export function HowWeWork({
   );
 }
 
-export function WhoWeAre() {
-  const team = Array.from({ length: 4 }, (_, i) => ({
-    name: "Hannan Hakim",
-    role: "Chief Operating Officer",
-    id: i,
-  }));
+export function WhoWeAre({ data }: { data: HomePageContent["whoWeAre"] }) {
+  const team = data.people.slice(0, 4);
 
   return (
     <section className="hll-home-section pb-[84px] lg:pb-[154px]">
       <div className={HOME_GUTTER}>
-        <HomeHeading eyebrow="Team" title="Who are we" />
+        <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
       {/* Figma Home mobile: rows of a 93px photo, name and role 12px right. */}
       <ul className="mt-8 space-y-[10px] px-[18px] lg:hidden">
         {team.map((person) => (
           <li key={person.id} className="flex gap-3">
-            <div className="size-[93px] shrink-0 rounded-lg bg-[#D9D9D9]" />
+            <div className="size-[93px] shrink-0 rounded-lg bg-[#D9D9D9]" style={photo(person.photo)} />
             <div>
               <p className="text-[24px] leading-[27.8px] text-black">{person.name}</p>
               <p
@@ -335,7 +317,7 @@ export function WhoWeAre() {
       <div className="mt-[84px] hidden grid-cols-4 gap-[10px] px-[10px] lg:grid">
         {team.map((person) => (
           <article key={person.id}>
-            <div className="aspect-square w-full rounded-lg bg-[#D9D9D9]" />
+            <div className="aspect-square w-full rounded-lg bg-[#D9D9D9]" style={photo(person.photo)} />
             <p className="mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
               {person.name}
             </p>
@@ -348,28 +330,46 @@ export function WhoWeAre() {
 
       {/* Phones set it on the team list's left edge. */}
       <div className="mt-[54px] flex justify-start px-[18px] lg:mt-[138px] lg:justify-center lg:px-0">
-        <HLLButton href="/team" variant="about" size="md">
-          View all team
+        <HLLButton href={data.ctaHref} variant="about" size="md">
+          {data.ctaLabel}
         </HLLButton>
       </div>
     </section>
   );
 }
 
-export function InsideTheLab() {
+const photo = (url?: string | null) =>
+  url ? { background: `#D9D9D9 url(${url}) center / cover` } : undefined;
+
+export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
   return (
     <section
       className={`hll-home-section relative overflow-hidden pb-12 pt-9 lg:min-h-[982px] lg:pb-[79px] lg:pt-[85px] ${HOME_GUTTER}`}
-      style={{ background: "#F26A2E url(/assets/home/lab-bg.webp) center / cover" }}
+      style={{ background: `#F26A2E url(${data.background}) center / cover` }}
     >
-      <HomeHeading eyebrow="Demo tool" title="Inside the Lab" tone="dark" />
+      <HomeHeading eyebrow={data.eyebrow} title={data.title} tone="dark" />
       {/* Edge to edge within the gutter, in line with the heading. */}
       <div
         aria-label="Demo window"
-        role="img"
-        className="mt-9 grid aspect-[312/238] w-full place-items-center rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:rounded-lg"
+        role={data.demoVideo ? undefined : "img"}
+        className="relative mt-9 grid aspect-[312/238] w-full place-items-center overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:rounded-lg"
       >
-        <span className="text-[12px] uppercase leading-none tracking-[0.25em] text-black">Demo window</span>
+        {data.demoVideo ? (
+          <video
+            src={data.demoVideo}
+            poster={data.demoImage ?? undefined}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 size-full object-cover"
+          />
+        ) : data.demoImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={data.demoImage} alt="" className="absolute inset-0 size-full object-cover" />
+        ) : (
+          <span className="text-[12px] uppercase leading-none tracking-[0.25em] text-black">Demo window</span>
+        )}
       </div>
     </section>
   );

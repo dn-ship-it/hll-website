@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DEFAULT_INDUSTRY_MENU, type IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
 import { NavMark } from "./nav-mark";
@@ -28,6 +29,7 @@ export function SiteHeader({
   nav = DEFAULT_NAV,
   markTint,
   news = DEFAULT_NEWS,
+  industries = DEFAULT_INDUSTRY_MENU,
 }: {
   siteName?: string;
   nav?: SiteNavItem[];
@@ -35,6 +37,8 @@ export function SiteHeader({
   markTint?: string;
   /** "In the News" in the nav menus. */
   news?: NewsData;
+  /** Industries menu groups (nav panel and mobile menu). */
+  industries?: IndustryMenuGroup[];
 }) {
   return (
     <header className="sticky top-0 z-50 h-[var(--nav-h)] bg-white lg:bg-[#fafafa]">
@@ -62,11 +66,12 @@ export function SiteHeader({
           </span>
         </Link>
 
-        <NavMenu nav={nav} news={news} />
+        <NavMenu nav={nav} news={news} industries={industries} />
         <MobileMenu
           siteName={siteName}
           nav={nav}
           news={news}
+          industries={industries}
           markTint={markTint}
         />
       </div>

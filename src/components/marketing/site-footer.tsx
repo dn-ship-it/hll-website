@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DEFAULT_INDUSTRY_MENU, type IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
 import { FooterButton, FooterCta, FooterShaderStrip } from "./footer-cta";
@@ -30,41 +31,9 @@ const DEFAULT_FOOTER_SERVICES = [
   "HLL Ontology",
 ];
 
-type IndustryGroup = { title: string; items: string[] };
-
-// Figma lists industries as groups over two columns; the second column has no
-// "industry" heading, so it starts one line lower.
-const INDUSTRY_COLUMNS: IndustryGroup[][] = [
-  [
-    {
-      title: "Financial Services",
-      items: ["Banking", "Insurance", "Other Financial Services"],
-    },
-    {
-      title: "Commerce & Consumer",
-      items: ["Retail Commerce & Brands", "Travel & Hospitality", "Pet Tech"],
-    },
-    {
-      title: "Health & Life Sciences",
-      items: ["Healthcare", "Pharmaceuticals"],
-    },
-  ],
-  [
-    {
-      title: "Built Environment & Industry",
-      items: ["Manufacturing", "Real Estate", "Logistics"],
-    },
-    {
-      title: "Government & Public Institutions",
-      items: [
-        "Public Sector – External Affairs",
-        "Public Sector – Tax & Commerce",
-        "International Organization",
-      ],
-    },
-    { title: "Professional Services", items: ["Consulting Firms"] },
-  ],
-];
+// Figma lists industries as groups over two columns, three groups in each;
+// the second column has no "industry" heading, so it starts one line lower.
+const industryColumns = (groups: IndustryMenuGroup[]) => [groups.slice(0, 3), groups.slice(3)];
 
 // Figma sets every list line on one line (e.g. "Government & Public
 // Institutions" fills its 305px column exactly), so lines never wrap on desktop.
@@ -85,6 +54,9 @@ type SiteFooterProps = {
   ctaHref?: string;
   /** This page's CTA background video (Figma: "each page will play a different video"). */
   ctaVideo?: string;
+  /** The CTA band's still, behind the video. */
+  ctaStill?: string;
+  industries?: IndustryMenuGroup[];
 };
 
 export function SiteFooter({
@@ -95,6 +67,8 @@ export function SiteFooter({
   ctaLabel = "Write to us",
   ctaHref = "/contact",
   ctaVideo,
+  ctaStill = "/assets/footer/cta-still.webp",
+  industries = DEFAULT_INDUSTRY_MENU,
 }: SiteFooterProps) {
   const emailLink =
     socialLinks.find((s) => s.platform === "email")?.url ??
@@ -109,13 +83,14 @@ export function SiteFooter({
         headline={ctaHeadline}
         label={ctaLabel}
         href={ctaHref}
-        poster="/assets/footer/cta-still.webp"
+        poster={ctaStill}
         videoSrc={ctaVideo}
       />
 
       <MobileFooterBody
         siteName={siteName}
         services={services}
+        industries={industries}
         emailLink={emailLink}
         linkedInLink={linkedInLink}
       />
@@ -170,7 +145,7 @@ export function SiteFooter({
             ))}
           </ul>
 
-          {INDUSTRY_COLUMNS.map((groups, col) => (
+          {industryColumns(industries).map((groups, col) => (
             <div
               key={col}
               className={`${LIST} text-[var(--hll-dark-grey)] ${col === 1 ? "pt-[28px]" : ""}`}
@@ -185,7 +160,7 @@ export function SiteFooter({
                 >
                   <li className="text-[var(--hll-mid-grey)]">{group.title}</li>
                   {group.items.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item.label}>{item.label}</li>
                   ))}
                 </ul>
               ))}
@@ -218,15 +193,16 @@ export function SiteFooter({
 function MobileFooterBody({
   siteName,
   services,
+  industries: groups,
   emailLink,
   linkedInLink,
 }: {
   siteName: string;
   services: string[];
+  industries: IndustryMenuGroup[];
   emailLink: string;
   linkedInLink: string;
 }) {
-  const groups = INDUSTRY_COLUMNS.flat();
   return (
     <div className="relative overflow-hidden px-5 pb-[26px] pt-[35px] lg:hidden">
       {/* Shader strip behind the copyright row. Its still: the image fill,
@@ -283,8 +259,8 @@ function MobileFooterBody({
                 {group.title}
               </li>
               {group.items.map((item) => (
-                <li key={item} className={MOBILE_ITEM}>
-                  {item}
+                <li key={item.label} className={MOBILE_ITEM}>
+                  {item.label}
                 </li>
               ))}
             </ul>

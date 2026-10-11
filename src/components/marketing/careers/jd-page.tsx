@@ -67,7 +67,7 @@ export async function JdPage({ slug }: { slug: string }) {
           <HomeHeading eyebrow="Careers" title="About HLL" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/about/careers.webp"
+            src={content.aboutHll.image}
             alt=""
             className="-mx-3 mt-8 aspect-[386/194] w-[calc(100%+24px)] max-w-none rounded-[6px] object-cover lg:mx-0 lg:ml-[24.5%] lg:mt-[17px] lg:aspect-[1096/551] lg:w-[75.5%] lg:rounded-none"
           />

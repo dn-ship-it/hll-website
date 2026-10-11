@@ -1,4 +1,5 @@
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { getMarketingContent } from "@/lib/payload/queries";
 import { SERVICE_LABELS } from "@/data/engagements";
 import { SERVICE_PAGES } from "@/data/services";
 
@@ -31,8 +32,31 @@ function serviceEntry(id: keyof typeof SERVICE_LABELS): CapabilityService {
   };
 }
 
+/** The wheel from the CMS (Marketing content › All Capabilities wheel), if set. */
+async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: number } | null> {
+  try {
+    const cms = (await getMarketingContent())?.allCapabilities;
+    const items = cms?.items ?? [];
+    if (!items.length) return null;
+    return {
+      wheel: items.map((item, i) => ({
+        id: `${item.tile}-${i}`,
+        tile: item.tile,
+        name: item.name,
+        href: item.href || null,
+        description: item.description ?? "",
+        subServices: item.subServices?.map((sub) => sub.label) ?? [],
+      })),
+      start: cms?.startIndex ? Math.min(items.length, cms.startIndex) - 1 : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /** Figma Capabilities › All Capabilities (2562:5155), the /services overview. */
-export function AllCapabilitiesPage() {
+export async function AllCapabilitiesPage() {
+  const cms = await loadCmsWheel();
   const entry = (id: string) =>
     id === "hll-cloud"
       ? HLL_CLOUD
@@ -52,7 +76,10 @@ export function AllCapabilitiesPage() {
     <MarketingShell>
       <ServiceReveal>
         <div className="hll-home hll-service-page">
-          <AllCapabilities services={wheel} startIndex={3} />
+          <AllCapabilities
+            services={cms?.wheel ?? wheel}
+            startIndex={cms ? (cms.start ?? Math.min(3, cms.wheel.length - 1)) : 3}
+          />
         </div>
       </ServiceReveal>
     </MarketingShell>

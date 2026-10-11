@@ -8,6 +8,8 @@ import { GradientRevealTextSlow } from "@/components/hll";
 
 export type CapabilityService = {
   id: string;
+  /** Tile colours and glyph (e.g. "hll-ai"); defaults to the id. */
+  tile?: string;
   name: string;
   /** No page yet (HLL Cloud): shown, not linked. */
   href: string | null;
@@ -410,7 +412,7 @@ export function AllCapabilities({
                   opacity: "var(--o)",
                 }}
               >
-                <Tile id={service.id} className="aspect-square w-full" />
+                <Tile id={service.tile ?? service.id} className="aspect-square w-full" />
               </button>
               <button
                 type="button"
@@ -521,7 +523,7 @@ export function AllCapabilities({
                     opacity: "var(--o)",
                   }}
                 >
-                  <Tile id={service.id} className="aspect-square w-full" />
+                  <Tile id={service.tile ?? service.id} className="aspect-square w-full" />
                 </button>
                 <div
                   className="absolute"

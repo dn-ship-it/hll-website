@@ -6,6 +6,7 @@ import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { PageHero } from "@/components/marketing/page-hero";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import {
+  mapAboutPage,
   mapTeamMembers,
   mapTeamPageContent,
 } from "@/lib/payload/marketing-mappers";
@@ -24,9 +25,15 @@ async function loadTeamPage() {
       cmsMembers.length > 0
         ? mapTeamMembers(cmsMembers)
         : [...teamPageContent.members];
-    return { content, members };
+    // The careers section is the About page's (edited there in the CMS).
+    const careers = mapAboutPage(marketing, aboutPage).careers;
+    return { content, members, careers };
   } catch {
-    return { content: teamPageContent, members: [...teamPageContent.members] };
+    return {
+      content: teamPageContent,
+      members: [...teamPageContent.members],
+      careers: aboutPage.careers,
+    };
   }
 }
 
@@ -62,7 +69,7 @@ function PersonCard({ person }: { person: TeamMember }) {
 
 /** Figma Desktop › Team (1098:5219). */
 export async function TeamPage() {
-  const { content, members } = await loadTeamPage();
+  const { content, members, careers } = await loadTeamPage();
   // The founder is the first featured leader; everyone else is in the grid.
   const founder =
     members.find((m) => m.featured && m.department === "leadership") ??
@@ -110,7 +117,7 @@ export async function TeamPage() {
         </section>
 
         <div data-line className="mx-2 h-px bg-[var(--hll-mid-grey)] lg:mx-0 lg:w-[98.6%]" />
-        <AboutCareersSection data={aboutPage.careers} className="pt-[84px]" />
+        <AboutCareersSection data={careers} className="pt-[84px]" />
       </div>
     </MarketingShell>
   );

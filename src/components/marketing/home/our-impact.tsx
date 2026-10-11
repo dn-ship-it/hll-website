@@ -4,116 +4,49 @@ import { HLLButton } from "@/components/hll";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { CountUp } from "@/components/marketing/count-up";
 
+import type { HomeImpactCard, HomeImpactStat, HomePageContent } from "@/data/home";
+
 import { HOME_GUTTER, HomeHeading } from "./primitives";
 
-type Card = {
-  kind: "card";
-  id: string;
-  title: string;
-  tags: string[];
-  /** Media height in px at the 490px card width (Figma). */
-  mediaH: number;
-  /** Figma Home mobile: media height at its 386px card width. */
-  mobileH?: number;
-  wide?: boolean;
-};
-type Stat = { kind: "stat"; id: string; stat: string; label: string };
+/** Figma slot for a card: its media height (px at the 490px card width, and
+ *  at the 386px mobile width) and whether it spans two columns. */
+type CardSlot = { kind: "card"; id: string; mediaH: number; mobileH?: number; wide?: boolean };
+type StatSlot = { kind: "stat"; id: string };
+type Slot = (CardSlot | StatSlot) & { x: number; y: number };
+type Card = CardSlot & HomeImpactCard;
+type Stat = StatSlot & HomeImpactStat;
 type Tile = (Card | Stat) & { x: number; y: number };
 
 // Figma "Our Impact" (1512px frame): three 490px columns 10px apart, laid out
 // as a staggered grid rather than equal rows. x / y are offsets inside the
-// 1491 × 1761 block that starts 10px from the frame's left edge.
+// 1491 × 1761 block that starts 10px from the frame's left edge. The CMS fills
+// the six card slots and two counters in order; the layout stays Figma's.
 const BLOCK = { w: 1491, h: 1761 };
-const TILES: Tile[] = [
-  {
-    kind: "card",
-    id: "bajaj",
-    title: "Bajaj",
-    tags: ["HLL People & Policy"],
-    mediaH: 490,
-    mobileH: 385,
-    x: 1,
-    y: 0,
-  },
-  {
-    kind: "card",
-    id: "ktm",
-    title: "KTM",
-    tags: ["HLL Trust & Governance"],
-    mediaH: 317,
-    mobileH: 280,
-    x: 501,
-    y: 0,
-  },
-  {
-    kind: "card",
-    id: "wecare",
-    title: "WeCare",
-    tags: ["HLL AI", "HLL Trust & Governance"],
-    mediaH: 551,
-    mobileH: 380,
-    x: 1001,
-    y: 0,
-  },
-  {
-    kind: "card",
-    id: "big-red",
-    title: "The Big Red Group",
-    tags: ["HLL People & Policy", "HLL AI", "HLL Trust & Governance"],
-    mediaH: 490,
-    mobileH: 380,
-    x: 501,
-    y: 641,
-  },
-  {
-    kind: "card",
-    id: "salt",
-    title: "Salt",
-    tags: ["HLL AI"],
-    mediaH: 317,
-    x: 1001,
-    y: 641,
-  },
-  {
-    kind: "stat",
-    id: "clients",
-    stat: "60+",
-    label: "Clients across the world",
-    x: 0,
-    y: 959,
-  },
-  {
-    kind: "card",
-    id: "zelish",
-    title: "Zelish",
-    tags: ["HLL AI", "HLL Trust & Governance"],
-    mediaH: 490,
-    wide: true,
-    x: 0,
-    y: 1221,
-  },
-  {
-    kind: "stat",
-    id: "satisfaction",
-    stat: "80%",
-    label: "Client satisfaction",
-    x: 1002,
-    y: 1533,
-  },
+const CARD_SLOTS: (CardSlot & { x: number; y: number })[] = [
+  { kind: "card", id: "card-1", mediaH: 490, mobileH: 385, x: 1, y: 0 },
+  { kind: "card", id: "card-2", mediaH: 317, mobileH: 280, x: 501, y: 0 },
+  { kind: "card", id: "card-3", mediaH: 551, mobileH: 380, x: 1001, y: 0 },
+  { kind: "card", id: "card-4", mediaH: 490, mobileH: 380, x: 501, y: 641 },
+  { kind: "card", id: "card-5", mediaH: 317, x: 1001, y: 641 },
+  { kind: "card", id: "card-6", mediaH: 490, wide: true, x: 0, y: 1221 },
+];
+const STAT_SLOTS: (StatSlot & { x: number; y: number })[] = [
+  { kind: "stat", id: "stat-1", x: 0, y: 959 },
+  { kind: "stat", id: "stat-2", x: 1002, y: 1533 },
 ];
 
-// Figma Home mobile reading order: the clients counter follows WeCare.
-const MOBILE_ORDER = [
-  "bajaj",
-  "ktm",
-  "wecare",
-  "clients",
-  "big-red",
-  "salt",
-  "zelish",
-  "satisfaction",
-];
-const MOBILE_TILES = MOBILE_ORDER.map((id) => TILES.find((t) => t.id === id)!);
+// Figma Home mobile reading order: the clients counter follows the third card.
+const MOBILE_ORDER = ["card-1", "card-2", "card-3", "stat-1", "card-4", "card-5", "card-6", "stat-2"];
+
+function tilesFor(data: HomePageContent["impact"]): Tile[] {
+  const cards = CARD_SLOTS.flatMap((slot, i): Tile[] =>
+    data.cards[i] ? [{ ...slot, ...data.cards[i] }] : [],
+  );
+  const stats = STAT_SLOTS.flatMap((slot, i): Tile[] =>
+    data.stats[i] ? [{ ...slot, ...data.stats[i] }] : [],
+  );
+  return [...cards, ...stats];
+}
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
@@ -123,11 +56,14 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
     mobile && tile.mobileH
       ? `386 / ${tile.mobileH}`
       : `${width} / ${tile.mediaH}`;
-  return (
-    <article className="group">
+  const body = (
+    <>
       <div
         className="relative overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:rounded-lg"
-        style={{ aspectRatio: ratio }}
+        style={{
+          aspectRatio: ratio,
+          background: tile.image ? `#D9D9D9 url(${tile.image}) center / cover` : undefined,
+        }}
       >
         <span
           aria-hidden
@@ -150,6 +86,17 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
       <h3 className="mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
         {tile.title}
       </h3>
+    </>
+  );
+  return (
+    <article className="group">
+      {tile.href ? (
+        <a href={tile.href} className="block">
+          {body}
+        </a>
+      ) : (
+        body
+      )}
     </article>
   );
 }
@@ -159,7 +106,7 @@ function ImpactStat({ tile }: { tile: Stat }) {
     <div className="text-black">
       {/* Figma: "Number counter". */}
       <p className="hll-display text-[128px] font-light leading-[1.16] lg:text-[clamp(4rem,calc(8.47*var(--vw)),8rem)]">
-        <CountUp value={tile.stat} />
+        <CountUp value={tile.value} />
       </p>
       <p className="mt-[-12px] text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-light leading-[1.16]">
         {tile.label}
@@ -168,13 +115,15 @@ function ImpactStat({ tile }: { tile: Stat }) {
   );
 }
 
-export function OurImpact() {
+export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
+  const tiles = tilesFor(data);
+  const mobileTiles = MOBILE_ORDER.flatMap((id) => tiles.filter((t) => t.id === id));
   return (
     <section id="impact" className="hll-home-section">
       {/* No divider on top (QA H-15): the knowledge graph above fades into
           the page, and a line here read as a divider under the graph. */}
       <div className={`pt-[154px] ${HOME_GUTTER}`}>
-        <HomeHeading eyebrow="Work" title="Our Impact" />
+        <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
       {/* Desktop: Figma's staggered placement, scaled with the block width. */}
@@ -182,7 +131,7 @@ export function OurImpact() {
         className="relative mx-[10px] mt-[84px] hidden lg:block"
         style={{ aspectRatio: `${BLOCK.w} / ${BLOCK.h}` }}
       >
-        {TILES.map((tile) => (
+        {tiles.map((tile) => (
           <div
             key={tile.id}
             className="absolute"
@@ -207,8 +156,8 @@ export function OurImpact() {
       {/* Figma Home mobile: one 386px column, 8px from the edges; cards 32px
           apart, 84px around a counter. */}
       <div className="mt-8 px-2 lg:hidden">
-        {MOBILE_TILES.map((tile, i) => {
-          const prev = MOBILE_TILES[i - 1];
+        {mobileTiles.map((tile, i) => {
+          const prev = mobileTiles[i - 1];
           const gap =
             i === 0
               ? undefined
@@ -233,8 +182,8 @@ export function OurImpact() {
           engagements page". Phones set it on the cards' left edge. */}
       <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-start px-2 lg:my-[59px] lg:justify-center lg:px-0">
         <span className="pointer-events-auto">
-          <HLLButton href="/engagement" variant="engagement" size="md" className={BUTTON_MOBILE}>
-            View all work
+          <HLLButton href={data.ctaHref} variant="engagement" size="md" className={BUTTON_MOBILE}>
+            {data.ctaLabel}
           </HLLButton>
         </span>
       </div>

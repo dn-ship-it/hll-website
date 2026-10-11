@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import { SERVICE_LABELS } from "@/data/engagements";
-import { INDUSTRY_PAGES } from "@/data/industries";
+import type { IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
 export type NewsItem = { title: string; href?: string | null };
@@ -36,40 +36,6 @@ export const MENU_SERVICES: ServiceVariant[] = [
   "hll-ai",
   "hll-ontology",
 ];
-
-// Figma Industries Menu: two rows of three groups.
-export const MENU_INDUSTRIES = [
-  {
-    title: "Financial services",
-    items: ["Banking", "Insurance", "Other Financial Services"],
-  },
-  {
-    title: "Commerce & Consumer",
-    items: ["Retail Commerce & Brands", "Travel & Hospitality", "Pet Tech"],
-  },
-  { title: "Health & Life Sciences", items: ["Healthcare", "Pharmaceuticals"] },
-  {
-    title: "Built Environment & Industry",
-    items: ["Manufacturing", "Real Estate", "Logistics"],
-  },
-  {
-    title: "Government & Public Institutions",
-    items: [
-      "Public Sector – External Affairs",
-      "Public Sector – Tax & Commerce",
-      "International Organization",
-    ],
-  },
-  { title: "Professional Services", items: ["Consulting Firms"] },
-];
-
-export const industryHref = (label: string) => {
-  const slug = label
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  return INDUSTRY_PAGES[slug] ? `/industries/${slug}` : null;
-};
 
 // Figma: each menu's panel keeps its own place under the Nav Bar (right
 // edges at x 1247 / 1244 of 1512, News at 1503); About's sits under its button.
@@ -194,21 +160,21 @@ function ServicesPanel() {
   );
 }
 
-function IndustriesPanel() {
+// Figma Industries Menu: two rows of three groups.
+function IndustriesPanel({ industries }: { industries: IndustryMenuGroup[] }) {
   return (
     <Panel
       className="min-h-[242px] w-[607px] px-[21px] pb-4 pt-[20px]"
       opacity={0.9}
     >
       <div className="grid grid-cols-[207fr_207fr_151fr] gap-y-[31px]">
-        {MENU_INDUSTRIES.map((group) => (
+        {industries.map((group) => (
           <div key={group.title}>
             <p className="text-[12px] leading-[1.25] text-[var(--hll-mid-grey)]">
               {group.title}
             </p>
             <ul className="mt-[13px]">
-              {group.items.map((label) => {
-                const href = industryHref(label);
+              {group.items.map(({ label, href }) => {
                 return (
                   <li key={label} className="text-[12px] leading-[1.65]">
                     {href ? (
@@ -262,7 +228,15 @@ function AboutPanel() {
 /** Nav buttons with no landing page of their own: they only open their menu. */
 const MENU_ONLY = new Set(["/industries"]);
 
-export function NavMenu({ nav, news }: { nav: SiteNavItem[]; news: NewsData }) {
+export function NavMenu({
+  nav,
+  news,
+  industries,
+}: {
+  nav: SiteNavItem[];
+  news: NewsData;
+  industries: IndustryMenuGroup[];
+}) {
   const [open, setOpen] = useState<NavVariant | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef(0);
@@ -293,7 +267,7 @@ export function NavMenu({ nav, news }: { nav: SiteNavItem[]; news: NewsData }) {
   const panels = open ? (
     <>
       {open === "services" ? <ServicesPanel /> : null}
-      {open === "industries" ? <IndustriesPanel /> : null}
+      {open === "industries" ? <IndustriesPanel industries={industries} /> : null}
       {open === "about" ? <AboutPanel /> : null}
       {/* "In the News" sits under Engagement only. */}
       {open === "engagement" ? <NewsPanel news={news} opacity={0.8} /> : null}

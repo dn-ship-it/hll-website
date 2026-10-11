@@ -3,65 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
-import type { ServiceVariant } from "@/components/hll/variants";
+import type { HomePageContent, HomeService } from "@/data/home";
 
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { useScaleToViewport } from "@/components/marketing/use-scale-to-viewport";
 
 import { HomeHeading, HOME_GUTTER } from "./primitives";
 
-const HOME_SERVICES: {
-  label: string;
-  name: string;
-  href: string;
-  description: string;
-  variant: ServiceVariant;
-}[] = [
-  {
-    label: "Application",
-    name: "HLL Application",
-    href: "/services/hll-application",
-    description: "We build applications that are a delight to use.",
-    variant: "hll-application",
-  },
-  {
-    label: "People & Policy",
-    name: "HLL People & Policy",
-    href: "/services/hll-people",
-    description: "The talent gap closed for you in under a week.",
-    variant: "hll-people",
-  },
-  {
-    label: "Trust & Governance",
-    name: "HLL Trust & Governance",
-    href: "/services/hll-trust",
-    description: "Could you show a regulator where that number came from?",
-    variant: "hll-trust",
-  },
-  {
-    label: "AI",
-    name: "HLL AI",
-    href: "/services/hll-ai",
-    description:
-      "Applied AI built to move from experimentation into real work.",
-    variant: "hll-ai",
-  },
-  {
-    label: "Foundation",
-    name: "HLL Foundation",
-    href: "/services/hll-foundation",
-    description: "Data your business can finally trust.",
-    variant: "hll-foundation",
-  },
-  {
-    label: "Ontology",
-    name: "HLL Ontology",
-    href: "/services/hll-ontology",
-    description:
-      "A connected view of the knowledge and relationships in your business.",
-    variant: "hll-ontology",
-  },
-];
 
 /**
  * Figma: "window starts at given ratio with video playing and then smoothly
@@ -183,14 +131,19 @@ export function HomeHero({
  * (Figma note). The active service is set large with its neighbours listed
  * small above and below it, as a wheel.
  */
-export function WhatWeDo() {
+export function WhatWeDo({ data }: { data: HomePageContent["whatWeDo"] }) {
+  if (!data.items.length) return null;
   return (
     <>
-      <WhatWeDoMobile />
-      <WhatWeDoWheel />
+      <WhatWeDoMobile data={data} />
+      <WhatWeDoWheel data={data} />
     </>
   );
 }
+
+/** The capability's demo still: the CMS image, else the bundled one. */
+const demoImage = (service: HomeService) =>
+  service.image ?? `/assets/services/${service.variant}-demo.webp`;
 
 const CARD = 253;
 const CARD_GAP = 10;
@@ -203,11 +156,12 @@ const pad2 = (n: number) => String(n).padStart(2, "0");
  * shifting through the list of names … the content and icon changes too";
  * the row also swipes.
  */
-function WhatWeDoMobile() {
+function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
+  const services = data.items;
   const rowRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  const count = HOME_SERVICES.length;
-  const selected = HOME_SERVICES[active];
+  const count = services.length;
+  const selected = services[active];
 
   const onScroll = () => {
     const row = rowRef.current;
@@ -235,7 +189,7 @@ function WhatWeDoMobile() {
       aria-label="Our capabilities"
     >
       <div className={HOME_GUTTER}>
-        <HomeHeading eyebrow="Capabilities" title="What we do" />
+        <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
       <div className="relative mt-8">
@@ -273,14 +227,14 @@ function WhatWeDoMobile() {
           onScroll={onScroll}
           className="flex snap-x snap-mandatory gap-[10px] overflow-x-auto scroll-pl-[74px] pl-[74px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {HOME_SERVICES.map((service) => (
+          {services.map((service) => (
             <a
-              key={service.variant}
+              key={service.href}
               href={service.href}
               aria-label={service.name}
               className="relative h-[252px] w-[253px] shrink-0 snap-start overflow-hidden rounded-[6px] bg-[#D9D9D9]"
               style={{
-                background: `#D9D9D9 url(/assets/services/${service.variant}-demo.webp) center / cover`,
+                background: `#D9D9D9 url(${demoImage(service)}) center / cover`,
               }}
             >
               <span className="absolute left-[6px] top-[6px] grid size-[34px] place-items-center rounded-[3px] bg-[var(--hll-bg)]">
@@ -315,12 +269,13 @@ function WhatWeDoMobile() {
 }
 
 /** Desktop: the pinned wheel. */
-function WhatWeDoWheel() {
+function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
+  const services = data.items;
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
-  const count = HOME_SERVICES.length;
-  const selected = HOME_SERVICES[active];
+  const count = services.length;
+  const selected = services[active];
 
   const updateActiveFromScroll = useCallback(() => {
     const section = sectionRef.current;
@@ -364,7 +319,7 @@ function WhatWeDoWheel() {
     const top =
       window.scrollY +
       section.getBoundingClientRect().top +
-      scrollRange * (index / (count - 1));
+      scrollRange * (count > 1 ? index / (count - 1) : 0);
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -375,7 +330,7 @@ function WhatWeDoWheel() {
   const wheel = (offsets: number[]) =>
     offsets.map((offset) => {
       const index = (active + offset + count) % count;
-      return { index, service: HOME_SERVICES[index] };
+      return { offset, index, service: services[index] };
     });
   const above = wheel([-2, -1]);
   const below = wheel([1, 2, 3]);
@@ -385,7 +340,7 @@ function WhatWeDoWheel() {
     service,
   }: {
     index: number;
-    service: (typeof HOME_SERVICES)[number];
+    service: HomeService;
   }) => (
     <li>
       <button
@@ -409,13 +364,13 @@ function WhatWeDoWheel() {
         ref={stickyRef}
         className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col justify-center ${HOME_GUTTER}`}
       >
-        <HomeHeading eyebrow="Capabilities" title="What we do" />
+        <HomeHeading eyebrow={data.eyebrow} title={data.title} />
 
         <div className="mt-[84px] grid gap-8 md:grid-cols-[731fr_721fr] md:gap-0">
           <div className="md:pt-[75px]" aria-live="polite">
             <ul className="space-y-3">
               {above.map((item) => (
-                <Label key={item.service.variant} {...item} />
+                <Label key={item.offset} index={item.index} service={item.service} />
               ))}
             </ul>
             <a
@@ -426,7 +381,7 @@ function WhatWeDoWheel() {
             </a>
             <ul className="space-y-3">
               {below.map((item) => (
-                <Label key={item.service.variant} {...item} />
+                <Label key={item.offset} index={item.index} service={item.service} />
               ))}
             </ul>
           </div>
@@ -435,7 +390,7 @@ function WhatWeDoWheel() {
             <div
               className="relative aspect-[721/444] overflow-hidden rounded-lg bg-[#D9D9D9] transition-[background] duration-500"
               style={{
-                background: `#D9D9D9 url(/assets/services/${selected.variant}-demo.webp) center / cover`,
+                background: `#D9D9D9 url(${demoImage(selected)}) center / cover`,
               }}
             >
               <span className="absolute left-2 top-2 grid size-12 place-items-center rounded-[4px] bg-[var(--hll-bg)]">
@@ -458,22 +413,36 @@ function WhatWeDoWheel() {
   );
 }
 
-/** Figma: "marquee runner displaying the clients logos (PNG or webp images)". */
-export function OurClients() {
-  const slots = Array.from({ length: 8 }, (_, i) => i);
+/** Figma: "marquee runner displaying the clients logos (PNG or webp images)".
+ *  Until logos are added in the CMS it runs eight grey slots. */
+export function OurClients({ data }: { data: HomePageContent["clients"] }) {
+  const logos = data.logos.filter((item) => item.logo);
+  const slots: (HomePageContent["clients"]["logos"][number] | null)[] = logos.length
+    ? logos
+    : Array.from({ length: 8 }, () => null);
 
   return (
     <section className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
       <div className={HOME_GUTTER}>
-        <HomeHeading eyebrow="Clients" title="Our Clients" />
+        <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
       <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
-        {[...slots, ...slots].map((i, n) => (
+        {[...slots, ...slots].map((item, n) => (
           <div
             key={n}
             aria-hidden={n >= slots.length}
-            className="h-[165px] w-[220px] shrink-0 rounded-lg bg-[#D9D9D9]"
-          />
+            className="grid h-[165px] w-[220px] shrink-0 place-items-center overflow-hidden rounded-lg bg-[#D9D9D9]"
+          >
+            {item?.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={item.logo}
+                alt={n < slots.length ? item.name : ""}
+                draggable={false}
+                className="max-h-[60%] max-w-[70%] object-contain"
+              />
+            ) : null}
+          </div>
         ))}
       </div>
     </section>

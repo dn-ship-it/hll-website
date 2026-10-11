@@ -2152,6 +2152,91 @@ export interface MarketingContent {
     heroVideo?: (number | null) | Media;
     heroCtaLabel?: string | null;
     heroCtaHref?: string | null;
+    /**
+     * Leave a field empty to keep the current text.
+     */
+    whatWeDo?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      /**
+       * Shown in this order in the wheel. Empty: the six current capabilities.
+       */
+      items?:
+        | {
+            /**
+             * Short name in the wheel, e.g. Foundation
+             */
+            label: string;
+            /**
+             * e.g. HLL Foundation
+             */
+            name: string;
+            description: string;
+            /**
+             * e.g. /services/hll-foundation
+             */
+            href: string;
+            /**
+             * Sets the colours, icon and default image.
+             */
+            variant: 'hll-application' | 'hll-people' | 'hll-trust' | 'hll-ai' | 'hll-foundation' | 'hll-ontology';
+            /**
+             * Optional: replaces the default image.
+             */
+            image?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Leave empty to keep the current text.
+     */
+    promise?: {
+      eyebrow?: string | null;
+      /**
+       * e.g. Intelligence you can audit.
+       */
+      line1?: string | null;
+      /**
+       * e.g. Every model we ship carries its evidence with it.
+       */
+      line2?: string | null;
+    };
+    /**
+     * The clients in the Our Promise graph. Industries and capabilities are fixed in the design. Empty: the current list.
+     */
+    impactGraph?: {
+      clients?:
+        | {
+            name: string;
+            industry:
+              'banking' | 'insurance' | 'payments' | 'pharma' | 'healthcare' | 'public' | 'consulting' | 'consumer';
+            services: (
+              | 'data-engineering'
+              | 'analytics'
+              | 'ai'
+              | 'ontology'
+              | 'trust'
+              | 'cloud'
+              | 'applications'
+              | 'experience-design'
+              | 'people'
+            )[];
+            /**
+             * Optional link, e.g. a case study.
+             */
+            href?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    clients?: {
+      eyebrow?: string | null;
+      title?: string | null;
+    };
+    /**
+     * Our Clients marquee (PNG, WebP or SVG). Empty: grey placeholders.
+     */
     clientLogos?:
       | {
           name?: string | null;
@@ -2159,20 +2244,119 @@ export interface MarketingContent {
           id?: string | null;
         }[]
       | null;
+    impact?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      /**
+       * Up to 6 cards, placed in the Figma grid in order. Empty: the current cards.
+       */
+      cards?:
+        | {
+            title: string;
+            tags?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            image?: (number | null) | Media;
+            /**
+             * Optional link, e.g. /engagement/bajaj
+             */
+            href?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Two counters, e.g. 60+ / Clients across the world.
+       */
+      stats?:
+        | {
+            value: string;
+            label: string;
+            id?: string | null;
+          }[]
+        | null;
+      ctaLabel?: string | null;
+      ctaHref?: string | null;
+    };
+    /**
+     * Also shown on the About page.
+     */
+    howWeWork?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      /**
+       * Exactly 3 steps. Empty: the current Shape / Build / Evolve.
+       */
+      steps?:
+        | {
+            title: string;
+            body: string;
+            image?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    whoWeAre?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      /**
+       * Up to 4 people. Empty: the current placeholders.
+       */
+      people?:
+        | {
+            name: string;
+            role: string;
+            photo?: (number | null) | Media;
+            id?: string | null;
+          }[]
+        | null;
+      ctaLabel?: string | null;
+      ctaHref?: string | null;
+    };
+    lab?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      background?: (number | null) | Media;
+      /**
+       * Shown in the demo window.
+       */
+      demoImage?: (number | null) | Media;
+      /**
+       * Plays in the demo window (the image is its poster).
+       */
+      demoVideo?: (number | null) | Media;
+    };
   };
   about?: {
     accentColor?: string | null;
     hero?: {
       eyebrow?: string | null;
+      /**
+       * The page title, "About".
+       */
       headline?: string | null;
       description?: string | null;
       image?: (number | null) | Media;
       ctaLabel?: string | null;
       ctaHref?: string | null;
+      /**
+       * The 4 hero collage tiles, in order. Empty tiles stay grey.
+       */
+      images?:
+        | {
+            image: number | Media;
+            id?: string | null;
+          }[]
+        | null;
     };
     story?: {
       eyebrow?: string | null;
       title?: string | null;
+      /**
+       * The paragraphs beside the About title.
+       */
       paragraphs?:
         | {
             text: string;
@@ -2189,8 +2373,71 @@ export interface MarketingContent {
             id: string;
             title: string;
             description?: string | null;
+            /**
+             * Empty: the current image for this position.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Optional: plays over the image when in focus.
+             */
+            video?: (number | null) | Media;
           }[]
         | null;
+    };
+    /**
+     * Leave a field empty to keep the current text.
+     */
+    leader?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      quote?: string | null;
+      name?: string | null;
+      role?: string | null;
+      portrait?: (number | null) | Media;
+    };
+    reach?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      /**
+       * e.g. 20+ Countries. Empty: the current two.
+       */
+      stats?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+      /**
+       * Empty: the current world map.
+       */
+      map?: (number | null) | Media;
+      /**
+       * Map pins. x and y are positions on the map from 0 to 1 (0, 0 = top left). A pin with a title shows a card. Empty: the current pins.
+       */
+      pins?:
+        | {
+            x: number;
+            y: number;
+            title?: string | null;
+            location?: string | null;
+            href?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Also shown on the Team page. The points come from Careers page › Culture › Highlights.
+     */
+    careers?: {
+      eyebrow?: string | null;
+      title?: string | null;
+      image?: (number | null) | Media;
+      /**
+       * e.g. Why work at HLL?
+       */
+      label?: string | null;
+      ctaLabel?: string | null;
+      ctaHref?: string | null;
     };
     promise?: {
       eyebrow?: string | null;
@@ -2272,6 +2519,22 @@ export interface MarketingContent {
         | null;
     };
     /**
+     * Shown in Open Roles when no roles are open.
+     */
+    noRolesMessage?: string | null;
+    /**
+     * The "About HLL" section at the bottom of every job page.
+     */
+    aboutHll?: {
+      image?: (number | null) | Media;
+      paragraphs?:
+        | {
+            text: string;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
      * The Team Voice carousel's slides, in order. The arrows, swipe and timer move between them.
      */
     teamVoices?:
@@ -2313,11 +2576,75 @@ export interface MarketingContent {
         id?: string | null;
       }[]
     | null;
+  /**
+   * The "Let's start a conversation" band above the footer on every page.
+   */
   cta?: {
     headline?: string | null;
     buttonLabel?: string | null;
     buttonHref?: string | null;
+    /**
+     * Image behind the band.
+     */
+    still?: (number | null) | Media;
+    /**
+     * Plays in the band on hover.
+     */
+    video?: (number | null) | Media;
   };
+  /**
+   * The wheel on /services. Empty: the current seven capabilities.
+   */
+  allCapabilities?: {
+    /**
+     * Top to bottom.
+     */
+    items?:
+      | {
+          name: string;
+          /**
+           * e.g. /services/hll-ai. Empty: shown without a link.
+           */
+          href?: string | null;
+          description?: string | null;
+          /**
+           * Tile colours and icon.
+           */
+          tile:
+            'hll-application' | 'hll-people' | 'hll-trust' | 'hll-ai' | 'hll-foundation' | 'hll-ontology' | 'hll-cloud';
+          subServices?:
+            | {
+                label: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Which capability is in focus first (1 = top). Empty: the 4th.
+     */
+    startIndex?: number | null;
+  };
+  /**
+   * Groups in the Industries menu, the mobile menu and the footer (three per footer column). Empty: the current six groups.
+   */
+  industryMenu?:
+    | {
+        title: string;
+        items?:
+          | {
+              label: string;
+              /**
+               * Optional, e.g. /industries/healthcare. Empty: shown without a link.
+               */
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2373,12 +2700,123 @@ export interface MarketingContentSelect<T extends boolean = true> {
         heroVideo?: T;
         heroCtaLabel?: T;
         heroCtaHref?: T;
+        whatWeDo?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              items?:
+                | T
+                | {
+                    label?: T;
+                    name?: T;
+                    description?: T;
+                    href?: T;
+                    variant?: T;
+                    image?: T;
+                    id?: T;
+                  };
+            };
+        promise?:
+          | T
+          | {
+              eyebrow?: T;
+              line1?: T;
+              line2?: T;
+            };
+        impactGraph?:
+          | T
+          | {
+              clients?:
+                | T
+                | {
+                    name?: T;
+                    industry?: T;
+                    services?: T;
+                    href?: T;
+                    id?: T;
+                  };
+            };
+        clients?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+            };
         clientLogos?:
           | T
           | {
               name?: T;
               logo?: T;
               id?: T;
+            };
+        impact?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              cards?:
+                | T
+                | {
+                    title?: T;
+                    tags?:
+                      | T
+                      | {
+                          label?: T;
+                          id?: T;
+                        };
+                    image?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              ctaHref?: T;
+            };
+        howWeWork?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    body?: T;
+                    image?: T;
+                    id?: T;
+                  };
+            };
+        whoWeAre?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              people?:
+                | T
+                | {
+                    name?: T;
+                    role?: T;
+                    photo?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              ctaHref?: T;
+            };
+        lab?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              background?: T;
+              demoImage?: T;
+              demoVideo?: T;
             };
       };
   about?:
@@ -2394,6 +2832,12 @@ export interface MarketingContentSelect<T extends boolean = true> {
               image?: T;
               ctaLabel?: T;
               ctaHref?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    id?: T;
+                  };
             };
         story?:
           | T
@@ -2419,7 +2863,52 @@ export interface MarketingContentSelect<T extends boolean = true> {
                     id?: T;
                     title?: T;
                     description?: T;
+                    image?: T;
+                    video?: T;
                   };
+            };
+        leader?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              quote?: T;
+              name?: T;
+              role?: T;
+              portrait?: T;
+            };
+        reach?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              stats?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              map?: T;
+              pins?:
+                | T
+                | {
+                    x?: T;
+                    y?: T;
+                    title?: T;
+                    location?: T;
+                    href?: T;
+                    id?: T;
+                  };
+            };
+        careers?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              image?: T;
+              label?: T;
+              ctaLabel?: T;
+              ctaHref?: T;
             };
         promise?:
           | T
@@ -2509,6 +2998,18 @@ export interface MarketingContentSelect<T extends boolean = true> {
                     body?: T;
                   };
             };
+        noRolesMessage?: T;
+        aboutHll?:
+          | T
+          | {
+              image?: T;
+              paragraphs?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+            };
         teamVoices?:
           | T
           | {
@@ -2562,6 +3063,41 @@ export interface MarketingContentSelect<T extends boolean = true> {
         headline?: T;
         buttonLabel?: T;
         buttonHref?: T;
+        still?: T;
+        video?: T;
+      };
+  allCapabilities?:
+    | T
+    | {
+        items?:
+          | T
+          | {
+              name?: T;
+              href?: T;
+              description?: T;
+              tile?: T;
+              subServices?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        startIndex?: T;
+      };
+  industryMenu?:
+    | T
+    | {
+        title?: T;
+        items?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

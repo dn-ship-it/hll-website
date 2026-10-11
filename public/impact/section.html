@@ -378,23 +378,39 @@
   var narrow = window.matchMedia("(max-width: 820px)");
   var portrait = window.matchMedia("(max-width: 820px) and (orientation: portrait)");
 
-  /* ---- Work out the graph from the client rows, once ---- */
+  /* Client rows edited in the CMS (Marketing content > Home page > Impact graph) replace the
+     list above; when there are none, or the request fails, the list above is used. */
   var IND = {}, SVC_IND = {};
-  CONFIG.industries.forEach(function (ind) { IND[ind.key] = { clients: [], services: [] }; });
-  Object.keys(CONFIG.services).forEach(function (k) { SVC_IND[k] = []; });
-  CONFIG.clients.forEach(function (c) {
-    var d = IND[c.industry];
-    if (!d) return;
-    c.order = d.clients.length;
-    d.clients.push(c);
-    c.services.forEach(function (s) {
-      if (!CONFIG.services[s]) return;
-      if (d.services.indexOf(s) < 0) d.services.push(s);
-      if (SVC_IND[s].indexOf(c.industry) < 0) SVC_IND[s].push(c.industry);
+  var booted = false;
+  function start(rows) {
+    if (booted) return;
+    booted = true;
+    if (Array.isArray(rows) && rows.length) CONFIG.clients = rows;
+    /* ---- Work out the graph from the client rows, once ---- */
+    CONFIG.industries.forEach(function (ind) { IND[ind.key] = { clients: [], services: [] }; });
+    Object.keys(CONFIG.services).forEach(function (k) { SVC_IND[k] = []; });
+    CONFIG.clients.forEach(function (c) {
+      var d = IND[c.industry];
+      if (!d) return;
+      c.order = d.clients.length;
+      d.clients.push(c);
+      c.services.forEach(function (s) {
+        if (!CONFIG.services[s]) return;
+        if (d.services.indexOf(s) < 0) d.services.push(s);
+        if (SVC_IND[s].indexOf(c.industry) < 0) SVC_IND[s].push(c.industry);
+      });
     });
-  });
 
-  Array.prototype.forEach.call(document.querySelectorAll(".hll-www"), mount);
+    Array.prototype.forEach.call(document.querySelectorAll(".hll-www"), mount);
+  }
+  if (window.fetch) {
+    fetch("/impact-clients", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(start, function () { start(null); });
+    setTimeout(function () { start(null); }, 4000);
+  } else {
+    start(null);
+  }
 
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function grad(s) { return "linear-gradient(135deg, " + s.a + ", " + s.b + ")"; }

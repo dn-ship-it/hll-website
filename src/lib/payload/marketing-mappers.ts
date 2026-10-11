@@ -11,6 +11,8 @@ import { aboutPage } from "@/data/about";
 import type { CareersPageContent } from "@/data/careers-page";
 import { careersPageContent } from "@/data/careers-page";
 import type { ContactPageContent } from "@/data/contact-page";
+import { homePageContent, type HomePageContent } from "@/data/home";
+import { DEFAULT_INDUSTRY_MENU, type IndustryMenuGroup } from "@/data/industry-menu";
 import { contactPageContent } from "@/data/contact-page";
 import type {
   EngagementCardType,
@@ -153,7 +155,7 @@ export function mapIndustryPage(
       title: pc.hero.title ?? fallback.hero.title,
       headline: pc.hero.headline ?? fallback.hero.headline,
       overlayLabel: pc.hero.overlayLabel ?? fallback.hero.overlayLabel,
-      image: fallback.hero.image,
+      image: resolveMediaUrl(pc.hero.image as CmsImageRef) ?? fallback.hero.image,
       filters:
         pc.hero.filters?.map((f) => ({ id: f.id, label: f.label })) ??
         fallback.hero.filters,
@@ -172,8 +174,8 @@ export function mapIndustryPage(
           description: item.description ?? "",
           cards:
             item.cards?.map((card) => {
-              // The CMS has no media fields for these cards yet, so keep the
-              // static fallback's image / logo for the same card.
+              // A card without a CMS image keeps the static fallback's image /
+              // logo for the same card.
               const media = fallback.capabilities.items
                 .flatMap((i) => i.cards)
                 .find((c) => c.id === card.id);
@@ -185,7 +187,7 @@ export function mapIndustryPage(
                 description: card.description ?? "",
                 variant: (card.variant ?? "image") as
                   "navy" | "orange" | "image",
-                image: media?.image,
+                image: resolveMediaUrl(card.image as CmsImageRef) ?? media?.image,
                 logo: media?.logo,
               };
             }) ?? [],
@@ -214,7 +216,9 @@ export function mapIndustryPage(
           id: String(i + 1),
           name: p.name,
           bio: p.bio ?? "",
-          photo: fallback.experts.people[i]?.photo,
+          photo:
+            resolveMediaUrl(p.photo as CmsImageRef) ??
+            fallback.experts.people[i]?.photo,
         })) ?? fallback.experts.people,
     },
     lab: {
@@ -248,28 +252,195 @@ export function mapAboutPage(
   fallback: AboutPageData = aboutPage,
 ): AboutPageData {
   const cms = marketing?.about;
-  if (!cms?.hero?.headline) return fallback;
+  if (!cms) return fallback;
 
   const paragraphs = cms.story?.paragraphs?.map((p) => p.text).filter(Boolean);
+  const collage = cms.hero?.images?.map((tile) => resolveMediaUrl(tile.image as CmsImageRef)) ?? [];
+  const values = cms.values?.items ?? [];
+  const stats = cms.reach?.stats?.map((stat) => stat.text).filter(Boolean) ?? [];
+  const pins = cms.reach?.pins ?? [];
+
   return {
-    ...fallback,
     hero: {
-      ...fallback.hero,
-      title: cms.hero.headline ?? fallback.hero.title,
+      title: text(cms.hero?.headline, fallback.hero.title),
       paragraphs: paragraphs?.length ? paragraphs : fallback.hero.paragraphs,
+      // Four collage tiles; a missing one stays the Figma grey placeholder.
+      images: collage.some(Boolean)
+        ? fallback.hero.images.map((_, i) => collage[i] ?? null)
+        : fallback.hero.images,
     },
     values: {
-      ...fallback.values,
-      // Copy is editable in the CMS; the storyboard media stays with the
-      // static entry in the same position until the CMS has media fields.
-      items:
-        cms.values?.items?.map((item, i) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description ?? "",
-          image: fallback.values.items[i % fallback.values.items.length].image,
-        })) ?? fallback.values.items,
+      ...heading(cms.values, fallback.values),
+      // A value without its own image keeps the storyboard still in the
+      // same position.
+      items: values.length
+        ? values.map((item, i) => ({
+            id: item.id,
+            title: item.title,
+            description: item.description ?? "",
+            image:
+              resolveMediaUrl(item.image as CmsImageRef) ??
+              fallback.values.items[i % fallback.values.items.length].image,
+            video: resolveMediaUrl(item.video as CmsImageRef) ?? undefined,
+          }))
+        : fallback.values.items,
     },
+    leader: {
+      ...heading(cms.leader, fallback.leader),
+      quote: text(cms.leader?.quote, fallback.leader.quote),
+      name: text(cms.leader?.name, fallback.leader.name),
+      role: text(cms.leader?.role, fallback.leader.role),
+      portrait: resolveMediaUrl(cms.leader?.portrait as CmsImageRef) ?? fallback.leader.portrait,
+    },
+    reach: {
+      ...heading(cms.reach, fallback.reach),
+      stats: stats.length ? stats : fallback.reach.stats,
+      map: resolveMediaUrl(cms.reach?.map as CmsImageRef) ?? fallback.reach.map,
+      pins: pins.length
+        ? pins.map((pin, i) => ({
+            id: pin.id ?? String(i),
+            x: pin.x,
+            y: pin.y,
+            title: pin.title || undefined,
+            location: pin.location || undefined,
+            href: pin.href || undefined,
+          }))
+        : fallback.reach.pins,
+    },
+    careers: {
+      ...heading(cms.careers, fallback.careers),
+      image: resolveMediaUrl(cms.careers?.image as CmsImageRef) ?? fallback.careers.image,
+      label: text(cms.careers?.label, fallback.careers.label),
+      points: mapCareersPageContent(marketing).culture.highlights,
+      ctaLabel: text(cms.careers?.ctaLabel, fallback.careers.ctaLabel),
+      ctaHref: text(cms.careers?.ctaHref, fallback.careers.ctaHref),
+    },
+  };
+}
+
+type HomeCms = NonNullable<MarketingContent["home"]>;
+
+/** Empty CMS text keeps the fallback's. */
+const text = (value: string | null | undefined, fallback: string) =>
+  value?.trim() ? value : fallback;
+
+function heading(
+  cms: { eyebrow?: string | null; title?: string | null } | null | undefined,
+  fallback: { eyebrow: string; title: string },
+) {
+  return { eyebrow: text(cms?.eyebrow, fallback.eyebrow), title: text(cms?.title, fallback.title) };
+}
+
+/** Home sections below the hero: each list replaces the fallback's only once
+ *  it has entries, so an empty section keeps the current content. */
+export function mapHomePage(
+  marketing: MarketingContent | null,
+  fallback: HomePageContent = homePageContent,
+): HomePageContent {
+  const cms: HomeCms | undefined = marketing?.home ?? undefined;
+  if (!cms) return fallback;
+
+  const services = cms.whatWeDo?.items ?? [];
+  const logos = cms.clientLogos ?? [];
+  const cards = cms.impact?.cards ?? [];
+  const stats = cms.impact?.stats ?? [];
+  const steps = cms.howWeWork?.steps ?? [];
+  const people = cms.whoWeAre?.people ?? [];
+
+  return {
+    whatWeDo: {
+      ...heading(cms.whatWeDo, fallback.whatWeDo),
+      items: services.length
+        ? services.map((item) => ({
+            label: item.label,
+            name: item.name,
+            description: item.description,
+            href: item.href,
+            variant: item.variant,
+            image: resolveMediaUrl(item.image as CmsImageRef),
+          }))
+        : fallback.whatWeDo.items,
+    },
+    clients: {
+      ...heading(cms.clients, fallback.clients),
+      logos: logos.length
+        ? logos.map((item) => ({
+            name: item.name ?? "",
+            logo: resolveMediaUrl(item.logo as CmsImageRef),
+          }))
+        : fallback.clients.logos,
+    },
+    impact: {
+      ...heading(cms.impact, fallback.impact),
+      cards: cards.length
+        ? cards.map((card) => ({
+            title: card.title,
+            tags: card.tags?.map((tag) => tag.label) ?? [],
+            image: resolveMediaUrl(card.image as CmsImageRef),
+            href: card.href || null,
+          }))
+        : fallback.impact.cards,
+      stats: stats.length
+        ? stats.map((stat) => ({ value: stat.value, label: stat.label }))
+        : fallback.impact.stats,
+      ctaLabel: text(cms.impact?.ctaLabel, fallback.impact.ctaLabel),
+      ctaHref: text(cms.impact?.ctaHref, fallback.impact.ctaHref),
+    },
+    howWeWork: {
+      ...heading(cms.howWeWork, fallback.howWeWork),
+      steps: steps.length
+        ? steps.map((step, i) => ({
+            id: step.id ?? String(i),
+            title: step.title,
+            body: step.body,
+            image:
+              resolveMediaUrl(step.image as CmsImageRef) ??
+              fallback.howWeWork.steps[i % fallback.howWeWork.steps.length].image,
+          }))
+        : fallback.howWeWork.steps,
+    },
+    whoWeAre: {
+      ...heading(cms.whoWeAre, fallback.whoWeAre),
+      people: people.length
+        ? people.map((person, i) => ({
+            id: person.id ?? String(i),
+            name: person.name,
+            role: person.role,
+            photo: resolveMediaUrl(person.photo as CmsImageRef),
+          }))
+        : fallback.whoWeAre.people,
+      ctaLabel: text(cms.whoWeAre?.ctaLabel, fallback.whoWeAre.ctaLabel),
+      ctaHref: text(cms.whoWeAre?.ctaHref, fallback.whoWeAre.ctaHref),
+    },
+    lab: {
+      ...heading(cms.lab, fallback.lab),
+      background: resolveMediaUrl(cms.lab?.background as CmsImageRef) ?? fallback.lab.background,
+      demoImage: resolveMediaUrl(cms.lab?.demoImage as CmsImageRef) ?? fallback.lab.demoImage,
+      demoVideo: resolveMediaUrl(cms.lab?.demoVideo as CmsImageRef) ?? fallback.lab.demoVideo,
+    },
+  };
+}
+
+/** Industries menu groups (nav, mobile menu, footer); empty keeps the default. */
+export function mapIndustryMenu(marketing: MarketingContent | null): IndustryMenuGroup[] {
+  const groups = marketing?.industryMenu ?? [];
+  if (!groups.length) return DEFAULT_INDUSTRY_MENU;
+  return groups.map((group) => ({
+    title: group.title,
+    items: (group.items ?? []).map((item) => ({ label: item.label, href: item.href || null })),
+  }));
+}
+
+/** The footer's "Let's start a conversation" band; empty fields keep the defaults. */
+export function mapFooterCta(marketing: MarketingContent | null) {
+  const cta = marketing?.cta;
+  return {
+    // Typeset apostrophes, as in the default "Let’s start a conversation".
+    headline: cta?.headline?.trim().replace(/'/g, "\u2019") || undefined,
+    label: cta?.buttonLabel?.trim() || undefined,
+    href: cta?.buttonHref?.trim() || undefined,
+    still: resolveMediaUrl(cta?.still as CmsImageRef) ?? undefined,
+    video: resolveMediaUrl(cta?.video as CmsImageRef) ?? undefined,
   };
 }
 
@@ -287,11 +458,12 @@ export function mapContactPage(
 
   return {
     ...fallback,
+    title: text(cms.hero?.headline, fallback.title),
     image:
       resolveMediaUrl(cms.details?.officeImage as CmsImageRef) ??
       fallback.image,
     offices: {
-      ...fallback.offices,
+      ...heading(cms.locations, fallback.offices),
       items: offices.length
         ? offices.map((item) => ({
             id: item.id,
@@ -305,6 +477,7 @@ export function mapContactPage(
     },
     getInTouch: {
       ...fallback.getInTouch,
+      eyebrow: text(cms.details?.eyebrow, fallback.getInTouch.eyebrow),
       email,
       scheduleHref:
         cms.details?.scheduleUrl ??
@@ -324,18 +497,29 @@ export function mapCareersPageContent(
       name: v.name ?? undefined,
       role: v.role ?? "",
     })) ?? fallback.teamVoices;
-  if (!cms?.hero?.headline) return { ...fallback, teamVoices };
+  const aboutParagraphs = cms?.aboutHll?.paragraphs?.map((p) => p.text).filter(Boolean) ?? [];
+  const shared = {
+    teamVoices,
+    notices: {
+      ...fallback.notices,
+      emptyMessage: text(cms?.noRolesMessage, fallback.notices.emptyMessage),
+    },
+    aboutHll: {
+      paragraphs: aboutParagraphs.length ? aboutParagraphs : fallback.aboutHll.paragraphs,
+      image: resolveMediaUrl(cms?.aboutHll?.image as CmsImageRef) ?? fallback.aboutHll.image,
+    },
+  };
+  if (!cms?.hero?.headline) return { ...fallback, ...shared };
 
   return {
     ...fallback,
-    teamVoices,
+    ...shared,
     accentColor: cms.accentColor ?? fallback.accentColor,
     hero: {
       eyebrow: cms.hero.eyebrow ?? fallback.hero.eyebrow,
       headline: cms.hero.headline ?? fallback.hero.headline,
       description: cms.hero.description ?? fallback.hero.description,
     },
-    notices: fallback.notices,
     culture: {
       eyebrow: cms.culture?.eyebrow ?? fallback.culture.eyebrow,
       title: cms.culture?.title ?? fallback.culture.title,

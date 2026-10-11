@@ -7,15 +7,14 @@ import { usePathname } from "next/navigation";
 
 import { VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import { SERVICE_LABELS } from "@/data/engagements";
+import type { IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
 import { NavMark } from "./nav-mark";
 import {
-  MENU_INDUSTRIES,
   MENU_SERVICES,
   NewsPanel,
   VARIANT_BY_HREF,
-  industryHref,
   type NewsData,
 } from "./nav-menu";
 
@@ -61,7 +60,7 @@ function ServicesList() {
   );
 }
 
-function IndustriesList() {
+function IndustriesList({ industries }: { industries: IndustryMenuGroup[] }) {
   const listRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
@@ -94,14 +93,13 @@ function IndustriesList() {
         className="overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ height: TRACK - 2 }}
       >
-        {MENU_INDUSTRIES.map((group, i) => (
+        {industries.map((group, i) => (
           <div key={group.title} className={i > 0 ? "mt-[29px]" : undefined}>
             <p className="text-[14px] leading-[17px] text-[var(--hll-mid-grey)]">
               {group.title}
             </p>
             <ul className="mt-2">
-              {group.items.map((label) => {
-                const href = industryHref(label);
+              {group.items.map(({ label, href }) => {
                 return (
                   <li
                     key={label}
@@ -135,7 +133,7 @@ function EngagementNews({ news }: { news: NewsData }) {
 
 /** Which nav buttons open a list in the menu instead of going to a page. */
 const SUBMENUS: Partial<
-  Record<NavVariant, (props: { news: NewsData }) => React.ReactNode>
+  Record<NavVariant, (props: { news: NewsData; industries: IndustryMenuGroup[] }) => React.ReactNode>
 > = {
   services: ServicesList,
   industries: IndustriesList,
@@ -169,11 +167,13 @@ export function MobileMenu({
   siteName,
   nav,
   news,
+  industries,
   markTint,
 }: {
   siteName: string;
   nav: SiteNavItem[];
   news: NewsData;
+  industries: IndustryMenuGroup[];
   markTint?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -310,7 +310,7 @@ export function MobileMenu({
                       >
                         <div className="overflow-hidden" inert={!isOpen}>
                           <div className={SUBMENU_SPACING[variant]}>
-                            <Submenu news={news} />
+                            <Submenu news={news} industries={industries} />
                             {VIEW_ALL[variant] ? (
                               <Link
                                 href={item.href}

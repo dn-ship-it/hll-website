@@ -14,9 +14,11 @@ from an ephemeral `/tmp`, so the SQLite path cannot function there. Staging
 needs a real Postgres instance — Vercel Postgres, Neon, Supabase or RDS all
 work.
 
-**Local disk media will not persist.** Without `S3_BUCKET`, Payload writes
-uploads next to the app. On Vercel those vanish on the next deploy or cold
-start. Point it at S3 or an S3-compatible bucket.
+**Local disk media will not persist.** Without a Vercel Blob store
+(`BLOB_READ_WRITE_TOKEN`) or `S3_BUCKET`, Payload writes uploads next to the
+app. On Vercel those vanish on the next deploy or cold start. Connect a
+**Public** Blob store to the project (a Private one won't work with Payload), or
+point it at S3 or an S3-compatible bucket.
 
 Neither failure is loud on its own, which is the trap worth knowing about: every
 marketing page wraps its CMS query in `try`/`catch` and falls back to the static
@@ -49,7 +51,8 @@ Set these on the Vercel project, scoped to the environment you are deploying
 | `DATABASE_URI` | Yes | Must start with `postgres://`. Include `?sslmode=require` for most managed providers. |
 | `PAYLOAD_SECRET` | Yes | Long random string. Generate with `openssl rand -hex 32`. Do not reuse the production value. |
 | `NEXT_PUBLIC_SERVER_URL` | Recommended | The deployment's own URL, used for admin preview links. |
-| `S3_BUCKET` | For uploads | Omit only if nothing will be uploaded through the admin. |
+| `BLOB_READ_WRITE_TOKEN` | For uploads | Set by Vercel when a **Public** Blob store is connected to the project (Storage tab). Used unless `S3_BUCKET` is set. |
+| `S3_BUCKET` | For uploads (alternative) | S3 / R2 instead of Vercel Blob. Omit only if nothing will be uploaded through the admin. |
 | `S3_REGION` | With S3 | Defaults to `ap-south-1`. |
 | `S3_ACCESS_KEY_ID` | With S3 | |
 | `S3_SECRET_ACCESS_KEY` | With S3 | |

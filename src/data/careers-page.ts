@@ -41,7 +41,7 @@ export type CareersPageContent = {
   teamVoices?: { quote: string; name?: string; role: string }[];
   approach: { title: string; items: readonly { id: string; title: string; body: string }[] };
   process: { title: string; rows: readonly CareerSection[] };
-  aboutHll: { paragraphs: readonly string[] };
+  aboutHll: { paragraphs: readonly string[]; image: string };
 };
 
 // PLACEHOLDER copy from the Figma Careers / JD frames, until real copy lands.
@@ -118,7 +118,10 @@ export const careersPageContent: CareersPageContent = {
       { title: "Expectations", paragraphs: [`${LOREM_1} ${LOREM_2}`, LOREM_1] },
     ],
   },
-  aboutHll: { paragraphs: [`${LOREM_1} ${LOREM_1}`, `${LOREM_1} ${LOREM_1}`] },
+  aboutHll: {
+    paragraphs: [`${LOREM_1} ${LOREM_1}`, `${LOREM_1} ${LOREM_1}`],
+    image: "/assets/about/careers.webp",
+  },
 };
 
 export const defaultCareerNotices: CareerNotice[] = [

@@ -5,6 +5,7 @@ import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -31,6 +32,9 @@ const dirname = path.dirname(filename);
 const usePostgres = Boolean(process.env.DATABASE_URI?.startsWith("postgres"));
 
 const s3Enabled = Boolean(process.env.S3_BUCKET);
+// Vercel Blob (a Public store connected to the project sets this token). S3
+// wins when both are configured.
+const blobEnabled = !s3Enabled && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
 // A misconfigured deploy is hard to spot here, because it does not look broken:
 // every marketing page wraps its CMS query in try/catch and falls back to
@@ -46,10 +50,11 @@ if (process.env.NODE_ENV === "production") {
         "Vercel — the CMS and /admin will not work. Set a Postgres DATABASE_URI.",
     );
   }
-  if (!s3Enabled) {
+  if (!s3Enabled && !blobEnabled) {
     console.warn(
-      "[payload] S3_BUCKET is not set, so uploads go to local disk, which does not persist on " +
-        "serverless hosts. Media added through the admin will disappear. Configure S3 storage.",
+      "[payload] Neither S3_BUCKET nor BLOB_READ_WRITE_TOKEN is set, so uploads go to local disk, " +
+        "which does not persist on serverless hosts. Media added through the admin will disappear. " +
+        "Connect a Public Vercel Blob store or configure S3 storage.",
     );
   }
 }
@@ -121,6 +126,19 @@ export default buildConfig({
                 ? { endpoint: process.env.S3_ENDPOINT, forcePathStyle: true }
                 : {}),
             },
+          }),
+        ]
+      : []),
+    ...(blobEnabled
+      ? [
+          vercelBlobStorage({
+            collections: {
+              media: true,
+            },
+            // The browser uploads straight to Blob: Vercel caps a function's
+            // request body at 4.5 MB, which videos easily exceed.
+            clientUploads: true,
+            token: process.env.BLOB_READ_WRITE_TOKEN,
           }),
         ]
       : []),

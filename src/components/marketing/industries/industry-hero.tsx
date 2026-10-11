@@ -9,8 +9,8 @@ import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import { useScaleToViewport } from "@/components/marketing/use-scale-to-viewport";
 import type { IndustryPageData } from "@/types/industry";
 
-// Figma footer's industry groups; the switcher lists the same set.
-const INDUSTRY_LINKS = [
+/** The industry pages, listed by the switcher until the CMS Industries menu is set. */
+export const INDUSTRY_LINKS = [
   { label: "Healthcare", href: "/industries/healthcare" },
   { label: "Payments", href: "/industries/payments" },
   { label: "Insurance", href: "/industries/insurance" },
@@ -21,10 +21,12 @@ export function IndustryHero({
   data,
   category,
   accentColor,
+  switcherLinks = INDUSTRY_LINKS,
 }: {
   data: IndustryPageData["hero"];
   category: string;
   accentColor: string;
+  switcherLinks?: { label: string; href: string }[];
 }) {
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
@@ -121,6 +123,7 @@ export function IndustryHero({
           <div data-industry-switcher className="absolute left-1/2 top-[44.8%] hidden -translate-x-1/2 lg:block">
             <Switcher
               label={data.overlayLabel}
+              links={switcherLinks}
               open={switcherOpen}
               onToggle={() => setSwitcherOpen((open) => !open)}
             />
@@ -132,6 +135,7 @@ export function IndustryHero({
           <div data-industry-switcher className="relative">
             <Switcher
               label={data.overlayLabel}
+              links={switcherLinks}
               open={switcherOpen}
               onToggle={() => setSwitcherOpen((open) => !open)}
             />
@@ -144,10 +148,12 @@ export function IndustryHero({
 
 function Switcher({
   label,
+  links,
   open,
   onToggle,
 }: {
   label: string;
+  links: { label: string; href: string }[];
   open: boolean;
   onToggle: () => void;
 }) {
@@ -164,7 +170,7 @@ function Switcher({
       </button>
       {open ? (
         <ul className="absolute left-0 right-0 top-10 z-20 overflow-hidden rounded-[4px] bg-[var(--hll-bg)] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] lg:top-11">
-          {INDUSTRY_LINKS.map((link) => (
+          {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}

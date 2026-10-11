@@ -4,7 +4,8 @@ import {
   getSiteSettings,
 } from "@/lib/payload/queries";
 import { resolveMediaUrl } from "@/lib/payload/media";
-import { mapSiteNav } from "@/lib/payload/marketing-mappers";
+import { DEFAULT_INDUSTRY_MENU } from "@/data/industry-menu";
+import { mapFooterCta, mapIndustryMenu, mapSiteNav } from "@/lib/payload/marketing-mappers";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { AiBubble } from "@/components/marketing/ai-bubble";
 import { LineReveal } from "@/components/marketing/line-reveal";
@@ -31,6 +32,8 @@ export async function MarketingShell({
   let socialLinks = undefined;
   let services = undefined;
   let news: NewsData = DEFAULT_NEWS;
+  let industries = DEFAULT_INDUSTRY_MENU;
+  let cta: ReturnType<typeof mapFooterCta> | undefined;
 
   try {
     const [settings, marketing] = await Promise.all([
@@ -50,6 +53,9 @@ export async function MarketingShell({
       };
     }
 
+    industries = mapIndustryMenu(marketing);
+    cta = mapFooterCta(marketing);
+
     if (marketing?.footerServices?.length) {
       services = marketing.footerServices.map((item) => item.label);
     }
@@ -64,6 +70,7 @@ export async function MarketingShell({
         nav={nav}
         markTint={markTint}
         news={news}
+        industries={industries}
       />
       <main className="overflow-x-clip" data-intro="pending">
         {children}
@@ -81,7 +88,12 @@ export async function MarketingShell({
           siteName={siteName}
           socialLinks={socialLinks}
           services={services}
-          ctaVideo={ctaVideo}
+          industries={industries}
+          ctaHeadline={cta?.headline}
+          ctaLabel={cta?.label}
+          ctaHref={cta?.href}
+          ctaStill={cta?.still}
+          ctaVideo={ctaVideo ?? cta?.video}
         />
       ) : null}
     </div>
