@@ -336,9 +336,22 @@ body {
   border-radius: var(--hll-button-radius, 4px);
 }
 
+/* Footer Email / LinkedIn (QA G-05): translucent over the shader strip, as
+   in the design, rather than the flat Light Grey. */
+.hll-button.hll-button--glass {
+  background: rgb(230 230 230 / 0.55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
 .hll-button canvas {
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+
+/* A floating CTA that should answer the pointer at once (QA H-28). */
+.hll-button--quick canvas {
+  transition-duration: 0.12s;
 }
 
 /* Hover only where there is a real pointer: a phone keeps :hover after a tap,
@@ -661,9 +674,28 @@ body {
 /* The Impact graph covers the whole screen below the sticky Nav Bar, so none
    of it sits under the bar and no page shows around it. */
 .our-promise-image-stage--impact {
+  /* Fades in at full size (QA H-22). */
+  transform: translate(-50%, -50%);
   width: calc(100*var(--vw));
   top: calc(50% + var(--nav-h) / 2);
   height: calc(100% - var(--nav-h));
+}
+
+/* The /#industries target: the scroll depth at which the Impact graph has
+   fully faded in (the sketch's trigger, 70% of a screen on phones). */
+.our-promise-anchor {
+  position: absolute;
+  left: 0;
+  top: var(--promise-anchor);
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+@media (width < 64rem) {
+  .our-promise-anchor {
+    top: calc(70 * var(--vh));
+  }
 }
 
 .our-promise-impact-frame {

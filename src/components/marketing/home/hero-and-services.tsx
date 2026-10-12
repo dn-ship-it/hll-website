@@ -141,7 +141,9 @@ export function WhatWeDo({ data }: { data: HomePageContent["whatWeDo"] }) {
   );
 }
 
-/** The capability's demo still: the CMS image, else the bundled one. */
+/** The capability's demo still: the CMS image, else the bundled one. The
+ *  glyph on it is shown in black and white (QA H-26): the card carries the
+ *  colour. */
 const demoImage = (service: HomeService) =>
   service.image ?? `/assets/services/${service.variant}-demo.webp`;
 
@@ -243,7 +245,7 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
                   src={`/assets/services/${service.variant}-glyph.svg`}
                   alt=""
                   aria-hidden
-                  className="size-[34px]"
+                  className="size-[34px] grayscale"
                 />
               </span>
             </a>
@@ -399,7 +401,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
                   src={`/assets/services/${selected.variant}-glyph.svg`}
                   alt=""
                   aria-hidden
-                  className="size-12"
+                  className="size-12 grayscale"
                 />
               </span>
             </div>
@@ -414,7 +416,9 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
 }
 
 /** Figma: "marquee runner displaying the clients logos (PNG or webp images)".
- *  Until logos are added in the CMS it runs eight grey slots. */
+ *  Each logo image carries its client's brand colour as its background and
+ *  fills its tile (QA H-27). Until logos are added in the CMS it runs eight
+ *  grey slots. */
 export function OurClients({ data }: { data: HomePageContent["clients"] }) {
   const logos = data.logos.filter((item) => item.logo);
   const slots: (HomePageContent["clients"]["logos"][number] | null)[] = logos.length
@@ -426,7 +430,8 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
       <div className={HOME_GUTTER}>
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
-      <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_40s_linear_infinite] hover:[animation-play-state:paused]">
+      {/* QA H-27: keeps running under the pointer. */}
+      <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_40s_linear_infinite]">
         {[...slots, ...slots].map((item, n) => (
           <div
             key={n}
@@ -439,7 +444,7 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
                 src={item.logo}
                 alt={n < slots.length ? item.name : ""}
                 draggable={false}
-                className="max-h-[60%] max-w-[70%] object-contain"
+                className="size-full object-cover"
               />
             ) : null}
           </div>

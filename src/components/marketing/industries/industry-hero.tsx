@@ -53,7 +53,8 @@ export function IndustryHero({
 
       <section
         // z-10: the switcher's menu opens over the section below it.
-        className={`relative z-10 pt-[154px] lg:pt-[clamp(8rem,calc(19.25*var(--vw)),18.1875rem)] ${SERVICE_GUTTER}`}
+        // QA I-11: less space above the title (240px at 1512).
+        className={`relative z-10 pt-[154px] lg:pt-[clamp(7.5rem,calc(15.87*var(--vw)),15rem)] ${SERVICE_GUTTER}`}
       >
         {/* Figma: the industry name in its own colour at Regular weight
             ("colour of Industry name will be a colour set to the industry"),
@@ -113,7 +114,9 @@ export function IndustryHero({
 
         <div
           ref={windowRef}
-          className="relative z-10 mt-8 aspect-[362/244] w-full origin-center overflow-hidden rounded-[6px] will-change-transform lg:aspect-[1452/982] lg:rounded-lg"
+          // QA I-10: never taller than the screen under the Nav Bar, so the
+          // hero takes one scroll; the image crops to fit.
+          className="relative z-10 mt-8 aspect-[362/244] w-full origin-center overflow-hidden rounded-[6px] will-change-transform lg:aspect-[1452/982] lg:max-h-[calc(100*var(--svh)-var(--nav-h)-2rem)] lg:rounded-lg"
           style={{
             background: `#D9D9D9 ${data.image ? `url(${data.image}) center / cover` : ""}`,
           }}

@@ -223,10 +223,16 @@ function AboutPanel() {
  * covers the screen upon interacting with or clicking on any options in the
  * navbar". Hovering a button lights it with its palette; clicking opens its
  * menu over the shader in that palette. Clicking the open button again goes
- * to its page, except Industries, which has no page (see MENU_ONLY).
+ * to its page; Industries goes to the Home page's knowledge graph (NAV_TARGET).
  */
-/** Nav buttons with no landing page of their own: they only open their menu. */
-const MENU_ONLY = new Set(["/industries"]);
+/**
+ * Nav items whose button goes somewhere other than their own href. Industries
+ * has no landing page of its own: it takes you to the industries knowledge
+ * graph on the Home page (QA N-06), and hovering still opens its menu.
+ */
+export const NAV_TARGET: Record<string, string> = {
+  "/industries": "/#industries",
+};
 
 export function NavMenu({
   nav,
@@ -319,18 +325,8 @@ export function NavMenu({
           );
           // QA N-01: there's no general Industries page, so Industries only
           // opens its menu and the visitor picks an industry from it.
-          return MENU_ONLY.has(item.href) ? (
-            <button
-              key={item.href}
-              type="button"
-              aria-haspopup="true"
-              onClick={() => variant && show(variant)}
-              {...triggerProps}
-            >
-              {content}
-            </button>
-          ) : (
-            <Link key={item.href} href={item.href} {...triggerProps}>
+          return (
+            <Link key={item.href} href={NAV_TARGET[item.href] ?? item.href} {...triggerProps}>
               {content}
             </Link>
           );

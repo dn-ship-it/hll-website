@@ -149,13 +149,15 @@ function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
     smoothWashOpacity += (washProgress - smoothWashOpacity) * 0.5;
     if (refs.wash.current) refs.wash.current.style.opacity = String(smoothWashOpacity);
 
-    // Image scales up and fades in once the ground is white.
+    // Image scales up and fades in once the ground is white. The Impact
+    // graph (an iframe) only fades in (QA H-22): no growing from the back.
     const imageProgress = smoothStep(
       (scrollProgress - IMAGE_FADE_START) / (IMAGE_FADE_END - IMAGE_FADE_START),
     );
+    const scaleStart = refs.imageStage.current?.querySelector("iframe") ? 1 : IMAGE_SCALE_START;
     smoothImageOpacity += (imageProgress - smoothImageOpacity) * 0.5;
     smoothImageScale +=
-      (IMAGE_SCALE_START + (1 - IMAGE_SCALE_START) * imageProgress - smoothImageScale) * 0.5;
+      (scaleStart + (1 - scaleStart) * imageProgress - smoothImageScale) * 0.5;
     if (refs.imageStage.current) {
       refs.imageStage.current.style.opacity = String(smoothImageOpacity);
       refs.imageStage.current.style.transform = `translate(-50%, -50%) scale(${smoothImageScale})`;
@@ -365,6 +367,17 @@ export function OurPromise({
           </div>
         ) : null}
       </div>
+
+      {/* Where the Impact graph has fully faded in: "Industries" in the nav
+          links here (/#industries, QA N-06). */}
+      {impactGraph && isSection ? (
+        <span
+          id="industries"
+          aria-hidden
+          className="our-promise-anchor"
+          style={{ "--promise-anchor": `${scrollTriggerPx}px` } as CSSProperties}
+        />
+      ) : null}
 
       {!isSection ? (
         <div className="our-promise-scroll-spacer" style={{ height: `calc(${scrollSpacerVh} * var(--vh))` }} />

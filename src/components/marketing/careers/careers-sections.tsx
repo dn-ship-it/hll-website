@@ -348,6 +348,15 @@ export function SeeOpenRoles() {
     <div className="pointer-events-none sticky bottom-8 z-20 flex h-0 justify-center">
       <a
         href="#open-roles"
+        // QA CR-01: glides down to Open roles instead of jumping there.
+        onClick={(event) => {
+          const target = document.getElementById("open-roles");
+          if (!target) return;
+          event.preventDefault();
+          const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+          history.replaceState(null, "", "#open-roles");
+        }}
         aria-hidden={hidden || undefined}
         tabIndex={hidden ? -1 : undefined}
         style={{ opacity, visibility: hidden ? "hidden" : undefined }}

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 
 import { GradientRevealTextSlow } from "@/components/hll";
@@ -210,8 +211,18 @@ export function AllCapabilities({
   );
 
   // Bring a slot to the focus the short way round.
-  const goTo = (slot: number) =>
-    spin(target.current + signedWrap(slot - target.current, slots));
+  // QA C-09: a click on the capability already in focus (tile, name or
+  // tags) opens its page; on any other row it turns the wheel to it.
+  const router = useRouter();
+  const goTo = (slot: number) => {
+    const step = signedWrap(slot - target.current, slots);
+    const href = services[slot % count].href;
+    if (Math.abs(step) < 0.5 && href) {
+      router.push(href);
+      return;
+    }
+    spin(target.current + step);
+  };
 
   useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
@@ -438,7 +449,10 @@ export function AllCapabilities({
           <div
             key={focus.id}
             ref={pillsRef}
-            className="absolute flex flex-wrap items-center gap-[6px]"
+            onClick={(event) => {
+              if (focus.href && !(event.target as Element).closest("a")) router.push(focus.href);
+            }}
+            className={`absolute flex flex-wrap items-center gap-[6px] ${focus.href ? "cursor-pointer" : ""}`}
             style={{
               left: PHONE.gutter,
               right: PHONE.gutter,
@@ -557,7 +571,8 @@ export function AllCapabilities({
             <div className="pointer-events-none absolute inset-0 [&_a]:pointer-events-auto">
               <div
                 key={focus.id}
-                className="absolute flex items-center gap-2"
+                onClick={() => focus.href && router.push(focus.href)}
+                className={`absolute flex items-center gap-2 ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
                 style={{
                   left: pct(815, STAGE.w),
                   top: `calc((365 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,

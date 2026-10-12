@@ -305,7 +305,7 @@ export async function seedMarketingContent(payload: Payload) {
           headerNav: [
             { label: "Capabilities", href: "/services", variant: "services" },
             { label: "Industries", href: "/industries", variant: "industries" },
-            { label: "Engagement", href: "/engagement", variant: "engagement" },
+            { label: "Engagements", href: "/engagement", variant: "engagement" },
             { label: "About", href: "/about", variant: "about" },
             { label: "Contact", href: "/contact", variant: "contact" },
           ],

@@ -30,7 +30,9 @@ export function ServiceHero({
 
   return (
     <section
-      className={`relative overflow-hidden pb-0 pt-[154px] lg:pt-[clamp(8rem,calc(19.64*var(--vw)),18.5625rem)] ${SERVICE_GUTTER}`}
+      // QA C-10: less space above the title (240px at 1512), so the top
+      // third of the demo window shows on load on a 13" laptop.
+      className={`relative overflow-hidden pb-0 pt-[154px] lg:pt-[clamp(7.5rem,calc(15.87*var(--vw)),15rem)] ${SERVICE_GUTTER}`}
     >
       <div className="relative">
         <GradientRevealTextSlow

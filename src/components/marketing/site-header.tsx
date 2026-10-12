@@ -10,7 +10,7 @@ import { NavMenu, type NewsData } from "./nav-menu";
 const DEFAULT_NAV: SiteNavItem[] = [
   { label: "Capabilities", href: "/services" },
   { label: "Industries", href: "/industries" },
-  { label: "Engagement", href: "/engagement" },
+  { label: "Engagements", href: "/engagement" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

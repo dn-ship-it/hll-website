@@ -180,9 +180,11 @@ export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
 
       {/* Figma: "View All work button will be sticky and leads to the
           engagements page". Phones set it on the cards' left edge. */}
-      <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-start px-2 lg:my-[59px] lg:justify-center lg:px-0">
+      {/* QA H-28: rides higher on desktop (10% of the screen off the
+          bottom) so it's noticed, and its glow comes on quicker. */}
+      <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-start px-2 lg:bottom-[calc(10*var(--svh))] lg:my-[59px] lg:justify-center lg:px-0">
         <span className="pointer-events-auto">
-          <HLLButton href={data.ctaHref} variant="engagement" size="md" className={BUTTON_MOBILE}>
+          <HLLButton href={data.ctaHref} variant="engagement" size="md" className={`hll-button--quick ${BUTTON_MOBILE}`}>
             {data.ctaLabel}
           </HLLButton>
         </span>

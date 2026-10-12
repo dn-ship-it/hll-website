@@ -1,6 +1,6 @@
-import Link from "next/link";
-
-import type { ServiceVariant } from "@/components/hll/variants";
+import { HLLButton } from "@/components/hll";
+import { SERVICE_VARIANTS, type HLLVariant, type ServiceVariant } from "@/components/hll/variants";
+import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import type { ExpertVoice, ServicePageData } from "@/data/services/types";
 
 import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
@@ -38,6 +38,14 @@ export function ExpertVoiceSection({
   );
 }
 
+/** A related link's palette: its capability's (/services/hll-ai → hll-ai), or
+ *  the Industries palette for an industry. */
+function relatedVariant(href: string): HLLVariant {
+  const slug = href.match(/^\/services\/([^/#?]+)/)?.[1];
+  if (slug && (SERVICE_VARIANTS as readonly string[]).includes(slug)) return slug as ServiceVariant;
+  return href.startsWith("/industries") ? "industries" : "services";
+}
+
 export function RelatedServicesSection({
   items,
   title = "Related Capabilities",
@@ -64,13 +72,17 @@ export function RelatedServicesSection({
         {/* Mobile: "Button Mobile" pills, 34px and 6px apart. */}
         <div className="mx-auto mt-3 flex max-w-[37rem] flex-wrap justify-center gap-[6px] lg:mt-9 lg:gap-2">
           {items.map((item) => (
-            <Link
+            // QA C-18: the site's light-up button, in the colours of the
+            // capability (or industry) it leads to.
+            <HLLButton
               key={item.label}
               href={item.href}
-              className="inline-flex h-[34px] items-center rounded-[3px] bg-[var(--hll-bg)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] transition hover:bg-white lg:h-9 lg:rounded-[4px] lg:text-[12px]"
+              variant={relatedVariant(item.href)}
+              size="md"
+              className={BUTTON_MOBILE}
             >
               {item.label}
-            </Link>
+            </HLLButton>
           ))}
         </div>
       </div>

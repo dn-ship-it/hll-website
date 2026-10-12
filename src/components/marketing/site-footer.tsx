@@ -18,7 +18,7 @@ const FOOTER_NAV: SiteNavItem[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Team", href: "/team" },
-  { label: "Engagement", href: "/engagement" },
+  { label: "Engagements", href: "/engagement" },
   { label: "Contact", href: "/contact" },
 ];
 

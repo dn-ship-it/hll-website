@@ -154,13 +154,14 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
       </div>
 
       {/* Figma Engagements mobile: "Layout becomes linear" — one 386px column,
-          8px from the edges, cards 34px apart. */}
-      <div className="mt-8 grid grid-cols-1 items-start gap-x-[10px] gap-y-[34px] px-2 lg:mt-[47px] lg:grid-cols-3 lg:gap-y-[40px] lg:px-[10px]">
+          8px from the edges, cards 34px apart. Large screens (1800px and
+          up) get a fourth column rather than ever-bigger cards (QA E-03). */}
+      <div className="mt-8 grid grid-cols-1 items-start gap-x-[10px] gap-y-[34px] px-2 lg:mt-[47px] [--eng-cols:3] lg:grid-cols-[repeat(var(--eng-cols),minmax(0,1fr))] lg:gap-y-[40px] lg:px-[10px] min-[1800px]:[--eng-cols:4]">
         {shown.map((engagement) => (
           <div
             key={engagement.id}
             data-fade-up
-            className={engagement.featured ? "lg:col-span-3" : undefined}
+            className={engagement.featured ? "lg:col-span-full" : undefined}
           >
             <EngagementCard engagement={engagement} />
           </div>

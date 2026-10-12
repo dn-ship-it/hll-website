@@ -98,13 +98,14 @@ export function ServiceDemoWindow({
     "h-[215px] min-h-[215px] lg:h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] lg:min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]";
 
   return (
-    <>
     <div
       className="service-demo-window relative mt-8 overflow-hidden rounded-[6px] lg:mt-[clamp(1.125rem,calc(2.18*var(--vw)),2.0625rem)] lg:rounded-lg"
       data-service-media
     >
+      {/* QA C-11: the same, smaller padding on every side of the gradient
+          box (60px at 1512), so more of the demo shows above the fold. */}
       <div
-        className="relative px-3 pb-[15px] pt-[14px] lg:px-[clamp(1.25rem,calc(6.35*var(--vw)),6rem)] lg:py-[clamp(2rem,calc(8.99*var(--vw)),8.5rem)]"
+        className="relative px-3 pb-[15px] pt-[14px] lg:p-[clamp(1.25rem,calc(3.97*var(--vw)),3.75rem)]"
         style={{ background }}
       >
         {ripple ? (
@@ -116,12 +117,10 @@ export function ServiceDemoWindow({
           />
         ) : null}
         <div className="relative mx-auto w-full overflow-hidden rounded-[3px] bg-[var(--hll-bg)] shadow-none lg:overflow-visible lg:rounded-lg lg:p-[clamp(0.75rem,calc(2*var(--vw)),1rem)]">
-          <div className="pointer-events-none absolute left-1/2 top-3 z-10 hidden -translate-x-1/2 lg:block">
-            <SelectorPill label={safeConfig.selectorLabel} />
-          </div>
-
+          {/* QA C-12: no "HLL Foundation ⌄" selector over the demo. It did
+              nothing, so the window starts at the top of its frame. */}
           <div
-            className={`relative overflow-hidden bg-white lg:mt-10 lg:rounded-sm ${iframeHeight}`}
+            className={`relative overflow-hidden bg-white lg:rounded-sm ${iframeHeight}`}
           >
             {!hasContent ? (
               <div
@@ -164,28 +163,5 @@ export function ServiceDemoWindow({
         </div>
       </div>
     </div>
-    {/* Figma Services mobile: the demo selector sits 54px under the window. */}
-    <div className="pointer-events-none mt-[54px] flex justify-center lg:hidden">
-      <SelectorPill label={safeConfig.selectorLabel} />
-    </div>
-    </>
-  );
-}
-
-/** The demo's service selector: "HLL FOUNDATION ⌄" on a Light Grey pill. */
-function SelectorPill({ label }: { label: string }) {
-  return (
-    <span className="inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]">
-      {label}
-      <svg aria-hidden className="size-3 text-black/45" viewBox="0 0 12 12" fill="none">
-        <path
-          d="M3 4.5 6 7.5 9 4.5"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
   );
 }

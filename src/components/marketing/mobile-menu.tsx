@@ -13,6 +13,7 @@ import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 import { NavMark } from "./nav-mark";
 import {
   MENU_SERVICES,
+  NAV_TARGET,
   NewsPanel,
   VARIANT_BY_HREF,
   type NewsData,
@@ -313,7 +314,7 @@ export function MobileMenu({
                             <Submenu news={news} industries={industries} />
                             {VIEW_ALL[variant] ? (
                               <Link
-                                href={item.href}
+                                href={NAV_TARGET[item.href] ?? item.href}
                                 onClick={close}
                                 className={`mt-4 inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] ${VIEW_ALL[variant].inset}`}
                                 style={NAV_FONT}

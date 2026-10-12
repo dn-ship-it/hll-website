@@ -579,7 +579,7 @@ export function mapSiteNav(settings: SiteSetting | null): {
     })) ?? [
       { label: "Capabilities", href: "/services" },
       { label: "Industries", href: "/industries" },
-      { label: "Engagement", href: "/engagement" },
+      { label: "Engagements", href: "/engagement" },
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
     ],
