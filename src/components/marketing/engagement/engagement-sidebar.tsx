@@ -238,8 +238,8 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
 
 /**
  * The left column of both templates: "this section remains sticky throughout
- * the entire page, the artifact only shows up when the supporting section
- * comes up". The strip behind it takes the client's colour.
+ * the entire page". The artifact shows from page load (QA E-04). The strip
+ * behind it takes the client's colour.
  */
 export function EngagementSidebar({
   engagement,
@@ -253,23 +253,12 @@ export function EngagementSidebar({
 }) {
   const [artifactShown, setArtifactShown] = useState(false);
 
+  // QA E-04: the artifact loads with the rest of the page (it used to wait
+  // for its supporting section to scroll into view, leaving the column
+  // empty). Shown just after mount, so its count-up and bars still play.
   useEffect(() => {
-    const triggers = document.querySelectorAll("[data-artifact-trigger]");
-    if (!triggers.length) {
-      setArtifactShown(true);
-      return undefined;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setArtifactShown(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px -25% 0px" },
-    );
-    triggers.forEach((t) => observer.observe(t));
-    return () => observer.disconnect();
+    const timer = window.setTimeout(() => setArtifactShown(true), 300);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const strip = accent ?? "#444444";

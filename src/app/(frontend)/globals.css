@@ -334,6 +334,7 @@ body {
 .hll-button {
   background: var(--hll-light-grey, #e6e6e6);
   border-radius: var(--hll-button-radius, 4px);
+  transition: background-color 0.3s ease;
 }
 
 /* Footer Email / LinkedIn (QA G-05): translucent over the shader strip, as
@@ -350,6 +351,7 @@ body {
 }
 
 /* A floating CTA that should answer the pointer at once (QA H-28). */
+.hll-button--quick,
 .hll-button--quick canvas {
   transition-duration: 0.12s;
 }
@@ -408,6 +410,14 @@ body {
 @media (hover: hover) {
   .hll-button:hover canvas {
     opacity: 1;
+  }
+
+  /* The glow is drawn at 94% of the button, so the Light Grey rest fill
+     showed as a grey edge either side of it (QA G-02). While the glow is on,
+     the fill fades out and only the glow shows. Buttons without the shader
+     (no WebGL) keep their fill. */
+  .hll-button:has(canvas):hover {
+    background-color: transparent;
   }
 
   .hll-button:hover .hll-button__label,
