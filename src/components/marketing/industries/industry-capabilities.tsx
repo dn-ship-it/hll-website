@@ -18,16 +18,24 @@ export function IndustryCapabilitiesSection({
 }) {
   return (
     <section className="pt-[84px] lg:pt-[clamp(5.375rem,calc(10.19*var(--vw)),9.625rem)]">
-      <div className={SERVICE_GUTTER}>
+      {/* Phones: the heading above the swipe row. Desktop shows it in the
+          sticky column below instead. */}
+      <div className={`lg:hidden ${SERVICE_GUTTER}`}>
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
       {/* Figma Industry mobile: the service row 29px under the heading, the
           first service 54px below it. */}
-      <div className="mt-[29px] grid grid-cols-[minmax(0,1fr)] gap-[54px] px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:mt-[72px] lg:grid-cols-[436fr_1036fr] lg:gap-0 lg:pr-[10px]">
+      <div className="mt-[29px] grid grid-cols-[minmax(0,1fr)] gap-[54px] px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:mt-0 lg:grid-cols-[436fr_1036fr] lg:gap-0 lg:pr-[10px]">
         {/* Figma: "as you scroll it highlights according to the section you
-            are in". Labels without a capability row yet stay unlinked. */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+            are in". Labels without a capability row yet stay unlinked.
+            QA I-07: on desktop the "Capabilities" heading rides in this
+            sticky column with the list, so both stay in view through the
+            cards and scroll away together after the last one. */}
+        <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
+          <div className="mb-[72px] hidden lg:block">
+            <HomeHeading eyebrow={data.eyebrow} title={data.title} />
+          </div>
           <CapabilityNav
             mobileRow
             accent={accentColor}
@@ -38,7 +46,10 @@ export function IndustryCapabilitiesSection({
           />
         </div>
 
-        <div>
+        {/* Desktop: starts where it did under the full-width heading (the
+            heading's height plus its 72px gap), now that the heading sits
+            in the sticky column. */}
+        <div className="lg:pt-[calc(14.4px+12px+1.16*clamp(30px,calc(4.23*var(--vw)),4rem)+72px)]">
           {data.items.map((item) => (
             <article
               key={item.id}

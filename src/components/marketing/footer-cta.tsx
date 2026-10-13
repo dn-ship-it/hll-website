@@ -135,6 +135,9 @@ export function FooterButton({
   );
 }
 
+/** Figma Home footer strip: pink, a deeper pink and peach (sampled). */
+const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
+
 /** BottomShader filling the strip it sits in, rather than 25% of the screen. */
 const STRIP_LAYOUT = { ...DEFAULT_LAYOUT, HOST_HEIGHT: "100%" };
 
@@ -201,6 +204,9 @@ export function FooterShaderStrip({
       {live ? (
         <BottomShader
           variant={variantForPath(pathname) ?? "contact"}
+          // Home has no section palette of its own; the Figma Home footer
+          // runs pink and peach rather than Contact's blues (QA G-07).
+          colors={variantForPath(pathname) ? undefined : HOME_SHADER_COLORS}
           contained
           passthrough
           layout={STRIP_LAYOUT}
