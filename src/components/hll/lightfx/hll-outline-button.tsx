@@ -94,6 +94,7 @@ export type HLLOutlineButtonProps = {
   isLoading?: boolean;
   role?: string;
   "aria-selected"?: boolean;
+  "aria-expanded"?: boolean;
   onClick?: () => void;
   className?: string;
   style?: CSSProperties;

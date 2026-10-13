@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 
+import { HLLOutlineButton } from "@/components/hll";
 import { HomeHeading } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type {
@@ -81,15 +82,34 @@ function FilterMenu({
 }) {
   return (
     <div data-filter-menu className="relative">
-      <button
+      {/* QA CR-03: the site's stroke button, so the filters light up on
+          hover like the other outline buttons. */}
+      <HLLOutlineButton
+        as="button"
         type="button"
         aria-expanded={open}
         onClick={() => onOpenChange(!open)}
-        className="inline-flex h-[34px] items-center gap-2 rounded-[4px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:text-[12px]"
+        variant="about"
+        size="md"
+        radius={0.21}
+        shapeSize={1}
+        strokeWidth={0.028}
+        className="[--tab-h:34px] [--tab-size:10px] lg:[--tab-h:36px] lg:[--tab-size:12px]"
+        style={{ width: "max-content", height: "var(--tab-h)", padding: "0 21px", borderRadius: "4px" }}
+        labelStyle={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "var(--tab-size)",
+          letterSpacing: "0.25em",
+          fontFamily: "var(--hll-font-aeonik)",
+          color: "var(--hll-dark-grey)",
+          textTransform: "uppercase",
+        }}
       >
         {value ?? label}
         <ChevronDown className="size-3.5" strokeWidth={1.4} aria-hidden />
-      </button>
+      </HLLOutlineButton>
       {open ? (
         <ul className="absolute left-0 top-11 z-10 min-w-full rounded-[4px] bg-[var(--hll-bg)] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)]">
           {[null, ...options].map((option) => (
