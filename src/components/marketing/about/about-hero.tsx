@@ -58,23 +58,33 @@ function Band({
   );
 }
 
-export function AboutHero({ data }: { data: AboutPageData["hero"] }) {
+/** The About hero's four-image collage (mobile and desktop bands). Careers
+ *  shows the same layout at the top of its page (QA CR-05). */
+export function HeroCollage({ images }: { images: AboutPageData["hero"]["images"] }) {
   return (
-    <section className={`lg:pt-[80px] ${SERVICE_GUTTER}`}>
+    <>
       <Band
         band={MOBILE_BAND}
         tiles={MOBILE_TILES}
-        images={data.images}
+        images={images}
         radius="rounded-[2px]"
         className="-mx-[6px] lg:hidden"
       />
       <Band
         band={BAND}
         tiles={TILES}
-        images={data.images}
+        images={images}
         radius="rounded-[4px]"
         className="hidden lg:block"
       />
+    </>
+  );
+}
+
+export function AboutHero({ data }: { data: AboutPageData["hero"] }) {
+  return (
+    <section className={`lg:pt-[80px] ${SERVICE_GUTTER}`}>
+      <HeroCollage images={data.images} />
 
       <GradientRevealTextSlow
         as="h1"

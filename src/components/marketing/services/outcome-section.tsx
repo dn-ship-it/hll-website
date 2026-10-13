@@ -5,7 +5,7 @@ import { CountUp } from "@/components/marketing/count-up";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
-import { RIPPLE_FILL, RIPPLE_OPACITY, getServiceTheme } from "./service-theme";
+import { RIPPLE_FILL, getServiceTheme } from "./service-theme";
 
 /**
  * Figma sets a trailing "%" at roughly half the stat size ("60%"). A trailing
@@ -49,13 +49,13 @@ export function OutcomeSection({
       style={{ background: outcomeBackground }}
     >
       {/* Figma: "Live centered ripple animation in the back according to the
-          colours of the service", over the frame's own still. */}
+          colours of the service". At full strength it covers the frame's
+          still, which only shows where the animation can't run (QA C-13). */}
       <Ripple
         variant={SERVICE_TO_RIPPLE[variant]}
         origin="center"
         contained
         className={RIPPLE_FILL}
-        style={{ opacity: RIPPLE_OPACITY }}
       />
 
       <div className={`relative ${SERVICE_GUTTER}`}>

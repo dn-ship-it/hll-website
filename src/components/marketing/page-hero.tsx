@@ -10,11 +10,14 @@ export function PageHero({
   title,
   lead,
   image,
+  collage,
   children,
 }: {
   title: string;
   lead: string;
   image?: string | null;
+  /** Shown instead of the single media window (Careers: the About collage). */
+  collage?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   return (
@@ -36,12 +39,17 @@ export function PageHero({
         </div>
         <p className="max-w-[344px] text-[24px] leading-[1.16] text-[var(--hll-dark-grey)] lg:max-w-none lg:pt-5 lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)]">{lead}</p>
       </div>
-      <div
-        className="relative -mx-3 mt-8 aspect-[386/244] w-[calc(100%+24px)] overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:mx-0 lg:aspect-[1452/982] lg:w-full lg:rounded-lg"
-        style={image ? { background: `#D9D9D9 url(${image}) center / cover` } : undefined}
-      >
-        {children}
-      </div>
+      {collage ? (
+        // The About page's four-image layout in place of the single window.
+        <div className="mt-8 lg:mt-0">{collage}</div>
+      ) : (
+        <div
+          className="relative -mx-3 mt-8 aspect-[386/244] w-[calc(100%+24px)] overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:mx-0 lg:aspect-[1452/982] lg:w-full lg:rounded-lg"
+          style={image ? { background: `#D9D9D9 url(${image}) center / cover` } : undefined}
+        >
+          {children}
+        </div>
+      )}
     </section>
   );
 }
