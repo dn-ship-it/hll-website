@@ -81,23 +81,39 @@ export function EngagementSection({
   breadcrumb: readonly string[];
   variant: ServiceVariant;
 }) {
+  const heading = (
+    <>
+      <ServiceSectionHeading
+        breadcrumb={breadcrumb}
+        title={data.title}
+        variant={variant}
+      />
+      <p className="mt-[10px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:mt-[25px] lg:max-w-[23rem] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
+        {data.intro}
+      </p>
+    </>
+  );
+
   return (
-    <section className="py-[84px] lg:py-[clamp(5.3125rem,calc(10.19*var(--vw)),9.625rem)]">
-      {/* Figma Services mobile sets this section on an 8px gutter. */}
-      <div className="px-2 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]">
-        <ServiceSectionHeading
-          breadcrumb={breadcrumb}
-          title={data.title}
-          variant={variant}
-        />
-        <p className="mt-[10px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:mt-[25px] lg:max-w-[23rem] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
-          {data.intro}
-        </p>
+    <section className="py-[84px] lg:grid lg:grid-cols-[calc(33.66*var(--vw))_minmax(0,1fr)] lg:py-[clamp(5.3125rem,calc(10.19*var(--vw)),9.625rem)]">
+      {/* Figma Services mobile sets this section on an 8px gutter. QA C-16:
+          on desktop the heading and intro stay in view (sticky) beside the
+          cards until the last card, then scroll away with it. */}
+      <div className="px-2 lg:row-span-2 lg:self-stretch lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]">
+        <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:w-[calc(33.66*var(--vw)-clamp(1.25rem,calc(1.98*var(--vw)),1.875rem))]">
+          {heading}
+        </div>
+      </div>
+
+      {/* Desktop: an invisible copy of the heading at the same width holds
+          the cards exactly where they sat under the full-width heading. */}
+      <div aria-hidden className="invisible hidden lg:block lg:w-[calc(33.66*var(--vw)-clamp(1.25rem,calc(1.98*var(--vw)),1.875rem))]">
+        {heading}
       </div>
 
       {/* Figma: two columns starting a third of the way across, running to
           10px from the right edge of the frame. */}
-      <div className="mt-8 grid grid-cols-1 gap-x-[14px] gap-y-8 px-2 lg:ml-[33.66%] lg:mt-[clamp(2.625rem,calc(5.09*var(--vw)),4.8125rem)] lg:grid-cols-2 lg:gap-y-[clamp(1.625rem,calc(3.17*var(--vw)),3rem)] lg:px-0 lg:pr-[10px]">
+      <div className="mt-8 grid grid-cols-1 gap-x-[14px] gap-y-8 px-2 lg:mt-[clamp(2.625rem,calc(5.09*var(--vw)),4.8125rem)] lg:grid-cols-2 lg:gap-y-[clamp(1.625rem,calc(3.17*var(--vw)),3rem)] lg:px-0 lg:pr-[10px]">
         {data.cards.map((card) => (
           <EngagementCardView key={card.id} card={card} />
         ))}

@@ -40,18 +40,35 @@ export function CapabilitiesSection({
       id="capabilities"
       className={`pb-[52px] pt-[84px] lg:pb-[clamp(3rem,calc(5.75*var(--vw)),5.4375rem)] lg:pt-[clamp(5.375rem,calc(10.32*var(--vw)),9.75rem)] ${SERVICE_GUTTER}`}
     >
-      <ServiceSectionHeading
-        breadcrumb={breadcrumb}
-        title={data.title}
-        variant={variant}
-      />
+      {/* Phones: the heading above the list. Desktop shows it in the sticky
+          column below instead. */}
+      <div className="lg:hidden">
+        <ServiceSectionHeading
+          breadcrumb={breadcrumb}
+          title={data.title}
+          variant={variant}
+        />
+      </div>
 
-      <div className="mt-8 grid gap-[clamp(2rem,calc(5*var(--vw)),4rem)] lg:mt-[clamp(2.5rem,calc(4.76*var(--vw)),4.5rem)] lg:grid-cols-[436fr_1016fr] lg:gap-0">
-        <div className="hidden lg:sticky lg:top-24 lg:block lg:self-start">
+      <div className="mt-8 grid gap-[clamp(2rem,calc(5*var(--vw)),4rem)] lg:mt-0 lg:grid-cols-[436fr_1016fr] lg:gap-0">
+        {/* QA C-15: on desktop the "Capabilities" heading rides in this
+            sticky column with the list, so both stay in view through the
+            capabilities and scroll away together after the last one. */}
+        <div className="hidden lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:block lg:self-start">
+          <div className="mb-[clamp(2.5rem,calc(4.76*var(--vw)),4.5rem)]">
+            <ServiceSectionHeading
+              breadcrumb={breadcrumb}
+              title={data.title}
+              variant={variant}
+            />
+          </div>
           <CapabilityNav items={data.items} accent={accent} />
         </div>
 
-        <div>
+        {/* Desktop: starts where it did under the full-width heading (the
+            heading's height plus its gap), now that the heading sits in
+            the sticky column. */}
+        <div className="lg:pt-[calc(14.4px+12px+1.16*clamp(30px,calc(4.23*var(--vw)),4rem)+clamp(2.5rem,calc(4.76*var(--vw)),4.5rem))]">
           {data.items.map((item) => (
             <article
               key={item.id}
