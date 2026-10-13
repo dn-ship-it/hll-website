@@ -270,14 +270,41 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
   );
 }
 
+/** Figma Home: the What we do description sits 163px above "Clients". */
+const DESIGN_GAP_TO_CLIENTS = 163;
+/** Our Clients' desktop top padding (lg:pt-[76px] below). */
+const CLIENTS_TOP_PAD = 76;
+
 /** Desktop: the pinned wheel. */
 function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
   const services = data.items;
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
+  const descRef = useRef<HTMLParagraphElement>(null);
   const count = services.length;
   const selected = services[active];
+
+  // QA H-21: the pinned content is centred in a screen-high panel, so the
+  // space under the description (and with it the gap down to "Our Clients")
+  // grew and shrank with the window's height. Measure that leftover space and
+  // trim or extend the section's bottom so the description sits the design's
+  // 163px (at 1512, scaled with the width) above the Clients eyebrow.
+  const [tail, setTail] = useState(0);
+  useEffect(() => {
+    const fit = () => {
+      const sticky = stickyRef.current;
+      const desc = descRef.current;
+      if (!sticky || !desc || !sticky.offsetHeight) return;
+      const below = sticky.getBoundingClientRect().bottom - desc.getBoundingClientRect().bottom;
+      const gap = (DESIGN_GAP_TO_CLIENTS * window.innerWidth) / 1512;
+      setTail(Math.round(gap - CLIENTS_TOP_PAD - below));
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    document.fonts?.ready.then(fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [active]);
 
   const updateActiveFromScroll = useCallback(() => {
     const section = sectionRef.current;
@@ -359,16 +386,21 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
     <section
       ref={sectionRef}
       className="hll-home-section hidden lg:block"
-      style={{ height: `calc(${count * 60} * var(--svh))` }}
+      style={{ height: `calc(${count * 60} * var(--svh))`, marginBottom: tail }}
       aria-label="Our capabilities"
     >
       <div
         ref={stickyRef}
-        className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col justify-center ${HOME_GUTTER}`}
+        // QA H-18: the design's 158px (at 1512) between the hero window and
+        // "Capabilities" on every screen height, rather than centring the
+        // block (which squeezed that gap on shorter screens). On a short
+        // screen the image card gives up height instead, so the block still
+        // fits.
+        className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col pb-6 pt-[calc(10.45*var(--vw))] ${HOME_GUTTER}`}
       >
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
 
-        <div className="mt-[84px] grid gap-8 md:grid-cols-[731fr_721fr] md:gap-0">
+        <div className="mt-[84px] grid min-h-0 flex-1 gap-8 md:grid-cols-[731fr_721fr] md:grid-rows-[minmax(0,1fr)] md:gap-0">
           <div className="md:pt-[75px]" aria-live="polite">
             <ul className="space-y-3">
               {above.map((item) => (
@@ -388,9 +420,9 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
             </ul>
           </div>
 
-          <div className="min-w-0">
+          <div className="flex min-h-0 min-w-0 flex-col">
             <div
-              className="relative aspect-[721/444] overflow-hidden rounded-lg bg-[#D9D9D9] transition-[background] duration-500"
+              className="relative aspect-[721/444] min-h-0 shrink overflow-hidden rounded-lg bg-[#D9D9D9] transition-[background] duration-500"
               style={{
                 background: `#D9D9D9 url(${demoImage(selected)}) center / cover`,
               }}
@@ -405,7 +437,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
                 />
               </span>
             </div>
-            <p className="mt-6 max-w-[509px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
+            <p ref={descRef} className="mt-6 max-w-[509px] shrink-0 text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
               {selected.description}
             </p>
           </div>
