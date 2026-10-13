@@ -102,10 +102,12 @@ export function HomeHero({
 
   return (
     <section
-      className={`hll-home-section flex min-h-[calc(100*var(--svh)-var(--nav-h))] flex-col justify-end pb-10 lg:block lg:min-h-0 lg:pb-0 lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${HOME_GUTTER}`}
+      className={`hll-home-section flex min-h-[calc(100*var(--svh)-var(--nav-h))] flex-col justify-end pb-10 lg:block lg:min-h-0 lg:pb-0 lg:pt-[max(8rem,min(calc(23.2*var(--vw)),21.9rem,calc(42.4*var(--svh)-var(--nav-h))))] ${HOME_GUTTER}`}
     >
       {/* Mobile: the first screen, its content set on the bottom edge
-          (button 40px up), as the 874px Figma Hero frame. */}
+          (button 40px up), as the 874px Figma Hero frame. Desktop: the
+          heading sits 42% down the screen as in the 1512 × 982 frame, so a
+          shorter laptop screen doesn't push it lower (QA H-17). */}
       <GradientRevealTextSlow
         as="h1"
         text={title}
