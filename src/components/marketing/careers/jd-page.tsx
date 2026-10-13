@@ -57,7 +57,10 @@ export async function JdPage({ slug }: { slug: string }) {
         </section>
 
         <section className={`grid gap-[54px] pt-[54px] lg:grid-cols-[534fr_864fr_54fr] lg:gap-0 lg:pt-[131px] ${SERVICE_GUTTER}`}>
-          <HomeHeading eyebrow="Careers" title="About" eyebrowColor="var(--hll-mid-grey)" />
+          {/* QA J-06: the label stays in view while the accordion scrolls. */}
+          <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
+            <HomeHeading eyebrow="Careers" title="About" eyebrowColor="var(--hll-mid-grey)" />
+          </div>
           <div className="lg:pt-[119px]">
             <JdAccordion sections={sections} />
           </div>

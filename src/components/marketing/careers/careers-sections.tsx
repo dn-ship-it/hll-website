@@ -24,10 +24,20 @@ export function CareersApproach({
 }) {
   const total = String(data.items.length).padStart(2, "0");
   return (
-    <section className={`pb-[84px] pt-[84px] lg:pb-[214px] lg:pt-[154px] ${SERVICE_GUTTER}`}>
-      <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
+    <section className={`pb-[84px] pt-[84px] lg:grid lg:grid-cols-[36.8fr_63.2fr] lg:pb-[214px] lg:pt-[154px] ${SERVICE_GUTTER}`}>
+      {/* QA CR-02: on desktop the label stays in view beside the items
+          until the last one; an invisible copy (same width) holds the
+          items where they sat under it. */}
+      <div className="lg:row-span-2 lg:self-stretch">
+        <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)]">
+          <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
+        </div>
+      </div>
+      <div aria-hidden className="invisible hidden lg:block lg:w-[58.23%]">
+        <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
+      </div>
       {/* Mobile: one column from x 74, 32px between items. */}
-      <div className="mt-[54px] grid gap-y-8 pl-[54px] lg:ml-[36.8%] lg:mr-[90px] lg:mt-[14px] lg:grid-cols-2 lg:gap-x-[120px] lg:gap-y-[155px] lg:pl-0">
+      <div className="mt-[54px] grid gap-y-8 pl-[54px] lg:mr-[90px] lg:mt-[14px] lg:grid-cols-2 lg:gap-x-[120px] lg:gap-y-[155px] lg:pl-0">
         {data.items.map((item, i) => (
           <article key={item.id}>
             <p
@@ -149,10 +159,18 @@ export function CareersOpenRoles({
     <section id="open-roles" className="scroll-mt-24">
       <div data-line className="mx-2 h-px bg-[var(--hll-mid-grey)] lg:mx-0" />
       <div className={`pb-[84px] pt-[84px] lg:pb-[214px] lg:pt-[154px] ${SERVICE_GUTTER}`}>
-        <HomeHeading eyebrow="Team" title="Open Roles" />
+        <div className="lg:hidden">
+          <HomeHeading eyebrow="Team" title="Open Roles" />
+        </div>
 
-        {/* Mobile: the filters 12px under the title, the rows 54px below. */}
-        <div className="mt-3 grid items-start gap-[54px] lg:mt-[72px] lg:grid-cols-[600fr_852fr] lg:gap-0">
+        {/* Mobile: the filters 12px under the title, the rows 54px below.
+            QA CR-02: on desktop the title and filters stay in view together
+            while the roles scroll. */}
+        <div className="mt-3 grid items-start gap-[54px] lg:mt-0 lg:grid-cols-[600fr_852fr] lg:gap-0">
+          <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
+          <div className="mb-[72px] hidden lg:block">
+            <HomeHeading eyebrow="Team" title="Open Roles" />
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className={`mr-[13px] hidden lg:inline ${BUTTON_TYPE}`}>Filter by</span>
             <FilterMenu
@@ -174,10 +192,13 @@ export function CareersOpenRoles({
               onOpenChange={(open) => setOpenMenu(open ? "location" : null)}
             />
           </div>
+          </div>
 
           {/* Mobile: the hairlines on the gutter, in line with the heading,
-              with 20px around each role so the list can breathe. */}
-          <ul className="lg:mr-[100px]">
+              with 20px around each role so the list can breathe. Desktop:
+              starts where it did under the full-width title (its height plus
+              the 72px gap), now that the title sits in the sticky column. */}
+          <ul className="lg:mr-[100px] lg:pt-[calc(14.4px+12px+1.16*clamp(30px,calc(4.23*var(--vw)),4rem)+72px)]">
             <li
               aria-hidden
               data-line
@@ -294,7 +315,10 @@ export function CareersProcess({
       <div
         className={`grid gap-[54px] pb-[84px] lg:grid-cols-[529fr_960fr] lg:gap-0 lg:pb-[151px] lg:pt-[154px] ${SERVICE_GUTTER}`}
       >
-        <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
+        {/* QA CR-02: the label stays in view while its rows scroll. */}
+        <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
+          <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
+        </div>
         <div className="lg:pt-[63px]">
           <LabelledRows rows={data.rows} />
         </div>
