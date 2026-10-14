@@ -198,16 +198,19 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
       </div>
 
       <div className="relative mt-8">
+        {/* QA H-03: the counter and arrows sit in their own row 12px above
+            the cards, lined up with the card in front, so a dragged card
+            never slides under them and the arrows keep a clear tap area. */}
         <div
-          className="absolute left-[30px] top-0 z-10 text-[10px] uppercase leading-[12px] text-[var(--hll-dark-grey)]"
+          className="mb-3 ml-[74px] flex w-[253px] items-center justify-between text-[10px] uppercase leading-[12px] text-[var(--hll-dark-grey)]"
           style={{ fontFamily: "var(--hll-font-functional)" }}
         >
           <p aria-live="polite">
             {pad2(active + 1)}/{pad2(count)}
           </p>
           {/* 32px tap areas around the 10px glyphs, pulled back so the
-              glyphs keep their Figma places. */}
-          <div className="-mb-[10px] -ml-[11px] -mt-[10px] flex">
+              glyphs line up with the card's edge. */}
+          <div className="-my-[10px] -mr-[11px] flex">
             <button
               type="button"
               aria-label="Previous capability"
