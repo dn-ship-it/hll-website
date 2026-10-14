@@ -184,13 +184,13 @@ export function AllCapabilities({
         row.setAttribute("aria-hidden", String(slot >= count || Math.abs(d) > REACH));
       });
     // The focused service's details (tags, open button) travel with its
-    // name and are only shown once it has settled: fully in within a quarter
-    // row of the focus, gone by the halfway point where the focus changes
-    // (QA C-06, C-07).
+    // name: gone by the halfway point where the focus changes (QA C-06,
+    // C-07) and fully in by 0.3 of a row from it. QA C-08: they used to wait
+    // for the wheel's long ease-out to finish (~0.5s), so they showed late.
     const offset = Math.round(pos.current) - pos.current;
     const root = rootRef.current;
     if (root) {
-      root.style.setProperty("--settle", Math.min(1, Math.max(0, 1 - Math.abs(offset) * 4)).toFixed(3));
+      root.style.setProperty("--settle", Math.min(1, Math.max(0, (0.5 - Math.abs(offset)) / 0.2)).toFixed(3));
       root.style.setProperty("--fy-desktop", offsetFor("desktop", offset).toFixed(2));
       root.style.setProperty("--fy-phone", offsetFor("phone", offset, below.current).toFixed(2));
     }
@@ -490,6 +490,8 @@ export function AllCapabilities({
             // than the screen below the Nav Bar, so the whole wheel shows.
             style={{
               aspectRatio: `${STAGE.w} / ${STAGE.h}`,
+              // The tags size with the stage (QA C-08).
+              containerType: "inline-size",
               width: `min(100%, calc((calc(100*var(--svh)) - var(--nav-h) - 58px - 40px) * ${STAGE.w / STAGE.h}))`,
             }}
           >
@@ -572,7 +574,10 @@ export function AllCapabilities({
               <div
                 key={focus.id}
                 onClick={() => focus.href && router.push(focus.href)}
-                className={`absolute flex items-center gap-2 ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
+                // QA C-08: the tags wrap within their design width and scale
+                // with the stage (10.7px at 1512, never under 9px), rather
+                // than running past the open button and off narrow screens.
+                className={`absolute flex flex-wrap items-center gap-[max(6px,0.53cqw)] ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
                 style={{
                   left: pct(815, STAGE.w),
                   top: `calc((365 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
@@ -580,7 +585,7 @@ export function AllCapabilities({
                   opacity: "var(--settle, 1)",
                 }}
               >
-                {pills("rounded-[3.8px] border-[0.64px] px-[7px] py-[5px] text-[10.7px]")}
+                {pills("rounded-[max(3px,0.25cqw)] border-[0.64px] px-[max(6px,0.46cqw)] py-[max(4px,0.33cqw)] text-[max(9px,0.71cqw)]")}
               </div>
               {focus.href ? (
                 <Link
