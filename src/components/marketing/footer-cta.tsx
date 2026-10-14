@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 
-import { BottomShader, DEFAULT_LAYOUT, HLLButton } from "@/components/hll";
+import { BottomShader, HLLButton } from "@/components/hll";
 
 import { BUTTON_MOBILE } from "./button-sizes";
 import { variantForPath } from "./page-variant";
@@ -138,9 +138,6 @@ export function FooterButton({
 /** Figma Home footer strip: pink, a deeper pink and peach (sampled). */
 const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
 
-/** BottomShader filling the strip it sits in, rather than 25% of the screen. */
-const STRIP_LAYOUT = { ...DEFAULT_LAYOUT, HOST_HEIGHT: "100%" };
-
 function supportsWebGL2() {
   try {
     const gl = document.createElement("canvas").getContext("webgl2");
@@ -151,14 +148,23 @@ function supportsWebGL2() {
   }
 }
 
+/** Whether the live shader can run here: WebGL2 and motion allowed. */
+function useShaderAble() {
+  const [able, setAble] = useState<boolean | null>(null);
+  useEffect(() => {
+    setAble(
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+        supportsWebGL2(),
+    );
+  }, []);
+  return able;
+}
+
 /**
- * The footer's shader strip: the live LightFX BottomShader in the page's
- * palette, like the footer buttons. It's created when the footer first comes
- * near the screen — phones allow few WebGL contexts and pay for every frame
- * (see use-light-component.ts) — and then kept: the runtime pauses itself off
- * screen, and remounting would leak a context each time. The Figma still
- * shows until it's running, and wherever it can't: reduced motion or no
- * WebGL2.
+ * The footer's shader strip. QA H-14: the live shader is now ScreenShader,
+ * pinned to the bottom of the screen on every page, so it already sits
+ * behind this strip when the footer is reached. The Figma still stays only
+ * where that can't run: reduced motion or no WebGL2.
  */
 export function FooterShaderStrip({
   className,
@@ -169,49 +175,114 @@ export function FooterShaderStrip({
   stillClassName?: string;
   stillStyle: CSSProperties;
 }) {
-  const pathname = usePathname();
-  const ref = useRef<HTMLDivElement>(null);
-  const [reached, setReached] = useState(false);
-  const [able, setAble] = useState(false);
-
-  useEffect(() => {
-    setAble(
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
-        supportsWebGL2(),
-    );
-    const strip = ref.current;
-    if (!strip) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setReached(true);
-        observer.disconnect();
-      },
-      { rootMargin: "200px 0px" },
-    );
-    observer.observe(strip);
-    return () => observer.disconnect();
-  }, []);
-
-  const live = able && reached;
-
+  const able = useShaderAble();
   return (
-    <div ref={ref} aria-hidden className={`pointer-events-none absolute ${className}`}>
+    <div aria-hidden className={`pointer-events-none absolute ${className}`}>
       <div
         className={`absolute inset-0 transition-opacity duration-700 ${stillClassName}`}
-        style={{ ...stillStyle, opacity: live ? 0 : 1 }}
+        style={{ ...stillStyle, opacity: able === false ? 1 : 0 }}
       />
-      {live ? (
-        <BottomShader
-          variant={variantForPath(pathname) ?? "contact"}
-          // Home has no section palette of its own; the Figma Home footer
-          // runs pink and peach rather than Contact's blues (QA G-07).
-          colors={variantForPath(pathname) ? undefined : HOME_SHADER_COLORS}
-          contained
-          passthrough
-          layout={STRIP_LAYOUT}
-        />
-      ) : null}
     </div>
+  );
+}
+
+/** How close to the end of the page counts as "at the footer". */
+const END_ZONE = 320;
+
+/**
+ * QA H-14, as in the HLL UI Demo: the page's shader pinned to the bottom of
+ * the screen while you scroll. It sits faintly over the content (hard-light,
+ * so whatever passes through it picks up its colours and clears again as it
+ * moves up the screen) and comes up to full strength at the footer.
+ *
+ * Desktop runs it the whole way down. Phones only bring it in near the
+ * footer, as before: they allow few WebGL contexts and pay for every frame.
+ * It's started once the page has settled, so it never competes with the
+ * first paint.
+ */
+export function ScreenShader() {
+  const pathname = usePathname();
+  const able = useShaderAble();
+  const [started, setStarted] = useState(false);
+  const [atEnd, setAtEnd] = useState(false);
+  const [desktop, setDesktop] = useState(false);
+  const [generation, setGeneration] = useState(0);
+
+  useEffect(() => {
+    if (!able) return;
+    const media = window.matchMedia("(min-width: 1024px)");
+    const onMedia = () => setDesktop(media.matches);
+    onMedia();
+    media.addEventListener("change", onMedia);
+
+    // Checked straight in the scroll event: it's a cheap read, and React
+    // skips the render when the answer hasn't changed.
+    const onScroll = () => {
+      const doc = document.documentElement;
+      setAtEnd(window.scrollY + window.innerHeight >= doc.scrollHeight - END_ZONE);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    const start = window.setTimeout(() => setStarted(true), 1200);
+    return () => {
+      window.clearTimeout(start);
+      media.removeEventListener("change", onMedia);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [able]);
+
+  // Re-check on page change: the new page has a different length.
+  useEffect(() => {
+    window.dispatchEvent(new Event("resize"));
+  }, [pathname]);
+
+  const [reachedEnd, setReachedEnd] = useState(false);
+  useEffect(() => {
+    if (atEnd) setReachedEnd(true);
+  }, [atEnd]);
+
+  // Over the content it tints (hard-light); at the footer it shows in full
+  // colour, as the footer strip did. A blend mode can't be animated, so it
+  // dips out, swaps, and comes back.
+  const [mode, setMode] = useState<"tint" | "full">("tint");
+  const [dipped, setDipped] = useState(false);
+  useEffect(() => {
+    const want = atEnd ? "full" : "tint";
+    // Back where it was before the swap landed (a quick scroll back and
+    // forth at the edge): just come back in, or it would stay faded out.
+    if (want === mode) {
+      setDipped(false);
+      return;
+    }
+    setDipped(true);
+    const swap = window.setTimeout(() => {
+      setMode(want);
+      setDipped(false);
+    }, 250);
+    return () => window.clearTimeout(swap);
+  }, [atEnd, mode]);
+
+  // Phones create it the first time the footer comes near, then keep it:
+  // remounting would leak a WebGL context each time.
+  if (!able || !started || (!desktop && !reachedEnd)) return null;
+
+  const variant = variantForPath(pathname);
+  return (
+    <BottomShader
+      // A fresh canvas if the browser ever drops this one's WebGL context.
+      key={generation}
+      onContextLost={() => setGeneration((n) => n + 1)}
+      variant={variant ?? "contact"}
+      // Home has no section palette of its own; the Figma Home footer runs
+      // pink and peach rather than Contact's blues (QA G-07).
+      colors={variant ? undefined : HOME_SHADER_COLORS}
+      overlay={mode === "tint"}
+      passthrough
+      className="z-30 transition-opacity duration-[250ms] ease-in-out"
+      style={{ opacity: dipped ? 0 : mode === "full" ? 1 : desktop ? 0.45 : 0 }}
+    />
   );
 }

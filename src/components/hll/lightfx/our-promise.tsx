@@ -54,7 +54,11 @@ const EMPTY_RIPPLE_ARRAY = new Array(MAX_RIPPLES * 2).fill(-10);
 function supportsWebGL() {
   try {
     const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+    // Only a probe: give the context back so it doesn't count against the
+    // browser's per-page limit.
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    return Boolean(gl);
   } catch {
     return false;
   }

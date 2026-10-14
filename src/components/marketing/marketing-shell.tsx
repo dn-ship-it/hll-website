@@ -7,6 +7,7 @@ import { resolveMediaUrl } from "@/lib/payload/media";
 import { DEFAULT_INDUSTRY_MENU } from "@/data/industry-menu";
 import { mapFooterCta, mapIndustryMenu, mapSiteNav } from "@/lib/payload/marketing-mappers";
 import { SiteFooter } from "@/components/marketing/site-footer";
+import { ScreenShader } from "@/components/marketing/footer-cta";
 import { AiBubble } from "@/components/marketing/ai-bubble";
 import { LineReveal } from "@/components/marketing/line-reveal";
 import { PageIntro } from "@/components/marketing/page-intro";
@@ -96,6 +97,7 @@ export async function MarketingShell({
           ctaVideo={ctaVideo ?? cta?.video}
         />
       ) : null}
+      {showFooter ? <ScreenShader /> : null}
     </div>
   );
 }

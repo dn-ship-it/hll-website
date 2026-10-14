@@ -934,6 +934,11 @@ export class LightComponent {
     this.el.removeEventListener('pointerdown', this.onDown);
     this.uniforms.u_mask.value.dispose();
     this.renderer.dispose();
+    // Hand the WebGL context back now (QA H-14, G-01). dispose() alone leaves
+    // it alive until garbage collection, and buttons are created and disposed
+    // as they scroll in and out, so the page would pile up contexts until the
+    // browser starts dropping the oldest ones, such as the screen shader.
+    this.renderer.forceContextLoss();
     this.canvas.remove();
   }
 }

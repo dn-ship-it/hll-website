@@ -60,6 +60,8 @@ export type BottomShaderProps = {
   layout?: BottomShaderLayout;
   pauseOnDoubleClick?: boolean;
   disabled?: boolean;
+  /** Called if the browser drops this canvas's WebGL context. */
+  onContextLost?: () => void;
   className?: string;
   style?: CSSProperties;
 };
@@ -76,6 +78,7 @@ export function BottomShader({
   layout = DEFAULT_LAYOUT,
   pauseOnDoubleClick = false,
   disabled = false,
+  onContextLost,
   className,
   style,
 }: BottomShaderProps) {
@@ -86,6 +89,16 @@ export function BottomShader({
   // so flipping the flag never tears down the WebGL context.
   const atEndRef = useRef(atEnd);
   atEndRef.current = atEnd;
+
+  const onLostRef = useRef(onContextLost);
+  onLostRef.current = onContextLost;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+    const lost = () => onLostRef.current?.();
+    canvas.addEventListener("webglcontextlost", lost);
+    return () => canvas.removeEventListener("webglcontextlost", lost);
+  }, []);
 
   useEffect(() => {
     if (disabled) return undefined;
