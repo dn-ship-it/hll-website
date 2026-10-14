@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 
 import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
 import type { HomePageContent, HomeService } from "@/data/home";
@@ -283,7 +284,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
   const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const count = services.length;
   const selected = services[active];
 
@@ -296,9 +297,9 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
   useEffect(() => {
     const fit = () => {
       const sticky = stickyRef.current;
-      const desc = descRef.current;
-      if (!sticky || !desc || !sticky.offsetHeight) return;
-      const below = sticky.getBoundingClientRect().bottom - desc.getBoundingClientRect().bottom;
+      const card = cardRef.current;
+      if (!sticky || !card || !sticky.offsetHeight) return;
+      const below = sticky.getBoundingClientRect().bottom - card.getBoundingClientRect().bottom;
       const gap = (DESIGN_GAP_TO_CLIENTS * window.innerWidth) / 1512;
       setTail(Math.round(gap - CLIENTS_TOP_PAD - below));
     };
@@ -358,31 +359,78 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
   }
 
   // Figma shows two neighbours above the active service and three below.
-  const wheel = (offsets: number[]) =>
-    offsets.map((offset) => {
-      const index = (active + offset + count) % count;
-      return { offset, index, service: services[index] };
-    });
-  const above = wheel([-2, -1]);
-  const below = wheel([1, 2, 3]);
+  // QA H-29: every service is always rendered and sits in a slot by its
+  // distance from the active one, so a change of service slides the labels
+  // into their new places instead of swapping the text (~0.6s ease-in-out).
+  const offsetOf = (index: number, from: number) => {
+    const o = (index - from + count) % count;
+    return o >= count - 2 ? o - count : o;
+  };
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const lastTransform = useRef<string[]>([]);
+  // Our own slide/fade per label. The labels' CSS opacity transition is left
+  // alone, so it isn't mistaken for a slide in progress.
+  const slides = useRef<(Animation | undefined)[]>([]);
+  const prevActive = useRef(active);
+  const bigRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
-  const Label = ({
-    index,
-    service,
-  }: {
-    index: number;
-    service: HomeService;
-  }) => (
-    <li>
-      <button
-        type="button"
-        onClick={() => scrollToService(index)}
-        className="hll-label text-[12px] uppercase leading-[1.2] text-[var(--hll-mid-grey)] transition-colors hover:text-[var(--hll-dark-grey)]"
-      >
-        {service.label}
-      </button>
-    </li>
-  );
+  // The slots below the big name depend on its height (names can wrap).
+  useEffect(() => {
+    const big = bigRef.current;
+    const list = listRef.current;
+    if (!big || !list) return;
+    const remember = () =>
+      itemRefs.current.forEach((el, i) => {
+        if (el && slides.current[i]?.playState !== "running") lastTransform.current[i] = getComputedStyle(el).transform;
+      });
+    const observer = new ResizeObserver(() => {
+      list.style.setProperty("--big-h", `${big.offsetHeight}px`);
+      remember();
+    });
+    observer.observe(big);
+    return () => observer.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const from = prevActive.current;
+    prevActive.current = active;
+    let delta = active - from;
+    if (delta > count / 2) delta -= count;
+    if (delta < -count / 2) delta += count;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    itemRefs.current.forEach((el, i) => {
+      if (!el) return;
+      // Mid-slide (a fast scroll), start from where the label is right now.
+      const running = slides.current[i]?.playState === "running" ? slides.current[i] : undefined;
+      const start = running ? getComputedStyle(el).transform : lastTransform.current[i];
+      running?.cancel();
+      const end = getComputedStyle(el).transform;
+      lastTransform.current[i] = end;
+      if (reduceMotion || delta === 0 || !start || start === end) return;
+
+      const move = offsetOf(i, active) - offsetOf(i, from);
+      const timing = { duration: 600, easing: "ease-in-out" };
+      // The label that wraps from one end of the list to the other fades in
+      // at its new place rather than sliding across everything.
+      if (Math.sign(move) !== Math.sign(-delta)) {
+        slides.current[i] = el.animate([{ opacity: 0 }, { opacity: getComputedStyle(el).opacity }], timing);
+      } else {
+        slides.current[i] = el.animate([{ transform: start }, { transform: end }], timing);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, count]);
+
+  // Slot tops: 14.4px labels 12px apart, the big name 21px under the second
+  // label and 12px above the next one (the same spacing as before).
+  const slotTop = (offset: number) => {
+    if (offset <= -2) return `${(offset + 2) * 26.4}px`;
+    if (offset === -1) return "26.4px";
+    if (offset === 0) return "calc(61.8px + var(--big-h) / 2 - 7.2px)";
+    return `calc(${73.8 + (offset - 1) * 26.4}px + var(--big-h))`;
+  };
 
   return (
     <section
@@ -393,55 +441,128 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
     >
       <div
         ref={stickyRef}
-        // QA H-18: the design's 158px (at 1512) between the hero window and
-        // "Capabilities" on every screen height, rather than centring the
-        // block (which squeezed that gap on shorter screens). On a short
-        // screen the image card gives up height instead, so the block still
-        // fits.
-        className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col pb-6 pt-[calc(10.45*var(--vw))] ${HOME_GUTTER}`}
+        // QA H-29: 56px (at 1512, scaled with the width) above "Capabilities"
+        // on every screen height (was H-18's 158px). On a short screen the
+        // image card gives up height instead, so the block still fits.
+        className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col pb-6 pt-[calc(3.7*var(--vw))] ${HOME_GUTTER}`}
       >
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
 
-        <div className="mt-[84px] grid min-h-0 flex-1 gap-8 md:grid-cols-[731fr_721fr] md:grid-rows-[minmax(0,1fr)] md:gap-0">
-          <div className="md:pt-[75px]" aria-live="polite">
-            <ul className="space-y-3">
-              {above.map((item) => (
-                <Label key={item.offset} index={item.index} service={item.service} />
-              ))}
-            </ul>
-            <a
-              href={selected.href}
-              className="mb-3 mt-[21px] block text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]"
+        <div className="mt-[48px] grid min-h-0 flex-1 gap-8 md:grid-cols-[731fr_721fr] md:grid-rows-[minmax(0,1fr)] md:gap-0">
+          <div className="md:pt-[75px]">
+            <p className="sr-only" aria-live="polite">{selected.name}</p>
+            <div
+              ref={listRef}
+              className="relative [--big-h:calc(1.16*clamp(2rem,calc(4.23*var(--vw)),4rem))]"
+              style={{ height: "calc(141px + var(--big-h))" }}
             >
-              {selected.name}
-            </a>
-            <ul className="space-y-3">
-              {below.map((item) => (
-                <Label key={item.offset} index={item.index} service={item.service} />
-              ))}
-            </ul>
+              <ul>
+                {services.map((service, index) => {
+                  const offset = offsetOf(index, active);
+                  const shown = offset !== 0 && offset >= -2 && offset <= 3;
+                  return (
+                    <li
+                      key={service.label}
+                      ref={(el) => {
+                        itemRefs.current[index] = el;
+                      }}
+                      aria-hidden={!shown}
+                      className="absolute left-0 top-0 transition-opacity duration-[600ms] ease-in-out motion-reduce:transition-none"
+                      style={{ transform: `translateY(${slotTop(offset)})`, opacity: shown ? 1 : 0 }}
+                    >
+                      <button
+                        type="button"
+                        tabIndex={shown ? undefined : -1}
+                        onClick={() => scrollToService(index)}
+                        className={`hll-label text-[12px] uppercase leading-[1.2] text-[var(--hll-mid-grey)] transition-colors hover:text-[var(--hll-dark-grey)] ${shown ? "" : "pointer-events-none"}`}
+                      >
+                        {service.label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {/* The big name crossfades in place with a small slide in the
+                  direction of travel. All names share one cell, so the box is
+                  as tall as the longest one. */}
+              <div ref={bigRef} className="absolute inset-x-0 top-[61.8px] grid">
+                {services.map((service, index) => {
+                  const on = index === active;
+                  return (
+                    <a
+                      key={service.label}
+                      href={service.href}
+                      aria-hidden={!on}
+                      tabIndex={on ? undefined : -1}
+                      className={`[grid-area:1/1] block text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)] transition-[opacity,transform] duration-[600ms] ease-in-out motion-reduce:transition-none ${on ? "" : "pointer-events-none"}`}
+                      style={{
+                        opacity: on ? 1 : 0,
+                        transform: `translateY(${on ? 0 : index < active ? -16 : 16}px)`,
+                      }}
+                    >
+                      {service.name}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="flex min-h-0 min-w-0 flex-col">
-            <div
-              className="relative aspect-[721/444] min-h-0 shrink overflow-hidden rounded-lg bg-[#D9D9D9] transition-[background] duration-500"
-              style={{
-                background: `#D9D9D9 url(${demoImage(selected)}) center / cover`,
-              }}
+            {/* QA H-29: the description sits inside the card, bottom left in
+                white, with an arrow that shows on hover. */}
+            <a
+              ref={cardRef}
+              href={selected.href}
+              className="group relative aspect-[721/444] min-h-0 shrink overflow-hidden rounded-lg bg-[#D9D9D9]"
             >
-              <span className="absolute left-2 top-2 grid size-12 place-items-center rounded-[4px] bg-[var(--hll-bg)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/assets/services/${selected.variant}-glyph.svg`}
-                  alt=""
+              {/* The image and description fade across to the next service. */}
+              {services.map((service, index) => (
+                <span
+                  key={service.label}
                   aria-hidden
-                  className="size-12 grayscale"
+                  className="absolute inset-0 transition-opacity duration-[600ms] ease-in-out motion-reduce:transition-none"
+                  style={{
+                    background: `url(${demoImage(service)}) center / cover`,
+                    opacity: index === active ? 1 : 0,
+                  }}
+                />
+              ))}
+              <span className="absolute left-2 top-2 grid size-12 place-items-center rounded-[4px] bg-[var(--hll-bg)]">
+                {services.map((service, index) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={service.label}
+                    src={`/assets/services/${service.variant}-glyph.svg`}
+                    alt=""
+                    aria-hidden
+                    className="size-12 grayscale transition-opacity duration-[600ms] ease-in-out [grid-area:1/1] motion-reduce:transition-none"
+                    style={{ opacity: index === active ? 1 : 0 }}
+                  />
+                ))}
+              </span>
+              {/* A soft shade under the text keeps it readable on light images. */}
+              <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/45 to-transparent" />
+              <span className="absolute bottom-6 left-6 right-6 flex items-end gap-3">
+                <span className="grid max-w-[509px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-white">
+                  {services.map((service, index) => (
+                    <span
+                      key={service.label}
+                      aria-hidden={index !== active}
+                      className="self-end transition-opacity duration-[600ms] ease-in-out [grid-area:1/1] motion-reduce:transition-none"
+                      style={{ opacity: index === active ? 1 : 0 }}
+                    >
+                      {service.description}
+                    </span>
+                  ))}
+                </span>
+                <ArrowUpRight
+                  aria-hidden
+                  strokeWidth={1.4}
+                  className="size-6 shrink-0 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
                 />
               </span>
-            </div>
-            <p ref={descRef} className="mt-6 max-w-[509px] shrink-0 text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
-              {selected.description}
-            </p>
+            </a>
           </div>
         </div>
       </div>
