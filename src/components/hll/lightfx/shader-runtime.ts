@@ -23,6 +23,12 @@ export type ShaderFXOptions = {
    * visible edge instead of drifting out of frame.
    */
   pointerMaxY?: number | null;
+  /**
+   * QA H-14: how much page scrolling moves the effect, in animation time per
+   * scrolled pixel. 0 (the default) leaves it on its own clock and the
+   * pointer only.
+   */
+  scrollResponse?: number;
 };
 
 export type ShaderFX = { dispose(): void };
@@ -45,6 +51,7 @@ export function createShaderFX(
     pauseOnDoubleClick = true,
     blueNoiseSize = 256,
     pointerMaxY,
+    scrollResponse = 0,
   } = options;
 
   // Opt-in via settings.background.transparent. Needs the context created with
@@ -474,6 +481,18 @@ export function createShaderFX(
   }
   window.addEventListener("pointermove", onPointerMove, { passive: true });
 
+  // Scrolling winds the animation clock forward, eased out over the next
+  // frames, so the effect flows while the page moves instead of sitting
+  // still under it.
+  let lastScrollY = window.scrollY;
+  let scrollDrive = 0;
+  function onScroll() {
+    const y = window.scrollY;
+    scrollDrive += Math.abs(y - lastScrollY) * scrollResponse;
+    lastScrollY = y;
+  }
+  if (scrollResponse) window.addEventListener("scroll", onScroll, { passive: true });
+
   let stopped = false;
   function onDblClick() {
     stopped = !stopped;
@@ -604,7 +623,12 @@ export function createShaderFX(
     const smoothing = stopped ? 0 : 0.1;
     currPointer[0] = lerp(currPointer[0], pointer[0], smoothing);
     currPointer[1] = lerp(currPointer[1], pointer[1], smoothing);
-    if (!stopped && !reduceMotion) elapsed += (delta / 1000) * 2;
+    if (!stopped && !reduceMotion) {
+      elapsed += (delta / 1000) * 2;
+      const step = scrollDrive * 0.12;
+      elapsed += step;
+      scrollDrive -= step;
+    }
 
     drawVignette(bufferWrite);
     swap();
@@ -664,6 +688,7 @@ export function createShaderFX(
     document.removeEventListener("visibilitychange", sync);
     ro.disconnect();
     window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("scroll", onScroll);
     if (pauseOnDoubleClick) canvas!.removeEventListener("dblclick", onDblClick);
   }
 

@@ -4,6 +4,10 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 
 import { BottomShader, HLLButton } from "@/components/hll";
+import {
+  BASE_SETTINGS,
+  type ShaderSettings,
+} from "@/components/hll/lightfx/shader-definition";
 
 import { BUTTON_MOBILE } from "./button-sizes";
 import { variantForPath } from "./page-variant";
@@ -186,25 +190,53 @@ export function FooterShaderStrip({
   );
 }
 
-/** How close to the end of the page counts as "at the footer". */
-const END_ZONE = 320;
+/**
+ * HLL-UI-Demo's ServicesScrollDemo settings, copied verbatim (QA H-14).
+ * Unlisted values never reach the shader; they're only filled from
+ * BASE_SETTINGS to satisfy the type.
+ */
+const DEMO_SETTINGS: ShaderSettings = {
+  ...BASE_SETTINGS,
+  background: { color: "#ffffff", transparent: true },
+  vignette: { ...BASE_SETTINGS.vignette, radius: 0.53, falloff: 2.6, skew: 0.0, angle: 0 },
+  sine: { ...BASE_SETTINGS.sine, frequency: 0.32, amplitude: 7.4, rotation: 0, mixRadius: 0.8, trackMouse: 1 },
+  shatter: { scale: 0.5, amount: 2.5, angle: 10, skew: 0.9, mixRadius: 1, trackMouse: 1 },
+  bokeh: { radius: 0.82, tilt: 0.5, mixRadius: 1, trackMouse: 0 },
+  output: { color: "#ffffff", aberration: 0.006, blendStrength: 0.85 },
+};
+/** The demo's plain end-of-page look: the same, with a finer shatter. */
+const DEMO_END_SETTINGS: ShaderSettings = {
+  ...DEMO_SETTINGS,
+  shatter: { ...DEMO_SETTINGS.shatter, scale: 0.2, amount: 1.0 },
+};
+
+/** The demo's "scrolled to the true end": a few px of slack for fractional
+ *  scroll positions. */
+const END_THRESHOLD_PX = 4;
+/** Animation time per scrolled pixel: a screen's worth of scrolling moves
+ *  the effect about as far as 1.5s of its own drift (Hannan, 16 Oct: "not
+ *  supposed to be static … it should move on scroll too"). */
+const SCROLL_RESPONSE = 0.0035;
+/** Start the end-of-page layer this far ahead, so it's running in time. */
+const END_LAYER_AHEAD = 1600;
 
 /**
- * QA H-14, as in the HLL UI Demo: the page's shader pinned to the bottom of
- * the screen while you scroll. It sits faintly over the content (hard-light,
- * so whatever passes through it picks up its colours and clears again as it
- * moves up the screen) and comes up to full strength at the footer.
+ * QA H-14, built as HLL-UI-Demo's ServicesScrollDemo: the page's shader
+ * pinned to the bottom of the screen, blended over the content (hard-light,
+ * so what passes through it takes its colours). At the true end of the page
+ * it crossfades (0.6s) to a second, unblended layer with a finer shatter. A
+ * blend mode can't be transitioned, hence two layers and an opacity fade.
  *
- * Desktop runs it the whole way down. Phones only bring it in near the
- * footer, as before: they allow few WebGL contexts and pay for every frame.
- * It's started once the page has settled, so it never competes with the
- * first paint.
+ * The end layer is only created once the end is near, and phones bring the
+ * whole thing in near the footer only: they allow few WebGL contexts and pay
+ * for every frame. It starts once the page has settled, after first paint.
  */
 export function ScreenShader() {
   const pathname = usePathname();
   const able = useShaderAble();
   const [started, setStarted] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
+  const [nearEnd, setNearEnd] = useState(false);
   const [desktop, setDesktop] = useState(false);
   const [generation, setGeneration] = useState(0);
 
@@ -215,11 +247,14 @@ export function ScreenShader() {
     onMedia();
     media.addEventListener("change", onMedia);
 
-    // Checked straight in the scroll event: it's a cheap read, and React
-    // skips the render when the answer hasn't changed.
+    // Checked straight in the scroll event: a cheap read, and React skips
+    // the render when the answer hasn't changed.
     const onScroll = () => {
       const doc = document.documentElement;
-      setAtEnd(window.scrollY + window.innerHeight >= doc.scrollHeight - END_ZONE);
+      const left = doc.scrollHeight - (window.scrollY + window.innerHeight);
+      setAtEnd(left <= END_THRESHOLD_PX);
+      // Once near, kept: remounting would rebuild the WebGL context.
+      if (left <= END_LAYER_AHEAD) setNearEnd(true);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -239,50 +274,37 @@ export function ScreenShader() {
     window.dispatchEvent(new Event("resize"));
   }, [pathname]);
 
-  const [reachedEnd, setReachedEnd] = useState(false);
-  useEffect(() => {
-    if (atEnd) setReachedEnd(true);
-  }, [atEnd]);
-
-  // Over the content it tints (hard-light); at the footer it shows in full
-  // colour, as the footer strip did. A blend mode can't be animated, so it
-  // dips out, swaps, and comes back.
-  const [mode, setMode] = useState<"tint" | "full">("tint");
-  const [dipped, setDipped] = useState(false);
-  useEffect(() => {
-    const want = atEnd ? "full" : "tint";
-    // Back where it was before the swap landed (a quick scroll back and
-    // forth at the edge): just come back in, or it would stay faded out.
-    if (want === mode) {
-      setDipped(false);
-      return;
-    }
-    setDipped(true);
-    const swap = window.setTimeout(() => {
-      setMode(want);
-      setDipped(false);
-    }, 250);
-    return () => window.clearTimeout(swap);
-  }, [atEnd, mode]);
-
-  // Phones create it the first time the footer comes near, then keep it:
-  // remounting would leak a WebGL context each time.
-  if (!able || !started || (!desktop && !reachedEnd)) return null;
+  if (!able || !started || (!desktop && !nearEnd)) return null;
 
   const variant = variantForPath(pathname);
+  const common = {
+    variant: variant ?? ("contact" as const),
+    // Home has no section palette of its own; the Figma Home footer runs
+    // pink and peach rather than Contact's blues (QA G-07).
+    colors: variant ? undefined : HOME_SHADER_COLORS,
+    passthrough: true,
+    scrollResponse: SCROLL_RESPONSE,
+    // A fresh canvas if the browser ever drops one's WebGL context.
+    onContextLost: () => setGeneration((n) => n + 1),
+    className: "z-30 transition-opacity duration-[600ms] ease-[ease]",
+  };
   return (
-    <BottomShader
-      // A fresh canvas if the browser ever drops this one's WebGL context.
-      key={generation}
-      onContextLost={() => setGeneration((n) => n + 1)}
-      variant={variant ?? "contact"}
-      // Home has no section palette of its own; the Figma Home footer runs
-      // pink and peach rather than Contact's blues (QA G-07).
-      colors={variant ? undefined : HOME_SHADER_COLORS}
-      overlay={mode === "tint"}
-      passthrough
-      className="z-30 transition-opacity duration-[250ms] ease-in-out"
-      style={{ opacity: dipped ? 0 : mode === "full" ? 1 : desktop ? 0.45 : 0 }}
-    />
+    <>
+      <BottomShader
+        key={`blend-${generation}`}
+        {...common}
+        settings={DEMO_SETTINGS}
+        overlay
+        style={{ opacity: atEnd ? 0 : 1 }}
+      />
+      {nearEnd ? (
+        <BottomShader
+          key={`end-${generation}`}
+          {...common}
+          settings={DEMO_END_SETTINGS}
+          style={{ opacity: atEnd ? 1 : 0 }}
+        />
+      ) : null}
+    </>
   );
 }

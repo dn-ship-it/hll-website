@@ -60,6 +60,8 @@ export type BottomShaderProps = {
   layout?: BottomShaderLayout;
   pauseOnDoubleClick?: boolean;
   disabled?: boolean;
+  /** How much page scrolling moves the effect (see shader-runtime.ts). */
+  scrollResponse?: number;
   /** Called if the browser drops this canvas's WebGL context. */
   onContextLost?: () => void;
   className?: string;
@@ -78,6 +80,7 @@ export function BottomShader({
   layout = DEFAULT_LAYOUT,
   pauseOnDoubleClick = false,
   disabled = false,
+  scrollResponse = 0,
   onContextLost,
   className,
   style,
@@ -112,6 +115,7 @@ export function BottomShader({
       blueNoiseSize: BLUE_NOISE_SIZE,
       pauseOnDoubleClick,
       pointerMaxY: layout.POINTER_MAX_Y,
+      scrollResponse,
     });
 
     let raf: number | null = null;
@@ -141,7 +145,7 @@ export function BottomShader({
       fx.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, colors?.join(","), pauseOnDoubleClick, disabled, settings, endShatter, layout]);
+  }, [variant, colors?.join(","), pauseOnDoubleClick, disabled, settings, endShatter, layout, scrollResponse]);
 
   const isOverlay = overlay || Boolean(endShatter);
 
