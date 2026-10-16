@@ -46,9 +46,15 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
     // How we work ends with its own 154px; Figma puts the map 223px below
     // (mobile: 84px).
     <section className="-mt-[70px] lg:mt-0 lg:pt-[69px]">
+      {/* QA A-07: on desktop the map, heading and numbers fit one screen
+          under the Nav Bar. The map takes what the numbers leave: first by
+          trimming up to 15% off its top and bottom (no pins live there),
+          then by shrinking, so it is never cut further than that. */}
+      <div className="lg:flex lg:h-[calc(100*var(--svh)-var(--nav-h))] lg:flex-col">
+      <div className="lg:flex lg:min-h-0 lg:flex-1 lg:justify-center lg:px-[10px]">
       {/* Mobile: a 386 × 551 crop of the same map, over the Americas (Figma
           image fill x 2–26%, y 15–93%); the pins follow the crop. */}
-      <div className="relative mx-[6px] aspect-[386/551] overflow-hidden rounded-lg bg-[#E6E6E6] lg:mx-[10px] lg:aspect-[1492/636]">
+      <div className="relative mx-[6px] aspect-[386/551] overflow-hidden rounded-lg bg-[#E6E6E6] lg:mx-0 lg:aspect-[1492/540] lg:h-full lg:max-h-[calc((100*var(--vw)-20px)*636/1492)] lg:max-w-full lg:[container-type:inline-size]">
         <div
           aria-hidden
           className="absolute inset-0 bg-[length:414.3%_127.6%] bg-[position:2.71%_69.1%] bg-no-repeat lg:hidden"
@@ -59,7 +65,10 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
         {data.pins.map((pin) => (
           <div
             key={pin.id}
-            className="group absolute left-[calc((var(--pin-x)_-_0.0206)/0.2413*100%)] top-[calc((var(--pin-y)_-_0.1493)/0.784*100%)] lg:left-[calc(var(--pin-x)*100%)] lg:top-[calc(var(--pin-y)*100%)]"
+            // Desktop: the map image covers the box from its centre, so a pin
+            // sits at its share of the image's height (the box's width ×
+            // 636/1492) less the half that is trimmed off the top.
+            className="group absolute left-[calc((var(--pin-x)_-_0.0206)/0.2413*100%)] top-[calc((var(--pin-y)_-_0.1493)/0.784*100%)] lg:left-[calc(var(--pin-x)*100%)] lg:top-[calc(var(--pin-y)*100cqw*636/1492_-_(100cqw*636/1492_-_100%)/2)]"
             style={{ ["--pin-x" as string]: pin.x, ["--pin-y" as string]: pin.y }}
           >
             {pin.title ? (
@@ -73,10 +82,11 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
           </div>
         ))}
       </div>
+      </div>
 
-      <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:gap-8 lg:px-[10px] lg:pb-[29px]">
+      <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:shrink-0 lg:gap-8 lg:px-[10px] lg:pb-[29px]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-        <p className="hidden text-[clamp(3rem,calc(6.35*var(--vw)),6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:block lg:w-[592px]">
+        <p className="hidden text-[clamp(3rem,min(calc(6.35*var(--vw)),calc(10*var(--svh))),6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:block lg:w-[592px]">
           {data.stats.map((line) => (
             <span key={line} className="block">
               {/* Figma: "Number counter". */}
@@ -96,6 +106,7 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
             );
           })}
         </div>
+      </div>
       </div>
     </section>
   );

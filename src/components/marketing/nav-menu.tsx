@@ -39,9 +39,12 @@ export const MENU_SERVICES: ServiceVariant[] = [
 
 // Figma: each menu's panel keeps its own place under the Nav Bar (right
 // edges at x 1247 / 1244 of 1512, News at 1503); About's sits under its button.
+// QA N-04: Services and Industries carry "In the News" beside them (that 250px
+// panel + 6px gap is why they ended 256px short of News's edge), so their row
+// is placed by its right edge, News, like Engagement's.
 const PANEL_RIGHT: Record<NavVariant, number> = {
-  services: 265,
-  industries: 268,
+  services: 9,
+  industries: 9,
   engagement: 9,
   about: 44,
   contact: 9,
@@ -164,7 +167,9 @@ function ServicesPanel() {
 function IndustriesPanel({ industries }: { industries: IndustryMenuGroup[] }) {
   return (
     <Panel
-      className="min-h-[242px] w-[607px] px-[21px] pb-4 pt-[20px]"
+      // 3px more than the row's gap, so it still ends at x 1244 while News
+      // keeps the same place under every menu.
+      className="mr-[3px] min-h-[242px] w-[607px] px-[21px] pb-4 pt-[20px]"
       opacity={0.9}
     >
       <div className="grid grid-cols-[207fr_207fr_151fr] gap-y-[31px]">
@@ -275,8 +280,11 @@ export function NavMenu({
       {open === "services" ? <ServicesPanel /> : null}
       {open === "industries" ? <IndustriesPanel industries={industries} /> : null}
       {open === "about" ? <AboutPanel /> : null}
-      {/* "In the News" sits under Engagement only. */}
-      {open === "engagement" ? <NewsPanel news={news} opacity={0.8} /> : null}
+      {/* "In the News" beside Services and Industries, and alone under
+          Engagement (QA N-04). */}
+      {open === "services" || open === "industries" || open === "engagement" ? (
+        <NewsPanel news={news} opacity={0.8} />
+      ) : null}
     </>
   ) : null;
 
