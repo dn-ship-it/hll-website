@@ -27,6 +27,9 @@ export function ExpertVoiceSection({
     <VoiceSection
       slides={[data, ...more]}
       counterColor={accent}
+      // QA T-03: the timer bar under the portrait, and the slides turn on
+      // their own, as on Industry pages.
+      timerColor={accent}
       heading={
         <ServiceSectionHeading
           breadcrumb={breadcrumb}

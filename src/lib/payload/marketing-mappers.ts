@@ -119,6 +119,10 @@ export function mapServiceToPage(
           name: pc.expertVoice.name ?? undefined,
           role: pc.expertVoice.role ?? "",
           company: pc.expertVoice.company ?? undefined,
+          companyLogo: resolveMediaUrl(pc.expertVoice.companyLogo as CmsImageRef) ?? undefined,
+          // The main quote's portrait was never read before (only the extra
+          // slides' were).
+          portrait: resolveMediaUrl(pc.expertVoice.portrait as CmsImageRef) ?? undefined,
         }
       : fallback.expertVoice,
     moreExpertVoices:
@@ -127,6 +131,7 @@ export function mapServiceToPage(
         name: q.name ?? undefined,
         role: q.role ?? "",
         company: q.company ?? undefined,
+        companyLogo: resolveMediaUrl(q.companyLogo as CmsImageRef) ?? undefined,
         portrait: resolveMediaUrl(q.portrait as CmsImageRef) ?? undefined,
       })) ?? fallback.moreExpertVoices,
     relatedServices:
@@ -199,6 +204,9 @@ export function mapIndustryPage(
       name: pc.clientVoice?.name ?? fallback.clientVoice.name,
       role: pc.clientVoice?.role ?? fallback.clientVoice.role,
       company: pc.clientVoice?.company ?? fallback.clientVoice.company,
+      companyLogo:
+        resolveMediaUrl(pc.clientVoice?.companyLogo as CmsImageRef) ?? fallback.clientVoice.companyLogo,
+      portrait: resolveMediaUrl(pc.clientVoice?.portrait as CmsImageRef) ?? fallback.clientVoice.portrait,
       slideCount: pc.clientVoice?.slideCount ?? fallback.clientVoice.slideCount,
       more:
         pc.clientVoice?.moreQuotes?.map((q) => ({
@@ -206,6 +214,8 @@ export function mapIndustryPage(
           name: q.name ?? undefined,
           role: q.role ?? "",
           company: q.company ?? undefined,
+          companyLogo: resolveMediaUrl(q.companyLogo as CmsImageRef) ?? undefined,
+          portrait: resolveMediaUrl(q.portrait as CmsImageRef) ?? undefined,
         })) ?? fallback.clientVoice.more,
     },
     experts: {

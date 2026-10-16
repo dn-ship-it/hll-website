@@ -97,7 +97,8 @@ function healthcarePageContentSeed() {
         })),
       })),
     },
-    clientVoice: h.clientVoice,
+    // Logo and portrait are uploads in the CMS, not the bundled paths.
+    clientVoice: { ...h.clientVoice, companyLogo: undefined, portrait: undefined },
     experts: {
       eyebrow: h.experts.eyebrow,
       title: h.experts.title,

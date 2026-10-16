@@ -131,6 +131,7 @@ export const servicePageContentFields: Field[] = [
       { name: "name", type: "text" },
       { name: "role", type: "text" },
       { name: "company", type: "text" },
+      { name: "companyLogo", type: "upload", relationTo: "media", admin: { description: "Small company logo on the card (QA T-03). Without one, the company name shows." } },
       { name: "portrait", type: "upload", relationTo: "media" },
       {
         name: "moreQuotes",
@@ -145,6 +146,7 @@ export const servicePageContentFields: Field[] = [
           { name: "name", type: "text" },
           { name: "role", type: "text" },
           { name: "company", type: "text" },
+          { name: "companyLogo", type: "upload", relationTo: "media", admin: { description: "Small company logo on the card (QA T-03). Without one, the company name shows." } },
           { name: "portrait", type: "upload", relationTo: "media" },
         ],
       },
@@ -234,6 +236,8 @@ export const industryPageContentFields: Field[] = [
       { name: "name", type: "text" },
       { name: "role", type: "text" },
       { name: "company", type: "text" },
+      { name: "companyLogo", type: "upload", relationTo: "media", admin: { description: "Small company logo on the card (QA T-03). Without one, the company name shows." } },
+      { name: "portrait", type: "upload", relationTo: "media" },
       {
         name: "slideCount",
         type: "number",
@@ -256,6 +260,8 @@ export const industryPageContentFields: Field[] = [
           { name: "name", type: "text" },
           { name: "role", type: "text" },
           { name: "company", type: "text" },
+          { name: "companyLogo", type: "upload", relationTo: "media", admin: { description: "Small company logo on the card (QA T-03). Without one, the company name shows." } },
+          { name: "portrait", type: "upload", relationTo: "media" },
         ],
       },
     ],

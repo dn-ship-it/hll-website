@@ -57,7 +57,14 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
         />
         <VoiceSection
           slides={[
-            { quote: voice.quote, name: voice.name, role: voice.role, company: voice.company },
+            {
+              quote: voice.quote,
+              name: voice.name,
+              role: voice.role,
+              company: voice.company,
+              companyLogo: voice.companyLogo,
+              portrait: voice.portrait,
+            },
             ...(voice.more ?? []),
           ]}
           timerColor={accent}

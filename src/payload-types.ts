@@ -505,6 +505,10 @@ export interface Service {
       name?: string | null;
       role?: string | null;
       company?: string | null;
+      /**
+       * Small company logo on the card (QA T-03). Without one, the company name shows.
+       */
+      companyLogo?: (number | null) | Media;
       portrait?: (number | null) | Media;
       /**
        * Further slides after the quote above. The arrows, swipe and timer move between them.
@@ -515,6 +519,10 @@ export interface Service {
             name?: string | null;
             role?: string | null;
             company?: string | null;
+            /**
+             * Small company logo on the card (QA T-03). Without one, the company name shows.
+             */
+            companyLogo?: (number | null) | Media;
             portrait?: (number | null) | Media;
             id?: string | null;
           }[]
@@ -746,6 +754,11 @@ export interface Industry {
       role?: string | null;
       company?: string | null;
       /**
+       * Small company logo on the card (QA T-03). Without one, the company name shows.
+       */
+      companyLogo?: (number | null) | Media;
+      portrait?: (number | null) | Media;
+      /**
        * No longer used: the counter now counts the testimonials.
        */
       slideCount?: number | null;
@@ -759,6 +772,11 @@ export interface Industry {
             name?: string | null;
             role?: string | null;
             company?: string | null;
+            /**
+             * Small company logo on the card (QA T-03). Without one, the company name shows.
+             */
+            companyLogo?: (number | null) | Media;
+            portrait?: (number | null) | Media;
             id?: string | null;
           }[]
         | null;
@@ -1552,6 +1570,7 @@ export interface ServicesSelect<T extends boolean = true> {
               name?: T;
               role?: T;
               company?: T;
+              companyLogo?: T;
               portrait?: T;
               moreQuotes?:
                 | T
@@ -1560,6 +1579,7 @@ export interface ServicesSelect<T extends boolean = true> {
                     name?: T;
                     role?: T;
                     company?: T;
+                    companyLogo?: T;
                     portrait?: T;
                     id?: T;
                   };
@@ -1745,6 +1765,8 @@ export interface IndustriesSelect<T extends boolean = true> {
               name?: T;
               role?: T;
               company?: T;
+              companyLogo?: T;
+              portrait?: T;
               slideCount?: T;
               galleryImage?: T;
               moreQuotes?:
@@ -1754,6 +1776,8 @@ export interface IndustriesSelect<T extends boolean = true> {
                     name?: T;
                     role?: T;
                     company?: T;
+                    companyLogo?: T;
+                    portrait?: T;
                     id?: T;
                   };
             };

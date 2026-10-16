@@ -195,13 +195,13 @@ export function VoiceSection({
             </div>
             {timer("mt-2 hidden lg:block")}
           </div>
-          {data.company ? (
+          {data.company || data.companyLogo ? (
             <div className="ml-auto grid aspect-square w-[57px] shrink-0 place-items-center rounded-[6px] bg-[#24477F] p-1 text-center text-[9px] text-white lg:ml-0 lg:w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] lg:rounded-[4px] lg:p-2 lg:text-[11px]">
               {data.companyLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={data.companyLogo}
-                  alt={data.company}
+                  alt={data.company ?? ""}
                   draggable={false}
                   className="w-[92%] object-contain"
                 />
