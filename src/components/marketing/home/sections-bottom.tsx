@@ -236,8 +236,15 @@ export function HowWeWork({
 
       <div
         ref={desktopRef}
-        className="relative hidden cursor-grab select-none active:cursor-grabbing lg:block"
-        style={{ aspectRatio: `${STAGE.w} / ${STAGE.h}` }}
+        className="relative mx-auto hidden cursor-grab select-none active:cursor-grabbing lg:block"
+        style={{
+          aspectRatio: `${STAGE.w} / ${STAGE.h}`,
+          // QA A-06: heading and stage together fit one screen under the Nav
+          // Bar (the heading is its 14.4px eyebrow, 12px gap and a 1.16-line
+          // title), so on a short screen the stage narrows, centred, rather
+          // than running off the bottom.
+          width: `min(100%, calc((100 * var(--svh) - var(--nav-h) - 26.4px - 1.16 * clamp(30px, calc(4.23 * var(--vw)), 4rem) - 32px) * ${STAGE.w} / ${STAGE.h}))`,
+        }}
         {...swipeHandlers}
       >
         <div className="absolute" style={{ left: pct(36, STAGE.w), top: pct(317, STAGE.h) }}>
