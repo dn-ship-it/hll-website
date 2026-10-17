@@ -1,32 +1,22 @@
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { getMarketingContent } from "@/lib/payload/queries";
 import { SERVICE_LABELS } from "@/data/engagements";
-import { SERVICE_PAGES } from "@/data/services";
+import { getServicePageByVariant } from "@/data/services";
+import { cleanServiceName, serviceHref } from "@/components/hll/variants";
 
 import { AllCapabilities, type CapabilityService } from "./all-capabilities";
 import { ServiceReveal } from "./service-reveal";
-
-// PLACEHOLDER — HLL Cloud has a tile in the Figma frame but no page or copy
-// yet; it shows Figma's stand-in text and isn't linked.
-const HLL_CLOUD: CapabilityService = {
-  id: "hll-cloud",
-  name: "HLL Cloud",
-  href: null,
-  description:
-    "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",
-  subServices: [],
-};
 
 // AI and Ontology still carry the template's (Foundation's) capability list
 // as placeholder; their sub-services stay hidden until real ones are written.
 const PLACEHOLDER_CAPABILITIES = new Set(["hll-ai", "hll-ontology"]);
 
 function serviceEntry(id: keyof typeof SERVICE_LABELS): CapabilityService {
-  const page = SERVICE_PAGES[id];
+  const page = getServicePageByVariant(id);
   return {
     id,
     name: SERVICE_LABELS[id],
-    href: `/services/${id}`,
+    href: serviceHref(id),
     description: page?.hero.headline ?? "",
     subServices: PLACEHOLDER_CAPABILITIES.has(id) ? [] : (page?.capabilities.items.map((item) => item.title) ?? []),
   };
@@ -42,7 +32,7 @@ async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: num
       wheel: items.map((item, i) => ({
         id: `${item.tile}-${i}`,
         tile: item.tile,
-        name: item.name,
+        name: cleanServiceName(item.name),
         href: item.href || null,
         description: item.description ?? "",
         subServices: item.subServices?.map((sub) => sub.label) ?? [],
@@ -57,10 +47,7 @@ async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: num
 /** Figma Capabilities › All Capabilities (2562:5155), the /services overview. */
 export async function AllCapabilitiesPage() {
   const cms = await loadCmsWheel();
-  const entry = (id: string) =>
-    id === "hll-cloud"
-      ? HLL_CLOUD
-      : serviceEntry(id as keyof typeof SERVICE_LABELS);
+  const entry = (id: string) => serviceEntry(id as keyof typeof SERVICE_LABELS);
   // Figma wheel, top to bottom (Application in focus).
   const wheel = [
     "hll-foundation",

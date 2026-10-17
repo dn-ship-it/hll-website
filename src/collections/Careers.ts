@@ -50,7 +50,7 @@ export const Careers: CollectionConfig = {
     },
     publishStatusField,
     // Tags shown on the Open Roles list and the JD page.
-    { name: "service", type: "text", admin: { description: "e.g. HLL Ontology" } },
+    { name: "service", type: "text", admin: { description: "e.g. Ontology" } },
     { name: "employmentType", type: "text", admin: { description: "e.g. Full time, Contract" } },
     { name: "location", type: "text", admin: { description: "e.g. Pune, Remote" } },
     { name: "seniority", type: "text", admin: { description: "e.g. Senior" } },

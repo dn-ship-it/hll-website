@@ -918,7 +918,7 @@ export interface Career {
   externalApplyUrl?: string | null;
   status?: ('draft' | 'published') | null;
   /**
-   * e.g. HLL Ontology
+   * e.g. Ontology
    */
   service?: string | null;
   /**
@@ -2212,12 +2212,12 @@ export interface MarketingContent {
              */
             label: string;
             /**
-             * e.g. HLL Foundation
+             * e.g. Data & Analytics
              */
             name: string;
             description: string;
             /**
-             * e.g. /services/hll-foundation
+             * e.g. /services/data-analytics
              */
             href: string;
             /**
@@ -2647,7 +2647,7 @@ export interface MarketingContent {
       | {
           name: string;
           /**
-           * e.g. /services/hll-ai. Empty: shown without a link.
+           * e.g. /services/ai. Empty: shown without a link.
            */
           href?: string | null;
           description?: string | null;

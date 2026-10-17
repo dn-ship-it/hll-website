@@ -12,7 +12,7 @@ export type CapabilityService = {
   /** Tile colours and glyph (e.g. "hll-ai"); defaults to the id. */
   tile?: string;
   name: string;
-  /** No page yet (HLL Cloud): shown, not linked. */
+  /** No page yet (Cloud): shown, not linked. */
   href: string | null;
   description: string;
   subServices: string[];

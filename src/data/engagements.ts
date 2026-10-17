@@ -1,4 +1,4 @@
-import type { ServiceVariant } from "@/components/hll/variants";
+import { SERVICE_NAMES, type ServiceVariant } from "@/components/hll/variants";
 
 /**
  * Engagements (Figma Desktop › Engagement Main, Case Study Template and
@@ -19,14 +19,8 @@ export type EngagementType = (typeof ENGAGEMENT_TYPES)[number];
  *  Story: the whole page takes the client's colour. */
 export type EngagementTemplate = "case-study" | "story";
 
-export const SERVICE_LABELS: Record<ServiceVariant, string> = {
-  "hll-ai": "HLL AI",
-  "hll-trust": "HLL Trust & Governance",
-  "hll-foundation": "HLL Foundation",
-  "hll-ontology": "HLL Ontology",
-  "hll-people": "HLL People & Policy",
-  "hll-application": "HLL Application",
-};
+/** The services as the site names them: no "HLL" in front (17 Oct handoff). */
+export const SERVICE_LABELS: Record<ServiceVariant, string> = SERVICE_NAMES;
 
 /** The expanded filter's industry columns (Figma Engagement Filter Expanded). */
 export const INDUSTRY_GROUPS = [

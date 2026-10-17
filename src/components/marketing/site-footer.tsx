@@ -23,12 +23,12 @@ const FOOTER_NAV: SiteNavItem[] = [
 ];
 
 const DEFAULT_FOOTER_SERVICES = [
-  "HLL Application",
-  "HLL People & Policy",
-  "HLL Trust & Governance",
-  "HLL Foundation",
-  "HLL AI",
-  "HLL Ontology",
+  "Applications",
+  "People & Policy",
+  "Trust & Governance",
+  "Data & Analytics",
+  "AI",
+  "Ontology",
 ];
 
 // Figma lists industries as groups over two columns, three groups in each;

@@ -65,7 +65,7 @@ export const Services: CollectionConfig = {
         {
           name: "selectorLabel",
           type: "text",
-          defaultValue: "HLL Foundation",
+          defaultValue: "Data & Analytics",
           admin: {
             description: "Label on the pill above the demo iframe.",
           },

@@ -1,10 +1,10 @@
 import type { ServicePageData } from "./types";
 
 export const hllMomentum: ServicePageData = {
-  slug: "hll-people",
+  slug: "people-policy",
   variant: "hll-people",
-  brand: "HLL People & Policy",
-  breadcrumb: ["Capabilities", "HLL People & Policy"],
+  brand: "People & Policy",
+  breadcrumb: ["Capabilities", "People & Policy"],
   hero: {
     headline: "The talent gap closed for you in under a week",
     support:
@@ -137,11 +137,11 @@ export const hllMomentum: ServicePageData = {
   },
   expertVoice: null,
   relatedServices: [
-    { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL Application", href: "/services/hll-application" },
-    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
-    { label: "HLL AI", href: "/services/hll-ai" },
-    { label: "HLL Ontology", href: "/services/hll-ontology" },
+    { label: "Data & Analytics", href: "/services/data-analytics" },
+    { label: "Applications", href: "/services/applications" },
+    { label: "Trust & Governance", href: "/services/trust-governance" },
+    { label: "AI", href: "/services/ai" },
+    { label: "Ontology", href: "/services/ontology" },
   ],
   cta: {
     headline: "Talk to us about your next hire.",

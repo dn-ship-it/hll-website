@@ -26,6 +26,9 @@ export function Tag({ children, variant, className }: TagProps) {
 }
 
 export function HLLServiceTag({ label }: { label: string }) {
-  const warm = label.includes("PEOPLE") || label.includes("HLL AI");
+  // Warm for People & Policy and AI (the label is uppercased); "AI" must be
+  // the whole name, or "CHAIN" or "MAINTENANCE" would match.
+  const upper = label.trim().toUpperCase();
+  const warm = upper.includes("PEOPLE") || upper === "AI";
   return <Tag variant={warm ? "warm" : "cool"}>{label}</Tag>;
 }

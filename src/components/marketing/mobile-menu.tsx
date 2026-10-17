@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 import { VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import { SERVICE_LABELS } from "@/data/engagements";
+import { serviceHref } from "@/components/hll/variants";
 import type { IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
@@ -34,7 +35,7 @@ function ServicesList() {
       {MENU_SERVICES.map((service) => (
         <li key={service}>
           <Link
-            href={`/services/${service}`}
+            href={serviceHref(service)}
             className="group/svc flex h-9 items-center gap-[10px] text-[14px] text-[var(--hll-dark-grey)]"
           >
             {/* The service's own palette fills its icon tile on hover / tap. */}

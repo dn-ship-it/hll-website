@@ -190,12 +190,12 @@ export async function seedMarketingContent(payload: Payload) {
             join: teamPageContent.join,
           },
           footerServices: [
-            { label: "HLL Application" },
-            { label: "HLL People & Policy" },
-            { label: "HLL Trust & Governance" },
-            { label: "HLL Foundation" },
-            { label: "HLL AI" },
-            { label: "HLL Ontology" },
+            { label: "Applications" },
+            { label: "People & Policy" },
+            { label: "Trust & Governance" },
+            { label: "Data & Analytics" },
+            { label: "AI" },
+            { label: "Ontology" },
           ],
           footerIndustries: [
             { label: "Financial Services" },

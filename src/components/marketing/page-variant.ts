@@ -1,4 +1,4 @@
-import { SERVICE_VARIANTS, type HLLVariant } from "@/components/hll/variants";
+import { serviceVariantForSlug, type HLLVariant } from "@/components/hll/variants";
 
 /**
  * The palette a page belongs to: its service's own on a service page, else
@@ -7,9 +7,9 @@ import { SERVICE_VARIANTS, type HLLVariant } from "@/components/hll/variants";
  * variant").
  */
 export function variantForPath(pathname: string): HLLVariant | null {
-  const service = pathname.match(/^\/services\/([^/]+)/)?.[1];
-  if (service && (SERVICE_VARIANTS as readonly string[]).includes(service))
-    return service as HLLVariant;
+  const slug = pathname.match(/^\/services\/([^/]+)/)?.[1];
+  const service = slug ? serviceVariantForSlug(slug) : null;
+  if (service) return service;
   if (pathname.startsWith("/services")) return "services";
   if (pathname.startsWith("/industries")) return "industries";
   if (pathname.startsWith("/engagement")) return "engagement";

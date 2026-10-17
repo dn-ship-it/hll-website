@@ -23,7 +23,8 @@ export type RippleVariant =
   | "hll-foundation"
   | "hll-ontology"
   | "hll-people-and-policy"
-  | "hll-trust-and-governance";
+  | "hll-trust-and-governance"
+  | "hll-cloud";
 
 export type RippleOrigin = "center" | "corner";
 
@@ -82,6 +83,9 @@ export const VARIANT_PARAMS: Record<RippleVariant, RippleParams> = {
   "hll-trust-and-governance": { ...SHARED, rot: 4.58, saturation: 0, vibrancy: 0.09, contrast: 2 },
   "hll-people-and-policy": { ...SHARED, rot: 4.16, saturation: 0, vibrancy: 0.68, contrast: 1.26 },
   "hll-ontology": { ...SHARED, rot: 0, saturation: 0, vibrancy: 0.67, contrast: 0.97 },
+  // Cloud (17 Oct handoff) has no tuned ripple of its own yet: the shared set
+  // in its wheel-tile colours.
+  "hll-cloud": { ...SHARED, rot: 0, saturation: 0, vibrancy: 0.31, contrast: 1.27 },
   "hll-ai": { ...SHARED, rot: 0, saturation: 0, vibrancy: 0.31, contrast: 1.27 },
 };
 
@@ -92,6 +96,7 @@ export const RIPPLE_GRADIENTS: Record<RippleVariant, string[]> = {
   "hll-people-and-policy": ["#ffd680", "#ffdea8", "#ffcc94", "#ffb378", "#ffba99", "#ff9445"],
   "hll-ontology": ["#cf9eb0", "#bf70a6", "#bf7db5", "#bf8cc4", "#c78aff", "#8266ff"],
   "hll-ai": ["#bf9cad", "#a399cc", "#6e70e0", "#8799ed", "#7a99fc", "#4075fc"],
+  "hll-cloud": ["#aaebe3", "#8fdbe2", "#74cbe1", "#57b9e1", "#4aa8d6", "#3d97cb"],
 };
 
 /** The design system's service variants use shorter names than the ripple's. */
@@ -102,6 +107,7 @@ export const SERVICE_TO_RIPPLE: Record<string, RippleVariant> = {
   "hll-ontology": "hll-ontology",
   "hll-people": "hll-people-and-policy",
   "hll-trust": "hll-trust-and-governance",
+  "hll-cloud": "hll-cloud",
 };
 
 export const RIPPLE_ORIGINS: Record<RippleOrigin, [number, number]> = {

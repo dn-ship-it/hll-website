@@ -1,10 +1,10 @@
 import type { ServicePageData } from "./types";
 
 export const hllGovernanceTrust: ServicePageData = {
-  slug: "hll-trust",
+  slug: "trust-governance",
   variant: "hll-trust",
-  brand: "HLL Trust & Governance",
-  breadcrumb: ["Capabilities", "HLL Trust & Governance"],
+  brand: "Trust & Governance",
+  breadcrumb: ["Capabilities", "Trust & Governance"],
   hero: {
     headline: "Could you show a regulator where that number came from?",
     support:
@@ -140,11 +140,11 @@ export const hllGovernanceTrust: ServicePageData = {
     companyLogo: "/assets/engagement/logo-mckinsey.png",
   },
   relatedServices: [
-    { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL People & Policy", href: "/services/hll-people" },
-    { label: "HLL AI", href: "/services/hll-ai" },
-    { label: "HLL Ontology", href: "/services/hll-ontology" },
-    { label: "HLL Application", href: "/services/hll-application" },
+    { label: "Data & Analytics", href: "/services/data-analytics" },
+    { label: "People & Policy", href: "/services/people-policy" },
+    { label: "AI", href: "/services/ai" },
+    { label: "Ontology", href: "/services/ontology" },
+    { label: "Applications", href: "/services/applications" },
   ],
   cta: {
     headline: "Talk to us about your data governance gap.",

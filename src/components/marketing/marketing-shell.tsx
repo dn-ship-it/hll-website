@@ -7,6 +7,7 @@ import { resolveMediaUrl } from "@/lib/payload/media";
 import { DEFAULT_INDUSTRY_MENU } from "@/data/industry-menu";
 import { mapFooterCta, mapIndustryMenu, mapSiteNav } from "@/lib/payload/marketing-mappers";
 import { SiteFooter } from "@/components/marketing/site-footer";
+import { cleanServiceName } from "@/components/hll/variants";
 import { ScreenShader } from "@/components/marketing/footer-cta";
 import { AiBubble } from "@/components/marketing/ai-bubble";
 import { LineReveal } from "@/components/marketing/line-reveal";
@@ -58,7 +59,7 @@ export async function MarketingShell({
     cta = mapFooterCta(marketing);
 
     if (marketing?.footerServices?.length) {
-      services = marketing.footerServices.map((item) => item.label);
+      services = marketing.footerServices.map((item) => cleanServiceName(item.label));
     }
   } catch {
     // use defaults

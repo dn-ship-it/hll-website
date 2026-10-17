@@ -44,7 +44,7 @@ export function ServiceDemoWindow({
     () => ({
       ...config,
       items: Array.isArray(config.items) ? config.items : [],
-      selectorLabel: config.selectorLabel || "HLL Foundation",
+      selectorLabel: config.selectorLabel || "Data & Analytics",
     }),
     [config],
   );
@@ -117,7 +117,7 @@ export function ServiceDemoWindow({
           />
         ) : null}
         <div className="relative mx-auto w-full overflow-hidden rounded-[3px] bg-[var(--hll-bg)] shadow-none lg:overflow-visible lg:rounded-lg lg:p-[clamp(0.75rem,calc(2*var(--vw)),1rem)]">
-          {/* QA C-12: no "HLL Foundation ⌄" selector over the demo. It did
+          {/* QA C-12: no "Data & Analytics ⌄" selector over the demo. It did
               nothing, so the window starts at the top of its frame. */}
           <div
             className={`relative overflow-hidden bg-white lg:rounded-sm ${iframeHeight}`}

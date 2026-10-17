@@ -1,5 +1,5 @@
 import { HLLButton } from "@/components/hll";
-import { SERVICE_VARIANTS, type HLLVariant, type ServiceVariant } from "@/components/hll/variants";
+import { serviceVariantForSlug, type HLLVariant, type ServiceVariant } from "@/components/hll/variants";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import type { ExpertVoice, ServicePageData } from "@/data/services/types";
 
@@ -41,11 +41,12 @@ export function ExpertVoiceSection({
   );
 }
 
-/** A related link's palette: its capability's (/services/hll-ai → hll-ai), or
+/** A related link's palette: its capability's (/services/ai → hll-ai), or
  *  the Industries palette for an industry. */
 function relatedVariant(href: string): HLLVariant {
   const slug = href.match(/^\/services\/([^/#?]+)/)?.[1];
-  if (slug && (SERVICE_VARIANTS as readonly string[]).includes(slug)) return slug as ServiceVariant;
+  const service = slug ? serviceVariantForSlug(slug) : null;
+  if (service) return service;
   return href.startsWith("/industries") ? "industries" : "services";
 }
 

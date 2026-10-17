@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import { SERVICE_LABELS } from "@/data/engagements";
+import { serviceHref } from "@/components/hll/variants";
 import type { IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
@@ -33,6 +34,7 @@ export const MENU_SERVICES: ServiceVariant[] = [
   "hll-people",
   "hll-trust",
   "hll-foundation",
+  "hll-cloud",
   "hll-ai",
   "hll-ontology",
 ];
@@ -135,7 +137,7 @@ function ServicesPanel() {
         {MENU_SERVICES.map((service) => (
           <li key={service}>
             <Link
-              href={`/services/${service}`}
+              href={serviceHref(service)}
               className={`group/svc flex h-9 items-center gap-[10px] ${ITEM}`}
             >
               {/* Hover: the service's own palette fills its icon tile. */}

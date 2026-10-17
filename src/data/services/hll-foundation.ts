@@ -1,10 +1,10 @@
 import type { ServicePageData } from "./types";
 
 export const hllFoundation: ServicePageData = {
-  slug: "hll-foundation",
+  slug: "data-analytics",
   variant: "hll-foundation",
-  brand: "HLL Foundation",
-  breadcrumb: ["Capabilities", "HLL Foundation"],
+  brand: "Data & Analytics",
+  breadcrumb: ["Capabilities", "Data & Analytics"],
   hero: {
     headline: "Data your business can finally trust",
     support:
@@ -211,11 +211,11 @@ export const hllFoundation: ServicePageData = {
     role: "Group Director, IT & Analytics",
   },
   relatedServices: [
-    { label: "HLL People & Policy", href: "/services/hll-people" },
-    { label: "HLL Application", href: "/services/hll-application" },
-    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
-    { label: "HLL AI", href: "/services/hll-ai" },
-    { label: "HLL Ontology", href: "/services/hll-ontology" },
+    { label: "People & Policy", href: "/services/people-policy" },
+    { label: "Applications", href: "/services/applications" },
+    { label: "Trust & Governance", href: "/services/trust-governance" },
+    { label: "AI", href: "/services/ai" },
+    { label: "Ontology", href: "/services/ontology" },
   ],
   cta: {
     headline: "Let's start a conversation.",

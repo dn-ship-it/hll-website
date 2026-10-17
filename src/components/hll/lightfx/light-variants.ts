@@ -24,6 +24,7 @@ const VARIANT_CLASSES = (prefix: string) => ({
   "hll-ontology": `${prefix}--hll-ontology`,
   "hll-people": `${prefix}--hll-people`,
   "hll-application": `${prefix}--hll-application`,
+  "hll-cloud": `${prefix}--hll-cloud`,
 });
 
 export const hllButtonVariants = cva("hll-button", {

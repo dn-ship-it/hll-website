@@ -25,6 +25,7 @@ export const shaderVariants = cva("shader", {
       "hll-ontology": "shader--hll-ontology",
       "hll-people": "shader--hll-people",
       "hll-application": "shader--hll-application",
+      "hll-cloud": "shader--hll-cloud",
     },
     disabled: {
       true: "shader--disabled",
@@ -56,6 +57,7 @@ export const bottomShaderVariants = cva("bottom-shader", {
       "hll-ontology": "bottom-shader--hll-ontology",
       "hll-people": "bottom-shader--hll-people",
       "hll-application": "bottom-shader--hll-application",
+      "hll-cloud": "bottom-shader--hll-cloud",
     },
     disabled: {
       true: "bottom-shader--disabled",

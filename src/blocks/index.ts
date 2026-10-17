@@ -6,12 +6,12 @@ export const hllVariantOptions = [
   { label: "Engagement", value: "engagement" },
   { label: "About", value: "about" },
   { label: "Contact", value: "contact" },
-  { label: "HLL AI", value: "hll-ai" },
-  { label: "HLL Trust", value: "hll-trust" },
-  { label: "HLL Foundation", value: "hll-foundation" },
-  { label: "HLL Ontology", value: "hll-ontology" },
-  { label: "HLL People", value: "hll-people" },
-  { label: "HLL Application", value: "hll-application" },
+  { label: "AI", value: "hll-ai" },
+  { label: "Trust & Governance", value: "hll-trust" },
+  { label: "Data & Analytics", value: "hll-foundation" },
+  { label: "Ontology", value: "hll-ontology" },
+  { label: "People & Policy", value: "hll-people" },
+  { label: "Applications", value: "hll-application" },
 ] as const;
 
 export const pageBlocks: Block[] = [

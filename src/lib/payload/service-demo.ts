@@ -45,7 +45,7 @@ export function resolveServiceDemoConfig(service: Service | null): ServiceDemoCo
   }
 
   return {
-    selectorLabel: demoWindow.selectorLabel || service?.title || "HLL Foundation",
+    selectorLabel: demoWindow.selectorLabel || service?.title || "Data & Analytics",
     items,
     fallbackHtml,
     fallbackUrl,
@@ -56,7 +56,7 @@ export function resolveServiceDemoConfig(service: Service | null): ServiceDemoCo
 // panel, because pickDemo falls back to items[0] for any tab without an entry
 // of its own, so switching tabs appeared to do nothing.
 export const defaultFoundationDemo: ServiceDemoConfig = {
-  selectorLabel: "HLL Foundation",
+  selectorLabel: "Data & Analytics",
   items: [
     {
       tabKey: "data-engineering",

@@ -247,7 +247,7 @@ export default buildConfig({
           collection: "services",
           overrideAccess: true,
           data: {
-            title: "HLL Foundation",
+            title: "Data & Analytics",
             slug: "hll-foundation",
             variant: "hll-foundation",
             summary: "Data your business can finally trust.",
@@ -262,7 +262,7 @@ export default buildConfig({
             // defaultFoundationDemo, and an editor can still override any tab
             // from the admin when they want to.
             demoWindow: {
-              selectorLabel: "HLL Foundation",
+              selectorLabel: "Data & Analytics",
             },
           },
         });

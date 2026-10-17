@@ -1,10 +1,10 @@
 import type { ServicePageData } from "./types";
 
 export const hllKinetic: ServicePageData = {
-  slug: "hll-application",
+  slug: "applications",
   variant: "hll-application",
-  brand: "HLL Application",
-  breadcrumb: ["Capabilities", "HLL Application"],
+  brand: "Applications",
+  breadcrumb: ["Capabilities", "Applications"],
   hero: {
     headline: "We build applications that are a delight to use",
     tabs: [
@@ -148,11 +148,11 @@ export const hllKinetic: ServicePageData = {
   },
   expertVoice: null,
   relatedServices: [
-    { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL People & Policy", href: "/services/hll-people" },
-    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
-    { label: "HLL AI", href: "/services/hll-ai" },
-    { label: "HLL Ontology", href: "/services/hll-ontology" },
+    { label: "Data & Analytics", href: "/services/data-analytics" },
+    { label: "People & Policy", href: "/services/people-policy" },
+    { label: "Trust & Governance", href: "/services/trust-governance" },
+    { label: "AI", href: "/services/ai" },
+    { label: "Ontology", href: "/services/ontology" },
   ],
   cta: {
     headline: "Talk to us about what you're building.",

@@ -4,7 +4,7 @@ import type { ServicePageData } from "./types";
 
 /**
  * PLACEHOLDER content for services that have a Figma frame but no copy yet
- * (HLL AI 1341:16956, HLL Ontology 1341:16568). Everything below the headline
+ * (AI 1341:16956, Ontology 1341:16568). Everything below the headline
  * mirrors the Figma service template verbatim, including its stand-in text,
  * so the page matches the design until the real copy lands in the CMS.
  */

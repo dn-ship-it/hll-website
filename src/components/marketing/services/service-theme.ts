@@ -27,6 +27,8 @@ const FIGMA: Record<ServiceVariant, { accent: string; demoBase: string; outcomeB
   "hll-ontology": { accent: "#8367FF", demoBase: "#A54FBA", outcomeBase: "#A14CBE" },
   "hll-people": { accent: "#FF9648", demoBase: "#FF9404", outcomeBase: "#FF9205" },
   "hll-application": { accent: "#FA2427", demoBase: "#AC5FA9", outcomeBase: "#A263B1" },
+  // Cloud: the wheel tile's colours (no Figma frame yet).
+  "hll-cloud": { accent: "#2E9FD3", demoBase: "#57B9E1", outcomeBase: "#7FD0E2" },
 };
 
 /**

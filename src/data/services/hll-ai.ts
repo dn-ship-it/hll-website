@@ -1,17 +1,17 @@
 import { figmaTemplateService } from "./figma-template";
 
 // Headline from the home page's service list; the rest is the Figma template
-// placeholder (see figma-template.ts) until the HLL AI copy is written.
+// placeholder (see figma-template.ts) until the AI copy is written.
 export const hllAi = figmaTemplateService({
-  slug: "hll-ai",
+  slug: "ai",
   variant: "hll-ai",
-  brand: "HLL AI",
+  brand: "AI",
   headline: "Applied AI built to move from experimentation into real work",
   relatedServices: [
-    { label: "HLL Foundation", href: "/services/hll-foundation" },
-    { label: "HLL Trust & Governance", href: "/services/hll-trust" },
-    { label: "HLL Application", href: "/services/hll-application" },
-    { label: "HLL People & Policy", href: "/services/hll-people" },
-    { label: "HLL Ontology", href: "/services/hll-ontology" },
+    { label: "Data & Analytics", href: "/services/data-analytics" },
+    { label: "Trust & Governance", href: "/services/trust-governance" },
+    { label: "Applications", href: "/services/applications" },
+    { label: "People & Policy", href: "/services/people-policy" },
+    { label: "Ontology", href: "/services/ontology" },
   ],
 });

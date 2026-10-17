@@ -8,6 +8,7 @@ import type {
 } from "@/payload-types";
 import type { AboutPageData } from "@/data/about";
 import { aboutPage } from "@/data/about";
+import { cleanServiceHref, cleanServiceName } from "@/components/hll/variants";
 import type { CareersPageContent } from "@/data/careers-page";
 import { careersPageContent } from "@/data/careers-page";
 import type { ContactPageContent } from "@/data/contact-page";
@@ -136,8 +137,8 @@ export function mapServiceToPage(
       })) ?? fallback.moreExpertVoices,
     relatedServices:
       pc.relatedServices?.map((link) => ({
-        label: link.label,
-        href: link.href,
+        label: cleanServiceName(link.label),
+        href: cleanServiceHref(link.href),
       })) ?? fallback.relatedServices,
     cta: fallback.cta,
   };
@@ -168,14 +169,14 @@ export function mapIndustryPage(
     capabilities: {
       eyebrow: pc.capabilities?.eyebrow ?? fallback.capabilities.eyebrow,
       title: pc.capabilities?.title ?? fallback.capabilities.title,
-      sidebar: (pc.capabilities?.sidebar?.map((s) => s.label) ??
+      sidebar: (pc.capabilities?.sidebar?.map((s) => cleanServiceName(s.label)) ??
         fallback.capabilities
           .sidebar) as IndustryPageData["capabilities"]["sidebar"],
       items:
         pc.capabilities?.items?.map((item) => ({
           id: item.id,
           index: item.index ?? "",
-          title: item.title,
+          title: cleanServiceName(item.title),
           description: item.description ?? "",
           cards:
             item.cards?.map((card) => {
@@ -363,9 +364,9 @@ export function mapHomePage(
       items: services.length
         ? services.map((item) => ({
             label: item.label,
-            name: item.name,
+            name: cleanServiceName(item.name),
             description: item.description,
-            href: item.href,
+            href: cleanServiceHref(item.href),
             variant: item.variant,
             image: resolveMediaUrl(item.image as CmsImageRef),
           }))

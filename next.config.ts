@@ -26,6 +26,24 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(dirname),
   },
+  // 17 Oct content handoff: services are named and addressed without "HLL"
+  // (Foundation became Data & Analytics). Old links keep working.
+  async redirects() {
+    const services: [string, string][] = [
+      ["hll-foundation", "data-analytics"],
+      ["hll-application", "applications"],
+      ["hll-ai", "ai"],
+      ["hll-trust", "trust-governance"],
+      ["hll-people", "people-policy"],
+      ["hll-ontology", "ontology"],
+      ["hll-cloud", "cloud"],
+    ];
+    return services.map(([from, to]) => ({
+      source: `/services/${from}`,
+      destination: `/services/${to}`,
+      permanent: true,
+    }));
+  },
 };
 
 export default withPayload(nextConfig, { devBundleServerPackages: false });
