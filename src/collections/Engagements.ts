@@ -10,6 +10,7 @@ const serviceOptions = [
   { label: "HLL Ontology", value: "hll-ontology" },
   { label: "HLL People & Policy", value: "hll-people" },
   { label: "HLL Application", value: "hll-application" },
+  { label: "Cloud", value: "hll-cloud" },
 ];
 
 const bodyField = {
@@ -289,11 +290,24 @@ export const Engagements: CollectionConfig = {
               admin: { description: "e.g. Apr 25" },
             },
             { name: "value", type: "number", required: true },
+            {
+              name: "display",
+              type: "text",
+              admin: { description: "Shown above the bar, e.g. 3.2s or $60M. Empty: the value." },
+            },
           ],
         },
       ],
     },
     { name: "layout", type: "blocks", blocks: engagementBlocks },
+    {
+      name: "art",
+      type: "json",
+      admin: {
+        description:
+          "Live artwork from the content handoff (ripple settings, image layers, live text positions). Filled by the handoff import – leave as is unless you know the format. Empty: the card and hero images above are used.",
+      },
+    },
     {
       name: "related",
       type: "relationship",

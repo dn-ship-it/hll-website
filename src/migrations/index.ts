@@ -2,6 +2,9 @@ import * as migration_20260930_212805_initial_schema from './20260930_212805_ini
 import * as migration_20261009_203105_more_testimonials from './20261009_203105_more_testimonials';
 import * as migration_20261011_141317_cms_coverage from './20261011_141317_cms_coverage';
 import * as migration_20261014_205241_voice_logos from './20261014_205241_voice_logos';
+import * as migration_20261017_155658_handoff_cloud_service from './20261017_155658_handoff_cloud_service';
+import * as migration_20261017_160138_handoff_chart_display from './20261017_160138_handoff_chart_display';
+import * as migration_20261017_164716_handoff_art from './20261017_164716_handoff_art';
 
 export const migrations = [
   {
@@ -22,6 +25,21 @@ export const migrations = [
   {
     up: migration_20261014_205241_voice_logos.up,
     down: migration_20261014_205241_voice_logos.down,
-    name: '20261014_205241_voice_logos'
+    name: '20261014_205241_voice_logos',
+  },
+  {
+    up: migration_20261017_155658_handoff_cloud_service.up,
+    down: migration_20261017_155658_handoff_cloud_service.down,
+    name: '20261017_155658_handoff_cloud_service',
+  },
+  {
+    up: migration_20261017_160138_handoff_chart_display.up,
+    down: migration_20261017_160138_handoff_chart_display.down,
+    name: '20261017_160138_handoff_chart_display',
+  },
+  {
+    up: migration_20261017_164716_handoff_art.up,
+    down: migration_20261017_164716_handoff_art.down,
+    name: '20261017_164716_handoff_art'
   },
 ];

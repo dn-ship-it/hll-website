@@ -7,6 +7,8 @@ import {
   type EngagementType,
 } from "@/data/engagements";
 
+import { SERVICE_VARIANTS, type ServiceVariant } from "@/components/hll/variants";
+
 import { getPayloadClient } from "./client";
 
 const TYPE_LABELS: Record<CmsEngagement["engagementType"], EngagementType> = {
@@ -123,7 +125,11 @@ export function mapEngagement(doc: CmsEngagement): Engagement {
     year: doc.year,
     type: TYPE_LABELS[doc.engagementType],
     template: doc.template,
-    services: doc.services ?? [],
+    // Only the services the site has pages for (Cloud's arrives with the
+    // service pages from the 17 Oct handoff).
+    services: (doc.services ?? []).filter((s): s is ServiceVariant =>
+      (SERVICE_VARIANTS as readonly string[]).includes(s),
+    ),
     industry: doc.industry ?? undefined,
     period: doc.period ?? undefined,
     location: doc.location ?? undefined,
@@ -139,9 +145,11 @@ export function mapEngagement(doc: CmsEngagement): Engagement {
           chart: (stat.chart ?? []).map((bar) => ({
             label: bar.label,
             value: bar.value,
+            display: bar.display ?? undefined,
           })),
         }
       : undefined,
+    art: (doc.art as Engagement["art"]) ?? undefined,
     blocks: (doc.layout ?? [])
       .map(mapBlock)
       .filter((b): b is EngagementBlock => b !== null),

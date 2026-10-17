@@ -68,7 +68,8 @@ export type EngagementStat = {
   value: string;
   unit?: string;
   body?: string;
-  chart: { label: string; value: number }[];
+  /** `display`: the value as written (3.2s, $60M); else the number. */
+  chart: { label: string; value: number; display?: string }[];
 };
 
 export type EngagementBlock =
@@ -136,6 +137,57 @@ export type Engagement = {
   blocks: EngagementBlock[];
   /** Picked in the CMS; otherwise engagements sharing a service. */
   related?: string[];
+  /** The handoff's live artwork (ripple, layers, live text), when imported. */
+  art?: EngagementArt;
+};
+
+/** One image slot of an engagement's artwork (handoff engagement.json). */
+export type EngagementArtSlot = {
+  w: number;
+  h: number;
+  /** Still frame: shown first, and alone under reduced motion. */
+  poster: string;
+  /** Transparent mockups / logo, drawn over the ripple. */
+  layer?: string;
+  /** Ripple speed for this slot (cards run slower than the hero). */
+  speed?: number;
+  /** This slot's own palette (the handoff says to use it over the top-level one). */
+  palette?: string[];
+  /** Dark text colour when the slot's background is light. */
+  ink?: string;
+  scrim?: string;
+  /** Live client name(s): position and size in % of the slot. */
+  texts?: {
+    cx: number;
+    cy: number;
+    maxW: number;
+    font: number;
+    weight: number;
+    colour: string;
+    align: "left" | "center" | "right";
+  }[];
+  /** Desktop hero: where the live lockup, quote and attribution sit. */
+  live?: {
+    lockup: { right: number; top: number; height: number };
+    quote: { left: number; top: number; width: number; font: number; lineHeight: number; weight: number };
+    attribution: { left: number; top: number; font: number; lineHeight: number; weight: number; orgColour: string };
+  };
+};
+
+export type EngagementArt = {
+  ripple: {
+    variant: string;
+    palette: string[];
+    origin: [number, number];
+    seed: number;
+    params: Record<string, number>;
+  };
+  /** Service lockup on the hero, e.g. "/engagement-lockups/ai.webp". */
+  lockup?: { src: string; name: string };
+  quote?: { text: string; role: string; organisation: string };
+  /** The list card's shape, e.g. "card-portrait_490x551". */
+  listSlot?: string;
+  slots: Record<string, EngagementArtSlot>;
 };
 
 // PLACEHOLDER — Figma's own stand-in copy until the engagement write-ups are

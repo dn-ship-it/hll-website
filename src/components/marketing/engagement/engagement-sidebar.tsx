@@ -39,20 +39,31 @@ function MetaRow({
   );
 }
 
+/** A round axis top just above `max`: 1, 2, 2.5 or 5 × a power of ten. */
+function niceCeil(max: number) {
+  if (max <= 0) return 1;
+  const step = 10 ** Math.floor(Math.log10(max));
+  const n = [1, 2, 2.5, 5, 10].find((m) => m * step >= max) ?? 10;
+  return n * step;
+}
+
+/** An axis number without float noise: 0.48, 2.5, 400. */
+const tickText = (v: number) => String(Number(v.toPrecision(3)));
+
 /**
- * Figma stat card (344 × 382): label and value, then a four-bar chart on a
- * 30K–90K scale with each bar's value above it, then a short note. The value
- * counts up and the bars rise once the card shows.
+ * Figma stat card (344 × 382): label and value, then a four-bar chart with
+ * each bar's value above it, then a short note. The value counts up and the
+ * bars rise once the card shows. The Figma's 30K–90K scale was a placeholder:
+ * the axis now runs from 0 to just above the largest bar, and each bar shows
+ * its value as written in the ledger (3.2s, $60M, 22%).
  */
 function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
   const bars = stat.chart.slice(0, 6);
-  const max = Math.max(90, ...bars.map((b) => b.value));
+  const max = niceCeil(Math.max(...bars.map((b) => b.value), 0) * 1.05);
   // Chart box in card px (Figma): gridlines 150–236, bars from x 29, 67px apart.
-  const scaleY = (v: number) => 236 - ((v - 30) / (max - 30)) * 86;
+  const scaleY = (v: number) => 236 - (Math.max(0, v) / max) * 86;
   const pitch = bars.length > 1 ? 204 / (bars.length - 1) : 0;
-  const ticks = [90, 70, 50, 30].map((t) =>
-    Math.round(30 + ((t - 30) / 60) * (max - 30)),
-  );
+  const ticks = [1, 2 / 3, 1 / 3, 0].map((f) => tickText(max * f));
 
   return (
     <div
@@ -151,7 +162,7 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
             fill={AXIS}
             style={FUNCTIONAL_STYLE}
           >
-            {t}K
+            {t}
           </text>
         ))}
         <g mask="url(#stat-bar-mask)">
@@ -211,7 +222,7 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
                 fill={AXIS}
                 style={FUNCTIONAL_STYLE}
               >
-                {bar.value}K
+                {bar.display ?? tickText(bar.value)}
               </text>
               <text
                 x={x}

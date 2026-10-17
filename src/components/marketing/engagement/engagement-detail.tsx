@@ -12,6 +12,7 @@ import type {
 } from "@/data/engagements";
 import { loadEngagements, relatedEngagements } from "@/lib/payload/engagements";
 
+import { EngagementArtSlot } from "./engagement-art";
 import {
   EngagementCard,
   EngagementMediaBox,
@@ -168,13 +169,30 @@ function Block({
   block,
   tone,
   isHero,
+  art,
+  client = "",
+  mobile = false,
 }: {
   block: EngagementBlock;
   tone: Tone;
   isHero: boolean;
+  /** The handoff's live artwork, when the engagement has it. */
+  art?: Engagement["art"];
+  client?: string;
+  /** The phone hero (in the sidebar). */
+  mobile?: boolean;
 }) {
+  // The desktop hero carries the quote as live text (17 Oct handoff), so the
+  // quote block below it only shows on phones, under the phone hero.
+  const heroHasQuote = Boolean(art?.slots["hero-desktop"]?.live && art?.quote?.text);
   switch (block.kind) {
     case "media":
+      if (isHero && art) {
+        const slot = mobile ? "hero-mobile" : "hero-desktop";
+        if (art.slots[slot]) {
+          return <EngagementArtSlot art={art} slot={slot} alt={client} client={client} live={!mobile} />;
+        }
+      }
       return (
         <div className={isHero ? "" : MEDIA_INSET}>
           <EngagementMediaBox
@@ -184,7 +202,11 @@ function Block({
         </div>
       );
     case "quote":
-      return <QuoteBlock block={block} accent={tone.accent ?? "#444444"} />;
+      return (
+        <div className={heroHasQuote ? "lg:hidden" : undefined}>
+          <QuoteBlock block={block} accent={tone.accent ?? "#444444"} />
+        </div>
+      );
     case "mediaGrid":
       return (
         <div className={MEDIA_INSET}>
@@ -204,7 +226,9 @@ function Block({
       // window, image/video, or text."
       return (
         <TextRow label={block.label} tone={tone}>
-          {block.display === "media" && block.media ? (
+          {block.display === "media" && art?.slots["feature-wide_1492x843"] ? (
+            <EngagementArtSlot art={art} slot="feature-wide_1492x843" alt={client} client={client} />
+          ) : block.display === "media" && block.media ? (
             <EngagementMediaBox media={block.media} fallbackRatio={16 / 9} />
           ) : block.display === "demo" ? (
             <div
@@ -404,6 +428,12 @@ function RelatedBand({ items, color }: { items: Engagement[]; color: string }) {
   );
 }
 
+/** Relative brightness of a #rrggbb colour, 0 (black) to 1 (white). */
+function luminance(hex: string) {
+  const n = parseInt(hex.replace("#", "").slice(0, 6), 16);
+  return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+}
+
 /** Figma Desktop › Case Study Template (1068:4964) / Engagement Story Template (1192:8048). */
 export async function EngagementDetail({ slug }: { slug: string }) {
   const all = await loadEngagements();
@@ -420,7 +450,9 @@ export async function EngagementDetail({ slug }: { slug: string }) {
   const { blocks } = engagement;
 
   return (
-    <MarketingShell markTint={accent ?? undefined}>
+    // The header mark takes the client colour, unless that's too light to
+    // see on the white Nav Bar (pale brand colours from the handoff).
+    <MarketingShell markTint={accent && luminance(accent) < 0.7 ? accent : undefined}>
       <ServiceReveal>
         <div className="hll-home hll-service-page">
           <div className="lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
@@ -428,7 +460,9 @@ export async function EngagementDetail({ slug }: { slug: string }) {
               engagement={engagement}
               accent={accent}
               mobileHero={
-                blocks[0] ? <Block block={blocks[0]} tone={tone} isHero /> : null
+                blocks[0] ? (
+                  <Block block={blocks[0]} tone={tone} isHero art={engagement.art} client={engagement.client} mobile />
+                ) : null
               }
             />
             <div
@@ -444,7 +478,7 @@ export async function EngagementDetail({ slug }: { slug: string }) {
                       afterHero={i === 1}
                     />
                   ) : null}
-                  <Block block={block} tone={tone} isHero={i === 0} />
+                  <Block block={block} tone={tone} isHero={i === 0} art={engagement.art} client={engagement.client} />
                 </div>
               ))}
             </div>

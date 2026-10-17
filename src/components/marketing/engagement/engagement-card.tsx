@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { SERVICE_LABELS, type Engagement } from "@/data/engagements";
 
+import { EngagementArtSlot } from "./engagement-art";
+
 export const FUNCTIONAL_STYLE = { fontFamily: "var(--hll-font-functional)" };
 
 /** Hex colour at an alpha, for the strip gradient. */
@@ -71,9 +73,26 @@ export function EngagementCard({
   const card = ratio
     ? { ...engagement.card, width: undefined, height: undefined }
     : engagement.card;
+  // The handoff's live artwork when imported: the related row's 490 × 308,
+  // else the list card's own shape.
+  const artSlot = engagement.art
+    ? ratio
+      ? "card-related_490x308"
+      : engagement.art.listSlot
+    : undefined;
+  const Media = ({ children }: { children: React.ReactNode }) =>
+    engagement.art && artSlot && engagement.art.slots[artSlot] ? (
+      <EngagementArtSlot art={engagement.art} slot={artSlot} alt={engagement.client} client={engagement.client}>
+        {children}
+      </EngagementArtSlot>
+    ) : (
+      <EngagementMediaBox media={card} fallbackRatio={ratio ?? 1}>
+        {children}
+      </EngagementMediaBox>
+    );
   return (
     <Link href={`/engagement/${engagement.slug}`} className="group block">
-      <EngagementMediaBox media={card} fallbackRatio={ratio ?? 1}>
+      <Media>
         <span
           aria-hidden
           className="absolute right-2 top-2 grid size-9 place-items-center rounded-[4px] bg-white text-[var(--hll-dark-grey)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -92,7 +111,7 @@ export function EngagementCard({
             ))}
           </span>
         ) : null}
-      </EngagementMediaBox>
+      </Media>
       <span className="mt-2 flex items-start justify-between gap-4">
         <span className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
           {engagement.client}

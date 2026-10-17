@@ -982,7 +982,9 @@ export interface Engagement {
   year: number;
   engagementType: 'insight' | 'client-work' | 'case-study';
   template: 'case-study' | 'story';
-  services?: ('hll-ai' | 'hll-trust' | 'hll-foundation' | 'hll-ontology' | 'hll-people' | 'hll-application')[] | null;
+  services?:
+    | ('hll-ai' | 'hll-trust' | 'hll-foundation' | 'hll-ontology' | 'hll-people' | 'hll-application' | 'hll-cloud')[]
+    | null;
   industry?:
     | (
         | 'Banking'
@@ -1041,6 +1043,10 @@ export interface Engagement {
            */
           label: string;
           value: number;
+          /**
+           * Shown above the bar, e.g. 3.2s or $60M. Empty: the value.
+           */
+          display?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -1161,6 +1167,18 @@ export interface Engagement {
             blockType: 'engagementLearnings';
           }
       )[]
+    | null;
+  /**
+   * Live artwork from the content handoff (ripple settings, image layers, live text positions). Filled by the handoff import – leave as is unless you know the format. Empty: the card and hero images above are used.
+   */
+  art?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
   /**
    * Explore related engagements. Empty: engagements sharing a service.
@@ -1953,6 +1971,7 @@ export interface EngagementsSelect<T extends boolean = true> {
           | {
               label?: T;
               value?: T;
+              display?: T;
               id?: T;
             };
       };
@@ -2051,6 +2070,7 @@ export interface EngagementsSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  art?: T;
   related?: T;
   updatedAt?: T;
   createdAt?: T;
