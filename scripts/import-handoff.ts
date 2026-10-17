@@ -44,6 +44,7 @@ type HandoffEngagement = {
   client?: string | null;
   service_id: string;
   tier: string;
+  industry?: string | null;
   industry_child?: string | null;
   years: string;
   location?: string | null;
@@ -305,7 +306,9 @@ async function importEngagements(payload: Payload) {
       engagementType: "case-study" as const,
       template: "case-study" as const,
       services: SERVICE[c.service_id] ? [SERVICE[c.service_id]] : [],
-      industry: industryFor(c.industry_child, id),
+      // The specific industry, else the broad one when it's one of the
+      // site's (e.g. Lesielle: no sub-industry, industry "Pharmaceuticals").
+      industry: industryFor(c.industry_child, id) ?? (c.industry ? INDUSTRIES.get(squash(c.industry)) ?? null : null),
       period: c.years,
       location: c.location || null,
       // Some ledger rows say "Default (white/grey)" instead of a colour.
