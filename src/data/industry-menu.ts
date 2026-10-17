@@ -1,4 +1,4 @@
-import { INDUSTRY_PAGES } from "./industries";
+import { INDUSTRY_ALIASES, INDUSTRY_PAGES } from "./industries";
 
 /** An industry in the menus: linked when it has a page, plain text when not. */
 export type IndustryMenuItem = { label: string; href: string | null };
@@ -10,7 +10,8 @@ export const industryHref = (label: string) => {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-  return INDUSTRY_PAGES[slug] ? `/industries/${slug}` : null;
+  const id = INDUSTRY_ALIASES[slug] ?? slug;
+  return INDUSTRY_PAGES[id] ? `/industries/${id}` : null;
 };
 
 const group = (title: string, labels: string[]): IndustryMenuGroup => ({

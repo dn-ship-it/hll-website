@@ -77,9 +77,15 @@ export function IndustryCapabilitiesSection({
               <h3 className="mt-3 text-[24px] font-normal leading-[1.16] text-black lg:col-start-2 lg:mt-9 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
                 {item.title}
               </h3>
-              <p className="mt-4 max-w-[368px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:col-start-3 lg:mt-9 lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
-                {item.description}
-              </p>
+              {/* The handoff's panel copy comes in paragraphs. */}
+              <div className="mt-4 max-w-[368px] space-y-3 text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:col-start-3 lg:mt-9 lg:space-y-4 lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
+                {item.description
+                  .split(/\n\s*\n/)
+                  .filter((para) => para.trim())
+                  .map((para, i) => (
+                    <p key={i}>{para.trim()}</p>
+                  ))}
+              </div>
               {/* Mobile: the cards swipe, 289px wide and 10px apart, running
                   off the right edge. */}
               <div className="-mr-5 mt-8 flex snap-x snap-mandatory gap-[10px] overflow-x-auto pr-5 [scrollbar-width:none] lg:col-span-2 lg:col-start-2 lg:mr-0 lg:-ml-[5px] lg:mt-[64px] lg:grid lg:grid-cols-2 lg:gap-2 lg:overflow-visible lg:pr-0 [&::-webkit-scrollbar]:hidden">

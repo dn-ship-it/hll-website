@@ -6,6 +6,7 @@ import * as migration_20261017_155658_handoff_cloud_service from './20261017_155
 import * as migration_20261017_160138_handoff_chart_display from './20261017_160138_handoff_chart_display';
 import * as migration_20261017_164716_handoff_art from './20261017_164716_handoff_art';
 import * as migration_20261017_171556_handoff_services from './20261017_171556_handoff_services';
+import * as migration_20261017_185743_handoff_industries from './20261017_185743_handoff_industries';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261017_171556_handoff_services.up,
     down: migration_20261017_171556_handoff_services.down,
-    name: '20261017_171556_handoff_services'
+    name: '20261017_171556_handoff_services',
+  },
+  {
+    up: migration_20261017_185743_handoff_industries.up,
+    down: migration_20261017_185743_handoff_industries.down,
+    name: '20261017_185743_handoff_industries'
   },
 ];

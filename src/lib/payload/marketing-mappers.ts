@@ -198,6 +198,7 @@ export function mapIndustryPage(
                   "navy" | "orange" | "image",
                 image: resolveMediaUrl(card.image as CmsImageRef) ?? media?.image,
                 logo: media?.logo,
+                href: card.href || undefined,
               };
             }) ?? [],
         })) ?? fallback.capabilities.items,

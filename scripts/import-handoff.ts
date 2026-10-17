@@ -489,10 +489,113 @@ async function importServices(payload: Payload) {
   }
 }
 
+type IndustryPanel = {
+  panel_order: string;
+  service_line: string;
+  service_id: string;
+  copy: string | null;
+  engagement_cards: { name: string; id: string | null; match?: string }[];
+};
+
+async function importIndustries(payload: Payload) {
+  const base = path.join(root!, "04-industries");
+  const engBase = path.join(root!, "02-engagements");
+  const ids = fs.readdirSync(base).filter((id) => fs.existsSync(path.join(base, id, "content.json"))).sort();
+  const names: Record<string, string> = {};
+  for (const id of ids) names[id] = JSON.parse(fs.readFileSync(path.join(base, id, "content.json"), "utf8")).name;
+
+  for (const id of ids) {
+    const c = JSON.parse(fs.readFileSync(path.join(base, id, "content.json"), "utf8"));
+    // Panels with no copy are hidden (QA I-06: "hide capabilities with no
+    // content for that industry").
+    const panels: IndustryPanel[] = (c.capability_panels ?? []).filter((p: IndustryPanel) => p.copy?.trim());
+    const items = [];
+    for (const [i, panel] of panels.entries()) {
+      const cards = [];
+      for (const card of panel.engagement_cards ?? []) {
+        if (!card.id) {
+          report.push(`industry ${id}: card "${card.name}" is ${card.match ?? "not linked to an engagement"} – left out`);
+          continue;
+        }
+        const dir = path.join(engBase, card.id);
+        const file = best(dir, "card-related_490x308");
+        const image = file ? await upload(payload, file, `ind-${card.id}`, card.name) : null;
+        const eng = fs.existsSync(path.join(dir, "content.json"))
+          ? JSON.parse(fs.readFileSync(path.join(dir, "content.json"), "utf8"))
+          : null;
+        cards.push({
+          // Row IDs are unique across every industry in the CMS, so they
+          // carry the industry's.
+          id: `${id}-${panel.service_id}-${card.id}`,
+          title: card.name,
+          client: eng?.shown_as || eng?.client || card.name,
+          tag: "Client work",
+          description: "",
+          variant: image ? "image" : "navy",
+          image,
+          href: `/engagement/${card.id}`,
+        });
+      }
+      items.push({
+        id: `${id}-${panel.service_id}`,
+        index: String(i + 1).padStart(2, "0"),
+        title: panel.service_line,
+        description: panel.copy ?? "",
+        cards,
+      });
+    }
+    if (c.hero_eyebrow) report.push(`industry ${id}: hero eyebrow "${c.hero_eyebrow}" – the page has no place for it yet, not shown`);
+
+    const pageContent = {
+      category: c.group,
+      breadcrumb: [{ label: "Industries" }, { label: c.group }],
+      hero: {
+        title: c.name,
+        headline: c.hero_statement,
+        overlayLabel: c.name,
+        filters: items.map((item) => ({ id: item.id, label: item.title })),
+      },
+      capabilities: {
+        eyebrow: `Industry  ${c.name}`,
+        title: "Capabilities",
+        sidebar: items.map((item) => ({ label: item.title })),
+        items,
+      },
+      relatedIndustries: (c.related_industries ?? []).map((rid: string) => ({
+        label: names[rid] ?? rid,
+        href: `/industries/${rid}`,
+      })),
+    };
+
+    const existing = await payload.find({
+      collection: "industries",
+      where: { slug: { equals: id } },
+      limit: 1,
+      depth: 0,
+      draft: true,
+    });
+    if (existing.docs[0]) {
+      // Only the handoff's sections: Client Voice, Experts and Lab stay as
+      // they are in the CMS.
+      const current = (existing.docs[0] as { pageContent?: Record<string, unknown> }).pageContent ?? {};
+      const data = { title: c.name, slug: id, pageContent: { ...current, ...pageContent }, _status: "published" as const };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await payload.update({ collection: "industries", id: existing.docs[0].id, data: data as any });
+      console.log(`updated  industry ${id}`);
+    } else {
+      const data = { title: c.name, slug: id, pageContent, _status: "published" as const };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await payload.create({ collection: "industries", data: data as any });
+      console.log(`created  industry ${id}`);
+    }
+  }
+}
+
 const payload = await getPayload({ config });
 const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 if (!only || only === "engagements") await importEngagements(payload);
 if (!only || only === "services") await importServices(payload);
+if (!only || only === "industries") await importIndustries(payload);
 if (report.length) {
   console.log("\nTo check:");
   for (const line of report) console.log(`  - ${line}`);

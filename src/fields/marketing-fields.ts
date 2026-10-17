@@ -225,6 +225,7 @@ export const industryPageContentFields: Field[] = [
                 enumName: "enum_industries_cap_card_variant",
               },
               { name: "image", type: "upload", relationTo: "media" },
+              { name: "href", type: "text", admin: { description: "Engagement page the card opens, e.g. /engagement/cg-global" } },
             ],
           },
         ],

@@ -12,6 +12,8 @@ export type IndustryCapabilityCard = {
   client?: string;
   image?: string;
   logo?: string;
+  /** The engagement page the card opens (handoff cross-link). */
+  href?: string;
 };
 
 export type IndustryCapability = {

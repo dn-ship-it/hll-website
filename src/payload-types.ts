@@ -754,6 +754,10 @@ export interface Industry {
                   description?: string | null;
                   variant?: ('navy' | 'orange' | 'image') | null;
                   image?: (number | null) | Media;
+                  /**
+                   * Engagement page the card opens, e.g. /engagement/cg-global
+                   */
+                  href?: string | null;
                 }[]
               | null;
           }[]
@@ -1786,6 +1790,7 @@ export interface IndustriesSelect<T extends boolean = true> {
                           description?: T;
                           variant?: T;
                           image?: T;
+                          href?: T;
                         };
                   };
             };

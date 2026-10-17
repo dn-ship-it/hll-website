@@ -83,9 +83,10 @@ export function IndustryHero({
           className="mt-3 flex flex-wrap gap-[6px] [--tab-h:36px] [--tab-r:3px] [--tab-size:10px] [--tab-track:2.5px] lg:mt-8 lg:gap-2 lg:[--tab-h:38px] lg:[--tab-r:4px] lg:[--tab-size:12px] lg:[--tab-track:0.25em]"
         >
           {data.filters.map((filter) => (
+            // QA I-06: each tag jumps to its capability panel below.
             <HLLOutlineButton
               key={filter.id}
-              as="span"
+              href={`#${filter.id}`}
               role="listitem"
               variant="industries"
               size="md"
@@ -98,7 +99,6 @@ export function IndustryHero({
                 height: "var(--tab-h)",
                 padding: "0 21px",
                 borderRadius: "var(--tab-r)",
-                cursor: "default",
               }}
               labelStyle={{
                 fontSize: "var(--tab-size)",

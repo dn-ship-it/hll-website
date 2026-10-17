@@ -63,10 +63,102 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
       { label: "Healthcare", href: "/industries/healthcare" },
       { label: "Insurance", href: "/industries/insurance" },
     ],
+  }),  // The rest of the 17 Oct handoff's industries (its permanent IDs). Their
+  // copy comes from the CMS; no hero image was supplied, so they use the
+  // template's until one is.
+  "banking": fromTemplate({
+    slug: "banking",
+    category: "Financial Services",
+    title: "Banking",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
   }),
+  "other-financial-services": fromTemplate({
+    slug: "other-financial-services",
+    category: "Financial Services",
+    title: "Other Financial Services",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "retail-commerce-brands": fromTemplate({
+    slug: "retail-commerce-brands",
+    category: "Commerce & Consumer",
+    title: "Retail Commerce & Brands",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "travel-hospitality": fromTemplate({
+    slug: "travel-hospitality",
+    category: "Commerce & Consumer",
+    title: "Travel & Hospitality",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "pettech": fromTemplate({
+    slug: "pettech",
+    category: "Commerce & Consumer",
+    title: "Pet Tech",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "manufacturing": fromTemplate({
+    slug: "manufacturing",
+    category: "Built Environment & Industry",
+    title: "Manufacturing",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "real-estate": fromTemplate({
+    slug: "real-estate",
+    category: "Built Environment & Industry",
+    title: "Real Estate",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "logistics": fromTemplate({
+    slug: "logistics",
+    category: "Built Environment & Industry",
+    title: "Logistics",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "public-sector-external-affairs": fromTemplate({
+    slug: "public-sector-external-affairs",
+    category: "Government & Public Institutions",
+    title: "Public Sector – External Affairs",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "public-sector-tax-commerce": fromTemplate({
+    slug: "public-sector-tax-commerce",
+    category: "Government & Public Institutions",
+    title: "Public Sector – Tax & Commerce",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "international-organization": fromTemplate({
+    slug: "international-organization",
+    category: "Government & Public Institutions",
+    title: "International Organization",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+  "consulting-firms": fromTemplate({
+    slug: "consulting-firms",
+    category: "Professional Services",
+    title: "Consulting Firms",
+    image: healthcareIndustry.hero.image ?? "",
+    related: [],
+  }),
+
+};
+
+/** Menu labels whose page ID isn't just the label in kebab case. */
+export const INDUSTRY_ALIASES: Record<string, string> = {
+  "health-life-sciences": "healthcare",
+  "pet-tech": "pettech",
 };
 
 export function getIndustryPage(slug: string): IndustryPageData | null {
-  if (slug === "health-life-sciences") return healthcareIndustry;
-  return INDUSTRY_PAGES[slug] ?? null;
+  return INDUSTRY_PAGES[INDUSTRY_ALIASES[slug] ?? slug] ?? null;
 }
