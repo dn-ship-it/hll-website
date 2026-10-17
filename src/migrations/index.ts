@@ -5,6 +5,7 @@ import * as migration_20261014_205241_voice_logos from './20261014_205241_voice_
 import * as migration_20261017_155658_handoff_cloud_service from './20261017_155658_handoff_cloud_service';
 import * as migration_20261017_160138_handoff_chart_display from './20261017_160138_handoff_chart_display';
 import * as migration_20261017_164716_handoff_art from './20261017_164716_handoff_art';
+import * as migration_20261017_171556_handoff_services from './20261017_171556_handoff_services';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261017_164716_handoff_art.up,
     down: migration_20261017_164716_handoff_art.down,
-    name: '20261017_164716_handoff_art'
+    name: '20261017_164716_handoff_art',
+  },
+  {
+    up: migration_20261017_171556_handoff_services.up,
+    down: migration_20261017_171556_handoff_services.down,
+    name: '20261017_171556_handoff_services'
   },
 ];

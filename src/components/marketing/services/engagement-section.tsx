@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import type { ServiceVariant } from "@/components/hll/variants";
@@ -20,12 +21,25 @@ export type EngagementCardLike = {
   variant: keyof typeof MEDIA_STYLES;
   image?: string;
   logo?: string;
+  href?: string;
 };
 
 /** Figma "Component 4": 490 × 308 media block with its tag, then title and
  *  body. Mobile: 386 × 242, the 34px tag pill, 24px title, 14px body. */
+/** Opens the engagement the card is about, when it has one. */
+function CardLink({ href, children }: { href?: string; children: React.ReactNode }) {
+  return href ? (
+    <Link href={href} className="block">
+      {children}
+    </Link>
+  ) : (
+    <>{children}</>
+  );
+}
+
 export function EngagementCardView({ card }: { card: EngagementCardLike }) {
   return (
+    <CardLink href={card.href}>
     <article className="group">
       <div
         className={`relative grid aspect-[386/242] place-items-center overflow-hidden rounded-[6px] lg:aspect-[490/308] lg:rounded-lg ${MEDIA_STYLES[card.variant]}`}
@@ -69,6 +83,7 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
         {card.description}
       </p>
     </article>
+    </CardLink>
   );
 }
 

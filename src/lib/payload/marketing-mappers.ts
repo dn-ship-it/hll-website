@@ -77,7 +77,8 @@ export function mapServiceToPage(
           index: item.index ?? "",
           title: item.title,
           description: item.description ?? "",
-          subServices: item.subServices?.map((s) => ({ name: s.label })) ?? [],
+          subServices:
+            item.subServices?.map((s) => ({ name: s.label, description: s.description ?? undefined })) ?? [],
         })) ?? fallback.capabilities.items,
       tools: fallback.capabilities.tools
         ? {
@@ -112,6 +113,8 @@ export function mapServiceToPage(
           tag: (card.tag ?? "Client work") as EngagementCardType,
           description: card.description ?? "",
           variant: (card.variant ?? "navy") as "navy" | "orange" | "image",
+          image: resolveMediaUrl(card.image as CmsImageRef) ?? undefined,
+          href: card.href || undefined,
         })) ?? fallback.engagement.cards,
     },
     expertVoice: pc.expertVoice?.quote

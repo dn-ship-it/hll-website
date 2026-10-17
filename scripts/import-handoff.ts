@@ -16,6 +16,7 @@ import { getPayload, type Payload } from "payload";
 
 import config from "@payload-config";
 
+import { SERVICE_NAMES, SERVICE_SLUGS } from "../src/components/hll/variants";
 import { INDUSTRY_GROUPS } from "../src/data/engagements";
 
 const args = process.argv.slice(2).filter((a) => a !== "--");
@@ -341,9 +342,157 @@ async function importEngagements(payload: Payload) {
   }
 }
 
+type ServiceRow = {
+  component_id: string;
+  order: number;
+  item: string;
+  parent_id: string | null;
+  title: string | null;
+  figure: string | null;
+  copy: string | null;
+  attribution_name: string | null;
+  attribution_title: string | null;
+  asset_ids: string[];
+};
+
+/** A service name (as the ledger writes it) → its page URL. */
+function serviceHrefFor(name: string) {
+  const entry = (Object.entries(SERVICE_NAMES) as [keyof typeof SERVICE_SLUGS, string][]).find(
+    ([, n]) => n.toLowerCase() === name.trim().toLowerCase(),
+  );
+  return entry ? `/services/${SERVICE_SLUGS[entry[0]]}` : null;
+}
+
+async function importServices(payload: Payload) {
+  const base = path.join(root!, "03-services");
+  for (const id of fs.readdirSync(base).sort()) {
+    const dir = path.join(base, id);
+    if (!fs.existsSync(path.join(dir, "content.json"))) continue;
+    const c = JSON.parse(fs.readFileSync(path.join(dir, "content.json"), "utf8"));
+    const assets: Record<string, { file?: string | null; status?: string }> = fs.existsSync(path.join(dir, "assets.json"))
+      ? JSON.parse(fs.readFileSync(path.join(dir, "assets.json"), "utf8"))
+      : {};
+    const variant = SERVICE[id];
+    if (!variant) {
+      report.push(`service ${id}: not a service the site knows – skipped`);
+      continue;
+    }
+    const slug = SERVICE_SLUGS[variant as keyof typeof SERVICE_SLUGS];
+    const S: Record<string, ServiceRow[]> = c.sections;
+    const rows = (name: string) => [...(S[name] ?? [])].sort((a, b) => a.order - b.order);
+
+    // Capabilities: top-level rows, each with its sub-services.
+    const caps = rows("Capabilities");
+    const parents = caps.filter((r) => !r.parent_id);
+    const items = parents.map((r, i) => ({
+      id: r.component_id,
+      index: String(i + 1).padStart(2, "0"),
+      title: r.title ?? "",
+      description: r.copy ?? "",
+      subServices: caps
+        .filter((sub) => sub.parent_id === r.component_id)
+        .map((sub) => ({ label: sub.title ?? "", description: sub.copy ?? undefined })),
+    }));
+
+    // Engagement cards: each points at an engagement package, whose folder
+    // gives the card image and the engagement page it links to.
+    const engRows = rows("Engagement");
+    const intro = engRows.find((r) => !/card/i.test(r.item))?.copy ?? undefined;
+    const cards = [];
+    for (const r of engRows.filter((row) => /card/i.test(row.item))) {
+      const pkg = r.asset_ids.map((a) => assets[a]).find((a) => a?.file);
+      const file = pkg?.file ? path.resolve(dir, pkg.file) : null;
+      const engagementId = file ? path.basename(path.dirname(file)) : null;
+      // Every engagement's card has the same file name, so the engagement goes
+      // in the stored name too, or each card would reuse the first one's image.
+      const image = file && fs.existsSync(file) ? await upload(payload, file, `svc-${id}-${engagementId}`, r.title ?? "") : null;
+      if (!file) report.push(`service ${id}: card "${r.title}" has no engagement image`);
+      cards.push({
+        id: r.component_id,
+        title: r.title ?? "",
+        client: r.title ?? "",
+        tag: /insight/i.test(r.item) ? "Insight" : /industry/i.test(r.item) ? "Industry" : "Client work",
+        description: r.copy ?? "",
+        variant: image ? "image" : "navy",
+        image,
+        href: engagementId ? `/engagement/${engagementId}` : undefined,
+      });
+    }
+
+    // Expert voice: three quotes; the headshot ships in assets/.
+    const quotes = [];
+    for (const r of rows("Expert Voice")) {
+      const hs = r.asset_ids.map((a) => assets[a]).find((a) => a?.file && /\.png$/i.test(a.file));
+      const hsFile = hs?.file ? path.join(dir, hs.file) : null;
+      let portrait = null;
+      if (hsFile && fs.existsSync(hsFile)) {
+        const found = await payload.find({ collection: "media", where: { filename: { equals: `svc-${id}--${path.basename(hsFile)}` } }, limit: 1, depth: 0 });
+        if (found.docs[0]) portrait = found.docs[0].id;
+        else {
+          const data = fs.readFileSync(hsFile);
+          portrait = (
+            await payload.create({
+              collection: "media",
+              data: { alt: r.attribution_name ?? "", mediaType: "image" },
+              file: { data, name: `svc-${id}--${path.basename(hsFile)}`, mimetype: "image/png", size: data.length },
+            })
+          ).id;
+        }
+      } else report.push(`service ${id}: no headshot for ${r.attribution_name ?? "a quote"}`);
+      quotes.push({ quote: r.copy ?? "", name: r.attribution_name ?? undefined, role: r.attribution_title ?? "", portrait });
+    }
+
+    const outcomeRows = rows("Outcome");
+    for (const r of outcomeRows.filter((row) => !row.figure)) report.push(`service ${id}: outcome "${r.copy}" has no figure – skipped`);
+    const outcomes = outcomeRows
+      .filter((r) => r.figure)
+      .map((r) => ({ stat: r.figure ?? "", description: r.copy ?? "", hasMedia: false }));
+    if (outcomes.length) report.push(`service ${id}: outcome images are "to generate" in the handoff – none added`);
+    const related = (rows("Related Services")[0]?.copy ?? "")
+      .split("·")
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .map((name) => ({ label: name, href: serviceHrefFor(name) ?? "/services" }));
+    const cta = rows("CTA")[0]?.copy;
+    if (cta) report.push(`service ${id}: CTA "${cta}" – the page has no place for it yet, not shown`);
+
+    const pageContent = {
+      brand: c.name,
+      breadcrumb: [{ label: "Capabilities" }, { label: c.name }],
+      hero: { headline: rows("Hero")[0]?.copy ?? undefined },
+      capabilities: { items },
+      outcomes: { cards: outcomes },
+      engagement: { intro, cards },
+      expertVoice: quotes[0]
+        ? { ...quotes[0], moreQuotes: quotes.slice(1) }
+        : undefined,
+      relatedServices: related,
+    };
+    const data = { title: c.name, slug, variant, summary: rows("Hero")[0]?.copy ?? undefined, pageContent, _status: "published" as const };
+
+    // Matched by the new slug, or the old hll-* one (which it then takes over).
+    // The new slug first; an entry still on the old one is taken over only
+    // when there's none on the new slug yet.
+    const bySlug = (value: string) =>
+      payload.find({ collection: "services", where: { slug: { equals: value } }, limit: 1, depth: 0, draft: true });
+    const current = await bySlug(slug);
+    const existing = current.docs[0] ? current : await bySlug(variant);
+    if (existing.docs[0]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await payload.update({ collection: "services", id: existing.docs[0].id, data: data as any });
+      console.log(`updated  service ${slug}`);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await payload.create({ collection: "services", data: data as any });
+      console.log(`created  service ${slug}`);
+    }
+  }
+}
+
 const payload = await getPayload({ config });
 const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 if (!only || only === "engagements") await importEngagements(payload);
+if (!only || only === "services") await importServices(payload);
 if (report.length) {
   console.log("\nTo check:");
   for (const line of report) console.log(`  - ${line}`);

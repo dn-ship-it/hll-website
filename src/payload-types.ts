@@ -226,6 +226,7 @@ export interface Page {
               | 'hll-ontology'
               | 'hll-people'
               | 'hll-application'
+              | 'hll-cloud'
             )
           | null;
         revealSpeed?: ('slow' | 'normal') | null;
@@ -274,7 +275,8 @@ export interface Page {
           | 'hll-foundation'
           | 'hll-ontology'
           | 'hll-people'
-          | 'hll-application';
+          | 'hll-application'
+          | 'hll-cloud';
         intensity?: number | null;
         placement?: ('full' | 'bottom') | null;
         id?: string | null;
@@ -326,6 +328,7 @@ export interface Page {
               | 'hll-ontology'
               | 'hll-people'
               | 'hll-application'
+              | 'hll-cloud'
             )
           | null;
         id?: string | null;
@@ -379,7 +382,8 @@ export interface Service {
     | 'hll-foundation'
     | 'hll-ontology'
     | 'hll-people'
-    | 'hll-application';
+    | 'hll-application'
+    | 'hll-cloud';
   summary?: string | null;
   featuredImage?: (number | null) | Media;
   /**
@@ -451,6 +455,7 @@ export interface Service {
             subServices?:
               | {
                   label: string;
+                  description?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -497,6 +502,10 @@ export interface Service {
             description?: string | null;
             variant?: ('navy' | 'orange' | 'image') | null;
             image?: (number | null) | Media;
+            /**
+             * Engagement page the card opens, e.g. /engagement/cg-global
+             */
+            href?: string | null;
           }[]
         | null;
     };
@@ -557,6 +566,7 @@ export interface Service {
                   | 'hll-ontology'
                   | 'hll-people'
                   | 'hll-application'
+                  | 'hll-cloud'
                 )
               | null;
             revealSpeed?: ('slow' | 'normal') | null;
@@ -605,7 +615,8 @@ export interface Service {
               | 'hll-foundation'
               | 'hll-ontology'
               | 'hll-people'
-              | 'hll-application';
+              | 'hll-application'
+              | 'hll-cloud';
             intensity?: number | null;
             placement?: ('full' | 'bottom') | null;
             id?: string | null;
@@ -657,6 +668,7 @@ export interface Service {
                   | 'hll-ontology'
                   | 'hll-people'
                   | 'hll-application'
+                  | 'hll-cloud'
                 )
               | null;
             id?: string | null;
@@ -1528,6 +1540,7 @@ export interface ServicesSelect<T extends boolean = true> {
                       | T
                       | {
                           label?: T;
+                          description?: T;
                           id?: T;
                         };
                   };
@@ -1579,6 +1592,7 @@ export interface ServicesSelect<T extends boolean = true> {
                     description?: T;
                     variant?: T;
                     image?: T;
+                    href?: T;
                   };
             };
         expertVoice?:
@@ -2154,6 +2168,7 @@ export interface SiteSetting {
               | 'hll-ontology'
               | 'hll-people'
               | 'hll-application'
+              | 'hll-cloud'
             )
           | null;
         id?: string | null;

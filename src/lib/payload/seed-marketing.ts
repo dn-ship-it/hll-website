@@ -220,7 +220,7 @@ export async function seedMarketingContent(payload: Payload) {
   try {
     const foundation = await payload.find({
       collection: "services",
-      where: { slug: { equals: "hll-foundation" } },
+      where: { or: [{ slug: { equals: "data-analytics" } }, { slug: { equals: "hll-foundation" } }] },
       limit: 1,
       overrideAccess: true,
     });

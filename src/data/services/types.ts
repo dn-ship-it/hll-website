@@ -37,6 +37,8 @@ export type EngagementCard = {
   image?: string;
   /** Client logo centred on the coloured block (Figma: McKinsey, KTM). */
   logo?: string;
+  /** The engagement page the card opens (handoff cross-link). */
+  href?: string;
 };
 
 export type ExpertVoice = {

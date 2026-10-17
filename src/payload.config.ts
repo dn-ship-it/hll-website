@@ -235,11 +235,15 @@ export default buildConfig({
     }
 
     try {
+      // Data & Analytics was HLL Foundation (slug hll-foundation) before the
+      // 17 Oct handoff renamed it; either slug counts as already seeded, or a
+      // renamed service would be seeded again on every boot.
       const foundation = await payload.find({
         collection: "services",
-        where: { slug: { equals: "hll-foundation" } },
+        where: { or: [{ slug: { equals: "data-analytics" } }, { slug: { equals: "hll-foundation" } }] },
         limit: 1,
         overrideAccess: true,
+        draft: true,
       });
 
       if (foundation.totalDocs === 0) {
@@ -248,7 +252,7 @@ export default buildConfig({
           overrideAccess: true,
           data: {
             title: "Data & Analytics",
-            slug: "hll-foundation",
+            slug: "data-analytics",
             variant: "hll-foundation",
             summary: "Data your business can finally trust.",
             _status: "published",

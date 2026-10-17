@@ -48,7 +48,10 @@ export const servicePageContentFields: Field[] = [
             // _services_v_version_page_content_capabilities_items_sub_services
             // is 64. Shortening just this segment brings it back under.
             dbName: "subsvc",
-            fields: [{ name: "label", type: "text", required: true }],
+            fields: [
+              { name: "label", type: "text", required: true },
+              { name: "description", type: "textarea" },
+            ],
           },
         ],
       },
@@ -119,6 +122,7 @@ export const servicePageContentFields: Field[] = [
             defaultValue: "navy",
           },
           { name: "image", type: "upload", relationTo: "media" },
+          { name: "href", type: "text", admin: { description: "Engagement page the card opens, e.g. /engagement/cg-global" } },
         ],
       },
     ],

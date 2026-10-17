@@ -12,6 +12,7 @@ export const hllVariantOptions = [
   { label: "Ontology", value: "hll-ontology" },
   { label: "People & Policy", value: "hll-people" },
   { label: "Applications", value: "hll-application" },
+  { label: "Cloud", value: "hll-cloud" },
 ] as const;
 
 export const pageBlocks: Block[] = [
