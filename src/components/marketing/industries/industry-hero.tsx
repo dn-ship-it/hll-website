@@ -172,7 +172,7 @@ function Switcher({
         <ChevronDown className="size-3.5" strokeWidth={1.4} aria-hidden />
       </button>
       {open ? (
-        <ul className="absolute left-0 right-0 top-10 z-20 overflow-hidden rounded-[4px] bg-[var(--hll-bg)] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] lg:top-11">
+        <ul className="absolute left-1/2 top-10 z-20 max-h-[min(60vh,420px)] w-max min-w-full max-w-[calc(100vw-2.5rem)] -translate-x-1/2 overflow-y-auto rounded-[4px] lg:left-0 lg:translate-x-0 lg:whitespace-nowrap bg-[var(--hll-bg)] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] lg:top-11">
           {links.map((link) => (
             <li key={link.href}>
               <Link

@@ -11,6 +11,9 @@ export function NamedExpertsSection({
   data: IndustryPageData["experts"];
   accentColor: string;
 }) {
+  // An industry without experts in the CMS shows no section, not an empty heading.
+  if (!data.people.length) return null;
+
   return (
     <section className="pb-[84px] lg:pb-[clamp(5.375rem,calc(10.19*var(--vw)),9.625rem)]">
       <div className={SERVICE_GUTTER}>

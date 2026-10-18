@@ -5,7 +5,7 @@ import {
   RelatedServicesSection,
   VoiceSection,
 } from "@/components/marketing/services/expert-and-related";
-import { mapIndustryPage } from "@/lib/payload/marketing-mappers";
+import { mapIndustryMenu, mapIndustryPage } from "@/lib/payload/marketing-mappers";
 import { getIndustryBySlug, getMarketingContent } from "@/lib/payload/queries";
 
 import { IndustryCapabilitiesSection } from "./industry-capabilities";
@@ -23,13 +23,12 @@ async function loadIndustry(fallback: IndustryPageData) {
   }
 }
 
-/** The switcher's industries: the linked ones from the CMS Industries menu,
- *  or the four industry pages until that menu is set. */
+/** The switcher's industries: every linked industry in the Industries menu
+ *  (the CMS one, or the default list of all industry pages). */
 async function loadSwitcherLinks() {
   try {
-    const groups = (await getMarketingContent())?.industryMenu ?? [];
-    const links = groups.flatMap((group) =>
-      (group.items ?? []).flatMap((item) => (item.href ? [{ label: item.label, href: item.href }] : [])),
+    const links = mapIndustryMenu(await getMarketingContent()).flatMap((group) =>
+      group.items.flatMap((item) => (item.href ? [{ label: item.label, href: item.href }] : [])),
     );
     return links.length ? links : INDUSTRY_LINKS;
   } catch {
