@@ -486,6 +486,10 @@ export interface Service {
             description?: string | null;
             hasMedia?: boolean | null;
             image?: (number | null) | Media;
+            /**
+             * The case study the image opens, e.g. /engagement/lesielle
+             */
+            href?: string | null;
             id?: string | null;
           }[]
         | null;
@@ -1578,6 +1582,7 @@ export interface ServicesSelect<T extends boolean = true> {
                     description?: T;
                     hasMedia?: T;
                     image?: T;
+                    href?: T;
                     id?: T;
                   };
             };

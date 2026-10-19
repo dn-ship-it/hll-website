@@ -92,6 +92,11 @@ export const servicePageContentFields: Field[] = [
           { name: "description", type: "textarea" },
           { name: "hasMedia", type: "checkbox", defaultValue: false },
           { name: "image", type: "upload", relationTo: "media" },
+          {
+            name: "href",
+            type: "text",
+            admin: { description: "The case study the image opens, e.g. /engagement/lesielle" },
+          },
         ],
       },
     ],

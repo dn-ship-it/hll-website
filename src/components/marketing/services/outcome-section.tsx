@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Ripple, SERVICE_TO_RIPPLE } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import type { ServicePageData } from "@/data/services/types";
@@ -77,12 +79,14 @@ export function OutcomeSection({
             className="flex flex-col rounded-[6px] bg-[var(--hll-bg)] pb-[17px] pl-[22px] pr-[18px] pt-[27px] lg:rounded-lg lg:pb-7 lg:pl-5 lg:pr-6"
           >
             <Stat value={card.stat} />
-            {card.hasMedia ? (
+            {card.image ? (
+              <OutcomeCaseStudy image={card.image} href={card.href} />
+            ) : card.hasMedia ? (
               <MediaPlaceholder className="mt-[9px] aspect-[320/234] w-full rounded-[4px] bg-[#d9d9d9] lg:mt-0" />
             ) : null}
             <p
               className={`text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] ${
-                card.hasMedia ? "mt-[9px] lg:mt-[17px]" : "lg:mt-[14px]"
+                card.hasMedia || card.image ? "mt-[9px] lg:mt-[17px]" : "lg:mt-[14px]"
               }`}
             >
               {card.description}
@@ -91,5 +95,30 @@ export function OutcomeSection({
         ))}
       </div>
     </section>
+  );
+}
+
+/**
+ * Hannan's review: under an outcome, the small card of the case study it
+ * comes from (the engagement's 490×308 card, at its own shape), opening that
+ * engagement.
+ */
+function OutcomeCaseStudy({ image, href }: { image: string; href?: string }) {
+  const img = (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={image}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      className="aspect-[490/308] w-full rounded-[4px] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+  );
+  return href ? (
+    <Link href={href} aria-label="Read the case study" className="group mt-[9px] block overflow-hidden rounded-[4px] lg:mt-0">
+      {img}
+    </Link>
+  ) : (
+    <div className="mt-[9px] overflow-hidden rounded-[4px] lg:mt-0">{img}</div>
   );
 }

@@ -505,7 +505,27 @@ const QUOTE_PEOPLE: Record<string, Record<number, { name: string; role: string; 
   },
 };
 
-async function importServices(payload: Payload, quotesOnly = false) {
+/** Outcomes whose case study Hannan named (19 Oct 2026 review), by component ID. */
+const OUTCOME_ENGAGEMENTS: Record<string, string> = {
+  "PP-OUT-01": "fraud-model-recovery-government-tax-auth", // "<1 Week": the McKinsey card from the ZATCA fraud case
+};
+
+/** Engagement name (as the outcome sheet writes it) → its ID, for the published ones. */
+function engagementIdsByName() {
+  const base = path.join(root!, "02-engagements");
+  const ids = new Map<string, string>();
+  for (const id of fs.readdirSync(base)) {
+    const file = path.join(base, id, "content.json");
+    if (fs.existsSync(file)) ids.set(JSON.parse(fs.readFileSync(file, "utf8")).name.trim().toLowerCase(), id);
+  }
+  return ids;
+}
+
+/** Which part of each service page to import: everything, or just the quotes or outcomes. */
+type ServicePart = "all" | "quotes" | "outcomes";
+
+async function importServices(payload: Payload, part: ServicePart = "all") {
+  const engagementIds = engagementIdsByName();
   const base = path.join(root!, "03-services");
   for (const id of fs.readdirSync(base).sort()) {
     const dir = path.join(base, id);
@@ -540,7 +560,7 @@ async function importServices(payload: Payload, quotesOnly = false) {
     // its card artwork, opening its engagement page.
     const engRows = rows("Engagement");
     const intro = engRows.find((r) => !/card/i.test(r.item))?.copy ?? undefined;
-    const cards = quotesOnly ? [] : await serviceEngagementCards(payload, id);
+    const cards = part === "all" ? await serviceEngagementCards(payload, id) : [];
 
     // Expert voice: three quotes; the headshot ships in assets/.
     const quotes = [];
@@ -574,7 +594,7 @@ async function importServices(payload: Payload, quotesOnly = false) {
       if (!q.portrait) report.push(`service ${id}: no photo for ${person.name} yet – upload it in the CMS`);
     }
 
-    if (quotesOnly) {
+    if (part === "quotes") {
       const found = await payload.find({ collection: "services", where: { slug: { equals: slug } }, limit: 1, depth: 0, draft: true });
       const doc = found.docs[0];
       if (!doc) continue;
@@ -591,10 +611,39 @@ async function importServices(payload: Payload, quotesOnly = false) {
 
     const outcomeRows = rows("Outcome");
     for (const r of outcomeRows.filter((row) => !row.figure)) report.push(`service ${id}: outcome "${r.copy}" has no figure – skipped`);
-    const outcomes = outcomeRows
-      .filter((r) => r.figure)
-      .map((r) => ({ stat: r.figure ?? "", description: r.copy ?? "", hasMedia: false }));
-    if (outcomes.length) report.push(`service ${id}: outcome images are "to generate" in the handoff – none added`);
+    // Hannan's review: an outcome from a case study shows that engagement's
+    // small card, opening it (the sheet's "Linked engagement / source").
+    const sheet: { "Component ID": string; "Linked engagement / source"?: string }[] = c.outcome_images ?? [];
+    const outcomes = [];
+    for (const r of outcomeRows.filter((row) => row.figure)) {
+      const source = sheet.find((o) => o["Component ID"] === r.component_id)?.["Linked engagement / source"]?.trim() ?? "";
+      const engagementId = OUTCOME_ENGAGEMENTS[r.component_id] ?? engagementIds.get(source.toLowerCase()) ?? null;
+      if (!engagementId && source && source !== "Firm-level") report.push(`service ${id}: outcome "${r.figure}" is from "${source}", which isn't published – no card`);
+      const file = engagementId ? best(path.join(root!, "02-engagements", engagementId), "card-related_490x308") : null;
+      const image = file ? await upload(payload, file, `svc-${id}-${engagementId}`, source || engagementId!) : null;
+      outcomes.push({
+        stat: r.figure ?? "",
+        description: r.copy ?? "",
+        hasMedia: false,
+        image,
+        href: image ? `/engagement/${engagementId}` : undefined,
+      });
+    }
+
+    if (part === "outcomes") {
+      const found = await payload.find({ collection: "services", where: { slug: { equals: slug } }, limit: 1, depth: 0, draft: true });
+      const doc = found.docs[0];
+      if (!doc) continue;
+      const pageContent = doc.pageContent ?? {};
+      await payload.update({
+        collection: "services",
+        id: doc.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { pageContent: { ...pageContent, outcomes: { ...(pageContent.outcomes ?? {}), cards: outcomes } }, _status: "published" } as any,
+      });
+      console.log(`outcomes service ${slug}: ${outcomes.map((o) => `${o.stat}${o.href ? ` → ${o.href.replace("/engagement/", "")}` : ""}`).join(" | ")}`);
+      continue;
+    }
     const related = (rows("Related Services")[0]?.copy ?? "")
       .split("·")
       .map((name) => name.trim())
@@ -744,7 +793,8 @@ if (!only || only === "engagements") await importEngagements(payload);
 if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
 if (!only || only === "services") await importServices(payload);
-if (only === "service-quotes") await importServices(payload, true);
+if (only === "service-quotes") await importServices(payload, "quotes");
+if (only === "service-outcomes") await importServices(payload, "outcomes");
 if (!only || only === "industries") await importIndustries(payload);
 if (report.length) {
   console.log("\nTo check:");

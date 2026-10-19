@@ -21,6 +21,9 @@ export type OutcomeCard = {
   stat: string;
   description: string;
   hasMedia?: boolean;
+  /** The case-study card shown under the figure, and the engagement it opens. */
+  image?: string;
+  href?: string;
 };
 
 /** Matches the copy spec's card typing, which drives the tag shown on the card. */

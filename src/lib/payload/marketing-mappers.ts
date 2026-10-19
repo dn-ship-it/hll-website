@@ -100,6 +100,8 @@ export function mapServiceToPage(
           stat: card.stat,
           description: card.description ?? "",
           hasMedia: card.hasMedia ?? Boolean(card.image),
+          image: resolveMediaUrl(card.image as CmsImageRef) ?? undefined,
+          href: card.href || undefined,
         })) ?? fallback.outcomes.cards,
     },
     engagement: {
