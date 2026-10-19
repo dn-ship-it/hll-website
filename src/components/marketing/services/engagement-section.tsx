@@ -96,6 +96,9 @@ export function EngagementSection({
   breadcrumb: readonly string[];
   variant: ServiceVariant;
 }) {
+  // A service without engagements yet (Ontology) shows no section, not an empty heading.
+  if (!data.cards.length) return null;
+
   const heading = (
     <>
       <ServiceSectionHeading

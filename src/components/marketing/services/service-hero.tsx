@@ -39,7 +39,7 @@ export function ServiceHero({
           as="h1"
           text={data.headline}
           variant={variant}
-          className="block max-w-[355px] font-light text-[var(--hll-dark-grey)] lg:max-w-none"
+          className="block max-w-[355px] font-light text-[var(--hll-dark-grey)] [text-wrap:pretty] lg:max-w-none"
           fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
           letterSpacing="0"
           lineHeight="1.16"

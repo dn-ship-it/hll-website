@@ -6,7 +6,7 @@ import type { ExpertVoice } from "@/data/services/types";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 /** How long each testimonial shows before the next one (the timer bar). */
-const SLIDE_MS = 6000;
+const SLIDE_MS = 10000;
 /** A horizontal drag this long (px) turns to the next or previous slide. */
 const SWIPE_PX = 40;
 

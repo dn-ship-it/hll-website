@@ -424,6 +424,73 @@ function serviceHrefFor(name: string) {
   return entry ? `/services/${SERVICE_SLUGS[entry[0]]}` : null;
 }
 
+/**
+ * Engagements shown on a service page, where Hannan named them (19 Oct
+ * 2026 review); every other service shows its own engagements in the library.
+ */
+const SERVICE_ENGAGEMENTS: Record<string, string[]> = {
+  "people-policy": ["fraud-model-recovery-government-tax-auth", "wataniya-monolith-to-microservices-archi", "docupet"],
+};
+
+/** A service page's engagement cards: client, project, card artwork and link. */
+async function serviceEngagementCards(payload: Payload, serviceId: string) {
+  const base = path.join(root!, "02-engagements");
+  const library = fs
+    .readdirSync(base)
+    .filter((id) => fs.existsSync(path.join(base, id, "content.json")))
+    .sort()
+    .map((id) => ({ id, c: JSON.parse(fs.readFileSync(path.join(base, id, "content.json"), "utf8")) as HandoffEngagement }));
+  const chosen = SERVICE_ENGAGEMENTS[serviceId]
+    ? SERVICE_ENGAGEMENTS[serviceId].flatMap((id) => library.filter((e) => e.id === id))
+    : library.filter((e) => e.c.service_id === serviceId);
+  if (!chosen.length) report.push(`service ${serviceId}: no engagements in the library – section left empty`);
+  const cards = [];
+  for (const { id, c } of chosen) {
+    const client = c.shown_as || c.client || c.name;
+    const file = best(path.join(base, id), "card-related_490x308");
+    // Every engagement's card has the same file name, so the engagement goes
+    // in the stored name too, or each card would reuse the first one's image.
+    const image = file ? await upload(payload, file, `svc-${serviceId}-${id}`, client) : null;
+    if (!file) report.push(`service ${serviceId}: ${id} has no card image`);
+    cards.push({
+      id: `${serviceId}-${id}`,
+      title: client,
+      client,
+      tag: "Client work",
+      description: c.name,
+      variant: image ? "image" : "navy",
+      image,
+      href: `/engagement/${id}`,
+    });
+  }
+  return cards;
+}
+
+/** Replaces only each service page's engagement cards. */
+async function importServiceEngagements(payload: Payload) {
+  const base = path.join(root!, "03-services");
+  for (const id of fs.readdirSync(base).sort()) {
+    const variant = SERVICE[id];
+    if (!variant || !fs.existsSync(path.join(base, id, "content.json"))) continue;
+    const slug = SERVICE_SLUGS[variant as keyof typeof SERVICE_SLUGS];
+    const found = await payload.find({ collection: "services", where: { slug: { equals: slug } }, limit: 1, depth: 0, draft: true });
+    const doc = found.docs[0];
+    if (!doc) {
+      report.push(`service ${id}: not in the CMS yet – run the services import first`);
+      continue;
+    }
+    const cards = await serviceEngagementCards(payload, id);
+    const pageContent = doc.pageContent ?? {};
+    await payload.update({
+      collection: "services",
+      id: doc.id,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: { pageContent: { ...pageContent, engagement: { ...(pageContent.engagement ?? {}), cards } }, _status: "published" } as any,
+    });
+    console.log(`engagements service ${slug}: ${cards.map((card) => card.href.replace("/engagement/", "")).join(", ") || "none"}`);
+  }
+}
+
 async function importServices(payload: Payload) {
   const base = path.join(root!, "03-services");
   for (const id of fs.readdirSync(base).sort()) {
@@ -455,30 +522,11 @@ async function importServices(payload: Payload) {
         .map((sub) => ({ label: sub.title ?? "", description: sub.copy ?? undefined })),
     }));
 
-    // Engagement cards: each points at an engagement package, whose folder
-    // gives the card image and the engagement page it links to.
+    // Engagement cards: the service's engagements in the library, each with
+    // its card artwork, opening its engagement page.
     const engRows = rows("Engagement");
     const intro = engRows.find((r) => !/card/i.test(r.item))?.copy ?? undefined;
-    const cards = [];
-    for (const r of engRows.filter((row) => /card/i.test(row.item))) {
-      const pkg = r.asset_ids.map((a) => assets[a]).find((a) => a?.file);
-      const file = pkg?.file ? path.resolve(dir, pkg.file) : null;
-      const engagementId = file ? path.basename(path.dirname(file)) : null;
-      // Every engagement's card has the same file name, so the engagement goes
-      // in the stored name too, or each card would reuse the first one's image.
-      const image = file && fs.existsSync(file) ? await upload(payload, file, `svc-${id}-${engagementId}`, r.title ?? "") : null;
-      if (!file) report.push(`service ${id}: card "${r.title}" has no engagement image`);
-      cards.push({
-        id: r.component_id,
-        title: r.title ?? "",
-        client: r.title ?? "",
-        tag: /insight/i.test(r.item) ? "Insight" : /industry/i.test(r.item) ? "Industry" : "Client work",
-        description: r.copy ?? "",
-        variant: image ? "image" : "navy",
-        image,
-        href: engagementId ? `/engagement/${engagementId}` : undefined,
-      });
-    }
+    const cards = await serviceEngagementCards(payload, id);
 
     // Expert voice: three quotes; the headshot ships in assets/.
     const quotes = [];
@@ -656,6 +704,7 @@ const payload = await getPayload({ config });
 const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 if (!only || only === "engagements") await importEngagements(payload);
 if (only === "engagement-industries") await importEngagementIndustries(payload);
+if (only === "service-engagements") await importServiceEngagements(payload);
 if (!only || only === "services") await importServices(payload);
 if (!only || only === "industries") await importIndustries(payload);
 if (report.length) {
