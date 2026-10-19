@@ -67,11 +67,49 @@ const squash = (text: string) => text.toLowerCase().replace(/[\s\-–—&]+/g, "
 const INDUSTRIES = new Map(
   INDUSTRY_GROUPS.flatMap((group) => group.items).map((name) => [squash(name), name]),
 );
-function industryFor(name: string | null | undefined, id: string) {
-  if (!name) return null;
-  const match = INDUSTRIES.get(squash(name));
-  if (!match) report.push(`${id}: industry "${name}" isn't in the site's list – left empty`);
-  return match ?? null;
+/** Engagement ID → the site industries whose handoff page lists it in linked_engagement_ids. */
+function linkedIndustries(): Map<string, string[]> {
+  const base = path.join(root!, "04-industries");
+  const links = new Map<string, string[]>();
+  if (!fs.existsSync(base)) return links;
+  for (const dir of fs.readdirSync(base).sort()) {
+    const file = path.join(base, dir, "content.json");
+    if (!fs.existsSync(file)) continue;
+    const page = JSON.parse(fs.readFileSync(file, "utf8"));
+    const industry = INDUSTRIES.get(squash(page.name ?? ""));
+    if (!industry) continue;
+    for (const id of page.linked_engagement_ids ?? []) links.set(id, [...(links.get(id) ?? []), industry]);
+  }
+  return links;
+}
+
+/** "Consumer and commerce" and "Commerce & Consumer" are the same group. */
+const words = (text: string) =>
+  [...new Set(text.toLowerCase().split(/[^a-z]+/).filter((w) => w && w !== "and"))].sort().join(" ");
+
+/**
+ * The engagement's site industry, from the handoff only: the ledger's
+ * sub-industry, else its industry column (some rows have the two swapped,
+ * e.g. "Insurance" / "Financial Services"), else the industry page that lists
+ * the engagement – when several do, the one in the ledger's industry group.
+ */
+function engagementIndustry(c: HandoffEngagement, id: string, links: Map<string, string[]>) {
+  const fromLedger =
+    (c.industry_child ? INDUSTRIES.get(squash(c.industry_child)) : undefined) ??
+    (c.industry ? INDUSTRIES.get(squash(c.industry)) : undefined);
+  if (fromLedger) return fromLedger;
+  const pages = links.get(id) ?? [];
+  if (pages.length === 1) return pages[0];
+  const group = INDUSTRY_GROUPS.find((g) => c.industry && words(g.title) === words(c.industry));
+  const inGroup = pages.filter((p) => (group?.items as readonly string[] | undefined)?.includes(p));
+  if (inGroup.length === 1) return inGroup[0];
+  const ledger = [c.industry_child, c.industry].filter(Boolean).join(" / ") || "none";
+  report.push(
+    pages.length
+      ? `${id}: ledger industry "${ledger}" isn't the site's, and ${pages.join(" and ")} both list it – left empty`
+      : `${id}: ledger industry "${ledger}" isn't the site's, and no industry page lists it – left empty`,
+  );
+  return null;
 }
 
 /** Uploads a file once, as `<prefix>--<file name>`, and returns its media ID. */
@@ -240,9 +278,31 @@ const GALLERY_ROWS = [
   ["block-1096x617"],
 ];
 
+/** Sets only each engagement's industry: quick, and no images are touched. */
+async function importEngagementIndustries(payload: Payload) {
+  const base = path.join(root!, "02-engagements");
+  const links = linkedIndustries();
+  for (const id of fs.readdirSync(base).sort()) {
+    const file = path.join(base, id, "content.json");
+    if (!fs.existsSync(file)) continue;
+    const c: HandoffEngagement = JSON.parse(fs.readFileSync(file, "utf8"));
+    const industry = engagementIndustry(c, id, links);
+    const existing = await payload.find({ collection: "engagements", where: { slug: { equals: id } }, limit: 1, depth: 0 });
+    const doc = existing.docs[0];
+    if (!doc) {
+      report.push(`${id}: not in the CMS yet – run the engagements import first`);
+      continue;
+    }
+    if ((doc.industry ?? null) === industry) continue;
+    await payload.update({ collection: "engagements", id: doc.id, data: { industry } as any });
+    console.log(`industry ${id}: ${doc.industry ?? "—"} → ${industry ?? "—"}`);
+  }
+}
+
 async function importEngagements(payload: Payload) {
   const base = path.join(root!, "02-engagements");
   const ids = fs.readdirSync(base).filter((id) => fs.existsSync(path.join(base, id, "content.json")));
+  const links = linkedIndustries();
   let order = 0;
   for (const id of ids.sort()) {
     const dir = path.join(base, id);
@@ -306,9 +366,7 @@ async function importEngagements(payload: Payload) {
       engagementType: "case-study" as const,
       template: "case-study" as const,
       services: SERVICE[c.service_id] ? [SERVICE[c.service_id]] : [],
-      // The specific industry, else the broad one when it's one of the
-      // site's (e.g. Lesielle: no sub-industry, industry "Pharmaceuticals").
-      industry: industryFor(c.industry_child, id) ?? (c.industry ? INDUSTRIES.get(squash(c.industry)) ?? null : null),
+      industry: engagementIndustry(c, id, links),
       period: c.years,
       location: c.location || null,
       // Some ledger rows say "Default (white/grey)" instead of a colour.
@@ -597,6 +655,7 @@ async function importIndustries(payload: Payload) {
 const payload = await getPayload({ config });
 const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 if (!only || only === "engagements") await importEngagements(payload);
+if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (!only || only === "services") await importServices(payload);
 if (!only || only === "industries") await importIndustries(payload);
 if (report.length) {
