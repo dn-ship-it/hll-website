@@ -44,6 +44,8 @@ export function OutcomeSection({
   variant?: ServiceVariant;
 }) {
   const { outcomeBackground } = getServiceTheme(variant);
+  // A service without outcome figures yet (Ontology) shows no section, not an empty heading.
+  if (!data.cards.length) return null;
 
   return (
     <section
