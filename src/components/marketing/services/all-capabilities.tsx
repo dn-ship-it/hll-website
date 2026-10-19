@@ -452,7 +452,7 @@ export function AllCapabilities({
             onClick={(event) => {
               if (focus.href && !(event.target as Element).closest("a")) router.push(focus.href);
             }}
-            className={`absolute flex flex-wrap items-center gap-[6px] ${focus.href ? "cursor-pointer" : ""}`}
+            className={`absolute flex flex-wrap items-center gap-[8px] ${focus.href ? "cursor-pointer" : ""}`}
             style={{
               left: PHONE.gutter,
               right: PHONE.gutter,
@@ -460,7 +460,7 @@ export function AllCapabilities({
               opacity: "var(--settle, 1)",
             }}
           >
-            {pills("rounded-[3px] border-[0.6px] px-[6px] py-[4px] text-[9px]")}
+            {pills("rounded-[3px] border-[0.6px] px-[8px] py-[5px] text-[9px]")}
             {focus.href ? (
               <Link
                 href={focus.href}
@@ -553,7 +553,7 @@ export function AllCapabilities({
                     type="button"
                     tabIndex={-1}
                     onClick={() => goTo(slot)}
-                    className="whitespace-nowrap text-left font-medium leading-[1.16] hover:!text-[var(--hll-dark-grey)]"
+                    className="cursor-pointer whitespace-nowrap text-left font-medium leading-[1.16] hover:!text-[var(--hll-dark-grey)]"
                     style={{
                       fontSize:
                         "calc(clamp(1.25rem, calc(1.72*var(--vw)), 1.625rem) * (1 - var(--a)) + clamp(1.5rem, calc(2.15*var(--vw)), 2.03rem) * var(--a))",
@@ -577,15 +577,19 @@ export function AllCapabilities({
                 // QA C-08: the tags wrap within their design width and scale
                 // with the stage (10.7px at 1512, never under 9px), rather
                 // than running past the open button and off narrow screens.
-                className={`absolute flex flex-wrap items-center gap-[max(6px,0.53cqw)] ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
+                // Hannan's review: the whole focused service opens its page –
+                // the block starts at the name (316) and runs to the open
+                // button's right edge, the tags 49 units under its top.
+                className={`absolute flex flex-wrap content-start items-center gap-[max(8px,0.66cqw)] ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
                 style={{
                   left: pct(815, STAGE.w),
-                  top: `calc((365 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
+                  top: `calc((316 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
                   width: pct(447, STAGE.w),
+                  paddingTop: `${(49 / STAGE.w) * 100}cqw`,
                   opacity: "var(--settle, 1)",
                 }}
               >
-                {pills("rounded-[max(3px,0.25cqw)] border-[0.64px] px-[max(6px,0.46cqw)] py-[max(4px,0.33cqw)] text-[max(9px,0.71cqw)]")}
+                {pills("rounded-[max(3px,0.25cqw)] border-[0.64px] px-[max(8px,0.6cqw)] py-[max(5px,0.4cqw)] text-[max(9px,0.71cqw)]")}
               </div>
               {focus.href ? (
                 <Link

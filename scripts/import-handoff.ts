@@ -491,7 +491,21 @@ async function importServiceEngagements(payload: Payload) {
   }
 }
 
-async function importServices(payload: Payload) {
+/**
+ * Who says each Expert Voice quote, where Hannan changed it (19 Oct 2026
+ * review): quote number (0-based) → name, title and, when there is one, the
+ * headshot in the handoff. Without one the portrait stays empty until it's
+ * uploaded in the CMS.
+ */
+const QUOTE_PEOPLE: Record<string, Record<number, { name: string; role: string; headshot?: string }>> = {
+  "people-policy": { 1: { name: "Santosh Maruwada", role: "Partner" } },
+  "trust-governance": {
+    1: { name: "Lalith Kumar", role: "Senior Solution Architect" },
+    2: { name: "Hannan Hakim", role: "Senior Partner", headshot: "03-services/ai/assets/hs-hannan-hakim.png" },
+  },
+};
+
+async function importServices(payload: Payload, quotesOnly = false) {
   const base = path.join(root!, "03-services");
   for (const id of fs.readdirSync(base).sort()) {
     const dir = path.join(base, id);
@@ -526,7 +540,7 @@ async function importServices(payload: Payload) {
     // its card artwork, opening its engagement page.
     const engRows = rows("Engagement");
     const intro = engRows.find((r) => !/card/i.test(r.item))?.copy ?? undefined;
-    const cards = await serviceEngagementCards(payload, id);
+    const cards = quotesOnly ? [] : await serviceEngagementCards(payload, id);
 
     // Expert voice: three quotes; the headshot ships in assets/.
     const quotes = [];
@@ -549,6 +563,30 @@ async function importServices(payload: Payload) {
         }
       } else report.push(`service ${id}: no headshot for ${r.attribution_name ?? "a quote"}`);
       quotes.push({ quote: r.copy ?? "", name: r.attribution_name ?? undefined, role: r.attribution_title ?? "", portrait });
+    }
+    for (const [index, person] of Object.entries(QUOTE_PEOPLE[id] ?? {})) {
+      const q = quotes[Number(index)];
+      if (!q) continue;
+      const file = person.headshot ? path.join(root!, person.headshot) : null;
+      q.name = person.name;
+      q.role = person.role;
+      q.portrait = file && fs.existsSync(file) ? await upload(payload, file, `svc-${id}`, person.name) : null;
+      if (!q.portrait) report.push(`service ${id}: no photo for ${person.name} yet – upload it in the CMS`);
+    }
+
+    if (quotesOnly) {
+      const found = await payload.find({ collection: "services", where: { slug: { equals: slug } }, limit: 1, depth: 0, draft: true });
+      const doc = found.docs[0];
+      if (!doc) continue;
+      const pageContent = doc.pageContent ?? {};
+      await payload.update({
+        collection: "services",
+        id: doc.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { pageContent: { ...pageContent, expertVoice: quotes[0] ? { ...quotes[0], moreQuotes: quotes.slice(1) } : pageContent.expertVoice }, _status: "published" } as any,
+      });
+      console.log(`quotes   service ${slug}: ${quotes.map((q) => q.name).join(", ")}`);
+      continue;
     }
 
     const outcomeRows = rows("Outcome");
@@ -706,6 +744,7 @@ if (!only || only === "engagements") await importEngagements(payload);
 if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
 if (!only || only === "services") await importServices(payload);
+if (only === "service-quotes") await importServices(payload, true);
 if (!only || only === "industries") await importIndustries(payload);
 if (report.length) {
   console.log("\nTo check:");
