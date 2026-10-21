@@ -21,7 +21,8 @@ import {
 } from "./engagement-card";
 import { EngagementSidebar } from "./engagement-sidebar";
 
-type Tone = { accent: string | null; story: boolean };
+/** `text`: the client colour for text, or null where it's too light to read on white. */
+type Tone = { accent: string | null; text: string | null; story: boolean };
 
 const BODY =
   "text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]";
@@ -40,7 +41,7 @@ function Label({ children, tone }: { children: React.ReactNode; tone: Tone }) {
     <p
       data-fade-up
       className={`text-[10px] uppercase leading-[1.16] tracking-[0.25em] lg:text-[12px] ${tone.story ? "font-medium" : ""}`}
-      style={{ color: tone.accent ?? "var(--hll-dark-grey)" }}
+      style={{ color: tone.text ?? "var(--hll-dark-grey)" }}
     >
       {children}
     </p>
@@ -87,6 +88,8 @@ function QuoteBlock({
   block: Extract<EngagementBlock, { kind: "quote" }>;
   accent: string;
 }) {
+  // A very light client colour (Parrot Finance's neon) washes out white text.
+  const ink = !block.media?.src && luminance(accent) > 0.7 ? "text-[var(--hll-dark-grey)]" : "text-[#FAFAFA]";
   return (
     // Mobile: the box keeps Figma's 386 × 244 shape but grows with the quote
     // (an aspect-ratio box only grows when it doesn't clip, so the clipping
@@ -125,11 +128,11 @@ function QuoteBlock({
       {/* Figma Story mobile: a 14px quote 90px down, 12px in, the name
           50px under it and 14px off the bottom. */}
       <div className="relative px-3 pb-[14px] pt-[90px] lg:absolute lg:inset-x-0 lg:top-[32.4%] lg:p-0 lg:pl-[22.47%] lg:pr-[22%]">
-        <blockquote className="text-[14px] leading-[1.25] text-[#FAFAFA] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]">
+        <blockquote className={`text-[14px] leading-[1.25] ${ink} lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]`}>
           {block.quote}
         </blockquote>
         {block.name || block.role ? (
-          <p className="mt-[50px] text-[14px] leading-[1.25] text-[#FAFAFA] lg:mt-[clamp(2rem,calc(9.26*var(--vw)),8.75rem)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] lg:text-black">
+          <p className={`mt-[50px] text-[14px] leading-[1.25] ${ink} lg:mt-[clamp(2rem,calc(9.26*var(--vw)),8.75rem)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] lg:text-black`}>
             {block.name}
             {block.role ? <span className="block">{block.role}</span> : null}
           </p>
@@ -302,8 +305,8 @@ function Block({
                   className="text-[14px] leading-[1.25] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]"
                   style={{
                     color:
-                      tone.story && tone.accent
-                        ? tone.accent
+                      tone.story && tone.text
+                        ? tone.text
                         : "var(--hll-mid-grey)",
                   }}
                 >
@@ -333,7 +336,7 @@ function Block({
                   className="hll-label mb-[6px] block text-[10px] leading-[1.2] lg:absolute lg:-left-[25px] lg:top-[3px] lg:mb-0 lg:text-[12px]"
                   style={{
                     ...FUNCTIONAL_STYLE,
-                    color: tone.accent ?? "var(--hll-dark-grey)",
+                    color: tone.text ?? "var(--hll-dark-grey)",
                   }}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -384,8 +387,9 @@ function Spacer({
 }
 
 /**
- * Figma "Explore related engagements": a 611px band washing up from clear to
- * 70% of the colour. Case study: "gradient is according to the service
+ * Figma "Explore related engagements": a 611px band, clear at the top and
+ * 70% of the colour at the bottom (the Figma rectangle is rotated 180°, which
+ * flips its fill; QA client review 21 Oct: it was upside down). Case study: "gradient is according to the service
  * colour, all case studies in it will be of the same service". Story:
  * "gradient is based on the colours of this project".
  */
@@ -396,7 +400,7 @@ function RelatedBand({ items, color }: { items: Engagement[]; color: string }) {
       data-related-band
       className="pb-12 pt-10 lg:px-[10px] lg:pb-[82px] lg:pt-[65px]"
       style={{
-        background: `linear-gradient(0deg, ${withAlpha(color, 0)}, ${withAlpha(color, 0.7)})`,
+        background: `linear-gradient(180deg, ${withAlpha(color, 0)}, ${withAlpha(color, 0.7)})`,
       }}
     >
       <div className="px-5 [--related-title:24px] lg:px-[20px] lg:[--related-title:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
@@ -428,6 +432,23 @@ function RelatedBand({ items, color }: { items: Engagement[]; color: string }) {
   );
 }
 
+/**
+ * The client colour for text on the page's white, or null when it's too light
+ * to read there (QA client review 21 Oct: Parrot Finance's neon labels): WCAG
+ * contrast against #FAFAFA under 2.5. Keeps strong colours like KTM orange.
+ */
+function readableOnWhite(hex: string | null) {
+  if (!hex || !/^#[0-9a-f]{6}$/i.test(hex)) return null;
+  const channel = (v: number) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const n = parseInt(hex.slice(1), 16);
+  const l = 0.2126 * channel((n >> 16) & 255) + 0.7152 * channel((n >> 8) & 255) + 0.0722 * channel(n & 255);
+  const white = 0.955; // #FAFAFA
+  return (white + 0.05) / (l + 0.05) >= 2.5 ? hex : null;
+}
+
 /** Relative brightness of a #rrggbb colour, 0 (black) to 1 (white). */
 function luminance(hex: string) {
   const n = parseInt(hex.replace("#", "").slice(0, 6), 16);
@@ -442,7 +463,7 @@ export async function EngagementDetail({ slug }: { slug: string }) {
 
   const story = engagement.template === "story";
   const accent = engagement.primaryColor ?? null;
-  const tone: Tone = { accent, story };
+  const tone: Tone = { accent, text: readableOnWhite(accent), story };
   const serviceColor = engagement.services[0]
     ? getServiceTheme(engagement.services[0]).accent
     : "#444444";

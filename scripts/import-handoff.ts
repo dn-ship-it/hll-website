@@ -440,9 +440,23 @@ async function serviceEngagementCards(payload: Payload, serviceId: string) {
     .filter((id) => fs.existsSync(path.join(base, id, "content.json")))
     .sort()
     .map((id) => ({ id, c: JSON.parse(fs.readFileSync(path.join(base, id, "content.json"), "utf8")) as HandoffEngagement }));
+  // Client review 21 Oct: three engagements, three different clients, the
+  // ones with a client logo first, then the flagship (tier A) ones.
+  const hasLogo = (id: string) => fs.existsSync(path.join(base, id, "logo.png"));
+  const ranked = library
+    .filter((e) => e.c.service_id === serviceId)
+    .sort((a, b) => Number(hasLogo(b.id)) - Number(hasLogo(a.id)) || a.c.tier.localeCompare(b.c.tier));
+  const clients = new Set<string>();
   const chosen = SERVICE_ENGAGEMENTS[serviceId]
     ? SERVICE_ENGAGEMENTS[serviceId].flatMap((id) => library.filter((e) => e.id === id))
-    : library.filter((e) => e.c.service_id === serviceId);
+    : ranked
+        .filter((e) => {
+          const client = e.c.shown_as || e.c.client || e.c.name;
+          if (clients.has(client)) return false;
+          clients.add(client);
+          return true;
+        })
+        .slice(0, 3);
   if (!chosen.length) report.push(`service ${serviceId}: no engagements in the library – section left empty`);
   const cards = [];
   for (const { id, c } of chosen) {
