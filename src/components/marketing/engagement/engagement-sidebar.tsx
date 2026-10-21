@@ -41,10 +41,12 @@ function MetaRow({
 
 /** A round axis top just above `max`: 1, 2, 2.5 or 5 × a power of ten. */
 function niceCeil(max: number) {
-  if (max <= 0) return 1;
-  const step = 10 ** Math.floor(Math.log10(max));
-  const n = [1, 2, 2.5, 5, 10].find((m) => m * step >= max) ?? 10;
-  return n * step;
+  if (max <= 0) return 3;
+  // Three equal axis steps, each a round number (5, 10, 15 – not 6.67, 13.3).
+  const raw = max / 3;
+  const pow = 10 ** Math.floor(Math.log10(raw));
+  const step = ([1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].find((m) => m * pow >= raw) ?? 10) * pow;
+  return step * 3;
 }
 
 /** An axis number without float noise: 0.48, 2.5, 400. */
@@ -106,137 +108,141 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
         {stat.unit ? <span className="text-[18px]">{stat.unit}</span> : null}
       </p>
 
-      <svg
-        viewBox="0 136 344 116"
-        className="mt-[10px] block w-full overflow-visible"
-        aria-hidden
-      >
-        <defs>
-          <linearGradient
-            id="stat-bar"
-            x1="29"
-            x2="297"
-            y1="0"
-            y2="0"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop offset="0" stopColor="#FA4288" />
-            <stop offset="0.42" stopColor="#FB8E97" />
-            <stop offset="0.63" stopColor="#FF836B" />
-            <stop offset="0.86" stopColor="#FEE253" />
-          </linearGradient>
-          <linearGradient id="stat-bar-fade" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#fff" stopOpacity="1" />
-            <stop offset="1" stopColor="#fff" stopOpacity="0.45" />
-          </linearGradient>
-          <mask id="stat-bar-mask">
-            <rect
-              x="0"
-              y="136"
-              width="344"
-              height="116"
-              fill="url(#stat-bar-fade)"
+      {/* Client review 21 Oct: KPIs without chart points (the People &
+          Policy placements) show no empty chart and made-up axis. */}
+      {bars.length ? (
+        <svg
+          viewBox="0 136 344 116"
+          className="mt-[10px] block w-full overflow-visible"
+          aria-hidden
+        >
+          <defs>
+            <linearGradient
+              id="stat-bar"
+              x1="29"
+              x2="297"
+              y1="0"
+              y2="0"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0" stopColor="#FA4288" />
+              <stop offset="0.42" stopColor="#FB8E97" />
+              <stop offset="0.63" stopColor="#FF836B" />
+              <stop offset="0.86" stopColor="#FEE253" />
+            </linearGradient>
+            <linearGradient id="stat-bar-fade" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stopColor="#fff" stopOpacity="1" />
+              <stop offset="1" stopColor="#fff" stopOpacity="0.45" />
+            </linearGradient>
+            <mask id="stat-bar-mask">
+              <rect
+                x="0"
+                y="136"
+                width="344"
+                height="116"
+                fill="url(#stat-bar-fade)"
+              />
+            </mask>
+            <filter id="stat-glow" x="-20%" y="-300%" width="140%" height="700%">
+              <feGaussianBlur stdDeviation="2" />
+            </filter>
+          </defs>
+          {[150, 178, 207, 236].map((y) => (
+            <line
+              key={y}
+              x1="24"
+              x2="295"
+              y1={y}
+              y2={y}
+              stroke="#B1B1B1"
+              strokeWidth="0.5"
             />
-          </mask>
-          <filter id="stat-glow" x="-20%" y="-300%" width="140%" height="700%">
-            <feGaussianBlur stdDeviation="2" />
-          </filter>
-        </defs>
-        {[150, 178, 207, 236].map((y) => (
-          <line
-            key={y}
-            x1="24"
-            x2="295"
-            y1={y}
-            y2={y}
-            stroke="#B1B1B1"
-            strokeWidth="0.5"
-          />
-        ))}
-        {ticks.map((t, i) => (
-          <text
-            key={t}
-            x="303"
-            y={[150, 178, 207, 236][i] + 3}
-            fontSize="8"
-            fill={AXIS}
-            style={FUNCTIONAL_STYLE}
-          >
-            {t}
-          </text>
-        ))}
-        <g mask="url(#stat-bar-mask)">
+          ))}
+          {ticks.map((t, i) => (
+            <text
+              key={t}
+              x="303"
+              y={[150, 178, 207, 236][i] + 3}
+              fontSize="8"
+              fill={AXIS}
+              style={FUNCTIONAL_STYLE}
+            >
+              {t}
+            </text>
+          ))}
+          <g mask="url(#stat-bar-mask)">
+            {bars.map((bar, i) => {
+              const x = 29 + i * pitch;
+              const top = scaleY(bar.value);
+              return (
+                <rect
+                  key={bar.label}
+                  x={x}
+                  y={shown ? top : 236}
+                  width="59"
+                  height={shown ? 236 - top : 0}
+                  fill="url(#stat-bar)"
+                  style={{
+                    transition: `y 900ms ${120 * i}ms, height 900ms ${120 * i}ms`,
+                    transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+                  }}
+                />
+              );
+            })}
+          </g>
           {bars.map((bar, i) => {
             const x = 29 + i * pitch;
             const top = scaleY(bar.value);
             return (
-              <rect
+              <g
                 key={bar.label}
-                x={x}
-                y={shown ? top : 236}
-                width="59"
-                height={shown ? 236 - top : 0}
-                fill="url(#stat-bar)"
                 style={{
-                  transition: `y 900ms ${120 * i}ms, height 900ms ${120 * i}ms`,
-                  transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+                  opacity: shown ? 1 : 0,
+                  transition: `opacity 500ms ${500 + 120 * i}ms`,
                 }}
-              />
+              >
+                <line
+                  x1={x - 5}
+                  x2={x + 63}
+                  y1={top}
+                  y2={top}
+                  stroke="#FEE253"
+                  strokeWidth="3"
+                  filter="url(#stat-glow)"
+                  opacity="0.9"
+                />
+                <line
+                  x1={x - 5}
+                  x2={x + 63}
+                  y1={top}
+                  y2={top}
+                  stroke="#fff"
+                  strokeWidth="3"
+                />
+                <text
+                  x={x - 2}
+                  y={top - 8}
+                  fontSize="12"
+                  fontWeight="500"
+                  fill={AXIS}
+                  style={FUNCTIONAL_STYLE}
+                >
+                  {bar.display ?? tickText(bar.value)}
+                </text>
+                <text
+                  x={x}
+                  y={250}
+                  fontSize="8"
+                  fill={AXIS}
+                  style={FUNCTIONAL_STYLE}
+                >
+                  {bar.label.toUpperCase()}
+                </text>
+              </g>
             );
           })}
-        </g>
-        {bars.map((bar, i) => {
-          const x = 29 + i * pitch;
-          const top = scaleY(bar.value);
-          return (
-            <g
-              key={bar.label}
-              style={{
-                opacity: shown ? 1 : 0,
-                transition: `opacity 500ms ${500 + 120 * i}ms`,
-              }}
-            >
-              <line
-                x1={x - 5}
-                x2={x + 63}
-                y1={top}
-                y2={top}
-                stroke="#FEE253"
-                strokeWidth="3"
-                filter="url(#stat-glow)"
-                opacity="0.9"
-              />
-              <line
-                x1={x - 5}
-                x2={x + 63}
-                y1={top}
-                y2={top}
-                stroke="#fff"
-                strokeWidth="3"
-              />
-              <text
-                x={x - 2}
-                y={top - 8}
-                fontSize="12"
-                fontWeight="500"
-                fill={AXIS}
-                style={FUNCTIONAL_STYLE}
-              >
-                {bar.display ?? tickText(bar.value)}
-              </text>
-              <text
-                x={x}
-                y={250}
-                fontSize="8"
-                fill={AXIS}
-                style={FUNCTIONAL_STYLE}
-              >
-                {bar.label.toUpperCase()}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
+        </svg>
+      ) : null}
 
       {stat.body ? (
         <p className="mt-[8px] px-[7px] text-[12px] leading-[1.25] text-[var(--hll-dark-grey)]">

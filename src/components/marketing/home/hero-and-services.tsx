@@ -50,7 +50,9 @@ function HeroWindow({
           playsInline
           controls
           controlsList="nodownload"
-          className="absolute inset-0 size-full bg-[#111] object-contain"
+          // Client review 21 Oct: fill the box – fitting it inside left dark
+          // bars above and below wherever the video's shape differs.
+          className="absolute inset-0 size-full object-cover"
         />
       ) : imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
