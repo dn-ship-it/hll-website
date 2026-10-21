@@ -270,14 +270,6 @@ const LIST_CARDS = [
   "card-square_490x490",
 ];
 
-/** Gallery blocks in rows of equal height: 1111 | 623 + 476 | 363 + 363 + 364 | 1096. */
-const GALLERY_ROWS = [
-  ["block-1111x617"],
-  ["block-623x617", "block-476x617"],
-  ["block-363x358-a", "block-363x358-b", "block-364x358"],
-  ["block-1096x617"],
-];
-
 /** Sets only each engagement's industry: quick, and no images are touched. */
 async function importEngagementIndustries(payload: Payload) {
   const base = path.join(root!, "02-engagements");
@@ -296,6 +288,78 @@ async function importEngagementIndustries(payload: Payload) {
     if ((doc.industry ?? null) === industry) continue;
     await payload.update({ collection: "engagements", id: doc.id, data: { industry } as any });
     console.log(`industry ${id}: ${doc.industry ?? "—"} → ${industry ?? "—"}`);
+  }
+}
+
+/**
+ * An engagement page's sections (client review, 21 Oct 2026): Challenge →
+ * Approach → What we built (its case-study text) → the gallery → Outcome →
+ * one more image → Team → Learnings. Only engagements with UI mockups (the
+ * handoff's block-* files: DocuPet, Lesielle, WeWork…) get the images; the
+ * rest are text, with no feature card standing in for "What we built". No
+ * small images: the gallery is the full block and the pair, and the last
+ * full block follows Outcome.
+ */
+async function engagementLayout(
+  dir: string,
+  c: HandoffEngagement,
+  img: (slot: string, alt: string) => Promise<number | string | null>,
+  hero: number | string | null,
+) {
+  const rows = [];
+  for (const row of [["block-1111x617"], ["block-623x617", "block-476x617"]]) {
+    const images = [];
+    for (const slot of row) {
+      const media = await img(slot, `${c.name}: screen`);
+      if (media) images.push(media);
+    }
+    // A pair missing one image would leave a half-width orphan: show neither.
+    if (images.length === row.length) rows.push({ images });
+  }
+  const closing = rows.length ? await img("block-1096x617", `${c.name}: screen`) : null;
+
+  const quote = c.hero_quote?.trim().replace(/^["“]|["”]$/g, "");
+  const [quoteRole, ...quoteOrg] = (c.quote_attribution ?? "").split(",");
+  return [
+    ...(hero ? [{ blockType: "engagementMedia", image: hero }] : []),
+    ...(quote ? [{ blockType: "engagementQuote", quote, name: quoteOrg.join(",").trim() || undefined, role: quoteRole.trim() || undefined }] : []),
+    ...(c.the_challenge ? [{ blockType: "engagementText", label: "The challenge", body: c.the_challenge, showsArtifact: true }] : []),
+    ...(c.our_approach ? [{ blockType: "engagementText", label: "Our approach", body: c.our_approach }] : []),
+    ...(c.what_we_built ? [{ blockType: "engagementShowcase", label: "What we built", display: "text", body: c.what_we_built }] : []),
+    ...(rows.length ? [{ blockType: "engagementMediaGrid", rows }] : []),
+    ...(c.outcomes.length
+      ? [{ blockType: "engagementOutcome", label: "Outcome", items: c.outcomes.map((o) => ({ stat: o.figure, text: o.text })) }]
+      : []),
+    ...(closing ? [{ blockType: "engagementMedia", image: closing }] : []),
+    ...(team(c.hll_team).length ? [{ blockType: "engagementTeam", label: "Team", rows: team(c.hll_team) }] : []),
+    ...(c.learnings.length
+      ? [{ blockType: "engagementLearnings", label: "Our learnings", items: c.learnings.map((text) => ({ text })) }]
+      : []),
+  ];
+}
+
+/** Replaces only each engagement's sections (no card, art or stat changes). */
+async function importEngagementLayouts(payload: Payload) {
+  const base = path.join(root!, "02-engagements");
+  for (const id of fs.readdirSync(base).sort()) {
+    const dir = path.join(base, id);
+    if (!fs.existsSync(path.join(dir, "content.json"))) continue;
+    const c: HandoffEngagement = JSON.parse(fs.readFileSync(path.join(dir, "content.json"), "utf8"));
+    const found = await payload.find({ collection: "engagements", where: { slug: { equals: id } }, limit: 1, depth: 0 });
+    const doc = found.docs[0];
+    if (!doc) {
+      report.push(`${id}: not in the CMS yet – run the engagements import first`);
+      continue;
+    }
+    const img = (slot: string, alt: string) => {
+      const file = best(dir, slot);
+      return file ? upload(payload, file, `eng-${id}`, alt) : Promise.resolve(null);
+    };
+    const hero = await img("hero-desktop", `${c.name}: hero`);
+    const layout = await engagementLayout(dir, c, img, hero);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await payload.update({ collection: "engagements", id: doc.id, data: { layout } as any });
+    console.log(`layout   ${id}: ${layout.map((b) => b.blockType.replace("engagement", "")).join(" > ")}`);
   }
 }
 
@@ -318,19 +382,6 @@ async function importEngagements(payload: Payload) {
     const card =
       (await img(listSlot, `${c.name}`)) ?? (await img("card-related_490x308", `${c.name}`));
     const art = await buildArt(payload, dir, id, c, listSlot);
-    const feature = await img("feature-wide_1492x843", `${c.name}: what we built`);
-    const rows = [];
-    for (const row of GALLERY_ROWS) {
-      const images = [];
-      for (const slot of row) {
-        const media = await img(slot, `${c.name}: screen`);
-        if (media) images.push(media);
-      }
-      if (images.length) rows.push({ images });
-    }
-
-    const quote = c.hero_quote?.trim().replace(/^["“]|["”]$/g, "");
-    const [quoteRole, ...quoteOrg] = (c.quote_attribution ?? "").split(",");
     const stat = splitStat(c.kpi.headline);
     if (!c.kpi.headline) report.push(`${id}: no KPI in the ledger`);
     const yearMatch = c.years.match(/\d{4}/);
@@ -340,23 +391,7 @@ async function importEngagements(payload: Payload) {
     if (c.brand_colour && !/^#[0-9a-f]{6}$/i.test(c.brand_colour)) report.push(`${id}: brand colour is "${c.brand_colour}" – site default used`);
     if (!c.outcomes.length) report.push(`${id}: no outcomes in the ledger`);
 
-    const layout = [
-      ...(hero ? [{ blockType: "engagementMedia", image: hero }] : []),
-      ...(quote ? [{ blockType: "engagementQuote", quote, name: quoteOrg.join(",").trim() || undefined, role: quoteRole.trim() || undefined }] : []),
-      ...(c.the_challenge ? [{ blockType: "engagementText", label: "The challenge", body: c.the_challenge, showsArtifact: true }] : []),
-      ...(c.our_approach ? [{ blockType: "engagementText", label: "Our approach", body: c.our_approach }] : []),
-      ...(c.what_we_built
-        ? [{ blockType: "engagementShowcase", label: "What we built", display: feature ? "media" : "text", body: c.what_we_built, image: feature ?? undefined }]
-        : []),
-      ...(rows.length ? [{ blockType: "engagementMediaGrid", rows }] : []),
-      ...(c.outcomes.length
-        ? [{ blockType: "engagementOutcome", label: "Outcome", items: c.outcomes.map((o) => ({ stat: o.figure, text: o.text })) }]
-        : []),
-      ...(team(c.hll_team).length ? [{ blockType: "engagementTeam", label: "Team", rows: team(c.hll_team) }] : []),
-      ...(c.learnings.length
-        ? [{ blockType: "engagementLearnings", label: "Our learnings", items: c.learnings.map((text) => ({ text })) }]
-        : []),
-    ];
+    const layout = await engagementLayout(dir, c, img, hero);
 
     const data = {
       client: title,
@@ -806,6 +841,7 @@ const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
 if (!only || only === "engagements") await importEngagements(payload);
 if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
+if (only === "engagement-layouts") await importEngagementLayouts(payload);
 if (!only || only === "services") await importServices(payload);
 if (only === "service-quotes") await importServices(payload, "quotes");
 if (only === "service-outcomes") await importServices(payload, "outcomes");
