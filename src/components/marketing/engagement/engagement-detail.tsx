@@ -280,9 +280,9 @@ function Block({
                       copy beside it, so words take the smaller title size. */}
                   <CountUp
                     value={item.stat}
-                    className={`min-w-0 break-words pl-px font-light leading-[1.16] text-black lg:pl-[6px] ${
+                    className={`min-w-0 pl-px font-light leading-[1.16] text-black lg:pl-[6px] ${
                       /[A-Za-z]{5,}/.test(item.stat)
-                        ? "text-[32px] lg:pr-4 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]"
+                        ? "text-[32px] lg:pr-4 lg:text-[clamp(1.25rem,calc(1.85*var(--vw)),1.75rem)]"
                         : "text-[64px] lg:text-[clamp(2.5rem,calc(4.23*var(--vw)),4rem)]"
                     }`}
                   />
