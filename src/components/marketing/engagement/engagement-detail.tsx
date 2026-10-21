@@ -456,6 +456,17 @@ function readableOnWhite(hex: string | null) {
   return (white + 0.05) / (l + 0.05) >= 2.5 ? hex : null;
 }
 
+/** The most saturated #rrggbb in a palette (the artwork's theme colour). */
+function themeColour(palette: readonly string[] | undefined) {
+  const chroma = (hex: string) => {
+    const n = parseInt(hex.slice(1), 16);
+    const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    return Math.max(...rgb) - Math.min(...rgb);
+  };
+  const hexes = (palette ?? []).filter((c) => /^#[0-9a-f]{6}$/i.test(c));
+  return hexes.length ? hexes.reduce((a, b) => (chroma(b) > chroma(a) ? b : a)) : null;
+}
+
 /** Relative brightness of a #rrggbb colour, 0 (black) to 1 (white). */
 function luminance(hex: string) {
   const n = parseInt(hex.replace("#", "").slice(0, 6), 16);
@@ -469,7 +480,9 @@ export async function EngagementDetail({ slug }: { slug: string }) {
   if (!engagement) notFound();
 
   const story = engagement.template === "story";
-  const accent = engagement.primaryColor ?? null;
+  // Ma'am's review 22 Oct: an engagement without a brand colour takes its
+  // artwork's theme colour (the strongest in its ripple palette), not grey.
+  const accent = engagement.primaryColor ?? themeColour(engagement.art?.ripple.palette) ?? null;
   const tone: Tone = { accent, text: readableOnWhite(accent), story };
   const serviceColor = engagement.services[0]
     ? getServiceTheme(engagement.services[0]).accent

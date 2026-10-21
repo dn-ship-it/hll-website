@@ -60,13 +60,13 @@ export const LOCKED_ORIGIN: [number, number] = [0.5, 0.5];
 // Band count is locked to BANDS_AT_TOP at the top of the scroll range and
 // drops to BANDS_AT_BOTTOM within SCROLL_TRIGGER_PX — not tied to the full
 // scroll range, so it settles before the real bottom and overscroll bounce
-// never feeds back into it. Speed rides the same progress as one signed
-// value: positive drives the ripple inward, negative outward, so lerping
-// through zero eases it to a stop and reverses it.
+// never feeds back into it. Speed rides the same progress and slows the
+// ripple to a crawl. (The demo went to -0.15, reversing it near the bottom;
+// Ma'am's review 22 Oct: it must never run backwards, so it stays forward.)
 export const BANDS_AT_TOP = 8;
 export const BANDS_AT_BOTTOM = 2;
 export const SPEED_AT_TOP = 0.9;
-export const SPEED_AT_BOTTOM = -0.15;
+export const SPEED_AT_BOTTOM = 0.15;
 
 /** Roughly a screen and a half, so the band count is clearly seen reducing. */
 export const SCROLL_TRIGGER_PX = 1100;
@@ -81,6 +81,9 @@ export const TEXT_FADE_END = 0.4;
 export const TEXT_SCALE_END = 0.25;
 export const WASH_START = 0.35;
 export const WASH_END = 0.7;
+/** How far the wash covers the ripple: Ma'am's review 22 Oct wants the ripple
+ *  still visible behind the Impact graph, not washed out to white. */
+export const WASH_MAX = 0.55;
 export const IMAGE_FADE_START = 0.7;
 export const IMAGE_FADE_END = 1.0;
 export const IMAGE_SCALE_START = 0.82;

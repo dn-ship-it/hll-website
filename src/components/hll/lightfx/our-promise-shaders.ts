@@ -17,6 +17,7 @@ uniform vec2 uResolution;
 
 uniform float uBands;
 uniform float uSpeed;
+uniform float uRipplePhase;
 uniform float uFlowStrength;
 uniform float uShearStrength;
 uniform float uRippleShape;
@@ -270,7 +271,7 @@ if (!uTapRippleMode) {
     // toward the origin as time increases, i.e. ripples travel INWARD
     float ripplePhase =
         gappedR * uBands +
-        t * uSpeed;
+        uRipplePhase; // speed integrated over time on the CPU: never jumps back
 
     float ripple = fract(ripplePhase);
 

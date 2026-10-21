@@ -68,11 +68,20 @@ function sketch(
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, RIPPLE_FRAG_SRC);
   };
 
+  // The ripple's position: speed added up frame by frame, so a change of
+  // speed (a switch of service or section) never jumps it backwards, as time
+  // × speed did (Ma'am's review 22 Oct).
+  let ripplePhase = 0;
+  let lastMillis = 0;
+
   p.draw = () => {
     p.background(0);
     p.shader(shaderProgram);
 
     const params = getParams();
+    const nowMillis = p.millis();
+    ripplePhase += Math.min(0.1, Math.max(0, (nowMillis - lastMillis) / 1000)) * 0.9 * params.speed;
+    lastMillis = nowMillis;
     const spacedPoints = getSpacedRipplePoints(params.rippleSpacing);
 
     const rippleArray: number[] = [];
@@ -93,6 +102,7 @@ function sketch(
 
     shaderProgram.setUniform("uBands", params.bands);
     shaderProgram.setUniform("uSpeed", params.speed);
+    shaderProgram.setUniform("uRipplePhase", ripplePhase);
     shaderProgram.setUniform("uFlowStrength", params.flow);
     shaderProgram.setUniform("uShearStrength", params.shear);
     shaderProgram.setUniform("uRippleShape", params.shape);

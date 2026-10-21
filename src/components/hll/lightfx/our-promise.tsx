@@ -37,6 +37,7 @@ import {
   SCROLL_SPACER_VH,
   SCROLL_TRIGGER_PX,
   SPEED_AT_BOTTOM,
+  WASH_MAX,
   SPEED_AT_TOP,
   TAP_RIPPLE_MODE,
   TEXT_FADE_END,
@@ -104,6 +105,11 @@ function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
 
   let smoothBands = BANDS_AT_TOP;
   let smoothSpeed = SPEED_AT_TOP;
+  // The ripple's position: speed added up frame by frame. Passing time and
+  // speed separately (time × speed) made it jump backwards whenever scrolling
+  // lowered the speed, more so the longer the page had been open.
+  let ripplePhase = 0;
+  let lastMillis = 0;
 
   let smoothTextOpacity = 1;
   let smoothTextScale = 1;
@@ -151,7 +157,7 @@ function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
     // out and the image fading in.
     const washProgress = smoothStep((scrollProgress - WASH_START) / (WASH_END - WASH_START));
     smoothWashOpacity += (washProgress - smoothWashOpacity) * 0.5;
-    if (refs.wash.current) refs.wash.current.style.opacity = String(smoothWashOpacity);
+    if (refs.wash.current) refs.wash.current.style.opacity = String(smoothWashOpacity * WASH_MAX);
 
     // Image scales up and fades in once the ground is white. The Impact
     // graph (an iframe) only fades in (QA H-22): no growing from the back.
@@ -179,6 +185,10 @@ function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
 
     shaderProgram.setUniform("uBands", smoothBands);
     shaderProgram.setUniform("uSpeed", smoothSpeed);
+    const nowMillis = p.millis();
+    ripplePhase += Math.min(0.1, Math.max(0, (nowMillis - lastMillis) / 1000)) * 0.9 * smoothSpeed;
+    lastMillis = nowMillis;
+    shaderProgram.setUniform("uRipplePhase", ripplePhase);
     shaderProgram.setUniform("uFlowStrength", BASE_PARAMS.flow);
     shaderProgram.setUniform("uShearStrength", BASE_PARAMS.shear);
     shaderProgram.setUniform("uRippleShape", BASE_PARAMS.shape);

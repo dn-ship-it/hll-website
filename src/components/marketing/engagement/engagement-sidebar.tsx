@@ -325,7 +325,10 @@ export function EngagementSidebar({
         </ul>
 
         {engagement.stat ? (
-          <div className="hidden lg:absolute lg:bottom-[10px] lg:left-4 lg:right-[6.5%] lg:block">
+          // Ma'am's review 22 Oct: the card sat at the foot of the full-height
+          // panel, leaving a large gap under the details on tall screens; it
+          // now follows them.
+          <div className="hidden lg:-ml-4 lg:mr-[3.5%] lg:mt-[clamp(2rem,5vh,3.5rem)] lg:block">
             <StatCard stat={engagement.stat} shown={artifactShown} />
           </div>
         ) : null}

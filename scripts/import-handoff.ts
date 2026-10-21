@@ -338,6 +338,40 @@ async function engagementLayout(
   ];
 }
 
+/**
+ * The Engagements list leads with big brands (client review 21 Oct, Ma'am
+ * 22 Oct): the four the client named, then EverythingALS and every other
+ * engagement with a client logo, flagship work first, then the anonymised
+ * ones. The client is sending a final list; change it here when it comes.
+ */
+const LEAD_ENGAGEMENTS = [
+  "docupet",
+  "fraud-model-recovery-government-tax-auth",
+  "galeries-lafayette",
+  "wataniya-monolith-to-microservices-archi",
+  "everythingals-managed-delivery-team",
+];
+
+/** Sets only each engagement's position in the list (sortOrder). */
+async function importEngagementOrder(payload: Payload) {
+  const base = path.join(root!, "02-engagements");
+  const ids = fs.readdirSync(base).filter((id) => fs.existsSync(path.join(base, id, "content.json")));
+  const tier = (id: string) => (JSON.parse(fs.readFileSync(path.join(base, id, "content.json"), "utf8")) as HandoffEngagement).tier;
+  const rank = (id: string) => {
+    const lead = LEAD_ENGAGEMENTS.indexOf(id);
+    if (lead >= 0) return lead;
+    return fs.existsSync(path.join(base, id, "logo.png")) ? 100 : 200;
+  };
+  const ordered = [...ids].sort((a, b) => rank(a) - rank(b) || tier(a).localeCompare(tier(b)) || a.localeCompare(b));
+  for (const [i, id] of ordered.entries()) {
+    const found = await payload.find({ collection: "engagements", where: { slug: { equals: id } }, limit: 1, depth: 0 });
+    if (!found.docs[0]) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await payload.update({ collection: "engagements", id: found.docs[0].id, data: { sortOrder: i } as any });
+  }
+  console.log(`order    ${ordered.join(", ")}`);
+}
+
 /** Replaces only each engagement's sections (no card, art or stat changes). */
 async function importEngagementLayouts(payload: Payload) {
   const base = path.join(root!, "02-engagements");
@@ -842,6 +876,7 @@ if (!only || only === "engagements") await importEngagements(payload);
 if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
 if (only === "engagement-layouts") await importEngagementLayouts(payload);
+if (only === "engagement-order") await importEngagementOrder(payload);
 if (!only || only === "services") await importServices(payload);
 if (only === "service-quotes") await importServices(payload, "quotes");
 if (only === "service-outcomes") await importServices(payload, "outcomes");
