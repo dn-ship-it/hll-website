@@ -275,12 +275,19 @@ function Block({
                 <div
                   className={`grid grid-cols-1 px-3 pt-[10px] lg:grid-cols-[165fr_345fr] lg:px-0 ${i < block.items.length - 1 ? "pb-4 lg:pb-[28px]" : ""} ${i === 0 ? "lg:pt-[10px]" : "lg:pt-[25px]"}`}
                 >
+                  {/* Client review 21 Oct: a figure in words ("Expert-vetted",
+                      "1 senior specialist") at number size pushed into the
+                      copy beside it, so words take the smaller title size. */}
                   <CountUp
                     value={item.stat}
-                    className="pl-px text-[64px] font-light leading-[1.16] text-black lg:pl-[6px] lg:text-[clamp(2.5rem,calc(4.23*var(--vw)),4rem)]"
+                    className={`min-w-0 break-words pl-px font-light leading-[1.16] text-black lg:pl-[6px] ${
+                      /[A-Za-z]{5,}/.test(item.stat)
+                        ? "text-[32px] lg:pr-4 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]"
+                        : "text-[64px] lg:text-[clamp(2.5rem,calc(4.23*var(--vw)),4rem)]"
+                    }`}
                   />
                   <p
-                    className={`pt-[10px] ${i === 0 ? "" : "lg:pt-[6px]"} ${BODY}`}
+                    className={`min-w-0 pt-[10px] ${i === 0 ? "" : "lg:pt-[6px]"} ${BODY}`}
                   >
                     {item.text}
                   </p>
