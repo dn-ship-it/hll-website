@@ -2363,6 +2363,10 @@ export interface MarketingContent {
             title: string;
             body: string;
             image?: (number | null) | Media;
+            /**
+             * Optional motion piece (MP4). Plays over the image, muted and looping.
+             */
+            video?: (number | null) | Media;
             id?: string | null;
           }[]
         | null;
@@ -2859,6 +2863,7 @@ export interface MarketingContentSelect<T extends boolean = true> {
                     title?: T;
                     body?: T;
                     image?: T;
+                    video?: T;
                     id?: T;
                   };
             };

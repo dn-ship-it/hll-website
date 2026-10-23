@@ -198,6 +198,12 @@ export const MarketingContent: GlobalConfig = {
                 { name: "title", type: "text", required: true },
                 { name: "body", type: "textarea", required: true },
                 { name: "image", type: "upload", relationTo: "media" },
+                {
+                  name: "video",
+                  type: "upload",
+                  relationTo: "media",
+                  admin: { description: "Optional motion piece (MP4). Plays over the image, muted and looping." },
+                },
               ],
             },
           ],

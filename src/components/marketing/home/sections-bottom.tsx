@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { HLLButton } from "@/components/hll";
 
-import { homePageContent, type HomePageContent } from "@/data/home";
+import { homePageContent, type HomePageContent, type HomeStep } from "@/data/home";
 
 import { HOME_GUTTER, HomeHeading } from "./primitives";
 
@@ -217,7 +217,7 @@ export function HowWeWork({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={step.image} alt="" draggable={false} className="aspect-square w-full rounded-lg object-cover" />
+              <StepMedia step={step} />
               {isActive ? (
                 <>
                   <span className="mt-2 block text-[24px] leading-[27.8px] text-black">
@@ -272,7 +272,7 @@ export function HowWeWork({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={step.image} alt="" draggable={false} className="aspect-square w-full rounded-lg object-cover" />
+              <StepMedia step={step} />
               <span className="mt-[6px] block text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
                 {step.title}
               </span>
@@ -379,5 +379,32 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * A How we work step's square: its motion piece (client, 22 Oct: Shape and
+ * Evolve) looping over the still, or just the still. Videos are muted so they
+ * may autoplay; reduced motion shows the still only.
+ */
+function StepMedia({ step }: { step: HomeStep }) {
+  return (
+    <span className="relative block aspect-square w-full overflow-hidden rounded-lg">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={step.image} alt="" draggable={false} className="absolute inset-0 size-full object-cover" />
+      {step.video ? (
+        <video
+          src={step.video}
+          poster={step.image}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+          className="absolute inset-0 size-full object-cover motion-reduce:hidden"
+        />
+      ) : null}
+    </span>
   );
 }

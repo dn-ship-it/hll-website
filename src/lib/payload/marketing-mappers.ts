@@ -413,6 +413,11 @@ export function mapHomePage(
             image:
               resolveMediaUrl(step.image as CmsImageRef) ??
               fallback.howWeWork.steps[i % fallback.howWeWork.steps.length].image,
+            // A step's own image without its own video drops the default
+            // video, so the two never come from different steps.
+            video:
+              resolveMediaUrl(step.video as CmsImageRef) ??
+              (step.image ? undefined : fallback.howWeWork.steps[i % fallback.howWeWork.steps.length].video),
           }))
         : fallback.howWeWork.steps,
     },

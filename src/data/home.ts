@@ -27,7 +27,8 @@ export type HomeImpactCard = {
 
 export type HomeImpactStat = { value: string; label: string };
 
-export type HomeStep = { id: string; title: string; body: string; image: string };
+/** `video`: the step's motion piece, played over its image (the still). */
+export type HomeStep = { id: string; title: string; body: string; image: string; video?: string };
 
 export type HomePerson = { id: string; name: string; role: string; photo?: string | null };
 
@@ -134,6 +135,7 @@ export const homePageContent: HomePageContent = {
         id: "shape",
         title: "Shape",
         image: "/assets/home/shape.webp",
+        video: "/assets/home/shape.mp4",
         body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
       },
       {
@@ -146,6 +148,7 @@ export const homePageContent: HomePageContent = {
         id: "evolve",
         title: "Evolve",
         image: "/assets/home/evolve.webp",
+        video: "/assets/home/evolve.mp4",
         body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
       },
     ],
