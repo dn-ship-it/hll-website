@@ -19,12 +19,32 @@ export function ServiceHero({
   data,
   demo,
   variant = "hll-foundation",
+  capabilities = [],
 }: {
   data: ServicePageData["hero"];
   demo: ServiceDemoConfig;
   variant?: ServiceVariant;
+  /**
+   * The page's capabilities. When given, the tags under the headline are
+   * these and take you to each one's section (Hannan's review, 22 Oct:
+   * "buttons that help people swap to the different sub-capabilities on the
+   * page"; Figma "On tags"); the demo window keeps its first view.
+   */
+  capabilities?: { id: string; label: string }[];
 }) {
   const [activeTab, setActiveTab] = useState<string>(data.tabs[0]?.id ?? "");
+  const tags = capabilities.length
+    ? capabilities
+    : data.tabs.map((tab) => ({ id: tab.id, label: tab.label }));
+  const [activeTag, setActiveTag] = useState<string>(tags[0]?.id ?? "");
+  const onTag = (id: string) => {
+    setActiveTag(id);
+    if (!capabilities.length) {
+      setActiveTab(id);
+      return;
+    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const rippleVariant = SERVICE_TO_RIPPLE[variant] ?? "hll-foundation";
   const theme = getServiceTheme(variant);
 
@@ -50,20 +70,22 @@ export function ServiceHero({
             page, clicking one jumped the demo out of view — so switching tabs
             looked like it did nothing at all. */}
         <div
-          role="tablist"
-          aria-label="Capability demos"
+          role={capabilities.length ? "navigation" : "tablist"}
+          aria-label={capabilities.length ? "Capabilities on this page" : "Capability demos"}
           // Figma "Button Mobile" outline tabs: 36px, 3px corners, a 10px
           // label, 6px apart; the desktop tabs are 38px with a 12px label.
           className="mt-3 flex flex-wrap gap-[6px] [--tab-h:36px] [--tab-r:3px] [--tab-size:10px] [--tab-track:2.5px] lg:mt-[clamp(1.1875rem,calc(2.25*var(--vw)),2.125rem)] lg:gap-2 lg:[--tab-h:38px] lg:[--tab-r:4px] lg:[--tab-size:12px] lg:[--tab-track:0.25em]"
         >
-          {data.tabs.map((tab) => (
+          {tags.map((tab) => (
             <HLLOutlineButton
               key={tab.id}
               as="button"
               type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              role={capabilities.length ? undefined : "tab"}
+              aria-selected={capabilities.length ? undefined : activeTag === tab.id}
+              aria-current={capabilities.length && activeTag === tab.id ? "true" : undefined}
+              data-active={activeTag === tab.id ? "" : undefined}
+              onClick={() => onTag(tab.id)}
               variant={variant}
               gradient={theme.tabGradient}
               size="md"

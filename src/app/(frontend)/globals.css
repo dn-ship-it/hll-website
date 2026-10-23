@@ -874,7 +874,8 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
 
 /* The WebGL canvas paints over any CSS border on the host, so the active
    state is an overlay above it rather than a border on the button. */
-.service-tab[aria-selected="true"]::after {
+.service-tab[aria-selected="true"]::after,
+.service-tab[aria-current="true"]::after {
   content: "";
   position: absolute;
   inset: 0;

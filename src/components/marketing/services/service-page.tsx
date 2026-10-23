@@ -47,7 +47,12 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
         </div>
 
         <ServiceReveal>
-          <ServiceHero data={data.hero} demo={demo} variant={data.variant} />
+          <ServiceHero
+            data={data.hero}
+            demo={demo}
+            variant={data.variant}
+            capabilities={data.capabilities.items.map((item) => ({ id: item.id, label: item.title }))}
+          />
           <CapabilitiesSection
             data={data.capabilities}
             breadcrumb={data.breadcrumb}
