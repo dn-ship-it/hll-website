@@ -49,21 +49,10 @@ import {
 } from "./our-promise-definition";
 import { OUR_PROMISE_FRAG_SRC } from "./our-promise-shaders";
 import { RIPPLE_VERT_SRC } from "./ripple-shaders";
+import { supportsWebGL } from "@/lib/webgl-support";
 
 const EMPTY_RIPPLE_ARRAY = new Array(MAX_RIPPLES * 2).fill(-10);
 
-function supportsWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
-    // Only a probe: give the context back so it doesn't count against the
-    // browser's per-page limit.
-    gl?.getExtension("WEBGL_lose_context")?.loseContext();
-    return Boolean(gl);
-  } catch {
-    return false;
-  }
-}
 
 function lerpPaletteInto(out: number[], a: Rgb[], b: Rgb[], t: number) {
   for (let i = 0; i < a.length; i++) {
@@ -118,9 +107,10 @@ function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
   let smoothImageScale = IMAGE_SCALE_START;
 
   p.setup = () => {
-    // Capped for the same reason as the ripple: p5 would otherwise render this
-    // full-viewport shader at the phone's full pixel ratio.
-    p.pixelDensity(Math.min(p.displayDensity(), 2));
+    // 1x for the same reason as the ripple: a full-viewport soft gradient
+    // that looks the same at 1x, at a quarter of the work on Retina.
+    p.pixelDensity(1);
+    p.frameRate(30);
     p.createCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom(), p.WEBGL);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, OUR_PROMISE_FRAG_SRC);

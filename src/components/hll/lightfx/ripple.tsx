@@ -27,6 +27,7 @@ import {
   type RippleVariant,
 } from "./ripple-definition";
 import { RIPPLE_FRAG_SRC, RIPPLE_VERT_SRC } from "./ripple-shaders";
+import { supportsWebGL } from "@/lib/webgl-support";
 
 type Palette = [number, number, number][];
 
@@ -59,10 +60,14 @@ function sketch(
   }
 
   p.setup = () => {
-    // p5 defaults to the device's full pixel ratio, which on a 3x phone screen
-    // means nine times the fragment work for a backdrop that sits under a
-    // scrim. The WebGL runtimes already cap at 2; match them.
-    p.pixelDensity(Math.min(p.displayDensity(), 2));
+    // One pixel per CSS pixel. p5 defaults to the device's full ratio: on a
+    // Retina laptop (2x) four times the fragment work, on a 3x phone nine,
+    // for a soft gradient that looks the same at 1x (performance, 24 Oct: the
+    // site lagged on the client's MacBook).
+    p.pixelDensity(1);
+    // 30 frames a second: the ripple drifts slowly, so 60 only doubled the
+    // full-window GPU work (performance, 24 Oct).
+    p.frameRate(30);
     p.createCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom(), p.WEBGL);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, RIPPLE_FRAG_SRC);
@@ -160,18 +165,6 @@ export type RippleProps = {
   style?: CSSProperties;
 };
 
-function supportsWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
-    // Only a probe: give the context back so it doesn't count against the
-    // browser's per-page limit.
-    gl?.getExtension("WEBGL_lose_context")?.loseContext();
-    return Boolean(gl);
-  } catch {
-    return false;
-  }
-}
 
 export function Ripple({
   variant = "hll-application",
@@ -243,6 +236,16 @@ export function Ripple({
       );
       observer.observe(host);
       document.addEventListener("visibilitychange", sync);
+
+      // Draw one frame early, while the page is idle, even off screen: the
+      // GPU compiles a shader on its first draw, and that compile used to land
+      // mid-scroll as this ripple came into view, a 1.3s+ freeze on service
+      // pages at the Outcome section (performance, 24 Oct).
+      const warm = () => {
+        if (!cancelled && instance && !onScreen) instance.redraw();
+      };
+      if ("requestIdleCallback" in window) window.requestIdleCallback(warm, { timeout: 3000 });
+      else globalThis.setTimeout(warm, 1500);
     });
 
     return () => {

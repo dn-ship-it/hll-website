@@ -11,6 +11,7 @@ import {
 
 import { BUTTON_MOBILE } from "./button-sizes";
 import { variantForPath } from "./page-variant";
+import { supportsWebGL2 } from "@/lib/webgl-support";
 
 /**
  * The footer's "Let's start a conversation" band. Figma note: "let's start a
@@ -142,15 +143,6 @@ export function FooterButton({
 /** Figma Home footer strip: pink, a deeper pink and peach (sampled). */
 const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
 
-function supportsWebGL2() {
-  try {
-    const gl = document.createElement("canvas").getContext("webgl2");
-    gl?.getExtension("WEBGL_lose_context")?.loseContext();
-    return Boolean(gl);
-  } catch {
-    return false;
-  }
-}
 
 /** Whether the live shader can run here: WebGL2 and motion allowed. */
 function useShaderAble() {
@@ -237,6 +229,10 @@ export function ScreenShader() {
   const [started, setStarted] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
   const [nearEnd, setNearEnd] = useState(false);
+  // Built in the first idle moment after load (performance, 24 Oct): creating
+  // a layer compiles its five shader passes, a 100ms+ block that used to land
+  // mid-scroll as the end of the page came near. Built early, it waits paused.
+  const [warm, setWarm] = useState(false);
   const [desktop, setDesktop] = useState(false);
   const [generation, setGeneration] = useState(0);
 
@@ -261,8 +257,15 @@ export function ScreenShader() {
     window.addEventListener("resize", onScroll);
 
     const start = window.setTimeout(() => setStarted(true), 1200);
+    // Safari has no requestIdleCallback; a timer stands in.
+    const hasIdle = "requestIdleCallback" in window;
+    const warmTimer = hasIdle
+      ? window.requestIdleCallback(() => setWarm(true), { timeout: 4000 })
+      : window.setTimeout(() => setWarm(true), 2500);
     return () => {
       window.clearTimeout(start);
+      if (hasIdle) window.cancelIdleCallback(warmTimer);
+      else window.clearTimeout(warmTimer);
       media.removeEventListener("change", onMedia);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
@@ -274,7 +277,9 @@ export function ScreenShader() {
     window.dispatchEvent(new Event("resize"));
   }, [pathname]);
 
-  if (!able || !started || (!desktop && !nearEnd)) return null;
+  // Phones show the shader near the footer only, but build it early, paused.
+  const show = desktop || nearEnd;
+  if (!able || !started || (!show && !warm)) return null;
 
   const variant = variantForPath(pathname);
   const common = {
@@ -295,13 +300,15 @@ export function ScreenShader() {
         {...common}
         settings={DEMO_SETTINGS}
         overlay
-        style={{ opacity: atEnd ? 0 : 1 }}
+        paused={!show}
+        style={{ opacity: show && !atEnd ? 1 : 0 }}
       />
-      {nearEnd ? (
+      {nearEnd || warm ? (
         <BottomShader
           key={`end-${generation}`}
           {...common}
           settings={DEMO_END_SETTINGS}
+          paused={!nearEnd}
           style={{ opacity: atEnd ? 1 : 0 }}
         />
       ) : null}

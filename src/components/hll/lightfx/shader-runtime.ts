@@ -31,13 +31,17 @@ export type ShaderFXOptions = {
   scrollResponse?: number;
 };
 
-export type ShaderFX = { dispose(): void };
+export type ShaderFX = {
+  dispose(): void;
+  /** Stop or resume drawing without tearing down the WebGL context. */
+  setPaused(value: boolean): void;
+};
 
 type UniformMap = Record<string, WebGLUniformLocation | null>;
 type CompiledProgram = { program: WebGLProgram; uniforms: UniformMap };
 type Framebuffer = { fbo: WebGLFramebuffer; tex: WebGLTexture; w: number; h: number };
 
-const NOOP_FX: ShaderFX = { dispose() {} };
+const NOOP_FX: ShaderFX = { dispose() {}, setPaused() {} };
 
 export function createShaderFX(
   canvas: HTMLCanvasElement | null,
@@ -665,9 +669,18 @@ export function createShaderFX(
     cancelAnimationFrame(raf);
   }
 
+  // Paused from outside: built (programs compiled) but not drawing yet, so a
+  // layer needed later doesn't compile mid-scroll (performance, 24 Oct).
+  let paused = false;
+
   function sync() {
-    if (onScreen && !document.hidden) start();
+    if (onScreen && !document.hidden && !paused) start();
     else stop();
+  }
+
+  function setPaused(value: boolean) {
+    paused = value;
+    sync();
   }
 
   let onScreen = false;
@@ -692,5 +705,5 @@ export function createShaderFX(
     if (pauseOnDoubleClick) canvas!.removeEventListener("dblclick", onDblClick);
   }
 
-  return { dispose };
+  return { dispose, setPaused };
 }

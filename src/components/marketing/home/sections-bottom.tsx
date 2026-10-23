@@ -392,19 +392,46 @@ function StepMedia({ step }: { step: HomeStep }) {
     <span className="relative block aspect-square w-full overflow-hidden rounded-lg">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={step.image} alt="" draggable={false} className="absolute inset-0 size-full object-cover" />
-      {step.video ? (
-        <video
-          src={step.video}
-          poster={step.image}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden
-          className="absolute inset-0 size-full object-cover motion-reduce:hidden"
-        />
-      ) : null}
+      {step.video ? <NearVideo src={step.video} poster={step.image} /> : null}
     </span>
+  );
+}
+
+/**
+ * A muted looping video that only downloads and plays once it comes near the
+ * screen (performance, 24 Oct: Home fetched every motion piece at load), and
+ * pauses again when it leaves.
+ */
+function NearVideo({ src, poster }: { src: string; poster: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          void video.play().catch(() => {});
+        } else video.pause();
+      },
+      { rootMargin: "300px" },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <video
+      ref={ref}
+      src={near ? src : undefined}
+      poster={poster}
+      autoPlay={near}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-hidden
+      className="absolute inset-0 size-full object-cover motion-reduce:hidden"
+    />
   );
 }

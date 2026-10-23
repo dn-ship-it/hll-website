@@ -60,6 +60,8 @@ export type BottomShaderProps = {
   layout?: BottomShaderLayout;
   pauseOnDoubleClick?: boolean;
   disabled?: boolean;
+  /** Built but not drawing (no frames, no GPU work) until this turns false. */
+  paused?: boolean;
   /** How much page scrolling moves the effect (see shader-runtime.ts). */
   scrollResponse?: number;
   /** Called if the browser drops this canvas's WebGL context. */
@@ -80,6 +82,7 @@ export function BottomShader({
   layout = DEFAULT_LAYOUT,
   pauseOnDoubleClick = false,
   disabled = false,
+  paused = false,
   scrollResponse = 0,
   onContextLost,
   className,
@@ -92,6 +95,13 @@ export function BottomShader({
   // so flipping the flag never tears down the WebGL context.
   const atEndRef = useRef(atEnd);
   atEndRef.current = atEnd;
+
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+  const fxRef = useRef<{ setPaused: (value: boolean) => void } | null>(null);
+  useEffect(() => {
+    fxRef.current?.setPaused(paused);
+  }, [paused]);
 
   const onLostRef = useRef(onContextLost);
   onLostRef.current = onContextLost;
@@ -117,6 +127,8 @@ export function BottomShader({
       pointerMaxY: layout.POINTER_MAX_Y,
       scrollResponse,
     });
+    fxRef.current = fx;
+    fx.setPaused(pausedRef.current);
 
     let raf: number | null = null;
     if (endShatter) {
@@ -142,6 +154,7 @@ export function BottomShader({
 
     return () => {
       if (raf != null) cancelAnimationFrame(raf);
+      fxRef.current = null;
       fx.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
