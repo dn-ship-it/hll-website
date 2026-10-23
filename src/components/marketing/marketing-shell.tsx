@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { cleanServiceName } from "@/components/hll/variants";
 import { ScreenShader } from "@/components/marketing/footer-cta";
 import { AiBubble } from "@/components/marketing/ai-bubble";
+import { SectionSnap } from "@/components/marketing/section-snap";
 import { LineReveal } from "@/components/marketing/line-reveal";
 import { PageIntro } from "@/components/marketing/page-intro";
 import { loadEngagements } from "@/lib/payload/engagements";
@@ -79,6 +80,7 @@ export async function MarketingShell({
       </main>
       <PageIntro />
       <LineReveal />
+      <SectionSnap />
       <AiBubble index={buildSearchIndex(await loadEngagements())} />
       <noscript>
         <style>{`main[data-intro] :has(h1) > * { visibility: visible !important; }`}</style>
