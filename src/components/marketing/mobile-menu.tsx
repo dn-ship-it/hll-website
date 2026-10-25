@@ -13,6 +13,7 @@ import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
 import { NavMark } from "./nav-mark";
 import {
+  ABOUT_LINKS,
   MENU_SERVICES,
   NAV_TARGET,
   NewsPanel,
@@ -133,6 +134,24 @@ function EngagementNews({ news }: { news: NewsData }) {
   );
 }
 
+/** About, Team and Careers, as in the desktop About menu. */
+function AboutList() {
+  return (
+    <ul className="pl-[21px]">
+      {ABOUT_LINKS.map((link) => (
+        <li key={link.href}>
+          <Link
+            href={link.href}
+            className="flex h-9 items-center text-[14px] text-[var(--hll-dark-grey)]"
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** Which nav buttons open a list in the menu instead of going to a page. */
 const SUBMENUS: Partial<
   Record<NavVariant, (props: { news: NewsData; industries: IndustryMenuGroup[] }) => React.ReactNode>
@@ -140,6 +159,7 @@ const SUBMENUS: Partial<
   services: ServicesList,
   industries: IndustriesList,
   engagement: EngagementNews,
+  about: AboutList,
 };
 
 // Figma Menu Mobile: services' list starts 1px under its button and ends 32px
@@ -156,13 +176,15 @@ const SUBMENU_SPACING: Partial<Record<NavVariant, string>> = {
   services: "pt-px pb-8",
   industries: "pt-5 pb-[31px]",
   engagement: "pt-5 pb-[31px]",
+  about: "pt-px pb-8",
 };
 
 /**
  * Figma Nav Mobile / Menu Mobile (1341:21563, 1341:20976 and its Services and
  * Industries states). Closed, the bar is the logo and a Mid Grey dot; the dot
  * opens a full-screen white menu: the five nav buttons 30px apart. Services
- * and Industries open their list in place, Engagement its "In the News", and
+ * and Industries open their list in place, Engagement its "In the News",
+ * About its About / Team / Careers, and
  * the buttons below close up to 3px apart.
  */
 export function MobileMenu({

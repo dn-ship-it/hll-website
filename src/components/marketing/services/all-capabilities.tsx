@@ -66,6 +66,13 @@ const CENTER_Y = 353;
 const TILE_RIGHT = 772;
 const TILE_MIN = 80;
 const TILE_MAX = 134;
+// The focused name's top (316) and its height in the frame; with one row of
+// tags under it the block sits about centred on the tile.
+const FOCUS_TOP = 316;
+const NAME_H = CENTER_Y - FOCUS_TOP;
+/** How far (stage units) to raise the focused name, tags and open button so
+    a block `h` tall sits centred on the tile, whatever the rows of tags. */
+const liftFor = (h: number) => h / 2 - NAME_H;
 
 // The phone wheel, in px: 64px tiles, the focused one 84px, from the 20px
 // gutter with names 14px right of the widest tile. The focused row's
@@ -162,6 +169,11 @@ export function AllCapabilities({
   const pillsRef = useRef<HTMLDivElement>(null);
   const below = useRef(phoneBelow(0));
   const belowTarget = useRef(phoneBelow(0));
+  // Desktop: the lift that centres the focused block on its tile, easing
+  // between services as their tags take one row or two.
+  const tagsRef = useRef<HTMLDivElement>(null);
+  const lift = useRef(0);
+  const liftTarget = useRef(0);
 
   const render = useCallback(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -170,6 +182,8 @@ export function AllCapabilities({
     if (Math.abs(target.current - pos.current) < 0.0005) pos.current = target.current;
     below.current += (belowTarget.current - below.current) * ease;
     if (Math.abs(belowTarget.current - below.current) < 0.05) below.current = belowTarget.current;
+    lift.current += (liftTarget.current - lift.current) * ease;
+    if (Math.abs(liftTarget.current - lift.current) < 0.05) lift.current = liftTarget.current;
     rootRef.current
       ?.querySelectorAll<HTMLElement>("[data-slot]")
       .forEach((row) => {
@@ -193,11 +207,14 @@ export function AllCapabilities({
       root.style.setProperty("--settle", Math.min(1, Math.max(0, (0.5 - Math.abs(offset)) / 0.2)).toFixed(3));
       root.style.setProperty("--fy-desktop", offsetFor("desktop", offset).toFixed(2));
       root.style.setProperty("--fy-phone", offsetFor("phone", offset, below.current).toFixed(2));
+      root.style.setProperty("--lift", lift.current.toFixed(2));
     }
     const next = wrap(Math.round(pos.current), count);
     setActive((current) => (current === next ? current : next));
     frame.current =
-      pos.current === target.current && below.current === belowTarget.current
+      pos.current === target.current &&
+      below.current === belowTarget.current &&
+      lift.current === liftTarget.current
         ? 0
         : requestAnimationFrame(render);
   }, [count, slots]);
@@ -224,22 +241,44 @@ export function AllCapabilities({
     spin(target.current + step);
   };
 
-  useEffect(() => () => cancelAnimationFrame(frame.current), []);
+  // Clear the handle too, or a remount (Strict Mode) never turns again.
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(frame.current);
+      frame.current = 0;
+    },
+    [],
+  );
 
   // Fit the phone gap under the focus to its sub-services block.
   // The first fit lands before paint, so the wheel doesn't shift on load.
+  // Desktop: centre the focused name and tags on the tile (in stage units, so
+  // it holds as the stage scales; re-fitted when the tags rewrap).
   const focusId = services[active].id;
+  const hasTags = services[active].subServices.length > 0;
   const fitted = useRef(false);
   useLayoutEffect(() => {
-    belowTarget.current = phoneBelow(pillsRef.current?.offsetHeight ?? 0);
-    if (!fitted.current) {
-      fitted.current = true;
-      below.current = belowTarget.current;
-      render();
-    } else if (!frame.current) {
-      frame.current = requestAnimationFrame(render);
-    }
-  }, [focusId, render]);
+    const fit = () => {
+      belowTarget.current = phoneBelow(pillsRef.current?.offsetHeight ?? 0);
+      const stage = stageRef.current?.offsetHeight ?? 0;
+      const tags = tagsRef.current?.offsetHeight ?? 0;
+      // No tags: the name alone. Phones: the desktop stage is hidden.
+      liftTarget.current = !stage ? 0 : liftFor(hasTags ? (tags * STAGE.h) / stage : NAME_H);
+      if (!fitted.current) {
+        fitted.current = true;
+        below.current = belowTarget.current;
+        lift.current = liftTarget.current;
+        render();
+      } else if (!frame.current) {
+        frame.current = requestAnimationFrame(render);
+      }
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    if (stageRef.current) observer.observe(stageRef.current);
+    if (tagsRef.current) observer.observe(tagsRef.current);
+    return () => observer.disconnect();
+  }, [focusId, hasTags, render]);
 
   // The mouse wheel over the wheel column turns it; elsewhere it scrolls the
   // page, so the footer stays in reach. Turns snap once the wheel goes quiet.
@@ -545,7 +584,7 @@ export function AllCapabilities({
                   className="absolute"
                   style={{
                     left: pct(815, STAGE.w),
-                    top: `calc((${CENTER_Y} + var(--y) - 14 - 23 * var(--a)) / ${STAGE.h} * 100%)`,
+                    top: `calc((${CENTER_Y} + var(--y) - 14 - (23 + var(--lift, 0)) * var(--a)) / ${STAGE.h} * 100%)`,
                     opacity: "var(--o)",
                   }}
                 >
@@ -573,6 +612,7 @@ export function AllCapabilities({
             <div className="pointer-events-none absolute inset-0 [&_a]:pointer-events-auto">
               <div
                 key={focus.id}
+                ref={tagsRef}
                 onClick={() => focus.href && router.push(focus.href)}
                 // QA C-08: the tags wrap within their design width and scale
                 // with the stage (10.7px at 1512, never under 9px), rather
@@ -583,7 +623,7 @@ export function AllCapabilities({
                 className={`absolute flex flex-wrap content-start items-center gap-[max(8px,0.66cqw)] ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
                 style={{
                   left: pct(815, STAGE.w),
-                  top: `calc((316 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
+                  top: `calc((${FOCUS_TOP} + var(--fy-desktop, 0) - var(--lift, 0)) / ${STAGE.h} * 100%)`,
                   width: pct(447, STAGE.w),
                   paddingTop: `${(49 / STAGE.w) * 100}cqw`,
                   opacity: "var(--settle, 1)",
@@ -598,7 +638,7 @@ export function AllCapabilities({
                   className="absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] bg-[var(--hll-light-grey)] transition-colors hover:bg-white"
                   style={{
                     left: pct(1229, STAGE.w),
-                    top: `calc((316 + var(--fy-desktop, 0)) / ${STAGE.h} * 100%)`,
+                    top: `calc((${FOCUS_TOP} + var(--fy-desktop, 0) - var(--lift, 0)) / ${STAGE.h} * 100%)`,
                     opacity: "var(--settle, 1)",
                   }}
                 >

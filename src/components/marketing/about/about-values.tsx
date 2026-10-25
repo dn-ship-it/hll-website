@@ -51,17 +51,19 @@ const lerpBox = (a: Box, b: Box, t: number): Box => ({
   h: lerp(a.h, b.h, t),
 });
 
-const slitBox = (index: number, count: number): Box => {
+// The slits and panels span the whole content width (`span`, in stage units),
+// which is wider than the stage when a short screen caps its height.
+const slitBox = (index: number, count: number, span = STAGE.w): Box => {
   const total = count * SLIT.w + (count - 1) * SLIT.gap;
   return {
-    x: (STAGE.w - total) / 2 + index * (SLIT.w + SLIT.gap),
+    x: (span - total) / 2 + index * (SLIT.w + SLIT.gap),
     y: (FOCUS.h - SLIT.h) / 2,
     w: SLIT.w,
     h: SLIT.h,
   };
 };
-const panelBox = (index: number, count: number): Box => {
-  const w = (STAGE.w - (count - 1) * SLIT.gap) / count;
+const panelBox = (index: number, count: number, span = STAGE.w): Box => {
+  const w = (span - (count - 1) * SLIT.gap) / count;
   return { x: index * (w + SLIT.gap), y: 0, w, h: FOCUS.h };
 };
 // Thumbnails keep their order (the focused value's slot is drawn separately).
@@ -80,8 +82,9 @@ function timelineAt(t: number, count: number) {
   const f = Math.min(count - 1, Math.max(0, (t - INTRO) / STEP));
   const from = Math.floor(f);
   const to = Math.min(count - 1, from + 1);
-  // Each step holds a moment, then moves: the swap runs over its last 65%.
-  const k = from === to ? 0 : smooth((f - from - 0.35) / 0.65);
+  // Each step holds a moment, then moves: the swap runs over its last 80%,
+  // so it glides rather than snaps.
+  const k = from === to ? 0 : smooth((f - from - 0.2) / 0.8);
   return { toPanels, toSettled, from, to, k };
 }
 
@@ -218,6 +221,22 @@ export function AboutValuesSection({
 function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
   const count = data.items.length;
   const trackRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  // The content width in stage units (the slits and panels span it).
+  const [span, setSpan] = useState(STAGE.w);
+  useEffect(() => {
+    const stage = stageRef.current;
+    const box = stage?.parentElement;
+    if (!stage || !box) return undefined;
+    const fit = () => {
+      if (stage.offsetWidth) setSpan((box.clientWidth / stage.offsetWidth) * STAGE.w);
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(box);
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
   // Timeline position in screens: where the scroll says (target) and where
   // the stage is (shown), easing after it so wheel steps don't jerk.
   const target = useRef(0);
@@ -236,7 +255,7 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const diff = target.current - shownRef.current;
       shownRef.current =
-        reduce || Math.abs(diff) < 0.0005 ? target.current : shownRef.current + diff * 0.12;
+        reduce || Math.abs(diff) < 0.0005 ? target.current : shownRef.current + diff * 0.07;
       setShown(shownRef.current);
       frame.current = shownRef.current === target.current ? 0 : requestAnimationFrame(tick);
     };
@@ -287,6 +306,7 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
     >
       <div className="sticky top-[var(--nav-h)] flex h-[calc(100svh-var(--nav-h))] items-center">
         <div
+          ref={stageRef}
           className="relative w-full"
           style={{
             aspectRatio: `${STAGE.w} / ${STAGE.h}`,
@@ -299,11 +319,14 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
             const weight = index === from ? 1 - k : index === to ? k : 0;
             const settledBox = lerpBox(thumbBox(index), FOCUS, weight);
             const box = lerpBox(
-              lerpBox(slitBox(index, count), panelBox(index, count), toPanels),
+              lerpBox(slitBox(index, count, span), panelBox(index, count, span), toPanels),
               settledBox,
               toSettled,
             );
             const isFocus = settled && index === current;
+            // The video fades with the focus, out as its value shrinks and
+            // in as the next grows, rather than cutting at the halfway point.
+            const videoOpacity = settled ? smooth((weight - 0.4) / 0.6) : 0;
             return (
               <button
                 key={value.id}
@@ -330,7 +353,7 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
                   // into colour as it grows (the "loader").
                   style={{ filter: `grayscale(${toSettled * (1 - weight)})` }}
                 />
-                {isFocus && value.video ? (
+                {videoOpacity > 0 && value.video ? (
                   <video
                     src={value.video}
                     autoPlay
@@ -338,6 +361,7 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
                     loop
                     playsInline
                     className="absolute inset-0 size-full object-cover"
+                    style={{ opacity: videoOpacity }}
                   />
                 ) : null}
               </button>
@@ -357,8 +381,18 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
               opacity: toSettled,
             }}
           >
+            {/* The outgoing value's image fades into the incoming one's. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={item.image} alt="" className="size-full object-cover" />
+            <img src={data.items[from].image} alt="" className="absolute inset-0 size-full object-cover" />
+            {to !== from ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={data.items[to].image}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+                style={{ opacity: k }}
+              />
+            ) : null}
           </span>
 
           <div

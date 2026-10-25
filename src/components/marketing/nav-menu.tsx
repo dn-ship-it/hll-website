@@ -204,15 +204,18 @@ function IndustriesPanel({ industries }: { industries: IndustryMenuGroup[] }) {
   );
 }
 
+/** The About menu's pages (desktop panel and mobile list). */
+export const ABOUT_LINKS = [
+  { label: "About", href: "/about" },
+  { label: "Team", href: "/team" },
+  { label: "Careers", href: "/careers" },
+];
+
 function AboutPanel() {
   return (
     <Panel className="min-h-[139px] w-[196px] px-[25px] pb-2 pt-[11px]">
       <ul>
-        {[
-          { label: "About", href: "/about" },
-          { label: "Team", href: "/team" },
-          { label: "Careers", href: "/careers" },
-        ].map((link) => (
+        {ABOUT_LINKS.map((link) => (
           <li key={link.href}>
             <Link href={link.href} className={`block leading-9 ${ITEM}`}>
               {link.label}
