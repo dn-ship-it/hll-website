@@ -40,6 +40,9 @@ const LOGOS: [file: string, name: string][] = [
   ["amadi", "Amadi"],
   ["ankbiz", "Ank Biz"],
   ["uplifty", "Uplifty"],
+  // Not in the pack; Hannan (25 Oct): "just download the WeWork logo from
+  // the internet". Wikimedia Commons "WeWork logo.png", set like the rest.
+  ["wework", "WeWork"],
 ];
 
 const payload = await getPayload({ config });

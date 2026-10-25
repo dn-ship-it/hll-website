@@ -262,6 +262,15 @@ body {
   height: 100%;
 }
 
+/* p5 (2.x) sets an inline `touch-action: none` on every canvas on the page
+   once a sketch has started, so a phone couldn't scroll while the finger was
+   on the Our Promise or Outcomes ripple, or any other canvas. None of our
+   canvases take drags, so the page scrolls over all of them; a tap still
+   reaches the ripple. */
+canvas {
+  touch-action: auto !important;
+}
+
 /* The canvas isn't mounted at this point, so this just keeps the plain
    background from reading as a broken effect. */
 .shader--disabled {
