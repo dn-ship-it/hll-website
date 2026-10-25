@@ -7,11 +7,12 @@ import { useEffect } from "react";
  *  review (21 Oct): "when a user is about 40–50% into a section, snap it into
  *  view so it fills the screen". */
 const REACH = 0.5;
+/** Phones: sections are taller than the screen and a flick travels far, so
+ *  the page only glides when a section's top is close. */
+const REACH_PHONE = 0.3;
 /** Without a `scrollend` event (older Safari), scrolling counts as finished
  *  after this long without a scroll event. */
 const IDLE_MS = 140;
-/** Desktop only for now: phones flick through many tall sections, where a
- *  snap after every flick fights the finger. */
 const DESKTOP = "(min-width: 1024px)";
 
 /**
@@ -22,6 +23,8 @@ const DESKTOP = "(min-width: 1024px)";
  * a section opts out with `data-snap="off"`. Tall, scroll-driven sections
  * (the Capabilities wheel, Our Values) keep working: in their middle no top
  * is near, so nothing snaps. Reduced motion jumps instead of gliding.
+ * Phones snap too (G-04 mobile), but never while a finger is on the screen:
+ * only once it's lifted and the flick has run out.
  */
 export function SectionSnap() {
   useEffect(() => {
@@ -30,6 +33,7 @@ export function SectionSnap() {
 
     const hasScrollEnd = "onscrollend" in window;
     let lastY = window.scrollY;
+    let lastScrollAt = 0;
     let direction = 0;
     let idle = 0;
     // Our own glide fires scroll events too; ignore them until it settles.
@@ -40,6 +44,28 @@ export function SectionSnap() {
     let userScrolled = false;
     const markUser = () => {
       userScrolled = true;
+    };
+    // A finger on the screen: hold any snap until it lifts.
+    let touching = false;
+    let touchStartY = 0;
+    const onTouchStart = () => {
+      touching = true;
+      touchStartY = window.scrollY;
+    };
+    const onTouchEnd = () => {
+      touching = false;
+      // A sideways swipe (a carousel) or a tap didn't move the page.
+      if (Math.abs(window.scrollY - touchStartY) < 2) {
+        userScrolled = false;
+        return;
+      }
+      // The page may already be still (a slow drag, no flick): no scroll end
+      // follows, so check once it has had a moment to start any momentum.
+      globalThis.clearTimeout(idle);
+      idle = globalThis.setTimeout(() => {
+        // Still moving (momentum after a flick): its own scroll end follows.
+        if (performance.now() - lastScrollAt >= IDLE_MS - 20) snap();
+      }, IDLE_MS) as unknown as number;
     };
     // Scrolling keys only, not typing in a form field.
     const SCROLL_KEYS = new Set(["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Home", "End"]);
@@ -65,10 +91,10 @@ export function SectionSnap() {
       );
 
     const snap = () => {
-      if (!desktop.matches || gliding || !userScrolled || direction === 0) return;
+      if (touching || gliding || !userScrolled || direction === 0) return;
       userScrolled = false;
       const top = navHeight();
-      const reach = window.innerHeight * REACH;
+      const reach = window.innerHeight * (desktop.matches ? REACH : REACH_PHONE);
       let best: { el: HTMLElement; offset: number } | null = null;
       for (const el of targets()) {
         // Where the section's top sits against the line under the Nav Bar.
@@ -94,6 +120,7 @@ export function SectionSnap() {
 
     const onScroll = () => {
       const y = window.scrollY;
+      lastScrollAt = performance.now();
       if (y !== lastY) direction = y > lastY ? 1 : -1;
       lastY = y;
       if (!hasScrollEnd) {
@@ -110,6 +137,9 @@ export function SectionSnap() {
     window.addEventListener("scrollend", onScrollEnd);
     window.addEventListener("wheel", markUser, { passive: true });
     window.addEventListener("touchmove", markUser, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onPointer);
     return () => {
@@ -119,6 +149,9 @@ export function SectionSnap() {
       window.removeEventListener("scrollend", onScrollEnd);
       window.removeEventListener("wheel", markUser);
       window.removeEventListener("touchmove", markUser);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("pointerdown", onPointer);
     };
