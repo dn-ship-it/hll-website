@@ -59,13 +59,18 @@ export function SectionSnap() {
         userScrolled = false;
         return;
       }
-      // The page may already be still (a slow drag, no flick): no scroll end
-      // follows, so check once it has had a moment to start any momentum.
+      // The browser may have called the scroll finished while the finger was
+      // still down, so don't count on another scroll end: snap once the page
+      // has been still for a moment, waiting out any momentum.
+      const settle = () => {
+        if (performance.now() - lastScrollAt < IDLE_MS - 20) {
+          idle = globalThis.setTimeout(settle, IDLE_MS) as unknown as number;
+        } else {
+          snap();
+        }
+      };
       globalThis.clearTimeout(idle);
-      idle = globalThis.setTimeout(() => {
-        // Still moving (momentum after a flick): its own scroll end follows.
-        if (performance.now() - lastScrollAt >= IDLE_MS - 20) snap();
-      }, IDLE_MS) as unknown as number;
+      idle = globalThis.setTimeout(settle, IDLE_MS) as unknown as number;
     };
     // Scrolling keys only, not typing in a form field.
     const SCROLL_KEYS = new Set(["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Home", "End"]);
