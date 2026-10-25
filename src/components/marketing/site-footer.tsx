@@ -72,10 +72,10 @@ export function SiteFooter({
 }: SiteFooterProps) {
   const emailLink =
     socialLinks.find((s) => s.platform === "email")?.url ??
-    "mailto:hello@hyperlychee.com";
+    "mailto:Rima@hyperlycheelabs.com";
   const linkedInLink =
     socialLinks.find((s) => s.platform === "linkedin")?.url ??
-    "https://linkedin.com";
+    "https://www.linkedin.com/company/hyper-lychee-labs";
 
   return (
     <footer className="bg-[var(--hll-bg)]">

@@ -57,22 +57,22 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
 
       <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:shrink-0 lg:gap-8 lg:px-[10px] lg:pb-[29px]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-        <p className="hidden text-[clamp(3rem,min(calc(6.35*var(--vw)),calc(10*var(--svh))),6rem)] font-light leading-[1.33] text-black lg:mr-[19px] lg:mt-[26px] lg:block lg:w-[592px]">
-          {data.stats.map((line) => (
-            <span key={line} className="block">
-              {/* Figma: "Number counter". */}
-              <CountUp value={line} />
-            </span>
-          ))}
-        </p>
-        {/* Figma About mobile: a 96px number with its 30px label under it. */}
-        <div className="w-full space-y-3 lg:hidden">
+        {/* Figma About: a number with its label under it (96 / 30px on
+            phones). Three stats since the 25 Oct canvas (4 Offices, 12+
+            Countries, 150+ People deployed): on desktop they sit side by
+            side, so the map keeps its size. */}
+        <div className="w-full space-y-3 lg:mr-[19px] lg:mt-[26px] lg:flex lg:w-auto lg:gap-[clamp(2rem,calc(4.2*var(--vw)),4.5rem)] lg:space-y-0">
           {data.stats.map((line) => {
             const [number, ...label] = line.split(" ");
             return (
               <div key={line} className="font-light text-black">
-                <CountUp value={number} className="block text-[96px] leading-[128px]" />
-                <p className="-mt-[18px] text-[30px] leading-[34.8px]">{label.join(" ")}</p>
+                <CountUp
+                  value={number}
+                  className="block text-[96px] leading-[128px] lg:text-[clamp(3rem,min(calc(5.3*var(--vw)),calc(9*var(--svh))),5rem)] lg:leading-[1.25]"
+                />
+                <p className="-mt-[18px] text-[30px] leading-[34.8px] lg:mt-0 lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] lg:leading-[1.16]">
+                  {label.join(" ")}
+                </p>
               </div>
             );
           })}

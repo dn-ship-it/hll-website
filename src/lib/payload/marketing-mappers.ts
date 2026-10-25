@@ -518,12 +518,14 @@ export function mapCareersPageContent(
   fallback: CareersPageContent = careersPageContent,
 ): CareersPageContent {
   const cms = marketing?.careers;
-  const teamVoices =
-    cms?.teamVoices?.map((v) => ({
-      quote: v.quote,
-      name: v.name ?? undefined,
-      role: v.role ?? "",
-    })) ?? fallback.teamVoices;
+  // An empty CMS list keeps the built-in quotes.
+  const teamVoices = cms?.teamVoices?.length
+    ? cms.teamVoices.map((v) => ({
+        quote: v.quote,
+        name: v.name ?? undefined,
+        role: v.role ?? "",
+      }))
+    : fallback.teamVoices;
   const aboutParagraphs = cms?.aboutHll?.paragraphs?.map((p) => p.text).filter(Boolean) ?? [];
   const shared = {
     teamVoices,

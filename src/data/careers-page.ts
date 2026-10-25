@@ -45,8 +45,12 @@ export type CareersPageContent = {
 };
 
 // PLACEHOLDER copy from the Figma Careers / JD frames, until real copy lands.
-const FIGMA_LEAD =
-  "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker, it takes center stage.";
+/** Hannan's canvas (25 Oct), /about "ABOUT HLL: Intro"; also the job pages' About HLL. */
+export const ABOUT_HLL_INTRO = [
+  "At our core, we believe in the power of technology to transform businesses, industries, and society as a whole. That's why we approach every project with a blend of creativity, expertise, and empathy - to truly understand our clients' needs and build solutions that drive impact.",
+  "We know that success is not just about what we build, but how we build it. That's why we value transparency, accountability, and a commitment to doing what's right, even when it's not the easy choice. We believe in creating a culture that fosters creativity, diversity, and inclusivity - because we believe that the best ideas come from a range of perspectives.",
+  "Join us on our mission to empower businesses to thrive in a rapidly changing world. Let's work together to build a better future, one impact story at a time.",
+];
 const LOREM_1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet velit, sagittis laoreet neque tincidunt at.";
 const LOREM_2 = "Vestibulum euismod nec lacus vel volutpat. Aenean scelerisque sagittis metus, in luctus nibh rhoncus nec.";
 
@@ -62,7 +66,7 @@ export const careersPageContent: CareersPageContent = {
   accentColor: "#FF9126",
   hero: {
     eyebrow: "Careers",
-    headline: "Build what enterprises need to work better",
+    headline: "HLL is a Data, Analytics, AI & Design lab for large organisations.",
     description:
       "Join a global team of engineers, designers, and strategists helping enterprises move faster with data, AI, and experience design.",
   },
@@ -80,46 +84,99 @@ export const careersPageContent: CareersPageContent = {
       {
         id: "impact",
         title: "Meaningful impact",
-        body: "Work on platforms and products used by leading enterprises across healthcare, finance, and public sector.",
+        body: "You work on engagements for leading enterprises in Insurance, Banking and the Public Sector. We build for the decades and magnitudes, so what you deliver stays in use for years.",
       },
       {
         id: "growth",
         title: "Room to grow",
-        body: "Senior talent across the stack with mentorship, ownership, and exposure to client-facing delivery.",
+        body: "You work beside senior partners from enterprise backgrounds, and they mentor you. You own your results and work directly with clients on challenges in different domains.",
       },
       {
         id: "culture",
         title: "Transparent culture",
-        body: "Open communication, visible progress, and partnerships built on trust — from kickoff to production.",
+        body: "We communicate openly and show our progress, so you always know the status of every project. Relationships matter to us as much as excellence, with clients and with each other.",
       },
     ],
   },
+  // Hannan's canvas (25 Oct), /careers.
   teamVoice: {
     quote:
-      "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",
-    name: "John Doe",
-    role: "CEO, McKinsey",
-    slideCount: 3,
+      "Our strength comes from our people, and we hire for capability and culture. We look for discerning people who strive for more and can lead from their first engagement.",
+    name: "Arjun Pathni",
+    role: "Partner, HLL",
+    slideCount: 2,
   },
+  teamVoices: [
+    {
+      quote:
+        "Our strength comes from our people, and we hire for capability and culture. We look for discerning people who strive for more and can lead from their first engagement.",
+      name: "Arjun Pathni",
+      role: "Partner, HLL",
+    },
+    {
+      quote:
+        "We design for the decades, and that starts with the people we invite in. I look for colleagues who care about their craft and keep learning and pushing the bounds of innovation",
+      name: "Hannan Hakim",
+      role: "Founding Partner, HLL",
+    },
+  ],
   approach: {
     title: "Approach",
     items: [
-      { id: "momentum", title: "Collective Momentum", body: FIGMA_LEAD },
-      { id: "learning", title: "Learning Culture", body: FIGMA_LEAD },
-      { id: "cadence", title: "Meeting Cadence", body: FIGMA_LEAD },
-      { id: "learning-2", title: "Learning Culture", body: FIGMA_LEAD },
+      {
+        id: "craft-first",
+        title: "Craft First",
+        body: "The quality of your work and the depth behind it come first. We want to be part of your growth story, and partners mentor you.",
+      },
+      {
+        id: "curious-by-default",
+        title: "Curious by Default",
+        body: "We believe human ingenuity can solve root node problems. Expect colleagues who ask good questions and imagine what should exist, then turn ambiguity into a plan.",
+      },
+      {
+        id: "early-ownership",
+        title: "Early Ownership",
+        body: "Our team is small and our expertise is deep. You take on real responsibility early, across different domains and scales, with senior partners beside you.",
+      },
+      {
+        id: "relationships-matter",
+        title: "Relationships Matter",
+        body: "We are interested in you beyond your work. Good relationships with colleagues and clients matter as much as excellence, and they make the work better.",
+      },
     ],
   },
   process: {
     title: "Process",
     rows: [
-      { title: "Steps", paragraphs: [LOREM_1, LOREM_2, LOREM_1, LOREM_2] },
-      { title: "Timelines", paragraphs: [`${LOREM_1} ${LOREM_2}`, LOREM_1] },
-      { title: "Expectations", paragraphs: [`${LOREM_1} ${LOREM_2}`, LOREM_1] },
+      {
+        title: "Steps",
+        paragraphs: [
+          "All applications are accepted only via our official listings and portals. Once your application is shortlisted, you speak with a member of our team about the requirements and your experience and goals. You learn how the role fits the firm.",
+          "You meet a senior partner for a conversation about your craft and how you approach problems. We will tell you what each step assesses.",
+          "You meet the colleagues you would work with. Together we explore how you work with others and what you want from the team.",
+          "We share our decision and our reasons with you. If we make an offer, we walk you through the role and your first engagement.",
+        ],
+      },
+      {
+        title: "Timelines",
+        paragraphs: [
+          "We reply to relevant applications within five working days. The full process takes about three weeks, and you hear from us after each step.",
+          "Please note that as much as we would like to reply to all applications, we simply can not due to the extremely high volume of applications per role.",
+          "Pro-tip: Read the job description thoroughly. Ensure that your application is well thought through and relevant for the requirement and is formatted correctly with all the information our teams would need to qualify you.",
+          "Post the initial screening and interviews we take about 12 working days for a background verification check. Typical hiring cycles can range from 2 weeks to 4 weeks.",
+        ],
+      },
+      {
+        title: "Expectations",
+        paragraphs: [
+          "We expect you to show your work openly. Come ready to talk about what you have built and where you want to grow.",
+          "You can expect an update after each step. If we decide not to move forward, you receive honest feedback. Questions are welcome at any point.",
+        ],
+      },
     ],
   },
   aboutHll: {
-    paragraphs: [`${LOREM_1} ${LOREM_1}`, `${LOREM_1} ${LOREM_1}`],
+    paragraphs: ABOUT_HLL_INTRO,
     image: "/assets/about/careers.webp",
   },
 };

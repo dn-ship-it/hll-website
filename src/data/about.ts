@@ -1,4 +1,4 @@
-import { careersPageContent } from "./careers-page";
+import { ABOUT_HLL_INTRO, careersPageContent } from "./careers-page";
 
 export type AboutValue = {
   id: string;
@@ -60,10 +60,7 @@ export type AboutPageData = {
 export const aboutPage: AboutPageData = {
   hero: {
     title: "About",
-    paragraphs: [
-      "Creating top-notch digital products is not just smart code or stylish design. It takes a true partnership between strategists, engineers, and designers.",
-      "We build those partnerships with clear communication, thorough project management, and a commitment to every detail — from the first workshop to production launch.",
-    ],
+    paragraphs: ABOUT_HLL_INTRO,
     images: [null, null, null, null],
   },
   values: {
@@ -105,16 +102,16 @@ export const aboutPage: AboutPageData = {
     eyebrow: "About",
     title: "HLL",
     quote:
-      "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",
+      "We are a services firm, and that shapes how we work. Our senior people work alongside yours, starting with the first question. We measure every project by what your team can do after we leave and the total impact on your investment with us.",
     name: "Hannan Hakim",
-    role: "Chief Executive Officer",
+    role: "Founding Partner",
   },
   // PLACEHOLDER pins from the Figma "Interactive Map"; the real project list
   // (location, title, case study link) is meant to come from the CMS.
   reach: {
     eyebrow: "About",
     title: "Our Reach",
-    stats: ["20+ Countries", "100+ Projects"],
+    stats: ["4 Offices", "12+ Countries", "150+ People deployed"],
     map: "/assets/about/map.webp",
     pins: [
       { id: "mckinsey", x: 0.086, y: 0.244, title: "Data Science Project for McKinsey", location: "Seattle", href: "/engagement" },

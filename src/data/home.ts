@@ -36,7 +36,7 @@ export type HomePageContent = {
   whatWeDo: HomeHeadingContent & { items: HomeService[] };
   clients: HomeHeadingContent & { logos: HomeClientLogo[] };
   impact: HomeHeadingContent & {
-    /** In Figma order: Bajaj, KTM, WeCare, The Big Red Group, Salt, Zelish. */
+    /** Rows of three, two and one (the wide card), in order. */
     cards: HomeImpactCard[];
     /** Clients counter, then satisfaction. */
     stats: HomeImpactStat[];
@@ -110,19 +110,18 @@ export const homePageContent: HomePageContent = {
     eyebrow: "Work",
     title: "Our Impact",
     cards: [
-      { title: "Bajaj", tags: ["People & Policy"] },
-      { title: "KTM", tags: ["Trust & Governance"] },
-      { title: "WeCare", tags: ["AI", "Trust & Governance"] },
-      {
-        title: "The Big Red Group",
-        tags: ["People & Policy", "AI", "Trust & Governance"],
-      },
-      { title: "Salt", tags: ["AI"] },
-      { title: "Zelish", tags: ["AI", "Trust & Governance"] },
+      // Hannan's canvas (25 Oct): DocuPet, McKinsey & Company, Galeries
+      // Lafayette / Wataniya, KTM / WeWork. Images come from the CMS.
+      { title: "DocuPet", tags: ["Applications"], href: "/engagement/docupet" },
+      { title: "McKinsey & Company", tags: ["People & Policy"], href: "/engagement/fraud-model-recovery-government-tax-auth" },
+      { title: "Galeries Lafayette", tags: ["Applications"], href: "/engagement/galeries-lafayette" },
+      { title: "Wataniya", tags: ["People & Policy"], href: "/engagement/wataniya-monolith-to-microservices-archi" },
+      { title: "KTM", tags: ["Applications"], href: "/engagement/ktm" },
+      { title: "WeWork", tags: ["Applications"], href: "/engagement/wework" },
     ],
     stats: [
-      { value: "60+", label: "Clients across the world" },
-      { value: "80%", label: "Client satisfaction" },
+      { value: "15+", label: "Enterprise Clients" },
+      { value: "$1B+", label: "Revenue Impact Across Clients" },
     ],
     ctaLabel: "View all work",
     ctaHref: "/engagement",
@@ -136,31 +135,33 @@ export const homePageContent: HomePageContent = {
         title: "Shape",
         image: "/assets/home/shape.webp",
         video: "/assets/home/shape.mp4",
-        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
+        body: "We constantly push the envelope to help you define what needs to exist and translate ambiguity into a clear and dynamic future.",
       },
       {
         id: "build",
         title: "Build",
         image: "/assets/home/build.webp",
-        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
+        body: "We leverage the collective momentum of our people along with future mental models to deliver impact-driven products and services.",
       },
       {
         id: "evolve",
         title: "Evolve",
         image: "/assets/home/evolve.webp",
         video: "/assets/home/evolve.mp4",
-        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet vehicula.",
+        body: "We help organisations evolve using insights and by augmenting them with the right people. All with the intent of solving challenges with a future-forward mindset.",
       },
     ],
   },
   whoWeAre: {
     eyebrow: "Team",
     title: "Who are we",
-    people: Array.from({ length: 4 }, (_, i) => ({
-      id: String(i),
-      name: "Hannan Hakim",
-      role: "Chief Operating Officer",
-    })),
+    // Hannan's canvas (25 Oct). Photos to come from Rima.
+    people: [
+      { id: "hannan-hakim", name: "Hannan Hakim", role: "Founding Partner" },
+      { id: "arjun-pathni", name: "Arjun Pathni", role: "Senior Partner" },
+      { id: "rima-sarkar", name: "Rima Sarkar", role: "Head Of Growth" },
+      { id: "nilesh-nalnikar", name: "Nilesh Nalnikar", role: "Senior Partner" },
+    ],
     ctaLabel: "View all team",
     ctaHref: "/team",
   },

@@ -97,7 +97,7 @@ export const contactPageContent: ContactPageContent = {
     text: "Prefer to talk it through? Book a call with us, or reach the office closest to you.",
     email: "hannan@hyperlycheelabs.com",
     scheduleLabel: "Schedule a call",
-    // No booking link yet: opens an email asking for a call.
-    scheduleHref: "mailto:hannan@hyperlycheelabs.com?subject=Schedule%20a%20call",
+    // Hannan's canvas (25 Oct): "schedule a call link should be: rima@hyperlycheelabs.com".
+    scheduleHref: "mailto:rima@hyperlycheelabs.com?subject=Schedule%20a%20call",
   },
 };
