@@ -1,7 +1,11 @@
 import type { CollectionConfig } from "payload";
 
+import { revalidateOnChangeOrDelete } from "@/lib/payload/revalidate-site";
+
 export const TeamMembers: CollectionConfig = {
   slug: "team-members",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChangeOrDelete,
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "role", "department", "featured"],

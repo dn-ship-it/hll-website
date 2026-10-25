@@ -3,8 +3,12 @@ import type { CollectionConfig } from "payload";
 import { hllVariantOptions, pageBlocks, seoFields } from "../blocks/index";
 import { servicePageContentFields } from "../fields/marketing-fields";
 
+import { revalidateOnChangeOrDelete } from "@/lib/payload/revalidate-site";
+
 export const Services: CollectionConfig = {
   slug: "services",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChangeOrDelete,
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "slug", "variant", "_status"],

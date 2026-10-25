@@ -3,8 +3,12 @@ import type { CollectionConfig } from "payload";
 import { industryPageContentFields } from "../fields/marketing-fields";
 import { seoFields } from "../blocks/index";
 
+import { revalidateOnChangeOrDelete } from "@/lib/payload/revalidate-site";
+
 export const Industries: CollectionConfig = {
   slug: "industries",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChangeOrDelete,
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "slug", "_status"],

@@ -2,8 +2,12 @@ import type { CollectionConfig } from "payload";
 
 import { seoFields } from "../blocks/index";
 
+import { revalidateOnChangeOrDelete } from "@/lib/payload/revalidate-site";
+
 export const Posts: CollectionConfig = {
   slug: "posts",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChangeOrDelete,
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "publishedAt", "_status"],

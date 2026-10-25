@@ -2,8 +2,12 @@ import type { GlobalConfig } from "payload";
 
 import { hllVariantOptions } from "../blocks/index";
 
+import { revalidateOnChange } from "@/lib/payload/revalidate-site";
+
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChange,
   label: "Site settings",
   access: {
     read: () => true,

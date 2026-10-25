@@ -2,6 +2,8 @@ import type { Field, GlobalConfig } from "payload";
 
 import { linkItemFields } from "../fields/marketing-fields";
 
+import { revalidateOnChange } from "@/lib/payload/revalidate-site";
+
 /** A Home section's eyebrow and title; empty keeps the current text. */
 const headingFields: Field[] = [
   { name: "eyebrow", type: "text" },
@@ -10,6 +12,8 @@ const headingFields: Field[] = [
 
 export const MarketingContent: GlobalConfig = {
   slug: "marketing-content",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChange,
   label: "Marketing content",
   access: {
     read: () => true,

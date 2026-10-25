@@ -3,6 +3,8 @@ import type { Block, CollectionConfig } from "payload";
 import { publishStatusField } from "../blocks/index";
 import { INDUSTRY_GROUPS } from "../data/engagements";
 
+import { revalidateOnChangeOrDelete } from "@/lib/payload/revalidate-site";
+
 const serviceOptions = [
   { label: "AI", value: "hll-ai" },
   { label: "Trust & Governance", value: "hll-trust" },
@@ -178,6 +180,8 @@ const engagementBlocks: Block[] = [
 
 export const Engagements: CollectionConfig = {
   slug: "engagements",
+  // Edits show on the site without a redeploy.
+  hooks: revalidateOnChangeOrDelete,
   admin: {
     useAsTitle: "client",
     defaultColumns: ["client", "year", "engagementType", "template", "status"],
