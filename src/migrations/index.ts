@@ -9,6 +9,7 @@ import * as migration_20261017_171556_handoff_services from './20261017_171556_h
 import * as migration_20261017_185743_handoff_industries from './20261017_185743_handoff_industries';
 import * as migration_20261019_114956_handoff_outcome_links from './20261019_114956_handoff_outcome_links';
 import * as migration_20261023_184540_motion_step_video from './20261023_184540_motion_step_video';
+import * as migration_20261025_101221_contact_office_details from './20261025_101221_contact_office_details';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261023_184540_motion_step_video.up,
     down: migration_20261023_184540_motion_step_video.down,
-    name: '20261023_184540_motion_step_video'
+    name: '20261023_184540_motion_step_video',
+  },
+  {
+    up: migration_20261025_101221_contact_office_details.up,
+    down: migration_20261025_101221_contact_office_details.down,
+    name: '20261025_101221_contact_office_details'
   },
 ];

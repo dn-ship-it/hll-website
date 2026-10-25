@@ -52,36 +52,7 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
           then by shrinking, so it is never cut further than that. */}
       <div className="lg:flex lg:h-[calc(100*var(--svh)-var(--nav-h))] lg:flex-col">
       <div className="lg:flex lg:min-h-0 lg:flex-1 lg:justify-center lg:px-[10px]">
-      {/* Mobile: a 386 × 551 crop of the same map, over the Americas (Figma
-          image fill x 2–26%, y 15–93%); the pins follow the crop. */}
-      <div className="relative mx-[6px] aspect-[386/551] overflow-hidden rounded-lg bg-[#E6E6E6] lg:mx-0 lg:aspect-[1492/540] lg:h-full lg:max-h-[calc((100*var(--vw)-20px)*636/1492)] lg:max-w-full lg:[container-type:inline-size]">
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-[length:414.3%_127.6%] bg-[position:2.71%_69.1%] bg-no-repeat lg:hidden"
-          style={{ backgroundImage: `url(${data.map})` }}
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={data.map} alt="" className="absolute inset-0 hidden size-full object-cover lg:block" />
-        {data.pins.map((pin) => (
-          <div
-            key={pin.id}
-            // Desktop: the map image covers the box from its centre, so a pin
-            // sits at its share of the image's height (the box's width ×
-            // 636/1492) less the half that is trimmed off the top.
-            className="group absolute left-[calc((var(--pin-x)_-_0.0206)/0.2413*100%)] top-[calc((var(--pin-y)_-_0.1493)/0.784*100%)] lg:left-[calc(var(--pin-x)*100%)] lg:top-[calc(var(--pin-y)*100cqw*636/1492_-_(100cqw*636/1492_-_100%)/2)]"
-            style={{ ["--pin-x" as string]: pin.x, ["--pin-y" as string]: pin.y }}
-          >
-            {pin.title ? (
-              <PinCard pin={pin} />
-            ) : (
-              <span className="grid size-[30px] place-items-center rounded-[4px] bg-white text-[var(--hll-dark-grey)]">
-                <Plus className="size-[15px]" strokeWidth={1.2} aria-hidden />
-                <span className="sr-only">Project</span>
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
+      <ReachMap map={data.map} pins={data.pins} />
       </div>
 
       <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:shrink-0 lg:gap-8 lg:px-[10px] lg:pb-[29px]">
@@ -109,6 +80,54 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
       </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * The Reach map with its project pins: on About, and on Contact as "the same
+ * interactive map as the About page" (QA CT-02). The box fills its parent's
+ * height on desktop where the parent gives it one (About fits it to a
+ * screen), otherwise it keeps the map's shape.
+ */
+export function ReachMap({
+  map,
+  pins,
+}: {
+  map: string;
+  pins: AboutPageData["reach"]["pins"];
+}) {
+  const data = { map, pins };
+  // Mobile: a 386 × 551 crop of the same map, over the Americas (Figma image
+  // fill x 2–26%, y 15–93%); the pins follow the crop.
+  return (
+    <div className="relative mx-[6px] aspect-[386/551] overflow-hidden rounded-lg bg-[#E6E6E6] lg:mx-0 lg:aspect-[1492/540] lg:h-full lg:max-h-[calc((100*var(--vw)-20px)*636/1492)] lg:max-w-full lg:[container-type:inline-size]">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[length:414.3%_127.6%] bg-[position:2.71%_69.1%] bg-no-repeat lg:hidden"
+        style={{ backgroundImage: `url(${data.map})` }}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={data.map} alt="" className="absolute inset-0 hidden size-full object-cover lg:block" />
+      {data.pins.map((pin) => (
+        <div
+          key={pin.id}
+          // Desktop: the map image covers the box from its centre, so a pin
+          // sits at its share of the image's height (the box's width ×
+          // 636/1492) less the half that is trimmed off the top.
+          className="group absolute left-[calc((var(--pin-x)_-_0.0206)/0.2413*100%)] top-[calc((var(--pin-y)_-_0.1493)/0.784*100%)] lg:left-[calc(var(--pin-x)*100%)] lg:top-[calc(var(--pin-y)*100cqw*636/1492_-_(100cqw*636/1492_-_100%)/2)]"
+          style={{ ["--pin-x" as string]: pin.x, ["--pin-y" as string]: pin.y }}
+        >
+          {pin.title ? (
+            <PinCard pin={pin} />
+          ) : (
+            <span className="grid size-[30px] place-items-center rounded-[4px] bg-white text-[var(--hll-dark-grey)]">
+              <Plus className="size-[15px]" strokeWidth={1.2} aria-hidden />
+              <span className="sr-only">Project</span>
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
 

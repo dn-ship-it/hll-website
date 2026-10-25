@@ -481,6 +481,7 @@ export function mapContactPage(
   return {
     ...fallback,
     title: text(cms.hero?.headline, fallback.title),
+    intro: text(cms.hero?.description, fallback.intro),
     image:
       resolveMediaUrl(cms.details?.officeImage as CmsImageRef) ??
       fallback.image,
@@ -492,6 +493,8 @@ export function mapContactPage(
             country: item.city,
             company: item.company ?? "",
             address: item.address ?? "",
+            phone: item.phone ?? undefined,
+            email: item.email ?? undefined,
             taxLabel: item.taxLabel ?? undefined,
             taxId: item.taxId ?? undefined,
           }))
@@ -500,6 +503,8 @@ export function mapContactPage(
     getInTouch: {
       ...fallback.getInTouch,
       eyebrow: text(cms.details?.eyebrow, fallback.getInTouch.eyebrow),
+      title: text(cms.details?.title, fallback.getInTouch.title),
+      text: text(cms.details?.text, fallback.getInTouch.text),
       email,
       scheduleHref:
         cms.details?.scheduleUrl ??

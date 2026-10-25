@@ -2547,6 +2547,10 @@ export interface MarketingContent {
        * Schedule a call link (e.g. Calendly).
        */
       scheduleUrl?: string | null;
+      /**
+       * The line under "Get in touch", e.g. Prefer to talk it through? Book a call with us…
+       */
+      text?: string | null;
     };
     locations?: {
       eyebrow?: string | null;
@@ -2561,6 +2565,14 @@ export interface MarketingContent {
              */
             company?: string | null;
             address?: string | null;
+            /**
+             * Shown under the address. Empty: not shown.
+             */
+            phone?: string | null;
+            /**
+             * Shown under the address. Empty: not shown.
+             */
+            email?: string | null;
             /**
              * e.g. EIN No:, GSTIN:
              */
@@ -3026,6 +3038,7 @@ export interface MarketingContentSelect<T extends boolean = true> {
               linkedinLabel?: T;
               officeImage?: T;
               scheduleUrl?: T;
+              text?: T;
             };
         locations?:
           | T
@@ -3040,6 +3053,8 @@ export interface MarketingContentSelect<T extends boolean = true> {
                     label?: T;
                     company?: T;
                     address?: T;
+                    phone?: T;
+                    email?: T;
                     taxLabel?: T;
                     taxId?: T;
                   };

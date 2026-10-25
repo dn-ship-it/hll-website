@@ -417,6 +417,11 @@ export const MarketingContent: GlobalConfig = {
             { name: "linkedinLabel", type: "text" },
             { name: "officeImage", type: "upload", relationTo: "media" },
             { name: "scheduleUrl", type: "text", admin: { description: "Schedule a call link (e.g. Calendly)." } },
+            {
+              name: "text",
+              type: "textarea",
+              admin: { description: "The line under \"Get in touch\", e.g. Prefer to talk it through? Book a call with us…" },
+            },
           ],
         },
         {
@@ -434,6 +439,8 @@ export const MarketingContent: GlobalConfig = {
                 { name: "label", type: "text" },
                 { name: "company", type: "text", admin: { description: "e.g. Hyper Lychee Labs" } },
                 { name: "address", type: "textarea" },
+                { name: "phone", type: "text", admin: { description: "Shown under the address. Empty: not shown." } },
+                { name: "email", type: "email", admin: { description: "Shown under the address. Empty: not shown." } },
                 { name: "taxLabel", type: "text", admin: { description: "e.g. EIN No:, GSTIN:" } },
                 { name: "taxId", type: "text" },
               ],
