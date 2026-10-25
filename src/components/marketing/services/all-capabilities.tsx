@@ -131,10 +131,10 @@ const rowStyle = (wheel: Wheel, d: number, below?: number) =>
     visibility: hidden(d) ? "hidden" : undefined,
   }) as React.CSSProperties;
 
-function OpenIcon() {
+function OpenIcon({ className = "text-[var(--hll-dark-grey)]" }: { className?: string }) {
   return (
     <ArrowUpRight
-      className="size-3.5 text-[var(--hll-dark-grey)]"
+      className={`size-3.5 transition-colors duration-300 ${className}`}
       strokeWidth={1.4}
       aria-hidden
     />
@@ -404,11 +404,33 @@ export function AllCapabilities({
       style: rowStyle(wheel, d, wheel === "phone" ? below.current : undefined),
     };
   };
+  // QA C-22: hovering the card in focus (tile, name, tags or arrow) lifts the
+  // tile slightly, turns the arrow button black and darkens the tag outlines.
+  // One state for all four, with a short grace on leave so moving between
+  // them doesn't flicker. Desktop wheel only.
+  const [hovered, setHovered] = useState(false);
+  const leaveTimer = useRef(0);
+  const hoverProps = {
+    onPointerEnter: (event: React.PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      window.clearTimeout(leaveTimer.current);
+      setHovered(true);
+    },
+    onPointerLeave: () => {
+      window.clearTimeout(leaveTimer.current);
+      leaveTimer.current = window.setTimeout(() => setHovered(false), 80);
+    },
+  };
+  useEffect(() => {
+    setHovered(false);
+  }, [focus.id]);
+  useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
+
   const pills = (className: string) =>
     focus.subServices.slice(0, 4).map((sub) => (
       <span
         key={sub}
-        className={`hll-label whitespace-nowrap border-[var(--hll-mid-grey)] uppercase leading-[1.2] text-[var(--hll-dark-grey)] ${className}`}
+        className={`hll-label whitespace-nowrap uppercase leading-[1.2] text-[var(--hll-dark-grey)] transition-colors duration-300 ${hovered ? "border-[var(--hll-dark-grey)]" : "border-[var(--hll-mid-grey)]"} ${className}`}
         style={{ fontFamily: "var(--hll-font-functional)" }}
       >
         {sub}
@@ -464,27 +486,46 @@ export function AllCapabilities({
               >
                 <Tile id={service.tile ?? service.id} className="aspect-square w-full" />
               </button>
-              <button
-                type="button"
-                tabIndex={-1}
-                onClick={() => goTo(slot)}
-                className="absolute whitespace-nowrap text-left font-medium leading-[1.16]"
+              {/* QA C-24: the focused service's open button sits 10px after
+                  its name, or under it when the name leaves no room. */}
+              <div
+                className="absolute flex flex-wrap items-center gap-x-[10px] gap-y-1"
                 style={{
                   left: PHONE.nameLeft,
+                  right: PHONE.gutter,
                   top: "calc(var(--center) + var(--y) * 1px - 11px - 22px * var(--a))",
-                  fontSize: "calc(18px + 4px * var(--a))",
-                  color:
-                    "color-mix(in srgb, var(--hll-dark-grey) calc(var(--a) * 100%), var(--hll-mid-grey))",
                   opacity: "var(--o)",
                 }}
               >
-                {service.name}
-              </button>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => goTo(slot)}
+                  className="whitespace-nowrap text-left font-medium leading-[1.16]"
+                  style={{
+                    fontSize: "calc(18px + 4px * var(--a))",
+                    color:
+                      "color-mix(in srgb, var(--hll-dark-grey) calc(var(--a) * 100%), var(--hll-mid-grey))",
+                  }}
+                >
+                  {service.name}
+                </button>
+                {service.id === focus.id && focus.href ? (
+                  <Link
+                    href={focus.href}
+                    aria-label={`Open ${focus.name}`}
+                    className="pointer-events-auto grid size-[22px] shrink-0 place-items-center rounded-[3px] border-[0.8px] border-[var(--hll-dark-grey)] bg-[var(--hll-light-grey)]"
+                    style={{ opacity: "var(--settle, 1)" }}
+                  >
+                    <OpenIcon />
+                  </Link>
+                ) : null}
+              </div>
             </div>
           ))}
 
-          {/* The focused service: its sub-services and the open button,
-              wrapped under its row. */}
+          {/* The focused service: its sub-services, wrapped under its row
+              (its open button sits beside the name, QA C-24). */}
           <div
             key={focus.id}
             ref={pillsRef}
@@ -500,15 +541,6 @@ export function AllCapabilities({
             }}
           >
             {pills("rounded-[3px] border-[0.6px] px-[8px] py-[5px] text-[9px]")}
-            {focus.href ? (
-              <Link
-                href={focus.href}
-                aria-label={`Open ${focus.name}`}
-                className="grid size-[22px] place-items-center rounded-[3px] border-[0.8px] border-[var(--hll-dark-grey)] bg-[var(--hll-light-grey)]"
-              >
-                <OpenIcon />
-              </Link>
-            ) : null}
           </div>
         </div>
         <div aria-hidden className="h-16 shrink-0" />
@@ -570,6 +602,7 @@ export function AllCapabilities({
                   type="button"
                   tabIndex={-1}
                   onClick={() => goTo(slot)}
+                  {...(service.id === focus.id ? hoverProps : {})}
                   className="absolute"
                   style={{
                     left: `calc((${TILE_RIGHT} - ${TILE_MIN} - ${TILE_MAX - TILE_MIN} * var(--a)) / ${STAGE.w} * 100%)`,
@@ -578,7 +611,16 @@ export function AllCapabilities({
                     opacity: "var(--o)",
                   }}
                 >
-                  <Tile id={service.tile ?? service.id} className="aspect-square w-full" />
+                  <span
+                    className="block rounded-[inherit] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    style={
+                      hovered && service.id === focus.id
+                        ? { transform: "translateY(-0.4cqw)", boxShadow: "0 1cqw 2cqw rgba(0,0,0,0.12)" }
+                        : undefined
+                    }
+                  >
+                    <Tile id={service.tile ?? service.id} className="aspect-square w-full" />
+                  </span>
                 </button>
                 <div
                   className="absolute"
@@ -592,6 +634,7 @@ export function AllCapabilities({
                     type="button"
                     tabIndex={-1}
                     onClick={() => goTo(slot)}
+                    {...(service.id === focus.id ? hoverProps : {})}
                     className="cursor-pointer whitespace-nowrap text-left font-medium leading-[1.16] hover:!text-[var(--hll-dark-grey)]"
                     style={{
                       fontSize:
@@ -614,6 +657,7 @@ export function AllCapabilities({
                 key={focus.id}
                 ref={tagsRef}
                 onClick={() => focus.href && router.push(focus.href)}
+                {...hoverProps}
                 // QA C-08: the tags wrap within their design width and scale
                 // with the stage (10.7px at 1512, never under 9px), rather
                 // than running past the open button and off narrow screens.
@@ -635,14 +679,15 @@ export function AllCapabilities({
                 <Link
                   href={focus.href}
                   aria-label={`Open ${focus.name}`}
-                  className="absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] bg-[var(--hll-light-grey)] transition-colors hover:bg-white"
+                  {...hoverProps}
+                  className={`absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] transition-colors duration-300 ${hovered ? "bg-[var(--hll-dark-grey)]" : "bg-[var(--hll-light-grey)]"}`}
                   style={{
                     left: pct(1229, STAGE.w),
                     top: `calc((${FOCUS_TOP} + var(--fy-desktop, 0) - var(--lift, 0)) / ${STAGE.h} * 100%)`,
                     opacity: "var(--settle, 1)",
                   }}
                 >
-                  <OpenIcon />
+                  <OpenIcon className={hovered ? "text-white" : "text-[var(--hll-dark-grey)]"} />
                 </Link>
               ) : null}
             </div>
