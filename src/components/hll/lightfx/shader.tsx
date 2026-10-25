@@ -30,6 +30,8 @@ export type ShaderProps = {
   settings?: ShaderSettings;
   pauseOnDoubleClick?: boolean;
   disabled?: boolean;
+  /** Built but not drawing (no frames, no GPU work) until this turns false. */
+  paused?: boolean;
   /** Let clicks and hovers reach the page content underneath the canvas. */
   passthrough?: boolean;
   /** Scope the canvas to its nearest positioned ancestor instead of the viewport. */
@@ -44,6 +46,7 @@ export function Shader({
   settings = BASE_SETTINGS,
   pauseOnDoubleClick = true,
   disabled = false,
+  paused = false,
   passthrough = false,
   contained = false,
   className,
@@ -52,6 +55,12 @@ export function Shader({
 }: ShaderProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const resolvedColors = resolveVariantColors(variant, colors);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
+  const fxRef = useRef<{ setPaused: (value: boolean) => void } | null>(null);
+  useEffect(() => {
+    fxRef.current?.setPaused(paused);
+  }, [paused]);
 
   // Like HLLButton's `disabled`: an inert, dimmed state. The effect is idle
   // work (a rAF loop plus a pointermove listener) even when nothing changes
@@ -69,7 +78,12 @@ export function Shader({
       blueNoiseSize: BLUE_NOISE_SIZE,
       pauseOnDoubleClick,
     });
-    return () => fx.dispose();
+    fxRef.current = fx;
+    fx.setPaused(pausedRef.current);
+    return () => {
+      fxRef.current = null;
+      fx.dispose();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant, colors?.join(","), pauseOnDoubleClick, disabled, settings]);
 

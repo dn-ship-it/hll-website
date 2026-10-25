@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
+import { Shader, TRANSPARENT_SETTINGS, VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import { SERVICE_LABELS } from "@/data/engagements";
 import { serviceHref } from "@/components/hll/variants";
@@ -254,6 +254,14 @@ export function NavMenu({
   industries: IndustryMenuGroup[];
 }) {
   const [open, setOpen] = useState<NavVariant | null>(null);
+  // QA N-04, Figma Menu / Nav: "the shader also covers the screen upon
+  // interacting with … any options in the navbar", in the open button's
+  // palette (HLL-UI-Demo's MenuTriggerOverlay). Built on the first open and
+  // then kept, paused while closed, so reopening doesn't rebuild it.
+  const [shaderVariant, setShaderVariant] = useState<NavVariant | null>(null);
+  useEffect(() => {
+    if (open) setShaderVariant(open);
+  }, [open]);
   const rootRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef(0);
   const pathname = usePathname();
@@ -346,7 +354,25 @@ export function NavMenu({
         })}
       </nav>
 
-      {/* Hover: just the menu, in the space under the Nav Bar. */}
+      {/* Under the menu: the shader over the page, below the Nav Bar. */}
+      {shaderVariant ? (
+        <Shader
+          variant={shaderVariant}
+          settings={TRANSPARENT_SETTINGS}
+          passthrough
+          pauseOnDoubleClick={false}
+          paused={!open}
+          className="transition-opacity duration-300 ease-out motion-reduce:hidden"
+          style={{
+            background: "transparent",
+            top: "var(--nav-h)",
+            height: "calc(100 * var(--vh) - var(--nav-h))",
+            opacity: open ? 1 : 0,
+          }}
+        />
+      ) : null}
+
+      {/* Hover: the menu, in the space under the Nav Bar. */}
       {open ? (
         <div
           onPointerEnter={() => show(open)}
