@@ -1,47 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { useRef } from "react";
 
 import { GradientRevealTextSlow, HLLOutlineButton } from "@/components/hll";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import { useScaleToViewport } from "@/components/marketing/use-scale-to-viewport";
 import type { IndustryPageData } from "@/types/industry";
 
-/** The industry pages, listed by the switcher until the CMS Industries menu is set. */
-export const INDUSTRY_LINKS = [
-  { label: "Healthcare", href: "/industries/healthcare" },
-  { label: "Payments", href: "/industries/payments" },
-  { label: "Insurance", href: "/industries/insurance" },
-  { label: "Pharmaceuticals", href: "/industries/pharmaceuticals" },
-];
-
 export function IndustryHero({
   data,
   category,
   accentColor,
-  switcherLinks = INDUSTRY_LINKS,
 }: {
   data: IndustryPageData["hero"];
   category: string;
   accentColor: string;
-  switcherLinks?: { label: string; href: string }[];
 }) {
-  const [switcherOpen, setSwitcherOpen] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
   useScaleToViewport(windowRef, { desktopOnly: true });
-
-  // A tap or click anywhere outside the switcher closes its menu.
-  useEffect(() => {
-    if (!switcherOpen) return undefined;
-    const close = (event: PointerEvent) => {
-      if (!(event.target as Element).closest("[data-industry-switcher]"))
-        setSwitcherOpen(false);
-    };
-    window.addEventListener("pointerdown", close);
-    return () => window.removeEventListener("pointerdown", close);
-  }, [switcherOpen]);
 
   return (
     <>
@@ -52,7 +28,6 @@ export function IndustryHero({
       </div>
 
       <section
-        // z-10: the switcher's menu opens over the section below it.
         // QA I-11: less space above the title (240px at 1512).
         className={`relative z-10 pt-[154px] lg:pt-[clamp(7.5rem,calc(15.87*var(--vw)),15rem)] ${SERVICE_GUTTER}`}
       >
@@ -121,70 +96,12 @@ export function IndustryHero({
             background: `#D9D9D9 ${data.image ? `url(${data.image}) center / cover` : ""}`,
           }}
         >
-          {/* Figma: "Clicking on the sticky button opens an expanded view of
-              the industries page to switch between them". */}
-          <div data-industry-switcher className="absolute left-1/2 top-[44.8%] hidden -translate-x-1/2 lg:block">
-            <Switcher
-              label={data.overlayLabel}
-              links={switcherLinks}
-              open={switcherOpen}
-              onToggle={() => setSwitcherOpen((open) => !open)}
-            />
-          </div>
         </div>
 
-        {/* Figma Industry mobile: the switcher sits 54px under the window. */}
-        <div className="relative z-20 mt-[54px] flex justify-center lg:hidden">
-          <div data-industry-switcher className="relative">
-            <Switcher
-              label={data.overlayLabel}
-              links={switcherLinks}
-              open={switcherOpen}
-              onToggle={() => setSwitcherOpen((open) => !open)}
-            />
-          </div>
-        </div>
+        {/* QA I-03: the industry switcher over the image (and under it on
+            phones) is gone – it got lost over the picture, and on the 12 Oct
+            call nobody knew what it was for. The menu switches industries. */}
       </section>
-    </>
-  );
-}
-
-function Switcher({
-  label,
-  links,
-  open,
-  onToggle,
-}: {
-  label: string;
-  links: { label: string; href: string }[];
-  open: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <>
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={onToggle}
-        className="inline-flex h-[34px] items-center gap-2 rounded-[3px] bg-[var(--hll-light-grey)] px-[21px] text-[10px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)] lg:h-9 lg:rounded-[4px] lg:text-[12px]"
-      >
-        {label}
-        <ChevronDown className="size-3.5" strokeWidth={1.4} aria-hidden />
-      </button>
-      {open ? (
-        <ul className="absolute left-1/2 top-10 z-20 max-h-[min(60vh,420px)] w-max min-w-full max-w-[calc(100vw-2.5rem)] -translate-x-1/2 overflow-y-auto rounded-[4px] lg:left-0 lg:translate-x-0 lg:whitespace-nowrap bg-[var(--hll-bg)] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.12)] lg:top-11">
-          {links.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className="block px-[21px] py-2 text-[10px] uppercase tracking-[0.25em] text-[var(--hll-dark-grey)] hover:bg-[var(--hll-light-grey)] lg:text-[12px]"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </>
   );
 }

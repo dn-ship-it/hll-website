@@ -9,7 +9,7 @@ import { mapIndustryMenu, mapIndustryPage } from "@/lib/payload/marketing-mapper
 import { getIndustryBySlug, getMarketingContent } from "@/lib/payload/queries";
 
 import { IndustryCapabilitiesSection } from "./industry-capabilities";
-import { INDUSTRY_LINKS, IndustryHero } from "./industry-hero";
+import { IndustryHero } from "./industry-hero";
 import { IndustryLabSection } from "./industry-lab-section";
 import { getIndustryAccent } from "./industry-theme";
 import { NamedExpertsSection } from "./named-experts-section";
@@ -23,21 +23,8 @@ async function loadIndustry(fallback: IndustryPageData) {
   }
 }
 
-/** The switcher's industries: every linked industry in the Industries menu
- *  (the CMS one, or the default list of all industry pages). */
-async function loadSwitcherLinks() {
-  try {
-    const links = mapIndustryMenu(await getMarketingContent()).flatMap((group) =>
-      group.items.flatMap((item) => (item.href ? [{ label: item.label, href: item.href }] : [])),
-    );
-    return links.length ? links : INDUSTRY_LINKS;
-  } catch {
-    return INDUSTRY_LINKS;
-  }
-}
-
 export async function IndustryPage({ content }: { content: IndustryPageData }) {
-  const [data, switcherLinks] = await Promise.all([loadIndustry(content), loadSwitcherLinks()]);
+  const data = await loadIndustry(content);
   const accent = getIndustryAccent(data.hero.title, data.accentColor);
   const voice = data.clientVoice;
 
@@ -48,7 +35,6 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
           data={data.hero}
           category={data.category}
           accentColor={accent}
-          switcherLinks={switcherLinks}
         />
         <IndustryCapabilitiesSection
           data={data.capabilities}

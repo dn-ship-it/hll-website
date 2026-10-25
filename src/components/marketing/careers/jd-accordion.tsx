@@ -18,13 +18,18 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
         const isOpen = open === i;
         const id = `jd-section-${i}`;
         return (
-          <div key={section.title} className={i > 0 ? "pt-[27px] lg:pt-[57px]" : undefined}>
+          <div key={section.title}>
+            {/* QA J-07: the whole row is the button – the space above the
+                title and down to its hairline too, not just the words and
+                the plus sign. Same spacing as before, moved inside. */}
             <button
               type="button"
               aria-expanded={isOpen}
               aria-controls={id}
               onClick={() => setOpen(isOpen ? null : i)}
-              className="flex w-full items-center justify-between text-left lg:items-start lg:px-[23px]"
+              className={`flex w-full cursor-pointer items-center justify-between text-left lg:items-start lg:px-[23px] ${
+                i > 0 ? "pt-[27px] lg:pt-[57px]" : ""
+              } ${isOpen ? "" : "pb-[27px] lg:pb-[51px]"}`}
             >
               <span className="text-[10px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:pt-[3px] lg:text-[14px]">
                 {section.title}
@@ -38,7 +43,7 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
                 between the title and its text. Mobile: out to 8px from the
                 edges. */}
             {isOpen ? null : (
-              <div data-line className="-mx-3 mt-[27px] h-px bg-[var(--hll-mid-grey)] lg:mx-0 lg:mt-[51px]" />
+              <div data-line className="-mx-3 h-px bg-[var(--hll-mid-grey)] lg:mx-0" />
             )}
             <div id={id} hidden={!isOpen}>
               <div className="space-y-[18px] pb-[54px] pt-[27px] lg:space-y-[30px] lg:pl-[30%] lg:pt-[51px]">

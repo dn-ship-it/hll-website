@@ -22,7 +22,9 @@ function Stat({ value }: { value: string }) {
   const unit = match ? match[2] : "";
 
   return (
-    <p className="text-[104px] font-light leading-[1.16] text-black lg:text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)]">
+    // QA C-23: 64px on phones (Figma's 104px reads far too large on a real
+    // phone), the size the engagement pages' outcome figures use.
+    <p className="text-[64px] font-light leading-[1.16] text-black lg:text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)]">
       {/* Figma: "Number counter". */}
       <CountUp value={main} />
       {unit ? (

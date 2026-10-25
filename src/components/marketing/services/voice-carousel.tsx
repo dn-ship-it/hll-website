@@ -111,13 +111,15 @@ export function VoiceSection({
   const affiliation = [data.role, data.company].filter(Boolean).join(", ");
   const running = many && inView && !dragging;
 
+  // QA T-04: a single testimonial shows no counter, arrows or timer bar,
+  // and doesn't rotate.
   const timer = (className: string) =>
-    timerColor ? (
+    timerColor && many ? (
       <VoiceTimer
         key={`${index}-${turn}`}
         color={timerColor}
         running={running}
-        loop={!many}
+        loop={false}
         onDone={() => go(1)}
         className={className}
       />
@@ -158,21 +160,27 @@ export function VoiceSection({
             way on narrow phones to keep 8px clear of the logo. */}
         <div className="flex items-start lg:gap-[10px]">
           <div className="ml-[26px] mt-1 w-[30px] shrink-0 lg:ml-0 lg:mt-0 lg:w-9" data-service-label>
-            <p
-              className="text-[10px] leading-[12px] lg:text-[12px] lg:leading-none"
-              style={{ color: accent }}
-              aria-live="polite"
-            >
-              {String(index + 1).padStart(2, "0")}/{String(count).padStart(2, "0")}
-            </p>
-            <p className="flex justify-between text-[10px] leading-[12px] text-[var(--hll-dark-grey)] lg:mt-1 lg:text-[12px] lg:leading-none">
-              <ArrowButton label="Previous testimonial" disabled={!many} onClick={() => go(-1)}>
-                &lt;
-              </ArrowButton>
-              <ArrowButton label="Next testimonial" disabled={!many} onClick={() => go(1)}>
-                &gt;
-              </ArrowButton>
-            </p>
+            {/* The column keeps its width with one slide, so the portrait
+                stays where the design has it. */}
+            {many ? (
+              <>
+                <p
+                  className="text-[10px] leading-[12px] lg:text-[12px] lg:leading-none"
+                  style={{ color: accent }}
+                  aria-live="polite"
+                >
+                  {String(index + 1).padStart(2, "0")}/{String(count).padStart(2, "0")}
+                </p>
+                <p className="flex justify-between text-[10px] leading-[12px] text-[var(--hll-dark-grey)] lg:mt-1 lg:text-[12px] lg:leading-none">
+                  <ArrowButton label="Previous testimonial" disabled={false} onClick={() => go(-1)}>
+                    &lt;
+                  </ArrowButton>
+                  <ArrowButton label="Next testimonial" disabled={false} onClick={() => go(1)}>
+                    &gt;
+                  </ArrowButton>
+                </p>
+              </>
+            ) : null}
           </div>
           <div
             className={`mr-2 min-w-0 flex-1 lg:ml-0 lg:mr-0 lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:max-w-none lg:flex-none lg:shrink-0 ${wide ? "ml-[11px] max-w-[253px]" : "ml-[15px] max-w-[245px]"}`}
