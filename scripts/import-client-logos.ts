@@ -4,7 +4,8 @@
  *
  *   npx payload run scripts/import-client-logos.ts -- <HLL-logo-blocks/2x folder>
  *
- * Hannan's list comes first, then the other clients in the pack. Media are
+ * Only the companies on Hannan's list (canvas, 23 Oct), in his order; the
+ * pack's other logos aren't used. Media are
  * matched by file name (`client-logo--<file>`), so re-runs upload nothing
  * twice. Only home.clientLogos is replaced; editors can reorder, add or
  * remove logos in the CMS afterwards.
@@ -27,22 +28,15 @@ const LOGOS: [file: string, name: string][] = [
   ["wataniya", "Wataniya Insurance"],
   ["snb", "Saudi National Bank"],
   ["undp", "United Nations Development Programme"],
+  // Not in the pack; Hannan (25 Oct): "just download the WeWork logo from
+  // the internet". Wikimedia Commons "WeWork logo.png", set like the rest.
+  ["wework", "WeWork"],
   ["upstox", "Upstox"],
   ["zatca", "Zakat, Tax and Customs Authority"],
   ["sacramento-community-development", "City of Sacramento"],
   ["niti-aayog", "NITI Aayog"],
   ["gosi", "GOSI"],
   ["galeries-lafayette", "Galeries Lafayette"],
-  ["docupet", "DocuPet"],
-  ["everythingals", "EverythingALS"],
-  ["ktm", "KTM"],
-  ["voxxy", "Voxxy Media"],
-  ["amadi", "Amadi"],
-  ["ankbiz", "Ank Biz"],
-  ["uplifty", "Uplifty"],
-  // Not in the pack; Hannan (25 Oct): "just download the WeWork logo from
-  // the internet". Wikimedia Commons "WeWork logo.png", set like the rest.
-  ["wework", "WeWork"],
 ];
 
 const payload = await getPayload({ config });
