@@ -42,10 +42,10 @@
     field are off below 820px and under prefers-reduced-motion; the connection lines still draw.
 
   Touch behaviour (phones and tablets)
-    Press an industry and its clients rise while the lines draw. Lift the finger and the page opens.
-    If the finger moves (a scroll), the press is cancelled and nothing opens. An industry with no URL
-    stays open after the finger lifts, so its clients can be tapped. The section never blocks page
-    scrolling, with a finger, a mouse wheel, or a trackpad.
+    Tap an industry and its clients rise into the middle while the lines draw; it stays open after
+    the finger lifts, so its clients can be read and tapped. Tap the same industry again (a double
+    tap) and its page opens. If the finger moves (a scroll), the press is cancelled and nothing
+    opens. The section never blocks page scrolling, with a finger, a mouse wheel, or a trackpad.
 
   HOW TO EMBED
     1. Drop this whole block (style, section, script) into the page. Everything is scoped to .hll-www.
@@ -432,7 +432,7 @@
   function listen(mq, fn) { if (mq.addEventListener) mq.addEventListener("change", fn); else if (mq.addListener) mq.addListener(fn); }
 
   /* -----------------------------------------------------------------------------------------
-     Press controller. Touch and pen: draw on press, open on release, cancel on scroll.
+     Press controller. Touch and pen: draw on press, act on release, cancel on scroll.
      Mouse: the native click opens the link, so cmd-click and middle-click keep working.
      It never calls preventDefault on pointerdown or touchmove, so the page always scrolls.
      ----------------------------------------------------------------------------------------- */
@@ -672,7 +672,8 @@
       pressable(n.el, {
         start: function (type) { if (type === "touch") setActive(n); },
         cancel: function (type) { if (type === "touch") setActive(pinned); },
-        release: function () { if (n.data.href) { go(n.data.href); } else { pinned = n; setActive(n); } },
+        /* Hannan (25 Oct): the first tap shows the clients, a second tap on the open node opens its page. */
+        release: function () { if (n.data.href && pinned === n) { go(n.data.href); } else { pinned = n; setActive(n); } },
         click: function (e) { if (n.data.href) return; e.preventDefault(); togglePin(n); }
       });
     });
