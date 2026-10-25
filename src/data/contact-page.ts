@@ -56,7 +56,8 @@ export const contactPageContent: ContactPageContent = {
       { id: "source", label: "How did you hear about us?", type: "text" },
     ],
     submitLabel: "Send message",
-    successMessage: "Thanks — your message has reached us. We'll be in touch shortly.",
+    // Figma "Contact – Message sent": follows "Thanks, <first name>."
+    successMessage: "We’ll reply within 2 working days.",
     errorMessage: "Something went wrong sending your message. Please try again, or email us directly.",
   },
   image: null,

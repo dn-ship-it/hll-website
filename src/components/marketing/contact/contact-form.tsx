@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { HLLButton } from "@/components/hll";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
@@ -19,20 +19,25 @@ const FIELD =
  * labels at the gutter, hairlines to 8px from the edges, fields 32px apart.
  */
 export function ContactForm({ data }: { data: ContactPageContent["form"] }) {
+  // "Send another message" starts a fresh form.
+  const [round, setRound] = useState(0);
+  return <EnquiryForm key={round} data={data} onAgain={() => setRound((r) => r + 1)} />;
+}
+
+function EnquiryForm({
+  data,
+  onAgain,
+}: {
+  data: ContactPageContent["form"];
+  onAgain: () => void;
+}) {
   const [state, action, pending] = useActionState<EnquiryState, FormData>(
     sendEnquiry,
     { status: "idle" },
   );
 
   if (state.status === "success") {
-    return (
-      <p
-        role="status"
-        className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]"
-      >
-        {data.successMessage}
-      </p>
-    );
+    return <MessageSent data={data} sent={state.sent} onAgain={onAgain} />;
   }
 
   return (
@@ -114,5 +119,87 @@ export function ContactForm({ data }: { data: ContactPageContent["form"] }) {
         </HLLButton>
       </div>
     </form>
+  );
+}
+
+const RECAP_LABEL =
+  "hll-label text-[11px] uppercase leading-[1.2] text-[var(--hll-mid-grey)] lg:text-[12px]";
+const RECAP_VALUE =
+  "mt-2 text-[16px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]";
+
+/**
+ * Figma "Contact – Message sent" (QA, 25 Oct: the old one-liner sat out of
+ * line with the page): in the form's place, a ticked "Message sent" label,
+ * "Thanks, <first name>." with the reply time, a recap of what was sent
+ * between two hairlines, and "Send another message".
+ */
+function MessageSent({
+  data,
+  sent,
+  onAgain,
+}: {
+  data: ContactPageContent["form"];
+  sent?: EnquiryState["sent"];
+  onAgain: () => void;
+}) {
+  const first = sent?.name.split(/\s+/)[0];
+  return (
+    <div role="status">
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden
+          className="grid size-8 shrink-0 place-items-center rounded-full border border-[var(--hll-dark-grey)]"
+        >
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path
+              d="M1 4.2 3.6 6.6 9 1"
+              stroke="var(--hll-dark-grey)"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <p
+          className="text-[11px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]"
+          style={{ fontFamily: "var(--hll-font-functional)" }}
+        >
+          Message sent
+        </p>
+      </div>
+
+      <p className="mt-5 text-[28px] font-light leading-[1.18] text-[var(--hll-dark-grey)] lg:mt-7 lg:text-[clamp(1.75rem,calc(2.65*var(--vw)),2.5rem)] lg:leading-[1.15]">
+        {first ? `Thanks, ${first}. ` : "Thanks. "}
+        {data.successMessage}
+      </p>
+
+      {sent ? (
+        <div className="mt-5 space-y-4 border-y border-[#E3E3E3] py-[18px] lg:mt-7 lg:space-y-5 lg:py-6">
+          <div className="space-y-4 lg:grid lg:max-w-[832px] lg:grid-cols-2 lg:gap-8 lg:space-y-0">
+            <dl>
+              <dt className={RECAP_LABEL} style={{ fontFamily: "var(--hll-font-functional)" }}>Name</dt>
+              <dd className={RECAP_VALUE}>{sent.name}</dd>
+            </dl>
+            <dl>
+              <dt className={RECAP_LABEL} style={{ fontFamily: "var(--hll-font-functional)" }}>Email</dt>
+              <dd className={`break-all ${RECAP_VALUE}`}>{sent.email}</dd>
+            </dl>
+          </div>
+          <dl className="lg:max-w-[832px]">
+            <dt className={RECAP_LABEL} style={{ fontFamily: "var(--hll-font-functional)" }}>Your message</dt>
+            <dd className={`whitespace-pre-line ${RECAP_VALUE}`}>{sent.message}</dd>
+          </dl>
+        </div>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={onAgain}
+        className="mt-5 text-[11px] uppercase leading-[1.2] tracking-[0.06em] text-[var(--hll-dark-grey)] underline underline-offset-2 hover:opacity-60 lg:mt-7 lg:text-[12px]"
+        style={{ fontFamily: "var(--hll-font-functional)" }}
+      >
+        Send another message
+      </button>
+    </div>
   );
 }

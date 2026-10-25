@@ -5,6 +5,8 @@ import { getPayloadClient } from "@/lib/payload/client";
 export type EnquiryState = {
   status: "idle" | "success" | "error";
   errors?: Record<string, string>;
+  /** What was sent, for the "Message sent" recap. */
+  sent?: { name: string; email: string; message: string };
 };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,7 +37,10 @@ export async function sendEnquiry(
       data,
       overrideAccess: true,
     });
-    return { status: "success" };
+    return {
+      status: "success",
+      sent: { name: data.name, email: data.email, message: data.message },
+    };
   } catch {
     return { status: "error" };
   }
