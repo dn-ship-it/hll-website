@@ -134,7 +134,7 @@ const rowStyle = (wheel: Wheel, d: number, below?: number) =>
 function OpenIcon({ className = "text-[var(--hll-dark-grey)]" }: { className?: string }) {
   return (
     <ArrowUpRight
-      className={`size-3.5 transition-colors duration-300 ${className}`}
+      className={`size-3.5 transition-[color,transform] duration-200 ease-out ${className}`}
       strokeWidth={1.4}
       aria-hidden
     />
@@ -404,8 +404,11 @@ export function AllCapabilities({
       style: rowStyle(wheel, d, wheel === "phone" ? below.current : undefined),
     };
   };
-  // QA C-22: hovering the card in focus (tile, name, tags or arrow) lifts the
-  // tile slightly, turns the arrow button black and darkens the tag outlines.
+  // QA C-22 (Figma "QA designs - 24 Oct"): hovering the card in focus (tile,
+  // name, tags or arrow), 200ms ease-out and back on leave: the tile scales
+  // to 1.04 with a soft shadow (0 12 28, black 14%), the arrow button fills
+  // #1A1A1A with the arrow white and nudged 2px up-right, and the tag
+  // outlines darken from #949494 to #1A1A1A.
   // One state for all four, with a short grace on leave so moving between
   // them doesn't flicker. Desktop wheel only.
   const [hovered, setHovered] = useState(false);
@@ -430,7 +433,7 @@ export function AllCapabilities({
     focus.subServices.slice(0, 4).map((sub) => (
       <span
         key={sub}
-        className={`hll-label whitespace-nowrap uppercase leading-[1.2] text-[var(--hll-dark-grey)] transition-colors duration-300 ${hovered ? "border-[var(--hll-dark-grey)]" : "border-[var(--hll-mid-grey)]"} ${className}`}
+        className={`hll-label whitespace-nowrap uppercase leading-[1.2] text-[var(--hll-dark-grey)] transition-colors duration-200 ease-out ${hovered ? "border-[var(--hll-dark-grey)]" : "border-[var(--hll-mid-grey)]"} ${className}`}
         style={{ fontFamily: "var(--hll-font-functional)" }}
       >
         {sub}
@@ -612,10 +615,10 @@ export function AllCapabilities({
                   }}
                 >
                   <span
-                    className="block rounded-[inherit] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    className="block rounded-lg transition-[transform,box-shadow] duration-200 ease-out"
                     style={
                       hovered && service.id === focus.id
-                        ? { transform: "translateY(-0.4cqw)", boxShadow: "0 1cqw 2cqw rgba(0,0,0,0.12)" }
+                        ? { transform: "scale(1.04)", boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }
                         : undefined
                     }
                   >
@@ -680,14 +683,14 @@ export function AllCapabilities({
                   href={focus.href}
                   aria-label={`Open ${focus.name}`}
                   {...hoverProps}
-                  className={`absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] transition-colors duration-300 ${hovered ? "bg-[var(--hll-dark-grey)]" : "bg-[var(--hll-light-grey)]"}`}
+                  className={`absolute grid size-[33px] place-items-center rounded-[3.6px] border-[0.9px] border-[var(--hll-dark-grey)] transition-colors duration-200 ease-out ${hovered ? "bg-[var(--hll-dark-grey)]" : "bg-[var(--hll-light-grey)]"}`}
                   style={{
                     left: pct(1229, STAGE.w),
                     top: `calc((${FOCUS_TOP} + var(--fy-desktop, 0) - var(--lift, 0)) / ${STAGE.h} * 100%)`,
                     opacity: "var(--settle, 1)",
                   }}
                 >
-                  <OpenIcon className={hovered ? "text-white" : "text-[var(--hll-dark-grey)]"} />
+                  <OpenIcon className={hovered ? "translate-x-[2px] -translate-y-[2px] text-white" : "text-[var(--hll-dark-grey)]"} />
                 </Link>
               ) : null}
             </div>
