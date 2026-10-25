@@ -576,9 +576,10 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
 }
 
 /** Figma: "marquee runner displaying the clients logos (PNG or webp images)".
- *  Each logo image carries its client's brand colour as its background and
- *  fills its tile (QA H-27). Until logos are added in the CMS it runs eight
- *  grey slots. */
+ *  Hannan, 24 Oct: the logos in black on white (HLL-logo-blocks), each fitted
+ *  inside a white tile with a hairline edge; it keeps running under the
+ *  pointer (QA H-27). Until logos are added in the CMS it runs eight grey
+ *  slots. */
 export function OurClients({ data }: { data: HomePageContent["clients"] }) {
   const logos = data.logos.filter((item) => item.logo);
   const slots: (HomePageContent["clients"]["logos"][number] | null)[] = logos.length
@@ -596,7 +597,9 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
           <div
             key={n}
             aria-hidden={n >= slots.length}
-            className="grid h-[165px] w-[220px] shrink-0 place-items-center overflow-hidden rounded-lg bg-[#D9D9D9]"
+            className={`grid h-[165px] w-[220px] shrink-0 place-items-center overflow-hidden rounded-lg ${
+              item?.logo ? "border border-[#E4E4E4] bg-white" : "bg-[#D9D9D9]"
+            }`}
           >
             {item?.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -604,7 +607,8 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
                 src={item.logo}
                 alt={n < slots.length ? item.name : ""}
                 draggable={false}
-                className="size-full object-cover"
+                decoding="async"
+                className="size-full object-contain px-3"
               />
             ) : null}
           </div>
