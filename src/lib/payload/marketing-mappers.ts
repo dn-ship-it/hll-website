@@ -576,6 +576,7 @@ export function mapTeamPageContent(
       eyebrow: cms.hero.eyebrow ?? fallback.hero.eyebrow,
       headline: cms.hero.headline ?? fallback.hero.headline,
       description: cms.hero.description ?? fallback.hero.description,
+      image: fallback.hero.image,
     },
     grid: {
       eyebrow: cms.grid?.eyebrow ?? fallback.grid.eyebrow,

@@ -17,6 +17,8 @@ export type TeamPageContent = {
     eyebrow: string;
     headline: string;
     description: string;
+    /** The 1452 × 982 picture under the intro. */
+    image?: string | null;
   };
   grid: {
     eyebrow: string;
@@ -40,6 +42,8 @@ export const teamPageContent: TeamPageContent = {
     headline: "Team",
     description:
       "We are as good as our people. As our ecosystem expands, so does our momentum. Our strength comes from our people.",
+    // Hannan's "team grid picture.zip" (canvas, 25 Oct).
+    image: "/assets/team/team-grid.webp",
   },
   grid: {
     eyebrow: "Named experts",

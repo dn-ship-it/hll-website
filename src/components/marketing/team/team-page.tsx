@@ -82,6 +82,7 @@ export async function TeamPage() {
         <PageHero
           title={content.hero.headline}
           lead={content.hero.description}
+          image={content.hero.image}
         />
 
         {founder ? (
