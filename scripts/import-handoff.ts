@@ -1,7 +1,7 @@
 /**
  * Imports a content handoff (HLL-web-handoff-<date>) into the CMS.
  *
- *   npx payload run scripts/import-handoff.ts -- <handoff folder> [--only engagements]
+ *   npx payload run scripts/import-handoff.ts -- <handoff folder> [--only engagements] [--from <id>]
  *
  * Every page is matched by its permanent handoff ID (the CMS slug), so a
  * second run updates what's there instead of adding duplicates. Images are
@@ -403,6 +403,12 @@ async function importEngagements(payload: Payload) {
   const links = linkedIndustries();
   let order = 0;
   for (const id of ids.sort()) {
+    // `--from <id>` resumes a run that stopped part way: earlier engagements
+    // are skipped but still counted, so card shapes and order stay the same.
+    if (from && id < from) {
+      order++;
+      continue;
+    }
     const dir = path.join(base, id);
     const c: HandoffEngagement = JSON.parse(fs.readFileSync(path.join(dir, "content.json"), "utf8"));
     const title = c.shown_as || c.client || c.name;
@@ -872,6 +878,7 @@ async function importIndustries(payload: Payload) {
 
 const payload = await getPayload({ config });
 const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
+const from = args.includes("--from") ? args[args.indexOf("--from") + 1] : null;
 if (!only || only === "engagements") await importEngagements(payload);
 if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
