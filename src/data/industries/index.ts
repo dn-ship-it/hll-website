@@ -64,34 +64,38 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
       { label: "Insurance", href: "/industries/insurance" },
     ],
   }),  // The rest of the 17 Oct handoff's industries (its permanent IDs). Their
-  // copy comes from the CMS; no hero image was supplied, so they use the
-  // template's until one is.
+  // copy comes from the CMS. Hero images: Figma › Final › Imagery, shared by
+  // Hannan's groups (canvas 19/10/26): Financial Services the Payments image,
+  // Commerce & Consumer the Commerce one, Public Sector and International
+  // Organizations Governance, Consulting Professional Services; Logistics has
+  // its own. PetTech, Manufacturing and Real Estate have none yet and keep
+  // the template's.
   "banking": fromTemplate({
     slug: "banking",
     category: "Financial Services",
     title: "Banking",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/payments-hero.webp",
     related: [],
   }),
   "other-financial-services": fromTemplate({
     slug: "other-financial-services",
     category: "Financial Services",
     title: "Other Financial Services",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/payments-hero.webp",
     related: [],
   }),
   "retail-commerce-brands": fromTemplate({
     slug: "retail-commerce-brands",
     category: "Commerce & Consumer",
     title: "Retail Commerce & Brands",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/commerce-hero.webp",
     related: [],
   }),
   "travel-hospitality": fromTemplate({
     slug: "travel-hospitality",
     category: "Commerce & Consumer",
     title: "Travel & Hospitality",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/commerce-hero.webp",
     related: [],
   }),
   "pettech": fromTemplate({
@@ -119,35 +123,35 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
     slug: "logistics",
     category: "Built Environment & Industry",
     title: "Logistics",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/logistics-hero.webp",
     related: [],
   }),
   "public-sector-external-affairs": fromTemplate({
     slug: "public-sector-external-affairs",
     category: "Government & Public Institutions",
     title: "Public Sector – External Affairs",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/governance-hero.webp",
     related: [],
   }),
   "public-sector-tax-commerce": fromTemplate({
     slug: "public-sector-tax-commerce",
     category: "Government & Public Institutions",
     title: "Public Sector – Tax & Commerce",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/governance-hero.webp",
     related: [],
   }),
   "international-organization": fromTemplate({
     slug: "international-organization",
     category: "Government & Public Institutions",
     title: "International Organization",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/governance-hero.webp",
     related: [],
   }),
   "consulting-firms": fromTemplate({
     slug: "consulting-firms",
     category: "Professional Services",
     title: "Consulting Firms",
-    image: healthcareIndustry.hero.image ?? "",
+    image: "/assets/industries/professional-services-hero.webp",
     related: [],
   }),
 
