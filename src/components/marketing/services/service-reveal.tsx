@@ -22,6 +22,9 @@ export function ServiceReveal({ children }: { children: ReactNode }) {
     );
 
     fades.forEach((element) => {
+      // The Reach map runs its own states (its hidden "use two fingers"
+      // note is a <p>), so it stays out of the fade-up.
+      if (element.closest(".reach-map")) return;
       element.classList.add("service-fade-in");
       observer.observe(element);
     });

@@ -1,0 +1,775 @@
+/* reach-map.css — layout and skin for ReachMap.jsx. Self-contained: no
+   Tailwind, no global resets. Fonts are the site's own (Aeonik, Sometype
+   Mono), loaded by the host page. Layout follows the component's own width
+   through container queries, so it reflows the same inside a narrow column
+   as on a narrow phone. Breakpoints match the site: 820 and 1100. */
+
+.reach-map {
+  /* Light mode only, from the site tokens: ocean is --hll-live-quote,
+     land is --hll-live-org, pins and type are Dark Grey. */
+  --reach-ocean: #fafafa;
+  --reach-land: #e6e6e6;
+  --reach-border: #ffffff;
+  --reach-lit: brightness(0.9);
+  --reach-active: brightness(0.8);
+  --reach-pin: #1a1a1a;
+  --reach-pin-ink: #ffffff;
+  --reach-chip-ink: #1a1a1a;
+  --reach-ink: #1a1a1a;
+  --reach-ink-soft: #949494;
+  --reach-rule: #e6e6e6;
+  --reach-radius: 10px; /* measured from the About page design */
+  --reach-font: 'Aeonik Regular', 'Aeonik', system-ui, sans-serif;
+  --reach-font-light: 'Aeonik Light', 'Aeonik', system-ui, sans-serif;
+  --reach-mono: 'Sometype Mono', ui-monospace, monospace;
+
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  overflow-x: clip; /* the buttons' glow canvases bleed ~57px; clip them here */
+  color: var(--reach-ink);
+  font-family: var(--reach-font);
+  font-weight: 400;
+}
+
+.reach-map *,
+.reach-map *::before,
+.reach-map *::after {
+  box-sizing: border-box;
+}
+
+/* ---- map frame ------------------------------------------------------
+   Everything lives inside the frame: the map, the lens tabs, the controls
+   and the panel. Proportions follow the About page design: a 1396 x 505
+   card at a 1600px screen (2.76 : 1). Phones get a taller frame so the
+   pins and the bottom sheet both have room. */
+
+.reach-map__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.2;
+  border-radius: var(--reach-radius);
+  overflow: hidden; /* also clips the buttons' glow canvases */
+  background: var(--reach-ocean);
+  border: 1px solid var(--reach-rule);
+  isolation: isolate;
+}
+
+@container (min-width: 560px) {
+  .reach-map__frame { aspect-ratio: 1.45 / 1; }
+}
+
+@container (min-width: 820px) {
+  .reach-map__frame { aspect-ratio: 2.2 / 1; min-height: 420px; }
+}
+
+@container (min-width: 1100px) {
+  .reach-map__frame { aspect-ratio: 1396 / 505; min-height: 400px; }
+}
+
+.reach-map__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* keeps the pins under the controls, card and touch note */
+  /* One finger pans the page (the browser keeps it); two fingers are
+     handled by ReachMap.jsx to move and zoom the map. Pinch-zoom of the
+     page is left out so a two-finger gesture never zooms the whole site. */
+  touch-action: pan-x pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.reach-map__stage:active {
+  cursor: grabbing;
+}
+
+/* Shown briefly when someone drags the map with one finger on a phone. */
+.reach-map__touch-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  max-width: calc(100% - 48px);
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #ffffff;
+  font: 400 14px/1.3 var(--reach-font);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 220ms ease;
+}
+
+.reach-map__touch-hint.is-shown {
+  opacity: 1;
+}
+
+/* ---- controls inside the map ---------------------------------------- */
+
+.reach-map__overlay {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid var(--reach-rule);
+}
+
+.reach-map__overlay--bottom {
+  left: 12px;
+  bottom: 12px;
+}
+
+.reach-map__overlay--bottom:empty {
+  display: none;
+}
+
+.reach-map--wide .reach-map__overlay--bottom {
+  left: 16px;
+  bottom: 16px;
+}
+
+/* The bottom sheet covers the corner on narrow screens. */
+.reach-map--narrow .reach-map__overlay--bottom.is-covered {
+  display: none;
+}
+
+.reach-map--narrow .reach-map__overlay--bottom {
+  left: 8px;
+  bottom: 8px;
+  padding: 4px;
+}
+
+.reach-map__legend {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px 14px;
+  margin: 0;
+  font: 400 10px/1.3 var(--reach-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--reach-ink);
+  pointer-events: none;
+}
+
+.reach-map--wide .reach-map__legend {
+  right: 16px;
+  bottom: 22px;
+}
+
+/* Hidden while a panel covers its corner. */
+.reach-map__legend.is-covered {
+  display: none;
+}
+
+.reach-map__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reach-map__key svg {
+  box-sizing: content-box;
+  padding: 3px;
+  border-radius: 3px;
+  border: 1px solid var(--reach-pin);
+  background: #ffffff;
+  color: var(--reach-pin);
+}
+
+.reach-map__key--office svg {
+  background: var(--reach-pin);
+  color: #ffffff;
+}
+
+.reach-map__key--people svg {
+  border-color: transparent;
+  border-radius: 50%;
+  background: var(--reach-accent);
+  color: #ffffff;
+}
+
+.reach-map__key--work svg {
+  border-color: #949494;
+}
+
+
+.reach-map__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.reach-map__ocean {
+  fill: var(--reach-ocean);
+}
+
+.reach-map__countries path {
+  fill: var(--reach-land);
+  stroke: var(--reach-border);
+  stroke-width: 0.6px;
+  transition: filter 300ms ease;
+}
+
+.reach-map__countries path.is-lit {
+  filter: var(--reach-lit);
+}
+
+.reach-map__countries path.is-active {
+  filter: var(--reach-active);
+}
+
+/* ---- pins ----------------------------------------------------------- */
+
+.reach-map__pins {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.reach-map__pin-slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.reach-map__pin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1.25px solid var(--reach-pin);
+  border-radius: 4px;
+  background: #ffffff;
+  color: var(--reach-pin);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+/* A 44px hit area on touch screens without a 44px drawing. */
+.reach-map__pin::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+}
+
+.reach-map__pin:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  z-index: 2;
+}
+
+.reach-map__pin:focus-visible {
+  outline: 2px solid var(--reach-pin);
+  outline-offset: 3px;
+}
+
+/* Office: a dark square with a building. */
+.reach-map__pin--office {
+  background: var(--reach-pin);
+  color: var(--reach-pin-ink);
+}
+
+/* Partners: a round pin in the About gradient with a person. These lead. */
+.reach-map__pin--people {
+  border: 0;
+  border-radius: 50%;
+  background: var(--reach-accent);
+  color: #ffffff;
+}
+
+/* Our work: a smaller white square with a briefcase; it sits back. */
+.reach-map__pin--work {
+  width: 26px;
+  height: 26px;
+  border-color: #949494;
+  color: #1a1a1a;
+}
+
+/* Open: a gradient ring around whichever pin is showing its card. */
+.reach-map__pin.is-on {
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 5px #a28dd7;
+  z-index: 3;
+}
+
+.reach-map__count {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  color: #ffffff;
+  font: 400 9px/16px var(--reach-mono);
+  text-align: center;
+}
+
+/* Thin lines from a spread-out pin back to its true spot. */
+.reach-map__leaders {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.reach-map__leaders line {
+  stroke: #949494;
+  stroke-width: 1;
+}
+
+.reach-map__leaders circle {
+  fill: #1a1a1a;
+}
+
+/* Hover card, after the Figma callout: title over a mono line, tail at the
+   bottom-left corner. Pointer devices only; touch goes straight to the panel. */
+.reach-map__tip {
+  position: absolute;
+  left: -4px;
+  bottom: calc(100% + 12px);
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 140px;
+  max-width: 240px;
+  padding: 9px 12px;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1a1a1a;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  z-index: 3;
+  border: 1px solid var(--reach-rule);
+}
+
+.reach-map__tip::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  bottom: -7px;
+  border-left: 7px solid #ffffff;
+  border-bottom: 7px solid transparent;
+}
+
+.reach-map__pin.is-flip .reach-map__tip {
+  left: auto;
+  right: -4px;
+}
+
+.reach-map__pin.is-flip .reach-map__tip::after {
+  left: auto;
+  right: 10px;
+  border-left: 0;
+  border-right: 7px solid #ffffff;
+}
+
+@media (hover: hover) {
+  .reach-map__pin:hover .reach-map__tip,
+  .reach-map__pin:focus-visible .reach-map__tip {
+    display: flex;
+  }
+}
+
+.reach-map__tip-faces {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.reach-map__tip-faces img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.reach-map__tip-title {
+  font: 400 13px/1.2 var(--reach-font);
+}
+
+.reach-map__tip-meta {
+  font: 400 9px/1.2 var(--reach-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #949494;
+}
+
+/* ---- panel ---------------------------------------------------------- */
+
+.reach-map__panel {
+  position: absolute;
+  z-index: 5;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  max-height: 55%;
+  padding: 14px 8px 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--reach-rule);
+  background: #ffffff;
+  overflow-x: clip;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* A thin scrollbar in the site grey, with its space always reserved, so
+     a computer set to show scrollbars never crowds or shifts the content. */
+  scrollbar-width: thin;
+  scrollbar-color: #e6e6e6 transparent;
+  scrollbar-gutter: stable;
+  animation: reach-map-in 260ms ease both;
+}
+
+.reach-map__panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reach-map__panel::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0;
+}
+
+.reach-map__panel::-webkit-scrollbar-thumb {
+  background: #e6e6e6;
+  border-radius: 3px;
+}
+
+.reach-map__panel::-webkit-scrollbar-thumb:hover {
+  background: #949494;
+}
+
+.reach-map--wide .reach-map__panel {
+  left: auto;
+  top: 16px;
+  right: 16px;
+  bottom: auto;
+  width: 400px;
+  max-height: calc(100% - 32px);
+  padding: 20px 12px 12px 20px; /* the reserved scrollbar gutter makes up the right side */
+}
+
+@keyframes reach-map-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.reach-map__panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--reach-rule);
+}
+
+.reach-map__sub {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--reach-ink-soft);
+}
+
+.reach-map__section {
+  padding: 16px 0 4px;
+}
+
+.reach-map__section + .reach-map__section {
+  border-top: 1px solid var(--reach-rule);
+}
+
+.reach-map__section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font: 400 10px/1.3 var(--reach-font);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--reach-ink);
+}
+
+.reach-map__section-count {
+  font-family: var(--reach-mono);
+  letter-spacing: 0.08em;
+  color: var(--reach-ink-soft);
+}
+
+.reach-map__office-type {
+  margin: 0 0 12px;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.reach-map__people {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.reach-map__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+
+/* No photo on file: keep the name in line with the others. */
+.reach-map__people.has-photos .reach-map__person.is-no-photo {
+  padding-left: 76px;
+  min-height: 48px;
+}
+
+.reach-map__person-name {
+  font: 300 22px/1.1 var(--reach-font-light);
+}
+
+.reach-map__person-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reach-map__email {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 4px 0;
+  font: 400 11px/1.3 var(--reach-mono);
+  letter-spacing: 0.02em;
+  color: var(--reach-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--reach-rule);
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  transition: text-decoration-color 200ms ease;
+}
+
+.reach-map__email:hover {
+  text-decoration-color: currentColor;
+}
+
+.reach-map__email:focus-visible {
+  outline: 2px solid var(--reach-ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.reach-map__portrait {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex: none;
+}
+
+.reach-map__title {
+  margin: 6px 0 4px;
+  font: 300 clamp(24px, 2.2cqi + 12px, 32px)/1.05 var(--reach-font-light);
+}
+
+.reach-map__mono {
+  display: block;
+  margin: 0;
+  font: 400 10px/1.35 var(--reach-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--reach-ink);
+}
+
+.reach-map__mono--soft {
+  color: var(--reach-ink-soft);
+}
+
+.reach-map__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reach-map__item {
+  border-bottom: 1px solid var(--reach-rule);
+}
+
+.reach-map__item:last-child {
+  border-bottom: 0;
+}
+
+.reach-map__item-link {
+  display: grid;
+  grid-template-columns: 1fr 28px;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  padding: 14px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.reach-map__item-link:has(> .reach-map__item-body:first-child) {
+  grid-template-columns: 1fr 28px;
+}
+
+.reach-map__item-link:focus-visible {
+  outline: 2px solid var(--reach-ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.reach-map__thumb {
+  width: 96px;
+  height: auto;
+  aspect-ratio: 490 / 308;
+  object-fit: cover;
+  border-radius: 3px;
+  display: block;
+}
+
+.reach-map__item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.reach-map__name {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.reach-map__role {
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--reach-ink-soft);
+}
+
+.reach-map__service {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 400 10px/1.3 var(--reach-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reach-map__service::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--reach-service);
+  flex: none;
+}
+
+.reach-map__outcome {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 4px 0 2px;
+}
+
+.reach-map__outcome-figure {
+  flex: none;
+  font: 300 22px/1 var(--reach-font-light);
+}
+
+.reach-map__outcome-text {
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--reach-ink-soft);
+}
+
+/* Arrow box, after the Figma callout's open button. */
+.reach-map__arrow {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--reach-rule);
+  border-radius: 3px;
+  color: var(--reach-ink);
+  transition: border-color 200ms ease;
+}
+
+.reach-map__item-link:hover .reach-map__arrow {
+  border-color: var(--reach-ink);
+}
+
+.reach-map__panel-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--reach-rule);
+}
+
+.reach-map__steps {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.reach-map--narrow .reach-map__item-link {
+  grid-template-columns: 1fr 28px;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.reach-map--narrow .reach-map__thumb {
+  width: 72px;
+}
+
+.reach-map--narrow .reach-map__name {
+  font-size: 15px;
+}
+
+.reach-map--narrow .reach-map__pin {
+  width: 26px;
+  height: 26px;
+}
+
+.reach-map--narrow .reach-map__pin--work {
+  width: 23px;
+  height: 23px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reach-map *,
+  .reach-map *::before,
+  .reach-map *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

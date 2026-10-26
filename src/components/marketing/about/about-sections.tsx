@@ -8,6 +8,8 @@ import { HomeHeading } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
+import { ReachMapEmbed } from "./reach-map-embed";
+
 /** Figma "HLL": 198 × 264 portrait from 35% across, quote beside it.
  *  Mobile: a hairline, then a 245 × 253 portrait at x 79 with the quote
  *  indented under it (as the service Expert Voice). */
@@ -36,48 +38,41 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
 }
 
 /**
- * Figma "Interactive Map": "The map shows where projects are located.
- * Clicking a project opens its case study. 2 projects are always shown with
- * the redirect-link state. Other projects start as a + icon and expand to the
- * redirect-link state on hover."
+ * Our Reach: the design team's interactive map (offices, partners and the
+ * work done in each place, see ReachMapEmbed), then the heading and numbers,
+ * as in their approved About page.
  */
 export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
   return (
     // How we work ends with its own 154px; Figma puts the map 223px below
     // (mobile: 84px).
     <section className="-mt-[70px] lg:mt-0 lg:pt-[69px]">
-      {/* QA A-07: on desktop the map, heading and numbers fit one screen
-          under the Nav Bar. The map takes what the numbers leave: first by
-          trimming up to 15% off its top and bottom (no pins live there),
-          then by shrinking, so it is never cut further than that. */}
-      <div className="lg:flex lg:h-[calc(100*var(--svh)-var(--nav-h))] lg:flex-col">
-      <div className="lg:flex lg:min-h-0 lg:flex-1 lg:justify-center lg:px-[10px]">
-      <ReachMap map={data.map} pins={data.pins} />
+      <div className="px-2 lg:px-[10px]">
+        <ReachMapEmbed />
       </div>
 
-      <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:shrink-0 lg:gap-8 lg:px-[10px] lg:pb-[29px]">
+      <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:gap-8 lg:px-[10px] lg:pb-[29px]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
         {/* Figma About: a number with its label under it (96 / 30px on
             phones). Three stats since the 25 Oct canvas (4 Offices, 12+
-            Countries, 150+ People deployed): on desktop they sit side by
-            side, so the map keeps its size. */}
-        <div className="w-full space-y-3 lg:mr-[19px] lg:mt-[26px] lg:flex lg:w-auto lg:gap-[clamp(2rem,calc(4.2*var(--vw)),4.5rem)] lg:space-y-0">
+            Countries, 150+ People deployed): from 640px they sit side by
+            side (64 / 22px on tablets), so the map keeps its size. */}
+        <div className="w-full space-y-3 sm:flex sm:gap-10 sm:space-y-0 lg:mr-[19px] lg:mt-[26px] lg:flex lg:w-auto lg:gap-[clamp(2rem,calc(4.2*var(--vw)),4.5rem)] lg:space-y-0">
           {data.stats.map((line) => {
             const [number, ...label] = line.split(" ");
             return (
               <div key={line} className="font-light text-black">
                 <CountUp
                   value={number}
-                  className="block text-[96px] leading-[128px] lg:text-[clamp(3rem,min(calc(5.3*var(--vw)),calc(9*var(--svh))),5rem)] lg:leading-[1.25]"
+                  className="block text-[96px] leading-[128px] sm:text-[64px] sm:leading-[1.2] lg:text-[clamp(3rem,min(calc(5.3*var(--vw)),calc(9*var(--svh))),5rem)] lg:leading-[1.25]"
                 />
-                <p className="-mt-[18px] text-[30px] leading-[34.8px] lg:mt-0 lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] lg:leading-[1.16]">
+                <p className="-mt-[18px] text-[30px] leading-[34.8px] sm:mt-0 sm:text-[22px] sm:leading-[1.16] lg:mt-0 lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)] lg:leading-[1.16]">
                   {label.join(" ")}
                 </p>
               </div>
             );
           })}
         </div>
-      </div>
       </div>
     </section>
   );

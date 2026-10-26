@@ -943,3 +943,12 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
   }
 }
 
+
+/* The design team's Our Reach map (src/components/reach-map) names its fonts
+   'Aeonik Regular' and 'Aeonik Light'; here Aeonik is one family by weight,
+   so point its three font variables at the site's (as its README says). */
+.hll-reach .reach-map {
+  --reach-font: "Aeonik TRIAL", system-ui, sans-serif;
+  --reach-font-light: "Aeonik TRIAL", system-ui, sans-serif;
+  --reach-mono: var(--hll-font-functional);
+}

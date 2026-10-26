@@ -4,10 +4,9 @@ import { HomeHeading } from "@/components/marketing/home/primitives";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import { ServiceReveal } from "@/components/marketing/services/service-reveal";
-import { ReachMap } from "@/components/marketing/about/about-sections";
-import { aboutPage } from "@/data/about";
+import { ReachMapEmbed } from "@/components/marketing/about/reach-map-embed";
 import { contactPageContent } from "@/data/contact-page";
-import { mapAboutPage, mapContactPage } from "@/lib/payload/marketing-mappers";
+import { mapContactPage } from "@/lib/payload/marketing-mappers";
 import { getMarketingContent } from "@/lib/payload/queries";
 
 import { ContactForm } from "./contact-form";
@@ -16,15 +15,15 @@ import { ContactOffices } from "./contact-offices";
 async function loadContactData() {
   try {
     const marketing = await getMarketingContent();
-    return { content: mapContactPage(marketing, contactPageContent), reach: mapAboutPage(marketing, aboutPage).reach };
+    return { content: mapContactPage(marketing, contactPageContent) };
   } catch {
-    return { content: contactPageContent, reach: aboutPage.reach };
+    return { content: contactPageContent };
   }
 }
 
 /** Figma Desktop › Contact (1341:11841). */
 export async function ContactPage() {
-  const { content, reach } = await loadContactData();
+  const { content } = await loadContactData();
   const { getInTouch } = content;
 
   return (
@@ -61,8 +60,8 @@ export async function ContactPage() {
           </section>
 
           {/* "The same interactive map as the About page." */}
-          <div className="pt-[84px] lg:px-[20px] lg:pt-[clamp(5rem,calc(10.6*var(--vw)),10rem)]">
-            <ReachMap map={reach.map} pins={reach.pins} />
+          <div className="px-2 pt-[84px] lg:px-[20px] lg:pt-[clamp(5rem,calc(10.6*var(--vw)),10rem)]">
+            <ReachMapEmbed />
           </div>
 
           {/* Get in touch: book a call, or the office closest to you – an
