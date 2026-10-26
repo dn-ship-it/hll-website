@@ -258,8 +258,11 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
               </span>
             </a>
           ))}
-          {/* Lets the last card come to rest at x 74. */}
-          <span aria-hidden className="w-[calc(100%-327px)] shrink-0" />
+          {/* Lets the last card come to rest at x 74, in line with its name
+              (Hannan, 26 Oct: Ontology sat 64px right of its text). 100% is
+              the row's width inside its 74px padding, so the spacer needs
+              the screen less one card and one gap. */}
+          <span aria-hidden className="w-[calc(100%-263px)] shrink-0" />
         </div>
 
         <div className="ml-[74px] w-[253px]">
@@ -576,10 +579,10 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
 }
 
 /** Figma: "marquee runner displaying the clients logos (PNG or webp images)".
- *  Hannan, 24 Oct: the logos in black on white (HLL-logo-blocks), each fitted
- *  inside a white tile with a hairline edge; it keeps running under the
- *  pointer (QA H-27). Until logos are added in the CMS it runs eight grey
- *  slots. */
+ *  Hannan, 26 Oct: the logos float on the page background, with no tile or
+ *  edge, and run faster on phones, where smaller logos show more at a time.
+ *  It keeps running under the pointer (QA H-27). Until logos are added in the
+ *  CMS it runs eight grey slots. */
 export function OurClients({ data }: { data: HomePageContent["clients"] }) {
   const logos = data.logos.filter((item) => item.logo);
   const slots: (HomePageContent["clients"]["logos"][number] | null)[] = logos.length
@@ -592,13 +595,15 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
       {/* QA H-27: keeps running under the pointer. */}
-      <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_40s_linear_infinite]">
+      {/* Phones: 120px logos at about 90px a second; desktop keeps 220px at
+          about 63px a second. */}
+      <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_16s_linear_infinite] lg:[animation-duration:40s]">
         {[...slots, ...slots].map((item, n) => (
           <div
             key={n}
             aria-hidden={n >= slots.length}
-            className={`grid h-[165px] w-[220px] shrink-0 place-items-center overflow-hidden rounded-lg ${
-              item?.logo ? "border border-[#E4E4E4] bg-white" : "bg-[#D9D9D9]"
+            className={`grid h-[90px] w-[120px] shrink-0 place-items-center overflow-hidden lg:h-[165px] lg:w-[220px] ${
+              item?.logo ? "" : "rounded-lg bg-[#D9D9D9]"
             }`}
           >
             {item?.logo ? (
