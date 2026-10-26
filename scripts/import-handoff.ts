@@ -131,6 +131,18 @@ async function upload(payload: Payload, file: string, prefix: string, alt: strin
   return doc.id;
 }
 
+/**
+ * The small web copy of a handoff headshot (hs-<name>.png, 3–6 MB), if
+ * scripts/optimize-portraits.ts has made one (`portrait--hs-<name>`). A
+ * re-import used to put the full PNGs back on every service page (26 Oct).
+ */
+async function webPortrait(payload: Payload, file: string) {
+  const person = path.basename(file).match(/^(hs-[a-z-]+?)(?:-\d+)?\.(?:png|jpe?g|webp)$/)?.[1];
+  if (!person) return null;
+  const found = await payload.find({ collection: "media", where: { filename: { like: `portrait--${person}` } }, limit: 1, depth: 0 });
+  return found.docs[0]?.id ?? null;
+}
+
 /** As `upload`, but the file's public URL (for the artwork JSON). */
 async function uploadUrl(payload: Payload, file: string, prefix: string, alt: string) {
   const id = await upload(payload, file, prefix, alt);
@@ -659,7 +671,9 @@ async function importServices(payload: Payload, part: ServicePart = "all") {
       let portrait = null;
       if (hsFile && fs.existsSync(hsFile)) {
         const found = await payload.find({ collection: "media", where: { filename: { equals: `svc-${id}--${path.basename(hsFile)}` } }, limit: 1, depth: 0 });
-        if (found.docs[0]) portrait = found.docs[0].id;
+        const web = await webPortrait(payload, hsFile);
+        if (web) portrait = web;
+        else if (found.docs[0]) portrait = found.docs[0].id;
         else {
           const data = fs.readFileSync(hsFile);
           portrait = (
@@ -679,7 +693,10 @@ async function importServices(payload: Payload, part: ServicePart = "all") {
       const file = person.headshot ? path.join(root!, person.headshot) : null;
       q.name = person.name;
       q.role = person.role;
-      q.portrait = file && fs.existsSync(file) ? await upload(payload, file, `svc-${id}`, person.name) : null;
+      q.portrait =
+        file && fs.existsSync(file)
+          ? ((await webPortrait(payload, file)) ?? (await upload(payload, file, `svc-${id}`, person.name)))
+          : null;
       if (!q.portrait) report.push(`service ${id}: no photo for ${person.name} yet – upload it in the CMS`);
     }
 
