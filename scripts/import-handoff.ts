@@ -517,6 +517,8 @@ function serviceHrefFor(name: string) {
  */
 const SERVICE_ENGAGEMENTS: Record<string, string[]> = {
   "people-policy": ["fraud-model-recovery-government-tax-auth", "wataniya-monolith-to-microservices-archi", "docupet"],
+  // Hannan, 27 Oct.
+  applications: ["docupet", "wework", "lesielle"],
 };
 
 /** A service page's engagement cards: client, project, card artwork and link. */

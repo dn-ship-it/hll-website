@@ -85,11 +85,11 @@ export const OFFICES = [
 // With no photo on file a person
 // shows by name only. Locations given by Hannan, 2026-10-23; emails 2026-10-24.
 export const PEOPLE = {
-  hannan: { name: 'Hannan Hakim', role: 'Partner', photo: hannanPhoto, home: [], email: 'Hannan@hyperlycheelabs.com' },
+  hannan: { name: 'Hannan Hakim', role: 'Founding Partner', photo: hannanPhoto, home: [], email: 'Hannan@hyperlycheelabs.com' },
   nilesh: { name: 'Nilesh Nalnikar', role: 'Senior Partner', photo: nileshPhoto, home: ['north-america'], email: 'Nilesh@hyperlycheelabs.com' },
   advaith: { name: 'Advaith Mohan', role: 'Partner', photo: advaithPhoto, home: ['new-york'], email: 'Advaith@hyperlycheelabs.com' },
   arjun: { name: 'Arjun Pathni', role: 'Partner, Operations', photo: arjunPhoto, home: [], email: 'Arjun@hyperlycheelabs.com' },
-  rima: { name: 'Rima Sarkar', role: 'Associate Partner', photo: rimaPhoto, home: [], email: 'Rima@hyperlycheelabs.com' },
+  rima: { name: 'Rima Sarkar', role: 'Head of Growth', photo: rimaPhoto, home: [], email: 'Rima@hyperlycheelabs.com' },
   vidya: { name: 'Vidya Mohan', role: 'Partner', photo: null, home: ['india'], email: 'Vidya@hyperlycheelabs.com' },
   santosh: { name: 'Santosh Maruwada', role: 'Associate Partner', photo: null, home: ['singapore'], email: 'Santosh@hyperlycheelabs.com' },
   tej: { name: 'Tej Haldule', role: null, photo: tejPhoto, home: [], email: 'Tej@hyperlycheelabs.com' },
