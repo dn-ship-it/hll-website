@@ -12,19 +12,22 @@ import { homePageContent } from "@/data/home";
 import { getCmsImageUrl, mapHomePage } from "@/lib/payload/marketing-mappers";
 
 /** "Line one. / Line two." with the design's coloured full stop; undefined
- *  keeps the component's own headline. */
+ *  keeps the component's own headline. A first line that doesn't end its
+ *  sentence ("…move faster,") runs on into the second instead of breaking,
+ *  which left "faster," alone on a line (Hannan, 28 Oct). */
 function promiseHeadline(line1?: string | null, line2?: string | null) {
   const first = line1?.trim();
   if (!first) return undefined;
   const stop = first.endsWith(".");
+  const second = line2?.trim();
   return (
     <>
       {stop ? first.slice(0, -1) : first}
       {stop ? <span className="our-promise-question-mark">.</span> : null}
-      {line2?.trim() ? (
+      {second ? (
         <>
-          <br />
-          {line2.trim()}
+          {stop ? <br /> : " "}
+          {second}
         </>
       ) : null}
     </>

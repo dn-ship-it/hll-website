@@ -6,9 +6,8 @@ import type { ExpertVoice } from "@/data/services/types";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
 /** How long each testimonial shows before the next one (the timer bar).
- *  Hannan (canvas, 25 Oct): "we can reduce the expert voice section down to
- *  6 seconds". */
-const SLIDE_MS = 6000;
+ *  Hannan's tracker (CAP-002, 28 Oct): 5 seconds. */
+const SLIDE_MS = 5000;
 /** A horizontal drag this long (px) turns to the next or previous slide. */
 const SWIPE_PX = 40;
 

@@ -635,7 +635,8 @@ canvas {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  width: min(calc(90*var(--vw)), 900px);
+  /* Hannan, 28 Oct: the line runs wider across the screen. */
+  width: min(calc(90*var(--vw)), 1180px);
   text-align: center;
   color: #1a1a1a;
   /* Purely decorative — never block the page underneath. */
@@ -656,6 +657,8 @@ canvas {
   font-weight: 300;
   font-size: clamp(28px, calc(4.23*var(--vw)), 64px);
   line-height: 1.16;
+  /* Even lines, so no word is left alone on the last one. */
+  text-wrap: balance;
 }
 
 .our-promise-question-mark {

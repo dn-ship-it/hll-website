@@ -20,18 +20,25 @@ function Stat({ value }: { value: string }) {
   const match = value.match(/^(.*?\d\+?)\s*(%|[A-Za-z]{2,}.*)$/);
   const main = match ? match[1] : value;
   const unit = match ? match[2] : "";
+  // Hannan, 28 Oct: long figures ("16% → 85%", "$400 million+") ran over the
+  // card's edge or wrapped. Anything wider than about five display-size
+  // characters scales down so the figure keeps to one line.
+  const width = main.length + unit.length * 0.55;
+  const scale = Math.min(1, 5 / width);
 
   return (
     // QA C-23: 64px on phones (Figma's 104px reads far too large on a real
     // phone), the size the engagement pages' outcome figures use.
     <p className="text-[64px] font-light leading-[1.16] text-black lg:text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)]">
-      {/* Figma: "Number counter". */}
-      <CountUp value={main} />
-      {unit ? (
-        <span className="text-[0.55em] tracking-normal">
-          {unit === "%" ? unit : ` ${unit}`}
-        </span>
-      ) : null}
+      <span className="whitespace-nowrap" style={scale < 1 ? { fontSize: `${scale}em` } : undefined}>
+        {/* Figma: "Number counter". */}
+        <CountUp value={main} />
+        {unit ? (
+          <span className="text-[0.55em] tracking-normal">
+            {unit === "%" ? unit : ` ${unit}`}
+          </span>
+        ) : null}
+      </span>
     </p>
   );
 }
