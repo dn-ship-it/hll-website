@@ -143,6 +143,17 @@ async function webPortrait(payload: Payload, file: string) {
   return found.docs[0]?.id ?? null;
 }
 
+/**
+ * A person's Team page photo (`team-photo--<name>`, scripts/import-team-photos.ts)
+ * for a quote whose headshot isn't in the handoff. Lalith Kumar's quote on
+ * Trust & Governance showed no photo (Hannan's tracker CAP-003, 28 Oct).
+ */
+async function teamPhoto(payload: Payload, name: string) {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const found = await payload.find({ collection: "media", where: { filename: { like: `team-photo--${slug}` } }, limit: 1, depth: 0 });
+  return found.docs[0]?.id ?? null;
+}
+
 /** As `upload`, but the file's public URL (for the artwork JSON). */
 async function uploadUrl(payload: Payload, file: string, prefix: string, alt: string) {
   const id = await upload(payload, file, prefix, alt);
@@ -698,7 +709,7 @@ async function importServices(payload: Payload, part: ServicePart = "all") {
       q.portrait =
         file && fs.existsSync(file)
           ? ((await webPortrait(payload, file)) ?? (await upload(payload, file, `svc-${id}`, person.name)))
-          : null;
+          : await teamPhoto(payload, person.name);
       if (!q.portrait) report.push(`service ${id}: no photo for ${person.name} yet – upload it in the CMS`);
     }
 

@@ -98,6 +98,11 @@ export function SectionSnap() {
     const snap = () => {
       if (touching || gliding || !userScrolled || direction === 0) return;
       userScrolled = false;
+      // Hannan's tracker (APP-004, 28 Oct): in the footer, a small scroll up
+      // pulled the page back to the last section (Related Capabilities). Once
+      // the footer fills more than half the screen, scrolling is left alone.
+      const main = document.querySelector("main");
+      if (main && main.getBoundingClientRect().bottom < window.innerHeight / 2) return;
       const top = navHeight();
       const reach = window.innerHeight * (desktop.matches ? REACH : REACH_PHONE);
       let best: { el: HTMLElement; offset: number } | null = null;

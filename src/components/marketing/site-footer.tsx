@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { SERVICE_NAMES, SERVICE_SLUGS } from "@/components/hll/variants";
 import { DEFAULT_INDUSTRY_MENU, type IndustryMenuGroup } from "@/data/industry-menu";
 import type { SiteNavItem } from "@/lib/payload/marketing-mappers";
 
@@ -29,7 +30,34 @@ const DEFAULT_FOOTER_SERVICES = [
   "Data & Analytics",
   "AI",
   "Ontology",
+  "Cloud",
 ];
+
+/** A capability's page (Applications → /services/applications), if it has one. */
+function serviceHref(label: string) {
+  const variant = (Object.keys(SERVICE_NAMES) as (keyof typeof SERVICE_NAMES)[]).find(
+    (key) => SERVICE_NAMES[key] === label,
+  );
+  return variant ? `/services/${SERVICE_SLUGS[variant]}` : null;
+}
+
+/** The given list plus any capability it leaves out (the CMS list had no Cloud). */
+const withEveryService = (labels: string[]) => [
+  ...labels,
+  ...Object.values(SERVICE_NAMES).filter((name) => !labels.includes(name)),
+];
+
+/** Hannan's tracker (FTR-001, 28 Oct): every capability and industry with a
+ *  page links to it; a name without one stays plain text. */
+function FooterItem({ label, href }: { label: string; href: string | null }) {
+  return href ? (
+    <Link href={href} className="hover:text-black">
+      {label}
+    </Link>
+  ) : (
+    <>{label}</>
+  );
+}
 
 // Figma lists industries as groups over two columns, three groups in each;
 // the second column has no "industry" heading, so it starts one line lower.
@@ -70,6 +98,7 @@ export function SiteFooter({
   ctaStill = "/assets/footer/cta-still.webp",
   industries = DEFAULT_INDUSTRY_MENU,
 }: SiteFooterProps) {
+  services = withEveryService(services);
   const emailLink =
     socialLinks.find((s) => s.platform === "email")?.url ??
     "mailto:Rima@hyperlycheelabs.com";
@@ -141,7 +170,9 @@ export function SiteFooter({
           <ul className={`${LIST} text-[var(--hll-dark-grey)]`}>
             <li className="text-[var(--hll-mid-grey)]">Capabilities</li>
             {services.map((label) => (
-              <li key={label}>{label}</li>
+              <li key={label}>
+                <FooterItem label={label} href={serviceHref(label)} />
+              </li>
             ))}
           </ul>
 
@@ -160,7 +191,9 @@ export function SiteFooter({
                 >
                   <li className="text-[var(--hll-mid-grey)]">{group.title}</li>
                   {group.items.map((item) => (
-                    <li key={item.label}>{item.label}</li>
+                    <li key={item.label}>
+                      <FooterItem label={item.label} href={item.href} />
+                    </li>
                   ))}
                 </ul>
               ))}
@@ -245,7 +278,7 @@ function MobileFooterBody({
             </li>
             {services.map((label) => (
               <li key={label} className={MOBILE_ITEM}>
-                {label}
+                <FooterItem label={label} href={serviceHref(label)} />
               </li>
             ))}
           </ul>
@@ -260,7 +293,7 @@ function MobileFooterBody({
               </li>
               {group.items.map((item) => (
                 <li key={item.label} className={MOBILE_ITEM}>
-                  {item.label}
+                  <FooterItem label={item.label} href={item.href} />
                 </li>
               ))}
             </ul>
