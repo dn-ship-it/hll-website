@@ -29,7 +29,10 @@ const MOBILE_SLOTS = [
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
-/** How long each stage holds before the carousel turns on its own. */
+/** How long a stage without a motion piece holds before the carousel turns
+ *  on its own. A stage with one holds for the video's length (Hannan's
+ *  tracker HOME-009, 28 Oct: Shape runs 12s and Evolve 8.5s, and turning at
+ *  6s cut them off). */
 const STAGE_MS = 6000;
 
 /**
@@ -38,10 +41,12 @@ const STAGE_MS = 6000;
  * starts it over; `paused` holds it where it is.
  */
 function StageTimer({
+  ms,
   paused,
   onDone,
   className = "",
 }: {
+  ms: number;
   paused: boolean;
   onDone: () => void;
   className?: string;
@@ -54,7 +59,7 @@ function StageTimer({
       <span
         className="block h-full bg-[var(--hll-dark-grey)]"
         style={{
-          animation: `voice-timer ${STAGE_MS}ms linear both`,
+          animation: `voice-timer ${ms}ms linear both`,
           animationPlayState: paused ? "paused" : "running",
         }}
         onAnimationEnd={onDone}
@@ -175,10 +180,15 @@ export function HowWeWork({
     }
     return () => observer.disconnect();
   }, []);
+  // Each motion piece's length, by stage, once its video has loaded.
+  const [videoMs, setVideoMs] = useState<Record<number, number>>({});
+  const onVideoMs = (index: number) => (ms: number) =>
+    setVideoMs((current) => (current[index] === ms ? current : { ...current, [index]: ms }));
   const timer = (className?: string) =>
     autoplay ? (
       <StageTimer
         key={active}
+        ms={videoMs[active] ?? STAGE_MS}
         paused={!inView || held || focused}
         onDone={() => go(1)}
         className={className}
@@ -217,7 +227,7 @@ export function HowWeWork({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <StepMedia step={step} playing={isActive} />
+              <StepMedia step={step} playing={isActive} onVideoMs={onVideoMs(index)} />
               {isActive ? (
                 <>
                   <span className="mt-2 block text-[24px] leading-[27.8px] text-black">
@@ -272,7 +282,7 @@ export function HowWeWork({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <StepMedia step={step} playing={isActive} />
+              <StepMedia step={step} playing={isActive} onVideoMs={onVideoMs(index)} />
               <span className="mt-[6px] block text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
                 {step.title}
               </span>
@@ -388,12 +398,20 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
  * may autoplay; reduced motion shows the still only. Only the card in the
  * centre plays; the two either side hold on their first frame.
  */
-function StepMedia({ step, playing }: { step: HomeStep; playing: boolean }) {
+function StepMedia({
+  step,
+  playing,
+  onVideoMs,
+}: {
+  step: HomeStep;
+  playing: boolean;
+  onVideoMs?: (ms: number) => void;
+}) {
   return (
     <span className="relative block aspect-square w-full overflow-hidden rounded-lg">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={step.image} alt="" draggable={false} className="absolute inset-0 size-full object-cover" />
-      {step.video ? <NearVideo src={step.video} playing={playing} /> : null}
+      {step.video ? <NearVideo src={step.video} playing={playing} onVideoMs={onVideoMs} /> : null}
     </span>
   );
 }
@@ -404,7 +422,15 @@ function StepMedia({ step, playing }: { step: HomeStep; playing: boolean }) {
  * `playing` and on screen, and otherwise waits on its first frame. No poster:
  * the still under it shows until that first frame loads.
  */
-function NearVideo({ src, playing }: { src: string; playing: boolean }) {
+function NearVideo({
+  src,
+  playing,
+  onVideoMs,
+}: {
+  src: string;
+  playing: boolean;
+  onVideoMs?: (ms: number) => void;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -440,6 +466,10 @@ function NearVideo({ src, playing }: { src: string; playing: boolean }) {
       loop
       playsInline
       preload={near ? "auto" : "none"}
+      onLoadedMetadata={(e) => {
+        const seconds = e.currentTarget.duration;
+        if (Number.isFinite(seconds) && seconds > 0) onVideoMs?.(Math.round(seconds * 1000));
+      }}
       aria-hidden
       className="absolute inset-0 size-full object-cover motion-reduce:hidden"
     />
