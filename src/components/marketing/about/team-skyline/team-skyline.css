@@ -1,0 +1,78 @@
+/* team-skyline.css — HLL Careers pill skyline. Light mode only. */
+.hll-skyline {
+  position: relative;
+  width: 100%;
+  --gap: 10px;
+  --cols: 12;
+  --row-h: 400px;
+  --pill-w: 110px;
+}
+.hll-skyline__track {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-auto-rows: var(--row-h);
+  column-gap: var(--gap);
+  row-gap: calc(var(--gap) * 2.4);
+  align-items: end;
+}
+/* phones: one swipeable row */
+.hll-skyline[data-mode="scroll"] .hll-skyline__track {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap);
+  height: var(--row-h);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+          mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+.hll-skyline[data-mode="scroll"] .hll-skyline__track::-webkit-scrollbar { display: none; }
+.hll-skyline[data-mode="scroll"] .hll-skyline__pill { flex: 0 0 var(--pill-w); scroll-snap-align: start; }
+
+.hll-skyline__pill {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--fallback, #d9d6f0);
+  isolation: isolate;
+  transform: translateZ(0); /* keeps the rounded clip on Safari */
+  outline: none;
+}
+.hll-skyline__pill canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+.hll-skyline.is-static .hll-skyline__pill canvas { display: none; }
+.hll-skyline__pill img {
+  position: absolute;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.hll-skyline__pill figcaption {
+  position: absolute;
+  left: 50%; bottom: 6%;
+  transform: translate(-50%, 8px);
+  opacity: 0;
+  max-width: 86%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, .9);
+  color: #1A1A1A;
+  font: 400 11px/1.2 "Sometype Mono", ui-monospace, monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  transition: opacity .3s ease, transform .3s ease;
+}
+.hll-skyline__pill:hover figcaption,
+.hll-skyline__pill:focus-visible figcaption { opacity: 1; transform: translate(-50%, 0); }
+.hll-skyline__pill:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #A28DD7; }
+@media (prefers-reduced-motion: reduce) {
+  .hll-skyline__pill figcaption { transition: none; }
+}

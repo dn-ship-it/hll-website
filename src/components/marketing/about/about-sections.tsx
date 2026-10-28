@@ -9,6 +9,7 @@ import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
 import { ReachMapEmbed } from "./reach-map-embed";
+import { TeamSkyline } from "./team-skyline/team-skyline";
 
 /** Figma "HLL": 198 × 264 portrait from 35% across, quote beside it.
  *  Mobile: a hairline, then a 245 × 253 portrait at x 79 with the quote
@@ -157,12 +158,9 @@ export function AboutCareersSection({
   return (
     <section className={`pb-[84px] ${className} ${SERVICE_GUTTER}`}>
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={data.image}
-        alt=""
-        className="-mx-3 mt-8 aspect-[386/194] w-[calc(100%+24px)] max-w-none rounded-[6px] object-cover lg:mx-0 lg:ml-[24.5%] lg:mt-[84px] lg:aspect-[1096/551] lg:w-[75.5%] lg:rounded-none"
-      />
+      {/* Hannan, 28 Oct: the team skyline in place of the still image. It sets
+          its own height from its width. */}
+      <TeamSkyline className="mt-8 lg:ml-[24.5%] lg:mt-[84px] lg:!w-[75.5%]" />
 
       {/* Mobile: the numbers at x 51, the points at x 75, 18px apart. */}
       <div className="mt-8 grid gap-[37px] lg:ml-[41.7%] lg:mt-[67px] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
