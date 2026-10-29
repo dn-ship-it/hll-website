@@ -10,7 +10,7 @@
 // `gradient`/`direction`/`radius`/`glow` exist as explicit one-off overrides,
 // not a substitute for adding a real variant.
 import Link from "next/link";
-import { useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ElementType, type HTMLAttributes, type ReactNode } from "react";
 
 import type { HLLVariant } from "../variants";
 
@@ -75,6 +75,8 @@ export type HLLButtonProps = {
   glow?: number;
   animated?: boolean;
   size?: LightSize;
+  /** Runs the shader only while hovered or held (see useLightComponent). */
+  shaderOnHover?: boolean;
   /** Renders a Next.js Link instead of a button. */
   href?: string;
   as?: ElementType;
@@ -85,6 +87,9 @@ export type HLLButtonProps = {
   className?: string;
   style?: CSSProperties;
   children: ReactNode;
+} & Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "style" | "onClick"> & {
+  /** e.g. data-held="true" keeps the hover glow on (the nav's open menu). */
+  [data: `data-${string}`]: string | undefined;
 };
 
 /**
@@ -103,6 +108,7 @@ export function HLLButton({
   glow,
   animated = true,
   size = "md",
+  shaderOnHover = false,
   href,
   as,
   type,
@@ -121,6 +127,7 @@ export function HLLButton({
     ref,
     () => buildDefinition(variant, { gradient, direction, radius, glow, animated, size }),
     [variant, gradient?.join(","), direction, radius, glow, animated, size],
+    { onHover: shaderOnHover },
   );
 
   const isInert = disabled || isLoading;

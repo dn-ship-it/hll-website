@@ -15,12 +15,18 @@ import { useEffect, type RefObject } from "react";
  *
  * `deps` should carry everything that changes the definition, so a variant
  * change rebuilds the effect the same way a remount would.
+ *
+ * `onHover` mounts it only while the host is hovered or marked
+ * data-held="true", and releases it shortly after: the five Nav Bar buttons
+ * are always on screen, and holding a context each pushed a busy page (a
+ * capability page, 16 contexts) past the limit.
  */
 export function useLightComponent(
   ref: RefObject<HTMLElement | null>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildDefinition: () => any,
   deps: unknown[],
+  { onHover = false }: { onHover?: boolean } = {},
 ) {
   useEffect(() => {
     const host = ref.current;
@@ -32,6 +38,8 @@ export function useLightComponent(
     // plain CSS (see .hll-outline-button in globals.css).
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
       return undefined;
+
+    if (onHover) return mountOnHover(host, buildDefinition);
 
     let fx: { dispose: () => void } | null = null;
     let onScreen = false;
@@ -73,4 +81,47 @@ export function useLightComponent(
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mountOnHover(host: HTMLElement, buildDefinition: () => any) {
+  let fx: { dispose: () => void; hovering: boolean } | null = null;
+  let cancelled = false;
+  let releaseTimer = 0;
+  const wanted = () => host.matches(":hover") || host.dataset.held === "true";
+
+  const mount = () => {
+    window.clearTimeout(releaseTimer);
+    if (fx) return;
+    import("./lightfx-runtime").then(({ LightComponent }) => {
+      if (cancelled || fx || !wanted()) return;
+      fx = new LightComponent(host, buildDefinition());
+      // The pointer is already over it, so its own pointerenter won't come.
+      fx.hovering = host.matches(":hover");
+    });
+  };
+  // Long enough for the glow to fade out before the canvas goes.
+  const release = () => {
+    window.clearTimeout(releaseTimer);
+    releaseTimer = window.setTimeout(() => {
+      if (wanted()) return;
+      fx?.dispose();
+      fx = null;
+    }, 800);
+  };
+  const onHeld = () => (host.dataset.held === "true" ? mount() : release());
+
+  host.addEventListener("pointerenter", mount);
+  host.addEventListener("pointerleave", release);
+  const held = new MutationObserver(onHeld);
+  held.observe(host, { attributes: true, attributeFilter: ["data-held"] });
+
+  return () => {
+    cancelled = true;
+    window.clearTimeout(releaseTimer);
+    host.removeEventListener("pointerenter", mount);
+    host.removeEventListener("pointerleave", release);
+    held.disconnect();
+    fx?.dispose();
+  };
 }

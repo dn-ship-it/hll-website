@@ -829,7 +829,10 @@ export class LightComponent {
     const u = this.uniforms;
     const speed = inter.speed || 6;
 
-    this.hoverTarget = inter.hover && this.hovering ? 1 : 0;
+    // A host marked data-held="true" keeps its hover state with the pointer
+    // elsewhere: the nav button whose menu is open (HLL site addition).
+    const held = this.el.dataset.held === 'true';
+    this.hoverTarget = inter.hover && (this.hovering || held) ? 1 : 0;
     this.hoverT = damp(this.hoverT, this.hoverTarget, speed, dt);
     this.pulse = Math.max(this.pulse - dt * 1.1, 0);
 

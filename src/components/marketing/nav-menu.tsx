@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Shader, TRANSPARENT_SETTINGS, VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
+import { HLLButton, Shader, TRANSPARENT_SETTINGS, VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import { SERVICE_LABELS } from "@/data/engagements";
 import { serviceHref } from "@/components/hll/variants";
@@ -307,7 +307,33 @@ export function NavMenu({
         {nav.map((item) => {
           const variant = VARIANT_BY_HREF[item.href];
           const active = open === variant;
-          const colors = variant ? VARIANT_GRADIENTS[variant].colors : null;
+          // HLL-UI-Demo's HLLButton (Satyam, 29 Oct): the palette's shader
+          // blooms on hover and follows the cursor, as in the demo's nav.
+          if (variant) {
+            return (
+              <HLLButton
+                key={item.href}
+                href={NAV_TARGET[item.href] ?? item.href}
+                variant={variant}
+                className="hll-button--nav"
+                shaderOnHover
+                aria-expanded={active}
+                data-held={active ? "true" : undefined}
+                onPointerEnter={() => show(variant)}
+                onPointerLeave={hide}
+                onFocus={() => show(variant)}
+                style={{
+                  ...NAV_FONT,
+                  "--hll-label-color": "#949494",
+                  "--hll-label-hover-color": "#FAFAFA",
+                  "--hll-nav-gradient": `linear-gradient(90deg, ${VARIANT_GRADIENTS[variant].colors.join(", ")})`,
+                } as CSSProperties}
+              >
+                {item.label}
+              </HLLButton>
+            );
+          }
+          // A link without a palette: just its label.
           const triggerProps = {
             "aria-expanded": variant ? active : undefined,
             onPointerEnter: () => variant && show(variant),
@@ -319,20 +345,6 @@ export function NavMenu({
           };
           const content = (
             <>
-              {/* Figma: the button's palette as a gradient fill under a 12px
-                  layer blur (CSS blur 6px renders the same softness), the
-                  label turning white over it. */}
-              {colors ? (
-                <span
-                  aria-hidden
-                  className={`absolute inset-0 rounded-[4px] blur-[6px] transition-opacity duration-300 ${
-                    active ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                  }`}
-                  style={{
-                    background: `linear-gradient(90deg, ${colors.join(", ")})`,
-                  }}
-                />
-              ) : null}
               <span
                 className={`relative transition-colors duration-300 ${
                   active

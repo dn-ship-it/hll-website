@@ -359,6 +359,39 @@ canvas {
   transition: opacity 0.3s ease;
 }
 
+/* Nav Bar buttons: no fill at rest, only the label, as in Figma's Nav Bar;
+   the shader blooms on hover and stays on while the button's menu is open
+   (data-held). */
+.hll-button.hll-button--nav {
+  background: transparent;
+}
+
+.hll-button--nav[data-held="true"] canvas {
+  opacity: 1;
+}
+
+.hll-button--nav[data-held="true"] .hll-button__label {
+  color: var(--hll-label-hover-color);
+}
+
+/* No shader (no mouse, or no WebGL): the palette as a blurred gradient
+   instead, so the white label never sits on nothing. */
+.hll-button--nav:not(:has(canvas))::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: var(--hll-nav-gradient);
+  filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hll-button--nav:not(:has(canvas)):hover::before,
+.hll-button--nav:not(:has(canvas))[data-held="true"]::before {
+  opacity: 1;
+}
+
 /* A floating CTA that should answer the pointer at once (QA H-28). */
 .hll-button--quick,
 .hll-button--quick canvas {
