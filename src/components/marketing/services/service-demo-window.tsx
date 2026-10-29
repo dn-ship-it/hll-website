@@ -17,6 +17,9 @@ type ServiceDemoWindowProps = {
    * of the service" — drawn over `background`, which stays as the fallback.
    */
   ripple?: RippleVariant;
+  /** A capability demo block: on phones it needs a tall window for its
+   *  portrait layout (the handoff's own phone size). */
+  tall?: boolean;
 };
 
 function pickDemo(config: ServiceDemoConfig, activeTabKey: string) {
@@ -39,6 +42,7 @@ export function ServiceDemoWindow({
   activeTabKey,
   background,
   ripple,
+  tall = false,
 }: ServiceDemoWindowProps) {
   const safeConfig = useMemo(
     () => ({
@@ -94,8 +98,9 @@ export function ServiceDemoWindow({
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
   // Figma Services mobile: a 362 × 244 frame around a 337 × 215 window.
-  const iframeHeight =
-    "h-[215px] min-h-[215px] lg:h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] lg:min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]";
+  const iframeHeight = `${
+    tall ? "h-[min(calc(100svh-96px),820px)] min-h-[560px]" : "h-[215px] min-h-[215px]"
+  } lg:h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] lg:min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]`;
 
   return (
     <div

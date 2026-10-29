@@ -8,6 +8,7 @@ import {
   SERVICE_TO_RIPPLE,
   type ServiceVariant,
 } from "@/components/hll";
+import { SERVICE_SLUGS } from "@/components/hll/variants";
 import type { ServicePageData } from "@/data/services/types";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 
@@ -46,6 +47,12 @@ export function ServiceHero({
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const rippleVariant = SERVICE_TO_RIPPLE[variant] ?? "hll-foundation";
+  // Hannan, 29 Oct: the design team's demo blocks (hll-capability-demos-v1)
+  // in each page's demo window, built into public/capability-demos.
+  const storyDemo: ServiceDemoConfig = {
+    ...demo,
+    items: [{ tabKey: activeTab, htmlUrl: `/capability-demos/embed.html#/embed/${SERVICE_SLUGS[variant]}` }],
+  };
   const theme = getServiceTheme(variant);
 
   return (
@@ -116,7 +123,8 @@ export function ServiceHero({
         </div>
 
         <ServiceDemoWindow
-          config={demo}
+          config={storyDemo}
+          tall
           activeTabKey={activeTab}
           background={theme.demoBackground}
           ripple={rippleVariant}
