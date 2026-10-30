@@ -6,8 +6,8 @@
  *
  *   npx payload run scripts/shuffle-expert-voices.ts
  *
- * Pages not listed keep their people. Cloud waits on Hannan (CLA-001 names a
- * "Claude" page), and Applications' second voice ("Hanasri") isn't on the
+ * Pages not listed keep their people. CLA-001 ("Claude") is Cloud, Hannan
+ * confirmed on 30 Oct. Applications' second voice ("Hanasri") isn't on the
  * team list yet, so Anjali speaks twice there for now.
  */
 import { getPayload } from "payload";
@@ -30,6 +30,7 @@ const PAGES: Record<string, Person[]> = {
   ai: ["hannan", "advaith", "nilesh"],
   ontology: ["advaith", "hannan", "nilesh"],
   applications: ["anjali", "chinmay", "anjali"],
+  cloud: ["chinmay", "lalith", "nilesh"],
   // Nilesh also opened Data & Analytics.
   "trust-governance": ["lalith", "nilesh", "hannan"],
 };
