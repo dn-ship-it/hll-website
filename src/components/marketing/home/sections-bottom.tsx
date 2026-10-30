@@ -365,28 +365,20 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
       style={{ background: `#F26A2E url(${data.background}) center / cover` }}
     >
       <HomeHeading eyebrow={data.eyebrow} title={data.title} tone="dark" />
-      {/* Edge to edge within the gutter, in line with the heading. */}
-      <div
-        aria-label="Demo window"
-        role={data.demoVideo ? undefined : "img"}
-        className="relative mt-9 grid aspect-[312/238] w-full place-items-center overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mt-[60px] lg:aspect-[1171/658] lg:rounded-lg"
-      >
-        {data.demoVideo ? (
-          <video
-            src={data.demoVideo}
-            poster={data.demoImage ?? undefined}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 size-full object-cover"
-          />
-        ) : data.demoImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={data.demoImage} alt="" className="absolute inset-0 size-full object-cover" />
-        ) : (
-          <span className="text-[12px] uppercase leading-none tracking-[0.25em] text-black">Demo window</span>
-        )}
+      {/* Hannan's Ports demo (Ports-Inside-the-Lab-handover, 30 Oct), one
+          self-contained file in public/lab. Figma's window: 1171 × 658 centred
+          in the 1512 frame, never taller than the screen leaves (HOME-013,
+          HOME-015: it ran edge to edge and past a 13" screen). Phones show
+          the demo's opening slide in the 312 × 238 slot; its Start button
+          goes full screen. */}
+      <div className="relative mt-9 aspect-[312/238] w-full overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mx-auto lg:mt-[60px] lg:aspect-[1171/658] lg:w-[min(calc(77.45*var(--vw)),calc((100*var(--vh)-160px)*1171/658))] lg:rounded-lg">
+        <iframe
+          src="/lab/ports.html"
+          title="Ports: interactive demo"
+          allow="fullscreen"
+          loading="lazy"
+          className="absolute inset-0 size-full border-0"
+        />
       </div>
     </section>
   );
