@@ -5,11 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Aeonik is the Figma type family for every style except Functional (Sometype
-   Mono). The files already shipped in public/impact/fonts but were never
-   declared, so every "Aeonik TRIAL" reference fell back to Helvetica/Arial. */
+   Mono): HLL's licensed web fonts (CoType, Hannan 30 Oct). The family keeps
+   the name "Aeonik TRIAL" that the components already ask for. */
 @font-face {
   font-family: "Aeonik TRIAL";
-  src: url("/impact/fonts/Aeonik-Light.otf") format("opentype");
+  src: url("/fonts/aeonik/aeonik-light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -17,7 +17,7 @@
 
 @font-face {
   font-family: "Aeonik TRIAL";
-  src: url("/impact/fonts/Aeonik-Regular.otf") format("opentype");
+  src: url("/fonts/aeonik/aeonik-regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -25,7 +25,7 @@
 
 @font-face {
   font-family: "Aeonik TRIAL";
-  src: url("/impact/fonts/Aeonik-Medium.otf") format("opentype");
+  src: url("/fonts/aeonik/aeonik-medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
