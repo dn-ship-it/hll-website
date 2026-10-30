@@ -4,12 +4,16 @@
  * names and images need to be shuffled", and no two pages should open on the
  * same person). Each quote keeps its words; only who says it changes.
  *
- *   npx payload run scripts/shuffle-expert-voices.ts
+ *   npx payload run scripts/shuffle-expert-voices.ts -- [photo folder]
  *
  * Pages not listed keep their people. CLA-001 ("Claude") is Cloud, Hannan
- * confirmed on 30 Oct. Applications' second voice ("Hanasri") isn't on the
- * team list yet, so Anjali speaks twice there for now.
+ * confirmed on 30 Oct. Applications' "Hanasri" is Dhanashree (Hannan, 30 Oct).
+ * A photo not yet in the CMS is uploaded from `<photo folder>/<photo>.webp`
+ * (Dhanashree's comes from the team grid zip, like Lalith's).
  */
+import fs from "node:fs";
+import path from "node:path";
+
 import { getPayload } from "payload";
 
 import config from "@payload-config";
@@ -21,6 +25,7 @@ const PEOPLE = {
   anjali: { name: "Anjali Darhba", role: "Consulting Partner, Design", photo: "portrait--hs-anjali-darhba" },
   chinmay: { name: "Chinmay Chandgude", role: "Partner", photo: "portrait--hs-chinmay-chandgude" },
   lalith: { name: "Lalith Kumar", role: "Senior Solution Architect", photo: "team-photo--lalith-kumar" },
+  dhanashree: { name: "Dhanashree Nawale", role: "Principal Software Engineer", photo: "team-photo--dhanashree" },
 } as const;
 type Person = keyof typeof PEOPLE;
 
@@ -29,22 +34,35 @@ const PAGES: Record<string, Person[]> = {
   "data-analytics": ["nilesh", "hannan", "advaith"],
   ai: ["hannan", "advaith", "nilesh"],
   ontology: ["advaith", "hannan", "nilesh"],
-  applications: ["anjali", "chinmay", "anjali"],
+  applications: ["anjali", "dhanashree", "chinmay"],
   cloud: ["chinmay", "lalith", "nilesh"],
   // Nilesh also opened Data & Analytics.
   "trust-governance": ["lalith", "nilesh", "hannan"],
 };
+
+const photoDir = process.argv.slice(2).find((a) => a !== "--" && !a.startsWith("--"));
 
 const payload = await getPayload({ config });
 
 const photoIds = new Map<string, number | string>();
 for (const person of Object.values(PEOPLE)) {
   const found = await payload.find({ collection: "media", where: { filename: { like: person.photo } }, limit: 1, depth: 0 });
-  if (!found.docs[0]) {
+  if (found.docs[0]) {
+    photoIds.set(person.photo, found.docs[0].id);
+    continue;
+  }
+  const src = photoDir && path.join(photoDir, `${person.photo}.webp`);
+  if (!src || !fs.existsSync(src)) {
     console.error(`no photo ${person.photo}`);
     process.exit(1);
   }
-  photoIds.set(person.photo, found.docs[0].id);
+  const created = await payload.create({
+    collection: "media",
+    data: { alt: person.name, mediaType: "image" },
+    file: { data: fs.readFileSync(src), name: `${person.photo}.webp`, mimetype: "image/webp", size: fs.statSync(src).size },
+  });
+  console.log(`uploaded ${person.photo}`);
+  photoIds.set(person.photo, created.id);
 }
 
 for (const [slug, people] of Object.entries(PAGES)) {
