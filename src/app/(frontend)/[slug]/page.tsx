@@ -22,6 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+// Rendered on first visit, then served from the cache (it rendered on every
+// visit before, ~0.6s). CMS changes refresh it through revalidatePath.
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function PageRoute({ params }: Props) {
   const { slug } = await params;
   const [page, settings] = await Promise.all([getPageBySlug(slug), getSiteSettings()]);
