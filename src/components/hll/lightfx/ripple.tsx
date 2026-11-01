@@ -63,12 +63,14 @@ function sketch(
     // One pixel per CSS pixel. p5 defaults to the device's full ratio: on a
     // Retina laptop (2x) four times the fragment work, on a 3x phone nine,
     // for a soft gradient that looks the same at 1x (performance, 24 Oct: the
-    // site lagged on the client's MacBook).
-    p.pixelDensity(1);
+    // site lagged on the client's MacBook). Set after createCanvas: p5 2
+    // resets the density when it makes the canvas, so set before it, the
+    // canvas still rendered at 2x (performance, 1 Nov).
     // 30 frames a second: the ripple drifts slowly, so 60 only doubled the
     // full-window GPU work (performance, 24 Oct).
     p.frameRate(30);
     p.createCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom(), p.WEBGL);
+    p.pixelDensity(1);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, RIPPLE_FRAG_SRC);
   };

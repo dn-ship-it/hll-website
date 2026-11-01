@@ -108,10 +108,11 @@ function sketch(p: any, refs: SketchRefs, scrollTrigger: () => number) {
 
   p.setup = () => {
     // 1x for the same reason as the ripple: a full-viewport soft gradient
-    // that looks the same at 1x, at a quarter of the work on Retina.
-    p.pixelDensity(1);
+    // that looks the same at 1x, at a quarter of the work on Retina. After
+    // createCanvas, which resets it in p5 2 (performance, 1 Nov).
     p.frameRate(30);
     p.createCanvas(p.windowWidth / pageZoom(), p.windowHeight / pageZoom(), p.WEBGL);
+    p.pixelDensity(1);
     p.noStroke();
     shaderProgram = p.createShader(RIPPLE_VERT_SRC, OUR_PROMISE_FRAG_SRC);
   };
