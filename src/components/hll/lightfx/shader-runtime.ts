@@ -452,7 +452,10 @@ export function createShaderFX(
   const renderScale = options.multiplier ?? 0.6;
 
   function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 1×, not the screen's 2×: the effect is a soft blur with no fine detail,
+    // and on a Retina screen 2× meant four times the pixels in each of the five
+    // passes, which held page scrolling near 30 fps (performance, 1 Nov).
+    const dpr = 1;
     const hostW = canvas!.clientWidth || 1;
     const hostH = canvas!.clientHeight || 1;
     canvas!.width = Math.floor(hostW * dpr);
