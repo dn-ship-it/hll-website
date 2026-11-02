@@ -44,12 +44,14 @@ async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: num
   }
 }
 
-/** Figma Capabilities › All Capabilities (2562:5155), the /services overview. */
-export async function AllCapabilitiesPage() {
+/** The wheel's services and the one in focus at first: the CMS list if set,
+ *  else the Figma wheel, top to bottom (Application in focus). Also the Home
+ *  Capabilities section (Hannan, 2 Nov). */
+export async function getCapabilitiesWheel(): Promise<{ services: CapabilityService[]; startIndex: number }> {
   const cms = await loadCmsWheel();
+  if (cms) return { services: cms.wheel, startIndex: cms.start ?? Math.min(3, cms.wheel.length - 1) };
   const entry = (id: string) => serviceEntry(id as keyof typeof SERVICE_LABELS);
-  // Figma wheel, top to bottom (Application in focus).
-  const wheel = [
+  const services = [
     "hll-foundation",
     "hll-cloud",
     "hll-ai",
@@ -58,15 +60,18 @@ export async function AllCapabilitiesPage() {
     "hll-people",
     "hll-ontology",
   ].map(entry);
+  return { services, startIndex: 3 };
+}
+
+/** Figma Capabilities › All Capabilities (2562:5155), the /services overview. */
+export async function AllCapabilitiesPage() {
+  const { services, startIndex } = await getCapabilitiesWheel();
 
   return (
     <MarketingShell>
       <ServiceReveal>
         <div className="hll-home hll-service-page">
-          <AllCapabilities
-            services={cms?.wheel ?? wheel}
-            startIndex={cms ? (cms.start ?? Math.min(3, cms.wheel.length - 1)) : 3}
-          />
+          <AllCapabilities services={services} startIndex={startIndex} />
         </div>
       </ServiceReveal>
     </MarketingShell>

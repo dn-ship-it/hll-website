@@ -146,18 +146,28 @@ function OpenIcon({ className = "text-[var(--hll-dark-grey)]" }: { className?: s
  * Capabilities title — the mouse wheel, a drag or swipe, or the arrow keys
  * turn it, and the service in focus grows with its sub-services beside it.
  * Phones get the same wheel, sized down, under the title.
+ *
+ * `scrollDriven` (Home, Hannan 2 Nov): mid-page, a wheel that takes the
+ * mouse wheel and swipes would trap the page, so there the section pins
+ * under the Nav Bar and the page's own scroll turns it, one service per
+ * stretch of scrolling, like the Home wheel it replaced.
  */
 export function AllCapabilities({
   services,
   startIndex = 0,
+  scrollDriven = false,
+  headingAs = "h1",
 }: {
   /** Wheel order, top to bottom. */
   services: CapabilityService[];
   startIndex?: number;
+  scrollDriven?: boolean;
+  headingAs?: "h1" | "h2";
 }) {
   const count = services.length;
   const slots = count * COPIES;
   const [active, setActive] = useState(startIndex);
+  const trackRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const spinRef = useRef<HTMLDivElement>(null);
@@ -227,6 +237,55 @@ export function AllCapabilities({
     [render],
   );
 
+  // Scroll-driven: how far the page has scrolled through the pinned stretch.
+  const scrollRange = () => {
+    const track = trackRef.current;
+    const pinned = rootRef.current;
+    if (!track || !pinned) return null;
+    return { track, range: track.offsetHeight - pinned.offsetHeight };
+  };
+  // Scroll the page to where a service is in focus.
+  const scrollToService = (index: number) => {
+    const found = scrollRange();
+    if (!found || found.range <= 0) return;
+    const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 0;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({
+      top:
+        window.scrollY +
+        found.track.getBoundingClientRect().top -
+        navH +
+        (found.range * index) / Math.max(1, count - 1),
+      behavior: reduce ? "auto" : "smooth",
+    });
+  };
+  useEffect(() => {
+    if (!scrollDriven) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const found = scrollRange();
+      if (!found || found.range <= 0) return;
+      const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 0;
+      const progress = Math.min(1, Math.max(0, (navH - found.track.getBoundingClientRect().top) / found.range));
+      // Whole steps, which the wheel eases between: wherever the page stops,
+      // one service is in focus with its tags, never two half-way.
+      spin(Math.round(progress * (count - 1)));
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollDriven, count, spin]);
+
   // Bring a slot to the focus the short way round.
   // QA C-09: a click on the capability already in focus (tile, name or
   // tags) opens its page; on any other row it turns the wheel to it.
@@ -236,6 +295,10 @@ export function AllCapabilities({
     const href = services[slot % count].href;
     if (Math.abs(step) < 0.5 && href) {
       router.push(href);
+      return;
+    }
+    if (scrollDriven) {
+      scrollToService(slot % count);
       return;
     }
     spin(target.current + step);
@@ -285,7 +348,7 @@ export function AllCapabilities({
   useEffect(() => {
     const stage = stageRef.current;
     const area = spinRef.current;
-    if (!stage || !area) return;
+    if (!stage || !area || scrollDriven) return;
     let snap = 0;
     const onWheel = (event: WheelEvent) => {
       if (event.clientX < area.getBoundingClientRect().left) return;
@@ -300,7 +363,7 @@ export function AllCapabilities({
       stage.removeEventListener("wheel", onWheel);
       window.clearTimeout(snap);
     };
-  }, [spin]);
+  }, [spin, scrollDriven]);
 
   // Drag (or swipe) the wheel up or down, with a little momentum on release.
   const drag = useRef<{
@@ -364,13 +427,17 @@ export function AllCapabilities({
     event.preventDefault();
     event.stopPropagation();
   };
-  const dragHandlers = (wheel: Wheel) => ({
-    onPointerDown: (event: React.PointerEvent) => startDrag(event, wheel),
-    onPointerMove,
-    onPointerUp,
-    onPointerCancel: onPointerUp,
-    onClickCapture,
-  });
+  // Scroll-driven, a swipe scrolls the page (which turns the wheel).
+  const dragHandlers = (wheel: Wheel) =>
+    scrollDriven
+      ? {}
+      : {
+          onPointerDown: (event: React.PointerEvent) => startDrag(event, wheel),
+          onPointerMove,
+          onPointerUp,
+          onPointerCancel: onPointerUp,
+          onClickCapture,
+        };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     const step =
@@ -381,6 +448,10 @@ export function AllCapabilities({
           : 0;
     if (!step) return;
     event.preventDefault();
+    if (scrollDriven) {
+      scrollToService(Math.min(count - 1, Math.max(0, Math.round(target.current) + step)));
+      return;
+    }
     spin(Math.round(target.current) + step);
   };
 
@@ -440,8 +511,11 @@ export function AllCapabilities({
       </span>
     ));
 
-  return (
-    <div ref={rootRef}>
+  const wheel = (
+    <div
+      ref={rootRef}
+      className={scrollDriven ? "sticky top-[var(--nav-h)]" : undefined}
+    >
       {/* Phones: the title, the wheel under it — a swipe there turns it —
           and a strip below that scrolls the page on to the footer. */}
       <section
@@ -450,7 +524,7 @@ export function AllCapabilities({
       >
         <div className="px-5 pt-8">
           <GradientRevealTextSlow
-            as="h1"
+            as={headingAs}
             text="Capabilities"
             variant="services"
             className="block font-light text-[var(--hll-dark-grey)]"
@@ -466,7 +540,7 @@ export function AllCapabilities({
           aria-activedescendant={`capability-phone-${focus.id}`}
           onKeyDown={onKeyDown}
           {...dragHandlers("phone")}
-          className="relative mt-4 min-h-0 flex-1 touch-none select-none overflow-hidden outline-none focus-visible:ring-1 focus-visible:ring-[var(--hll-mid-grey)] [mask-image:linear-gradient(transparent,#000_32px,#000_calc(100%-32px),transparent)]"
+          className={`relative mt-4 min-h-0 flex-1 ${scrollDriven ? "" : "touch-none"} select-none overflow-hidden outline-none focus-visible:ring-1 focus-visible:ring-[var(--hll-mid-grey)] [mask-image:linear-gradient(transparent,#000_32px,#000_calc(100%-32px),transparent)]`}
           style={{ "--center": PHONE.center } as React.CSSProperties}
         >
           {rows.map(({ slot, service, d, primary }) => (
@@ -574,7 +648,7 @@ export function AllCapabilities({
               style={{ left: pct(30, STAGE.w), top: pct(310, STAGE.h) }}
             >
               <GradientRevealTextSlow
-                as="h1"
+                as={headingAs}
                 text="Capabilities"
                 variant="services"
                 className="block font-light text-[var(--hll-dark-grey)]"
@@ -588,7 +662,7 @@ export function AllCapabilities({
             <div
               ref={spinRef}
               aria-hidden
-              className="absolute inset-y-0 right-0 cursor-grab active:cursor-grabbing"
+              className={`absolute inset-y-0 right-0 ${scrollDriven ? "" : "cursor-grab active:cursor-grabbing"}`}
               style={{ left: pct(600, STAGE.w) }}
             />
 
@@ -697,6 +771,21 @@ export function AllCapabilities({
           </div>
         </div>
       </section>
+    </div>
+  );
+
+  if (!scrollDriven) return wheel;
+  // A screen for the pinned wheel, then 45% of a screen of scrolling per
+  // service after the first.
+  return (
+    <div
+      ref={trackRef}
+      className="hll-home-section"
+      style={{
+        height: `calc(calc(100*var(--svh)) - var(--nav-h) + ${(count - 1) * 45} * var(--svh))`,
+      }}
+    >
+      {wheel}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { OurPromise } from "@/components/hll";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
-import { HomeHero, OurClients, WhatWeDo } from "@/components/marketing/home/hero-and-services";
+import { HomeHero, OurClients } from "@/components/marketing/home/hero-and-services";
+import { AllCapabilities } from "@/components/marketing/services/all-capabilities";
+import { getCapabilitiesWheel } from "@/components/marketing/services/all-capabilities-page";
 import { OurImpact } from "@/components/marketing/home/our-impact";
 import {
   HowWeWork,
@@ -55,6 +57,7 @@ export default async function HomePage() {
   } catch {
     // defaults in HomeHero
   }
+  const capabilities = await getCapabilitiesWheel();
 
   return (
     <MarketingShell>
@@ -66,7 +69,9 @@ export default async function HomePage() {
           heroImageUrl={heroImageUrl}
           heroVideoUrl={heroVideoUrl}
         />
-        <WhatWeDo data={content.whatWeDo} />
+        {/* The All Capabilities wheel, which Hannan preferred to the Home
+            one (2 Nov); here the page's scroll turns it, from the top. */}
+        <AllCapabilities services={capabilities.services} scrollDriven headingAs="h2" />
         <OurClients data={content.clients} />
         <OurPromise
           impactGraph
