@@ -271,26 +271,37 @@ export function AllCapabilities({
   useEffect(() => {
     if (!scrollDriven) return;
     let raf = 0;
+    let settle = 0;
+    const navH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 0;
+    let nav = navH();
+    // The wheel follows the scroll as it happens, as the mouse wheel turns
+    // it on /services; turning only in whole steps once the page passed
+    // half way felt laggy next to it (Hannan, 3 Nov). When the scrolling
+    // stops it eases to the nearest service, so it never rests between two.
     const update = () => {
       raf = 0;
       const found = scrollRange();
       if (!found || found.range <= 0) return;
-      const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 0;
-      const progress = Math.min(1, Math.max(0, (navH - found.track.getBoundingClientRect().top) / found.range));
-      // Whole steps, which the wheel eases between: wherever the page stops,
-      // one service is in focus with its tags, never two half-way.
-      spin(Math.round(progress * (count - 1)));
+      const progress = Math.min(1, Math.max(0, (nav - found.track.getBoundingClientRect().top) / found.range));
+      spin(progress * (count - 1));
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => spin(Math.round(target.current)), 140);
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
+    const onResize = () => {
+      nav = navH();
+      schedule();
+    };
     update();
     window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+    window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(settle);
       window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", onResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollDriven, count, spin]);

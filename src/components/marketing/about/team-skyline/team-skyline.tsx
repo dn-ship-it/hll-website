@@ -16,5 +16,5 @@ export function TeamSkyline({ className }: { className?: string }) {
     const instance = mountTeamSkyline(ref.current, { team: TEAM, imageBase: "/assets/about/team/" });
     return () => instance.destroy();
   }, []);
-  return <section ref={ref} aria-label="The HLL team" data-snap="off" className={className} />;
+  return <section ref={ref} aria-label="The HLL team" className={className} />;
 }
