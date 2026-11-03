@@ -3,10 +3,9 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
-import { GradientRevealTextSlow, HLLButton, HLLOutlineButton } from "@/components/hll";
+import { GradientRevealTextSlow, HLLOutlineButton } from "@/components/hll";
 import type { HomePageContent, HomeService } from "@/data/home";
 
-import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { useScaleToViewport } from "@/components/marketing/use-scale-to-viewport";
 
 import { HomeHeading, HOME_GUTTER } from "./primitives";
@@ -63,23 +62,14 @@ function HeroWindow({
           className="absolute inset-0 size-full object-cover"
         />
       ) : null}
-      {/* Hannan, 3 Nov: higher, clear of the industry titles the intro sets
-          along its bottom quarter, and the outline button whose edge lights
-          up on hover. Inside the window, so it stays in view as the window
-          grows to fill the screen. */}
-      <div
-        className={`pointer-events-none absolute inset-x-0 hidden justify-center lg:flex ${videoUrl ? "bottom-[30%]" : "bottom-9"}`}
-      >
-        <HLLOutlineButton href={ctaHref} variant="engagement" className="pointer-events-auto">
-          {ctaLabel}
-        </HLLOutlineButton>
-      </div>
     </div>
-    {/* Figma Home mobile: the button sits 54px under the window. */}
-    <div className="mt-[54px] flex justify-center lg:hidden">
-      <HLLButton href={ctaHref} variant="engagement" size="md" className={BUTTON_MOBILE}>
+    {/* Under the window on every screen (Hannan, 3 Nov): over the intro it
+        sat on the industry titles. The outline button, whose edge lights up
+        on hover, in place of the grey one. Figma Home mobile: 54px under. */}
+    <div className="mt-[54px] flex justify-center lg:mt-8">
+      <HLLOutlineButton href={ctaHref} variant="engagement">
         {ctaLabel}
-      </HLLButton>
+      </HLLOutlineButton>
     </div>
     </>
   );
