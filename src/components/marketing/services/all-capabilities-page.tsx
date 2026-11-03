@@ -1,5 +1,6 @@
 import { MarketingShell } from "@/components/marketing/marketing-shell";
-import { getMarketingContent } from "@/lib/payload/queries";
+import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
+import { getMarketingContent, getServiceBySlug } from "@/lib/payload/queries";
 import { SERVICE_LABELS } from "@/data/engagements";
 import { getServicePageByVariant } from "@/data/services";
 import { cleanServiceName, serviceHref } from "@/components/hll/variants";
@@ -7,18 +8,39 @@ import { cleanServiceName, serviceHref } from "@/components/hll/variants";
 import { AllCapabilities, type CapabilityService } from "./all-capabilities";
 import { ServiceReveal } from "./service-reveal";
 
-// AI and Ontology still carry the template's (Foundation's) capability list
-// as placeholder; their sub-services stay hidden until real ones are written.
+// The bundled AI and Ontology pages still carry the template's (Foundation's)
+// capability list; without the CMS their sub-services stay hidden.
 const PLACEHOLDER_CAPABILITIES = new Set(["hll-ai", "hll-ontology"]);
 
-function serviceEntry(id: keyof typeof SERVICE_LABELS): CapabilityService {
-  const page = getServicePageByVariant(id);
+/** A capability's headline and sub-services as its own page shows them: the
+ *  CMS page over the bundled one, the same mapping the page uses, so the
+ *  wheel's tags always match the page (Hannan, 3 Nov). */
+async function pageCapabilities(variant: string) {
+  const page = getServicePageByVariant(variant);
+  if (!page) return null;
+  try {
+    const service = await getServiceBySlug(page.slug);
+    if (service) {
+      const data = mapServiceToPage(service, page);
+      return { headline: data.hero.headline, subServices: data.capabilities.items.map((item) => item.title) };
+    }
+  } catch {
+    // the bundled page below
+  }
+  return {
+    headline: page.hero.headline,
+    subServices: PLACEHOLDER_CAPABILITIES.has(variant) ? [] : page.capabilities.items.map((item) => item.title),
+  };
+}
+
+async function serviceEntry(id: keyof typeof SERVICE_LABELS): Promise<CapabilityService> {
+  const page = await pageCapabilities(id);
   return {
     id,
     name: SERVICE_LABELS[id],
     href: serviceHref(id),
-    description: page?.hero.headline ?? "",
-    subServices: PLACEHOLDER_CAPABILITIES.has(id) ? [] : (page?.capabilities.items.map((item) => item.title) ?? []),
+    description: page?.headline ?? "",
+    subServices: page?.subServices ?? [],
   };
 }
 
@@ -28,6 +50,9 @@ async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: num
     const cms = (await getMarketingContent())?.allCapabilities;
     const items = cms?.items ?? [];
     if (!items.length) return null;
+    // A capability with a page of its own takes its sub-services from it;
+    // the wheel's own list is only for one without.
+    const pages = await Promise.all(items.map((item) => pageCapabilities(item.tile)));
     return {
       wheel: items.map((item, i) => ({
         id: `${item.tile}-${i}`,
@@ -35,7 +60,7 @@ async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: num
         name: cleanServiceName(item.name),
         href: item.href || null,
         description: item.description ?? "",
-        subServices: item.subServices?.map((sub) => sub.label) ?? [],
+        subServices: pages[i]?.subServices ?? item.subServices?.map((sub) => sub.label) ?? [],
       })),
       start: cms?.startIndex ? Math.min(items.length, cms.startIndex) - 1 : undefined,
     };
@@ -51,15 +76,17 @@ export async function getCapabilitiesWheel(): Promise<{ services: CapabilityServ
   const cms = await loadCmsWheel();
   if (cms) return { services: cms.wheel, startIndex: cms.start ?? Math.min(3, cms.wheel.length - 1) };
   const entry = (id: string) => serviceEntry(id as keyof typeof SERVICE_LABELS);
-  const services = [
-    "hll-foundation",
-    "hll-cloud",
-    "hll-ai",
-    "hll-application",
-    "hll-trust",
-    "hll-people",
-    "hll-ontology",
-  ].map(entry);
+  const services = await Promise.all(
+    [
+      "hll-foundation",
+      "hll-cloud",
+      "hll-ai",
+      "hll-application",
+      "hll-trust",
+      "hll-people",
+      "hll-ontology",
+    ].map(entry),
+  );
   return { services, startIndex: 3 };
 }
 

@@ -96,6 +96,10 @@ const SPACING: Record<Wheel, { above: number; below: number; pitch: number }> = 
     the tile, 14px over the next) when there is one. */
 const phoneBelow = (block: number) =>
   block ? PHONE.tileMax / 2 + 12 + block + 14 + PHONE.tileMin / 2 : SPACING.phone.above;
+/** Desktop: the same for a block `h` stage units tall, centred on the tile
+    (see liftFor): a capability with many sub-services wraps to more rows
+    than the design's two (Hannan, 3 Nov: all of a page's sub-services). */
+const desktopBelow = (h: number) => Math.max(SPACING.desktop.below, h / 2 + 14 + TILE_MIN / 2);
 
 /** Rows shown each side of the focused one; the next one out fades in. */
 const REACH = 3;
@@ -184,6 +188,8 @@ export function AllCapabilities({
   const tagsRef = useRef<HTMLDivElement>(null);
   const lift = useRef(0);
   const liftTarget = useRef(0);
+  const deskBelow = useRef(SPACING.desktop.below);
+  const deskBelowTarget = useRef(SPACING.desktop.below);
 
   const render = useCallback(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -194,13 +200,15 @@ export function AllCapabilities({
     if (Math.abs(belowTarget.current - below.current) < 0.05) below.current = belowTarget.current;
     lift.current += (liftTarget.current - lift.current) * ease;
     if (Math.abs(liftTarget.current - lift.current) < 0.05) lift.current = liftTarget.current;
+    deskBelow.current += (deskBelowTarget.current - deskBelow.current) * ease;
+    if (Math.abs(deskBelowTarget.current - deskBelow.current) < 0.05) deskBelow.current = deskBelowTarget.current;
     rootRef.current
       ?.querySelectorAll<HTMLElement>("[data-slot]")
       .forEach((row) => {
         const slot = Number(row.dataset.slot);
         const d = signedWrap(slot - pos.current, slots);
         for (const [name, value] of Object.entries(
-          rowVars(row.dataset.wheel as Wheel, d, row.dataset.wheel === "phone" ? below.current : undefined),
+          rowVars(row.dataset.wheel as Wheel, d, row.dataset.wheel === "phone" ? below.current : deskBelow.current),
         )) {
           row.style.setProperty(name, value);
         }
@@ -215,7 +223,7 @@ export function AllCapabilities({
     const root = rootRef.current;
     if (root) {
       root.style.setProperty("--settle", Math.min(1, Math.max(0, (0.5 - Math.abs(offset)) / 0.2)).toFixed(3));
-      root.style.setProperty("--fy-desktop", offsetFor("desktop", offset).toFixed(2));
+      root.style.setProperty("--fy-desktop", offsetFor("desktop", offset, deskBelow.current).toFixed(2));
       root.style.setProperty("--fy-phone", offsetFor("phone", offset, below.current).toFixed(2));
       root.style.setProperty("--lift", lift.current.toFixed(2));
     }
@@ -224,7 +232,8 @@ export function AllCapabilities({
     frame.current =
       pos.current === target.current &&
       below.current === belowTarget.current &&
-      lift.current === liftTarget.current
+      lift.current === liftTarget.current &&
+      deskBelow.current === deskBelowTarget.current
         ? 0
         : requestAnimationFrame(render);
   }, [count, slots]);
@@ -326,11 +335,14 @@ export function AllCapabilities({
       const stage = stageRef.current?.offsetHeight ?? 0;
       const tags = tagsRef.current?.offsetHeight ?? 0;
       // No tags: the name alone. Phones: the desktop stage is hidden.
-      liftTarget.current = !stage ? 0 : liftFor(hasTags ? (tags * STAGE.h) / stage : NAME_H);
+      const block = hasTags ? (tags * STAGE.h) / stage : NAME_H;
+      liftTarget.current = !stage ? 0 : liftFor(block);
+      deskBelowTarget.current = !stage ? SPACING.desktop.below : desktopBelow(block);
       if (!fitted.current) {
         fitted.current = true;
         below.current = belowTarget.current;
         lift.current = liftTarget.current;
+        deskBelow.current = deskBelowTarget.current;
         render();
       } else if (!frame.current) {
         frame.current = requestAnimationFrame(render);
@@ -472,7 +484,7 @@ export function AllCapabilities({
       "aria-selected": primary ? service.id === focus.id : undefined,
       "aria-label": primary ? service.name : undefined,
       "aria-hidden": !primary || Math.abs(d) > REACH,
-      style: rowStyle(wheel, d, wheel === "phone" ? below.current : undefined),
+      style: rowStyle(wheel, d, wheel === "phone" ? below.current : deskBelow.current),
     };
   };
   // QA C-22 (Figma "QA designs - 24 Oct"): hovering the card in focus (tile,
@@ -500,8 +512,9 @@ export function AllCapabilities({
   }, [focus.id]);
   useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
 
+  // All of them, as on the capability's own page (Hannan, 3 Nov).
   const pills = (className: string) =>
-    focus.subServices.slice(0, 4).map((sub) => (
+    focus.subServices.map((sub) => (
       <span
         key={sub}
         className={`hll-label whitespace-nowrap uppercase leading-[1.2] text-[var(--hll-dark-grey)] transition-colors duration-200 ease-out ${hovered ? "border-[var(--hll-dark-grey)]" : "border-[var(--hll-mid-grey)]"} ${className}`}
