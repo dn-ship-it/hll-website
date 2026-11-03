@@ -855,8 +855,11 @@ main[data-intro="pending"] :has(h1) > :not(:has(h1)):not(h1) {
   visibility: hidden;
 }
 
+/* `backwards`, not `both`: held after it ends, the final `transform: none`
+   overrode transforms set later, so the Home hero video never grew to fill
+   the screen as you scroll (Hannan, 3 Nov). */
 main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
-  animation: page-intro-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: page-intro-in 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @keyframes page-intro-in {
