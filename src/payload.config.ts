@@ -291,7 +291,7 @@ export default buildConfig({
             slug: "senior-data-engineer",
             status: "published",
             expiryDate: "2026-10-15",
-            externalApplyUrl: "mailto:careers@hyperlychee.com?subject=Senior%20Data%20Engineer",
+            externalApplyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=Senior%20Data%20Engineer",
             summary: {
               root: {
                 type: "root",

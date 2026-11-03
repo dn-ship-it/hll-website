@@ -189,7 +189,7 @@ export const defaultCareerNotices: CareerNotice[] = [
     summary:
       "Design and build lakehouse pipelines, governed metrics, and integration layers for enterprise clients.",
     expiryDate: "2026-10-15",
-    applyUrl: "mailto:careers@hyperlychee.com?subject=Senior%20Data%20Engineer",
+    applyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=Senior%20Data%20Engineer",
     documents: [{ label: "Job description (PDF)", url: "#" }],
     sections: placeholderJdSections,
   },
@@ -200,7 +200,7 @@ export const defaultCareerNotices: CareerNotice[] = [
     summary:
       "Lead UX research and product design engagements — translating complexity into clarity for global brands.",
     expiryDate: "2026-09-30",
-    applyUrl: "mailto:careers@hyperlychee.com?subject=Experience%20Design%20Lead",
+    applyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=Experience%20Design%20Lead",
     documents: [{ label: "Job description (PDF)", url: "#" }],
     sections: placeholderJdSections,
   },
@@ -211,7 +211,7 @@ export const defaultCareerNotices: CareerNotice[] = [
     summary:
       "Ship production ML systems including knowledge graphs, anomaly detection, and LLM-powered workflows.",
     expiryDate: null,
-    applyUrl: "mailto:careers@hyperlychee.com?subject=AI%20ML%20Engineer",
+    applyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=AI%20ML%20Engineer",
     documents: [],
     sections: placeholderJdSections,
   },

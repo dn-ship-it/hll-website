@@ -20,7 +20,7 @@ export async function JdPage({ slug }: { slug: string }) {
 
   const tags = roleTags(role);
   // Figma: "Apply button takes you to the email."
-  const applyHref = role.applyUrl ?? `mailto:careers@hyperlychee.com?subject=${encodeURIComponent(role.title)}`;
+  const applyHref = role.applyUrl ?? `mailto:spoorthi@hyperlycheelabs.com?subject=${encodeURIComponent(role.title)}`;
   const sections = role.sections?.length ? role.sections : placeholderJdSections;
 
   return (
