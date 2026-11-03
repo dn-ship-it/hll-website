@@ -38,7 +38,9 @@ function HeroWindow({
     <>
     <div
       ref={ref}
-      className="relative z-10 mt-3 aspect-[362/244] w-full origin-center overflow-hidden rounded-[6px] bg-[#D9D9D9] will-change-transform lg:mt-[31px] lg:aspect-[1452/982] lg:rounded-lg"
+      // 16:9, the intro video's own shape: in Figma's 1452 × 982 window the
+      // sides were cut, and with them the start of its industry titles.
+      className="relative z-10 mt-3 aspect-video w-full origin-center overflow-hidden rounded-[6px] bg-[#D9D9D9] will-change-transform lg:mt-[31px] lg:rounded-lg"
     >
       {videoUrl ? (
         <video
@@ -81,9 +83,11 @@ function HeroWindow({
   );
 }
 
-/** Placeholder until the CMS supplies a hero: the old site's video loop. */
-const PLACEHOLDER_HERO_VIDEO = "/video/home-hero.mp4";
-const PLACEHOLDER_HERO_POSTER = "/video/home-hero-poster.jpg";
+/** Until the CMS supplies a hero: Arjun's HLL intro (v05, 3 Nov), the loop
+ *  Hannan wants playing as visitors land. The old site's loop stays in
+ *  public/video as home-hero.mp4. */
+const PLACEHOLDER_HERO_VIDEO = "/video/home-intro.mp4";
+const PLACEHOLDER_HERO_POSTER = "/video/home-intro-poster.jpg";
 
 export function HomeHero({
   heading,
