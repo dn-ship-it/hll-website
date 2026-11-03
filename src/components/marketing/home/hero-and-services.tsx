@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
-import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
+import { GradientRevealTextSlow, HLLButton, HLLOutlineButton } from "@/components/hll";
 import type { HomePageContent, HomeService } from "@/data/home";
 
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
@@ -50,8 +50,7 @@ function HeroWindow({
           muted
           loop
           playsInline
-          controls
-          controlsList="nodownload"
+          // No play button or progress bar (Hannan, 3 Nov): a background loop.
           // Client review 21 Oct: fill the box – fitting it inside left dark
           // bars above and below wherever the video's shape differs.
           className="absolute inset-0 size-full object-cover"
@@ -64,13 +63,16 @@ function HeroWindow({
           className="absolute inset-0 size-full object-cover"
         />
       ) : null}
-      {/* Raised over a video so it clears the native controls bar. */}
+      {/* Hannan, 3 Nov: higher, clear of the industry titles the intro sets
+          along its bottom quarter, and the outline button whose edge lights
+          up on hover. Inside the window, so it stays in view as the window
+          grows to fill the screen. */}
       <div
-        className={`pointer-events-none absolute inset-x-0 hidden justify-center lg:flex ${videoUrl ? "bottom-24" : "bottom-9"}`}
+        className={`pointer-events-none absolute inset-x-0 hidden justify-center lg:flex ${videoUrl ? "bottom-[30%]" : "bottom-9"}`}
       >
-        <HLLButton href={ctaHref} variant="engagement" size="md" className="pointer-events-auto">
+        <HLLOutlineButton href={ctaHref} variant="engagement" className="pointer-events-auto">
           {ctaLabel}
-        </HLLButton>
+        </HLLOutlineButton>
       </div>
     </div>
     {/* Figma Home mobile: the button sits 54px under the window. */}
