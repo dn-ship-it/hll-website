@@ -39,11 +39,8 @@ export const INDUSTRY_GROUPS = [
   },
   {
     title: "Government & Public Institutions",
-    items: [
-      "Public Sector – External Affairs",
-      "Public Sector – Tax & Commerce",
-      "International Organization",
-    ],
+    // The two Public Sector pages merged into one (handoff 29 Oct, Hannan 3 Nov).
+    items: ["Public Sector & Government Services", "International Organization"],
   },
   { title: "Professional Services", items: ["Consulting Firms"] },
 ] as const;

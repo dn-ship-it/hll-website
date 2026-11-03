@@ -69,7 +69,8 @@ const LIST =
   "text-[12px] uppercase leading-[28px] tracking-[0.25em] whitespace-nowrap";
 
 // Footer Mobile: 10px, 0.25em tracking, 20px lines; a name that wraps closes
-// up to 14px lines (Figma "Public Sector – / External Affairs").
+// up to 14px lines (Figma "Public Sector – / External Affairs", now
+// "Public Sector // up to 14px lines (Figma "Public Sector – / External Affairs"). / Government Services").
 const MOBILE_LIST = "text-[10px] uppercase tracking-[0.25em]";
 const MOBILE_ITEM = "py-[3px] leading-[14px]";
 

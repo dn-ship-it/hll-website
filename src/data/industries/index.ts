@@ -126,17 +126,12 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
     image: "/assets/industries/logistics-hero.webp",
     related: [],
   }),
-  "public-sector-external-affairs": fromTemplate({
-    slug: "public-sector-external-affairs",
+  // External Affairs and Tax & Commerce, merged (handoff 29 Oct); their old
+  // addresses redirect here (next.config).
+  "public-sector-government-services": fromTemplate({
+    slug: "public-sector-government-services",
     category: "Government & Public Institutions",
-    title: "Public Sector – External Affairs",
-    image: "/assets/industries/governance-hero.webp",
-    related: [],
-  }),
-  "public-sector-tax-commerce": fromTemplate({
-    slug: "public-sector-tax-commerce",
-    category: "Government & Public Institutions",
-    title: "Public Sector – Tax & Commerce",
+    title: "Public Sector & Government Services",
     image: "/assets/industries/governance-hero.webp",
     related: [],
   }),

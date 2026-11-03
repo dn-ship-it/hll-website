@@ -91,7 +91,7 @@ export function OutcomeSection({
           >
             <Stat value={card.stat} />
             {card.image ? (
-              <OutcomeCaseStudy image={card.image} href={card.href} />
+              <OutcomeCaseStudy image={card.image} ratio={card.imageRatio} href={card.href} />
             ) : card.hasMedia ? (
               <MediaPlaceholder className="mt-[9px] aspect-[320/234] w-full rounded-[4px] bg-[#d9d9d9] lg:mt-0" />
             ) : null}
@@ -112,9 +112,10 @@ export function OutcomeSection({
 /**
  * Hannan's review: under an outcome, the small card of the case study it
  * comes from (the engagement's 490×308 card, at its own shape), opening that
- * engagement.
+ * engagement. An image of the tile's own (Applications' 4:3 mock-ups, 29 Oct
+ * handoff) shows at its shape, uncropped.
  */
-function OutcomeCaseStudy({ image, href }: { image: string; href?: string }) {
+function OutcomeCaseStudy({ image, ratio, href }: { image: string; ratio?: number; href?: string }) {
   const img = (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -122,7 +123,8 @@ function OutcomeCaseStudy({ image, href }: { image: string; href?: string }) {
       alt=""
       loading="lazy"
       decoding="async"
-      className="aspect-[490/308] w-full rounded-[4px] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      className="w-full rounded-[4px] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      style={{ aspectRatio: ratio ?? 490 / 308 }}
     />
   );
   return href ? (

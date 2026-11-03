@@ -23,6 +23,8 @@ export type OutcomeCard = {
   hasMedia?: boolean;
   /** The case-study card shown under the figure, and the engagement it opens. */
   image?: string;
+  /** The image's width / height, so it shows at its own shape. */
+  imageRatio?: number;
   href?: string;
 };
 

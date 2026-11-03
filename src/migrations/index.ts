@@ -10,6 +10,7 @@ import * as migration_20261017_185743_handoff_industries from './20261017_185743
 import * as migration_20261019_114956_handoff_outcome_links from './20261019_114956_handoff_outcome_links';
 import * as migration_20261023_184540_motion_step_video from './20261023_184540_motion_step_video';
 import * as migration_20261025_101221_contact_office_details from './20261025_101221_contact_office_details';
+import * as migration_20261103_172957_merge_public_sector from './20261103_172957_merge_public_sector';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20261025_101221_contact_office_details.up,
     down: migration_20261025_101221_contact_office_details.down,
-    name: '20261025_101221_contact_office_details'
+    name: '20261025_101221_contact_office_details',
+  },
+  {
+    up: migration_20261103_172957_merge_public_sector.up,
+    down: migration_20261103_172957_merge_public_sector.down,
+    name: '20261103_172957_merge_public_sector'
   },
 ];

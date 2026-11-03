@@ -738,14 +738,26 @@ async function importServices(payload: Payload, part: ServicePart = "all") {
       const source = sheet.find((o) => o["Component ID"] === r.component_id)?.["Linked engagement / source"]?.trim() ?? "";
       const engagementId = OUTCOME_ENGAGEMENTS[r.component_id] ?? engagementIds.get(source.toLowerCase()) ?? null;
       if (!engagementId && source && source !== "Firm-level") report.push(`service ${id}: outcome "${r.figure}" is from "${source}", which isn't published – no card`);
-      const file = engagementId ? best(path.join(root!, "02-engagements", engagementId), "card-related_490x308") : null;
-      const image = file ? await upload(payload, file, `svc-${id}-${engagementId}`, source || engagementId!) : null;
+      // The 29 Oct handoff gives some tiles an image of their own (Applications:
+      // a 4:3 crop of the case study's mock-up); others show the case study's
+      // small card.
+      const own = ((r as { asset_ids?: string[] }).asset_ids ?? [])
+        .map((assetId) => assets[assetId]?.file)
+        .find((f): f is string => Boolean(f && fs.existsSync(path.join(dir, f))));
+      const file = own
+        ? path.join(dir, own)
+        : engagementId
+          ? best(path.join(root!, "02-engagements", engagementId), "card-related_490x308")
+          : null;
+      const image = file
+        ? await upload(payload, file, own ? `svc-${id}-outcome` : `svc-${id}-${engagementId}`, source || engagementId || r.figure || "")
+        : null;
       outcomes.push({
         stat: r.figure ?? "",
         description: r.copy ?? "",
         hasMedia: false,
         image,
-        href: image ? `/engagement/${engagementId}` : undefined,
+        href: image && engagementId ? `/engagement/${engagementId}` : undefined,
       });
     }
 
@@ -903,6 +915,17 @@ async function importIndustries(payload: Payload) {
       await payload.create({ collection: "industries", data: data as any });
       console.log(`created  industry ${id}`);
     }
+  }
+
+  // A page the handoff no longer has (29 Oct: the two Public Sector pages,
+  // merged into one) is unpublished, not deleted: its copy stays in the CMS,
+  // and its address redirects (next.config).
+  const live = await payload.find({ collection: "industries", where: { _status: { equals: "published" } }, limit: 100, depth: 0 });
+  for (const doc of live.docs) {
+    if (ids.includes(doc.slug)) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await payload.update({ collection: "industries", id: doc.id, data: { _status: "draft" } as any });
+    console.log(`unpublished industry ${doc.slug} (not in the handoff)`);
   }
 }
 

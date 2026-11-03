@@ -48,6 +48,13 @@ function mapTools(
   }));
 }
 
+/** A media document's width / height, when it is populated and has both. */
+function mediaRatio(media: unknown): number | undefined {
+  if (!media || typeof media !== "object") return undefined;
+  const { width, height } = media as { width?: number | null; height?: number | null };
+  return width && height ? width / height : undefined;
+}
+
 export function mapServiceToPage(
   service: Service | null,
   fallback: ServicePageData = hllFoundation,
@@ -101,6 +108,7 @@ export function mapServiceToPage(
           description: card.description ?? "",
           hasMedia: card.hasMedia ?? Boolean(card.image),
           image: resolveMediaUrl(card.image as CmsImageRef) ?? undefined,
+          imageRatio: mediaRatio(card.image),
           href: card.href || undefined,
         })) ?? fallback.outcomes.cards,
     },

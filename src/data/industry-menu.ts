@@ -31,8 +31,7 @@ export const DEFAULT_INDUSTRY_MENU: IndustryMenuGroup[] = [
   group("Health & Life Sciences", ["Healthcare", "Pharmaceuticals"]),
   group("Built Environment & Industry", ["Manufacturing", "Real Estate", "Logistics"]),
   group("Government & Public Institutions", [
-    "Public Sector – External Affairs",
-    "Public Sector – Tax & Commerce",
+    "Public Sector & Government Services",
     "International Organization",
   ]),
   group("Professional Services", ["Consulting Firms"]),

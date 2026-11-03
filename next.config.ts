@@ -38,11 +38,23 @@ const nextConfig: NextConfig = {
       ["hll-ontology", "ontology"],
       ["hll-cloud", "cloud"],
     ];
-    return services.map(([from, to]) => ({
-      source: `/services/${from}`,
-      destination: `/services/${to}`,
-      permanent: true,
-    }));
+    // 29 Oct handoff: the two Public Sector industry pages became one.
+    const industries: [string, string][] = [
+      ["public-sector-external-affairs", "public-sector-government-services"],
+      ["public-sector-tax-commerce", "public-sector-government-services"],
+    ];
+    return [
+      ...services.map(([from, to]) => ({
+        source: `/services/${from}`,
+        destination: `/services/${to}`,
+        permanent: true,
+      })),
+      ...industries.map(([from, to]) => ({
+        source: `/industries/${from}`,
+        destination: `/industries/${to}`,
+        permanent: true,
+      })),
+    ];
   },
 };
 
