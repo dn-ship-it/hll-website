@@ -54,6 +54,8 @@ const nextConfig: NextConfig = {
         destination: `/industries/${to}`,
         permanent: true,
       })),
+      // 5 Nov handoff: Voxxy Media is not to be published (Hannan, 4 Nov).
+      { source: "/engagement/voxxy-media", destination: "/engagement", permanent: true },
     ];
   },
 };
