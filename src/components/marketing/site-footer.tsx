@@ -268,7 +268,10 @@ function MobileFooterBody({
       </Link>
 
       <div
-        className={`relative mt-[34px] grid grid-cols-[150px_1fr] gap-x-5 ${MOBILE_LIST} text-[var(--hll-dark-grey)]`}
+        // Figma's 150px + 192px columns at 402px, sharing out the width on
+        // narrower phones so the Industry column never runs off the edge
+        // (HoK's mobile review, 5 Nov); a long name breaks as a last resort.
+        className={`relative mt-[34px] grid grid-cols-[minmax(0,150fr)_minmax(0,192fr)] gap-x-5 [overflow-wrap:anywhere] ${MOBILE_LIST} text-[var(--hll-dark-grey)]`}
       >
         <div className="pt-1">
           <ul>

@@ -27,6 +27,19 @@ const MOBILE_SLOTS = [
   { x: 174, y: 23, size: 295 },
 ];
 
+// The middle stage narrows to the screen (12px clear of each edge) on phones
+// narrower than Figma's 402px frame, so it never runs off the left (HoK's
+// mobile review, 5 Nov); the side stages keep Figma's gaps to it (11px left,
+// 10px right).
+const MOBILE_ACTIVE_W = `min(${MOBILE_SLOTS[1].size}px, calc(100 * var(--vw) - 24px))`;
+// Figma sets the middle stage 2.5px left of centre (x -169 for 333px).
+const mobileLeft = (slot: number) =>
+  slot === 1
+    ? `calc(50% - ${MOBILE_ACTIVE_W} / 2 - 2.5px)`
+    : slot === 0
+      ? `calc(50% - ${MOBILE_ACTIVE_W} / 2 - 2.5px - 11px - ${MOBILE_SLOTS[0].size}px)`
+      : `calc(50% + ${MOBILE_ACTIVE_W} / 2 - 2.5px + 10px)`;
+
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
 /** How long a stage without a motion piece holds before the carousel turns
@@ -210,7 +223,8 @@ export function HowWeWork({
         {...swipeHandlers}
       >
         {steps.map((step, index) => {
-          const slot = MOBILE_SLOTS[slotOf(index)];
+          const slotIndex = slotOf(index);
+          const slot = MOBILE_SLOTS[slotIndex];
           const isActive = index === active;
           return (
             <button
@@ -220,9 +234,9 @@ export function HowWeWork({
               aria-current={isActive ? "step" : undefined}
               className="absolute text-left transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={{
-                left: `calc(50% + ${slot.x}px)`,
+                left: mobileLeft(slotIndex),
                 top: slot.y,
-                width: slot.size,
+                width: slotIndex === 1 ? MOBILE_ACTIVE_W : slot.size,
                 animation: wrapIn(index),
               }}
             >

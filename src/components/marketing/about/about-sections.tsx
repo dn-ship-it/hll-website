@@ -18,9 +18,12 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
     <section className={`pt-[84px] lg:pt-[221px] ${SERVICE_GUTTER}`}>
       <div data-line className="-mx-3 mb-[84px] h-px bg-[var(--hll-mid-grey)] lg:hidden" />
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      <div className="mt-[47px] grid gap-3 lg:ml-[34.5%] lg:mt-[-26px] lg:grid-cols-[198fr_721fr] lg:gap-[33px]">
+      {/* Phones narrower than Figma's 402px frame: the portrait narrows
+          rather than pushing the quote off the right edge (HoK's mobile
+          review, 5 Nov). */}
+      <div className="mt-[47px] grid grid-cols-[minmax(0,1fr)] gap-3 lg:ml-[34.5%] lg:mt-[-26px] lg:grid-cols-[198fr_721fr] lg:gap-[33px]">
         <div
-          className="ml-[59px] aspect-[245/253] w-[245px] rounded-[6px] bg-[#D9D9D9] lg:ml-0 lg:aspect-[198/264] lg:w-[198px] lg:rounded-[4px]"
+          className="ml-[59px] aspect-[245/253] w-[min(245px,calc(100%-59px))] rounded-[6px] bg-[#D9D9D9] lg:ml-0 lg:aspect-[198/264] lg:w-[198px] lg:rounded-[4px]"
           style={data.portrait ? { background: `#D9D9D9 url(${data.portrait}) center / cover` } : undefined}
         />
         <blockquote className="ml-[55px] flex max-w-[311px] flex-col justify-between gap-6 lg:ml-0 lg:max-w-none lg:gap-8">

@@ -296,7 +296,9 @@ export function EngagementSidebar({
           as="h1"
           text={engagement.client}
           variant="engagement"
-          className="block max-w-[8ch] text-[var(--hll-dark-grey)]"
+          // The 8-character measure is the desktop sidebar's; phones use the
+          // full width (HoK's mobile review, 5 Nov: one word per line).
+          className="block text-[var(--hll-dark-grey)] lg:max-w-[8ch]"
           fontWeight={500}
           fontSize="var(--eng-name-size)"
           letterSpacing="0"

@@ -187,7 +187,9 @@ export function AboutValuesSection({
                 aria-label={value.title}
                 aria-pressed={isFocus}
                 onClick={() => pick(index)}
-                className={`relative size-[42px] shrink-0 overflow-hidden rounded-[4px] bg-[#D9D9D9] ${isFocus ? "outline outline-1 outline-offset-2 outline-[var(--hll-dark-grey)]" : ""}`}
+                // Narrow phones: the thumbnails shrink to fit the strip instead of
+                // running off the edge (HoK's mobile review, 5 Nov).
+                className={`relative aspect-square w-[42px] min-w-0 shrink overflow-hidden rounded-[4px] bg-[#D9D9D9] ${isFocus ? "outline outline-1 outline-offset-2 outline-[var(--hll-dark-grey)]" : ""}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={value.image} alt="" className={`size-full object-cover ${isFocus ? "" : "grayscale"}`} />

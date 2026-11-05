@@ -103,8 +103,14 @@ export function ServiceHero({
               strokeWidth={0.028}
               style={{
                 width: "max-content",
-                height: "var(--tab-h)",
-                padding: "0 21px",
+                // A chip wider than the screen (narrow phones, larger text
+                // settings) wraps onto two lines instead of running off the
+                // edge (HoK's mobile review, 5 Nov); one that fits is as before.
+                maxWidth: "100%",
+                whiteSpace: "normal",
+                height: "auto",
+                minHeight: "var(--tab-h)",
+                padding: "6px 21px",
                 borderRadius: "var(--tab-r)",
                 // Read by .service-tab: Figma marks the active tab with a
                 // solid hairline in the service colour, drawn above the
