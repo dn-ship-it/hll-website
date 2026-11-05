@@ -19,7 +19,7 @@ import { OutcomeSection } from "./outcome-section";
 import { ServiceBrandHeader } from "./service-chrome";
 import { ServiceHero } from "./service-hero";
 import { getServiceTheme } from "./service-theme";
-import { ServiceReveal } from "./service-reveal";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 
 async function loadServicePage(fallback: ServicePageData) {
   try {
@@ -52,7 +52,10 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
           <ServiceBrandHeader brand={data.brand} variant={data.variant} />
         </div>
 
-        <ServiceReveal>
+        {/* House of Katha's reveal animations (5 Nov), in place of the
+            fade-up. The hero's demo window and the quote carousel change
+            their own text, so they opt out. */}
+        <RevealRoot skip=".hll-display, .hll-label">
           <ServiceHero
             data={data.hero}
             demo={demo}
@@ -81,7 +84,7 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
             variant={data.variant}
           />
           <RelatedServicesSection items={data.relatedServices} />
-        </ServiceReveal>
+        </RevealRoot>
       </div>
     </MarketingShell>
   );

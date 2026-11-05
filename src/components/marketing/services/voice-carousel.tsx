@@ -133,6 +133,8 @@ export function VoiceSection({
     // so it always clears the logo tile by 8px.
     <section
       ref={sectionRef}
+      data-no-text-scroll
+      data-no-image-reveal
       aria-roledescription="carousel"
       className={`px-2 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pb-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] ${timerColor ? "pb-[84px]" : "pb-[11px]"}`}
     >

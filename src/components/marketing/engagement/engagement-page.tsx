@@ -1,7 +1,7 @@
 import { GradientRevealTextSlow } from "@/components/hll";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
-import { ServiceReveal } from "@/components/marketing/services/service-reveal";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { loadEngagements } from "@/lib/payload/engagements";
 
 import { EngagementList } from "./engagement-list";
@@ -12,7 +12,9 @@ export async function EngagementPage() {
 
   return (
     <MarketingShell>
-      <ServiceReveal>
+      {/* House of Katha's reveal animations (5 Nov), in place of the fade-up:
+          card images grow in from a blur, card text fades in word by word. */}
+      <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page pb-[154px]">
           {/* Figma Engagements mobile: the title at y 385 of the first screen. */}
           <div className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
@@ -28,7 +30,7 @@ export async function EngagementPage() {
           </div>
           <EngagementList engagements={engagements} />
         </div>
-      </ServiceReveal>
+      </RevealRoot>
     </MarketingShell>
   );
 }
