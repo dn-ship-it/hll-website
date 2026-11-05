@@ -30,6 +30,7 @@ export { shaderVariants, bottomShaderVariants, resolveVariantColors } from "./sh
 export {
   BASE_SETTINGS,
   TRANSPARENT_SETTINGS,
+  TUNED_SETTINGS,
   MULTIPLIER,
   BLUE_NOISE_SIZE,
   type ShaderSettings,

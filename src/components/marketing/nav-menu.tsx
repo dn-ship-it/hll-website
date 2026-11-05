@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { HLLButton, Shader, TRANSPARENT_SETTINGS, VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
+import { HLLButton, Shader, TUNED_SETTINGS, VARIANT_GRADIENTS, type NavVariant } from "@/components/hll";
 import type { ServiceVariant } from "@/components/hll/variants";
 import { SERVICE_LABELS } from "@/data/engagements";
 import { serviceHref } from "@/components/hll/variants";
@@ -366,11 +366,20 @@ export function NavMenu({
         })}
       </nav>
 
-      {/* Under the menu: the shader over the page, below the Nav Bar. */}
+      {/* Under the menu: the shader over the page, below the Nav Bar, in
+          House of Katha's tuned look (5 Nov), with their subtle blur of the
+          page just beneath it. */}
+      {shaderVariant ? (
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-x-0 top-[var(--nav-h)] h-[calc(100*var(--vh)-var(--nav-h))] backdrop-blur-[10px] transition-opacity duration-300 ease-out motion-reduce:hidden"
+          style={{ opacity: open ? 1 : 0 }}
+        />
+      ) : null}
       {shaderVariant ? (
         <Shader
           variant={shaderVariant}
-          settings={TRANSPARENT_SETTINGS}
+          settings={TUNED_SETTINGS}
           passthrough
           pauseOnDoubleClick={false}
           paused={!open}

@@ -11,6 +11,38 @@
 // canvas itself, and a plain { dispose } return.
 import type { ShaderSettings } from "./shader-definition";
 
+/**
+ * Every constant that used to be fixed inside the shader strings / render
+ * loop, with its original value as the default, so settings without a `tune`
+ * key render exactly as before. From HLL-UI-Demo (House of Katha, 3 Nov,
+ * "shader-runtime: expose hardcoded constants as live tunables"); read once
+ * when the effect is created.
+ */
+export const DEFAULT_TUNE = {
+  // global
+  timeScale: 2, pointerSmoothing: 0.1, gradientSpinSpeed: 0.035,
+  // vignette
+  vignetteX: 0.5, vignetteY: 0.5, vignetteFollow: 1,
+  vignetteHalfFactor: 0.5, vignetteFalloffFactor: 0.5,
+  // sine
+  sineX: 0.5, sineY: 0.5, sineTimeScale: 0.25, sineFrequencyScale: 20,
+  sineAmplitudeScale: 0.2, sinePhase: 1.04709283144, sineDistScale: 4,
+  // shatter
+  shatterX: 0.5, shatterY: 0.5, shatterCellScale: 50, shatterTurns: 2,
+  shatterSeedPhase: 5, shatterTimeScale: 0.2, shatterOffsetScale: 0.2,
+  shatterDistScale: 4, shatterMinDist: 15,
+  shatterRandA: 127.1, shatterRandB: 311.7, shatterRandC: 269.5,
+  shatterRandD: 183.3, shatterRandMul: 43758.5453,
+  // bokeh
+  bokehX: 0.5, bokehY: 0.5, bokehBaseSize: 0.003, bokehIterations: 50,
+  bokehGoldenAngle: 2.39996323, bokehNoiseScale: 0.01, bokehJitter: 0.05,
+  bokehJitterFreqA: 0.1, bokehJitterFreqB: 0.7, bokehWeightBase: 5,
+  bokehWeightPow: 9, bokehWeightScale: 150, bokehTiltScale: 1,
+  // output
+  outputAlpha: 1, aberrationScale: 1, softness: 1, bokehRadiusMix: 0,
+};
+export type ShaderTune = Partial<typeof DEFAULT_TUNE>;
+
 export type ShaderFXOptions = {
   colors: string[];
   settings: ShaderSettings;
@@ -63,6 +95,7 @@ export function createShaderFX(
   // composite as see-through against the DOM beneath it, whatever the shader
   // outputs.
   const transparentBg = !!settings.background.transparent;
+  const T = { ...DEFAULT_TUNE, ...settings.tune };
 
   // premultipliedAlpha: false matches the reference export exactly — the
   // output pass writes straight (unpremultiplied) alpha, where fragColor.rgb
@@ -185,7 +218,7 @@ export function createShaderFX(
     "precision highp float;\n" +
     "#define TWO_PI 6.28318530718\n" +
     "in vec2 vUv; out vec4 fragColor;\n" +
-    "uniform float uRadius, uFalloff, uSkew, uAngle, uSpin;\n" +
+    "uniform float uRadius, uFalloff, uSkew, uAngle, uSpin, uHalfF, uFalloffF;\n" +
     "uniform vec3 uClearColor;\n" +
     "uniform vec2 uPos, uResolution;\n" +
     "uniform sampler2D tGradient;\n" +
@@ -195,9 +228,9 @@ export function createShaderFX(
     "  vec2 skew = vec2(uSkew, 1.0 - uSkew);\n" +
     "  vec2 rel = (vUv - uPos) * aspectRatio * rot(uAngle * TWO_PI) * skew;\n" +
     "  float radius = length(rel);\n" +
-    "  float halfRadius = uRadius * 0.5;\n" +
-    "  float innerEdge = halfRadius - uFalloff * halfRadius * 0.5;\n" +
-    "  float outerEdge = halfRadius + uFalloff * halfRadius * 0.5;\n" +
+    "  float halfRadius = uRadius * uHalfF;\n" +
+    "  float innerEdge = halfRadius - uFalloff * halfRadius * uFalloffF;\n" +
+    "  float outerEdge = halfRadius + uFalloff * halfRadius * uFalloffF;\n" +
     "  float falloff = smoothstep(innerEdge, outerEdge, radius);\n" +
     "  float ang = atan(rel.y, rel.x) / TWO_PI + 0.5 + uSpin;\n" +
     "  vec3 gradColor = texture(tGradient, vec2(fract(ang), 0.5)).rgb;\n" +
@@ -207,25 +240,24 @@ export function createShaderFX(
   const FS_SINE =
     "#version 300 es\n" +
     "precision mediump float;\n" +
-    "#define PI3 1.04709283144\n" +
     "in vec2 vUv; out vec4 fragColor;\n" +
     "uniform sampler2D tInput;\n" +
-    "uniform float uMixRadius, uFrequency, uAmplitude, uRotation, uTime, uTrackMouse;\n" +
+    "uniform float uMixRadius, uFrequency, uAmplitude, uRotation, uTime, uTrackMouse, uTimeScale, uFreqScale, uAmpScale, uPhase, uDistScale;\n" +
     "uniform vec2 uPos, uResolution, uMousePos;\n" +
     "void main(){\n" +
     "  vec2 uv = vUv;\n" +
     "  vec2 waveCoord = vUv.xy * 2.0 - 1.0;\n" +
-    "  float time = uTime * 0.25;\n" +
-    "  float frequency = 20.0 * uFrequency;\n" +
-    "  float amp = uAmplitude * 0.2;\n" +
-    "  float waveX = sin((waveCoord.y + uPos.y) * frequency + (time * PI3)) * amp;\n" +
-    "  float waveY = sin((waveCoord.x - uPos.x) * frequency + (time * PI3)) * amp;\n" +
+    "  float time = uTime * uTimeScale;\n" +
+    "  float frequency = uFreqScale * uFrequency;\n" +
+    "  float amp = uAmplitude * uAmpScale;\n" +
+    "  float waveX = sin((waveCoord.y + uPos.y) * frequency + (time * uPhase)) * amp;\n" +
+    "  float waveY = sin((waveCoord.x - uPos.x) * frequency + (time * uPhase)) * amp;\n" +
     "  waveCoord.xy += vec2(mix(waveX, 0., uRotation), mix(0., waveY, uRotation));\n" +
     "  vec2 finalUV = waveCoord * 0.5 + 0.5;\n" +
     "  float aspectRatio = uResolution.x/uResolution.y;\n" +
     "  vec2 mPos = uPos + mix(vec2(0), (uMousePos-0.5), uTrackMouse);\n" +
     "  vec2 pos = mix(uPos, mPos, floor(uMixRadius));\n" +
-    "  float dist = (max(0.,1.-distance(uv * vec2(aspectRatio,1), mPos * vec2(aspectRatio,1)) * 4. * (1. - uMixRadius)));\n" +
+    "  float dist = (max(0.,1.-distance(uv * vec2(aspectRatio,1), mPos * vec2(aspectRatio,1)) * uDistScale * (1. - uMixRadius)));\n" +
     "  uv = mix(uv, finalUV, dist);\n" +
     "  fragColor = texture(tInput, uv);\n" +
     "}";
@@ -236,32 +268,33 @@ export function createShaderFX(
     "#define PI 3.14159265359\n" +
     "in vec2 vUv; out vec4 fragColor;\n" +
     "uniform sampler2D tInput;\n" +
-    "uniform float uAmount, uSpread, uAngle, uTime, uSkew, uMixRadius, uTrackMouse;\n" +
+    "uniform float uAmount, uSpread, uAngle, uTime, uSkew, uMixRadius, uTrackMouse, uCell, uTurns, uSeedPhase, uTimeScale, uOffScale, uDistScale, uMinDist, uRMul;\n" +
+    "uniform vec4 uRand;\n" +
     "uniform vec2 uPos, uResolution, uMousePos;\n" +
-    "vec2 random2(vec2 p){ return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453); }\n" +
+    "vec2 random2(vec2 p){ return fract(sin(vec2(dot(p,uRand.xy),dot(p,uRand.zw)))*uRMul); }\n" +
     "mat2 rot(float a){ return mat2(cos(a),-sin(a),sin(a),cos(a)); }\n" +
     "void main(){\n" +
     "  vec2 uv = vUv;\n" +
     "  float aspectRatio = uResolution.x/uResolution.y;\n" +
     "  vec2 skew = mix(vec2(1), vec2(1,0), uSkew);\n" +
-    "  vec2 st = (uv - uPos) * vec2(aspectRatio,1.) * 50. * uAmount;\n" +
-    "  st = st * rot(uAngle * 2. * PI) * skew;\n" +
+    "  vec2 st = (uv - uPos) * vec2(aspectRatio,1.) * uCell * uAmount;\n" +
+    "  st = st * rot(uAngle * uTurns * PI) * skew;\n" +
     "  vec2 i_st = floor(st);\n" +
     "  vec2 f_st = fract(st);\n" +
-    "  float m_dist = 15.;\n" +
+    "  float m_dist = uMinDist;\n" +
     "  vec2 m_point; vec2 d;\n" +
     "  for (int j=-1;j<=1;j++){ for (int i=-1;i<=1;i++){\n" +
     "    vec2 neighbor = vec2(float(i),float(j));\n" +
     "    vec2 point = random2(i_st + neighbor);\n" +
-    "    point = 0.5 + 0.5 * sin(5. + uTime * 0.2 + 6.2831*point);\n" +
+    "    point = 0.5 + 0.5 * sin(uSeedPhase + uTime * uTimeScale + 6.2831*point);\n" +
     "    vec2 diff = neighbor + point - f_st;\n" +
     "    float dist = length(diff);\n" +
     "    if (dist < m_dist){ m_dist = dist; m_point = point; d = diff; }\n" +
     "  }}\n" +
-    "  vec2 offset = (m_point * 0.2 * uSpread * 2.) - (uSpread * 0.2);\n" +
+    "  vec2 offset = (m_point * uOffScale * uSpread * 2.) - (uSpread * uOffScale);\n" +
     "  vec2 mPos = uPos + mix(vec2(0), (uMousePos-0.5), uTrackMouse);\n" +
     "  vec2 pos = mix(uPos, mPos, floor(uMixRadius));\n" +
-    "  float dist = (max(0.,1.-distance(uv * vec2(aspectRatio,1), mPos * vec2(aspectRatio,1)) * 4. * (1. - uMixRadius)));\n" +
+    "  float dist = (max(0.,1.-distance(uv * vec2(aspectRatio,1), mPos * vec2(aspectRatio,1)) * uDistScale * (1. - uMixRadius)));\n" +
     "  fragColor = texture(tInput, uv + offset * dist);\n" +
     "}";
 
@@ -271,10 +304,8 @@ export function createShaderFX(
     "in vec2 vUv; out vec4 fragColor;\n" +
     "#define PI 3.14159265\n" +
     "#define PI2 6.28318530718\n" +
-    "#define ITERATIONS 50.0\n" +
-    "#define GOLDEN_ANGLE 2.39996323\n" +
     "uniform sampler2D tInput, tBlueNoise;\n" +
-    "uniform float uAmount, uTilt, uTime, uTrackMouse;\n" +
+    "uniform float uAmount, uTilt, uTime, uTrackMouse, uSpread, uBase, uSoftness, uRadMix, uIter, uGolden, uNoiseScale, uJit, uJitA, uJitB, uWBase, uWPow, uWScale, uTiltScale;\n" +
     "uniform vec2 uPos, uResolution, uMousePos, uBlueNoiseResolution;\n" +
     "vec2 Sample(in float theta, inout float r){ r += 1.0/r; return (r-1.0)*vec2(cos(theta),sin(theta)); }\n" +
     "float getBlueNoiseOffset(vec2 st){\n" +
@@ -287,29 +318,29 @@ export function createShaderFX(
     "  vec3 accumulatedWeights = vec3(0.0);\n" +
     "  float accumulatedAlpha = 0.0;\n" +
     "  float aspectRatio = uResolution.x/uResolution.y;\n" +
-    "  vec2 pixelSize = vec2(1.0/aspectRatio,1.0) * 0.04 * 0.075;\n" +
+    "  vec2 pixelSize = vec2(1.0/aspectRatio,1.0) * uBase * uSpread * uSoftness * mix(1.0, blurRadius, uRadMix);\n" +
     "  float r = 1.0;\n" +
-    "  float noiseOffset = (getBlueNoiseOffset(uv) - 0.5) * 0.01;\n" +
+    "  float noiseOffset = (getBlueNoiseOffset(uv) - 0.5) * uNoiseScale;\n" +
     "  float noiseAngle = noiseOffset * PI2;\n" +
     "  mat2 rotationMatrix = mat2(cos(noiseAngle),-sin(noiseAngle),sin(noiseAngle),cos(noiseAngle));\n" +
-    "  for (float j = 0.0; j < GOLDEN_ANGLE * ITERATIONS; j += GOLDEN_ANGLE) {\n" +
+    "  for (float j = 0.0; j < uGolden * uIter; j += uGolden) {\n" +
     "    vec2 offset = Sample(j, r) * pixelSize;\n" +
-    "    float jitterAmount = 0.05 * (sin(j * 0.1) * 0.5 + 0.5);\n" +
-    "    offset *= 1.0 + jitterAmount * sin(j * 0.7 + noiseOffset);\n" +
+    "    float jitterAmount = uJit * (sin(j * uJitA) * 0.5 + 0.5);\n" +
+    "    offset *= 1.0 + jitterAmount * sin(j * uJitB + noiseOffset);\n" +
     "    vec2 sampleOffset = rotationMatrix * offset;\n" +
     "    vec4 colorSample = texture(tex, uv + sampleOffset);\n" +
-    "    vec3 bokehWeight = vec3(5.0) + pow(colorSample.rgb, vec3(9.0)) * 150.0;\n" +
+    "    vec3 bokehWeight = vec3(uWBase) + pow(colorSample.rgb, vec3(uWPow)) * uWScale;\n" +
     "    accumulatedAlpha += colorSample.a;\n" +
     "    accumulatedColor += colorSample.rgb * bokehWeight;\n" +
     "    accumulatedWeights += bokehWeight;\n" +
     "  }\n" +
-    "  return vec4(accumulatedColor/accumulatedWeights, accumulatedAlpha/ITERATIONS);\n" +
+    "  return vec4(accumulatedColor/accumulatedWeights, accumulatedAlpha/uIter);\n" +
     "}\n" +
     "void main(){\n" +
     "  vec2 uv = vUv;\n" +
     "  if (uAmount == 0.0) { fragColor = vec4(0.0); return; }\n" +
     "  vec2 pos = uPos + mix(vec2(0), (uMousePos-0.5), uTrackMouse);\n" +
-    "  float dis = distance(uv, pos) * 1000.0;\n" +
+    "  float dis = distance(uv, pos) * 1000.0 * uTiltScale;\n" +
     "  float tilt = mix(1.0 - dis*0.001, dis*0.001, uTilt);\n" +
     "  float blurRadius = uAmount * tilt;\n" +
     "  fragColor = Bokeh(tInput, uv, blurRadius);\n" +
@@ -331,7 +362,7 @@ export function createShaderFX(
     "uniform sampler2D tInput;\n" +
     "uniform vec3 uBgColor, uOutputColor;\n" +
     "uniform vec2 uPos, uResolution;\n" +
-    "uniform float uAberration, uBlendStrength, uTransparent, uCapAmount;\n" +
+    "uniform float uAberration, uBlendStrength, uTransparent, uCapAmount, uOutAlpha;\n" +
     "void main(){\n" +
     "  vec2 aspect = vec2(uResolution.x/uResolution.y, 1.0);\n" +
     "  vec2 dir = (vUv - uPos) * aspect;\n" +
@@ -352,7 +383,7 @@ export function createShaderFX(
     "  vec3 transparentRgb = mix(transparentRestRgb, uOutputColor, uCapAmount);\n" +
     "  float transparentAlpha = mix(transparentRestAlpha, 1., uCapAmount);\n" +
     "  fragColor.rgb = mix(opaqueRgb, transparentRgb, uTransparent);\n" +
-    "  fragColor.a = mix(1., transparentAlpha, uTransparent);\n" +
+    "  fragColor.a = mix(1., transparentAlpha, uTransparent) * uOutAlpha;\n" +
     "}";
 
   const vignetteProg = createProgram(VS, FS_VIGNETTE);
@@ -524,8 +555,13 @@ export function createShaderFX(
     setF(u, "uFalloff", settings.vignette.falloff);
     setF(u, "uSkew", settings.vignette.skew);
     setF(u, "uAngle", settings.vignette.angle);
-    setF(u, "uSpin", elapsed * 0.035);
-    set2(u, "uPos", currPointer);
+    setF(u, "uSpin", elapsed * T.gradientSpinSpeed);
+    setF(u, "uHalfF", T.vignetteHalfFactor);
+    setF(u, "uFalloffF", T.vignetteFalloffFactor);
+    set2(u, "uPos", [
+      lerp(T.vignetteX, currPointer[0], T.vignetteFollow),
+      lerp(T.vignetteY, currPointer[1], T.vignetteFollow),
+    ]);
     set3(u, "uClearColor", bgColorVec);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -539,7 +575,12 @@ export function createShaderFX(
     const u = sineProg.uniforms;
     bindTex(u, "tInput", inputTex, 0);
     setF(u, "uMixRadius", settings.sine.mixRadius);
-    set2(u, "uPos", [0.5, 0.5]);
+    set2(u, "uPos", [T.sineX, T.sineY]);
+    setF(u, "uTimeScale", T.sineTimeScale);
+    setF(u, "uFreqScale", T.sineFrequencyScale);
+    setF(u, "uAmpScale", T.sineAmplitudeScale);
+    setF(u, "uPhase", T.sinePhase);
+    setF(u, "uDistScale", T.sineDistScale);
     setF(u, "uFrequency", settings.sine.frequency);
     setF(u, "uAmplitude", settings.sine.amplitude);
     setF(u, "uRotation", settings.sine.rotation);
@@ -564,7 +605,16 @@ export function createShaderFX(
     setF(u, "uSpread", settings.shatter.amount);
     setF(u, "uSkew", settings.shatter.skew);
     setF(u, "uTime", elapsed);
-    set2(u, "uPos", [0.5, 0.5]);
+    set2(u, "uPos", [T.shatterX, T.shatterY]);
+    setF(u, "uCell", T.shatterCellScale);
+    setF(u, "uTurns", T.shatterTurns);
+    setF(u, "uSeedPhase", T.shatterSeedPhase);
+    setF(u, "uTimeScale", T.shatterTimeScale);
+    setF(u, "uOffScale", T.shatterOffsetScale);
+    setF(u, "uDistScale", T.shatterDistScale);
+    setF(u, "uMinDist", T.shatterMinDist);
+    setF(u, "uRMul", T.shatterRandMul);
+    if (u.uRand) gl.uniform4f(u.uRand, T.shatterRandA, T.shatterRandB, T.shatterRandC, T.shatterRandD);
     setF(u, "uMixRadius", settings.shatter.mixRadius);
     set2(u, "uMousePos", currPointer);
     setF(u, "uTrackMouse", settings.shatter.trackMouse);
@@ -583,9 +633,24 @@ export function createShaderFX(
     set2(u, "uBlueNoiseResolution", state.blueNoiseResolution);
     set2(u, "uResolution", state.resolution);
     setF(u, "uAmount", settings.bokeh.radius);
+    // Optional bokeh disc-size multiplier (default 1 = original look).
+    setF(u, "uSpread", settings.bokeh.spread ?? 1);
     setF(u, "uTilt", settings.bokeh.tilt);
     setF(u, "uTime", elapsed);
-    set2(u, "uPos", [0.5, 0.5]);
+    set2(u, "uPos", [T.bokehX, T.bokehY]);
+    setF(u, "uBase", T.bokehBaseSize);
+    setF(u, "uSoftness", T.softness);
+    setF(u, "uRadMix", T.bokehRadiusMix);
+    setF(u, "uIter", T.bokehIterations);
+    setF(u, "uGolden", T.bokehGoldenAngle);
+    setF(u, "uNoiseScale", T.bokehNoiseScale);
+    setF(u, "uJit", T.bokehJitter);
+    setF(u, "uJitA", T.bokehJitterFreqA);
+    setF(u, "uJitB", T.bokehJitterFreqB);
+    setF(u, "uWBase", T.bokehWeightBase);
+    setF(u, "uWPow", T.bokehWeightPow);
+    setF(u, "uWScale", T.bokehWeightScale);
+    setF(u, "uTiltScale", T.bokehTiltScale);
     setF(u, "uMixRadius", settings.bokeh.mixRadius);
     set2(u, "uMousePos", currPointer);
     setF(u, "uTrackMouse", settings.bokeh.trackMouse);
@@ -604,7 +669,8 @@ export function createShaderFX(
     set3(u, "uBgColor", bgColorVec);
     set2(u, "uPos", currPointer);
     set2(u, "uResolution", [canvas!.width, canvas!.height]);
-    setF(u, "uAberration", settings.output.aberration);
+    setF(u, "uAberration", settings.output.aberration * T.aberrationScale);
+    setF(u, "uOutAlpha", T.outputAlpha);
     setF(u, "uBlendStrength", settings.output.blendStrength);
     setF(u, "uTransparent", transparentBg ? 1 : 0);
     setF(u, "uCapAmount", settings.output.capAmount || 0);
@@ -627,11 +693,11 @@ export function createShaderFX(
     const delta = now - last;
     last = now;
 
-    const smoothing = stopped ? 0 : 0.1;
+    const smoothing = stopped ? 0 : T.pointerSmoothing;
     currPointer[0] = lerp(currPointer[0], pointer[0], smoothing);
     currPointer[1] = lerp(currPointer[1], pointer[1], smoothing);
     if (!stopped && !reduceMotion) {
-      elapsed += (delta / 1000) * 2;
+      elapsed += (delta / 1000) * T.timeScale;
       const step = scrollDrive * 0.12;
       elapsed += step;
       scrollDrive -= step;

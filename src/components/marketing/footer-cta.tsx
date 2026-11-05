@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 
-import { BottomShader, HLLButton } from "@/components/hll";
+import { BottomShader, HLLButton, makeBottomShaderLayout } from "@/components/hll";
 import {
-  BASE_SETTINGS,
+  TUNED_SETTINGS,
   type ShaderSettings,
 } from "@/components/hll/lightfx/shader-definition";
 
@@ -192,24 +192,40 @@ export function FooterShaderStrip({
 }
 
 /**
- * HLL-UI-Demo's ServicesScrollDemo settings, copied verbatim (QA H-14).
- * Unlisted values never reach the shader; they're only filled from
- * BASE_SETTINGS to satisfy the type.
+ * House of Katha's tuned bottom shader (HLL-UI-Demo, 3 Nov, ServicesScrollDemo
+ * and the Home Media page): their tuned look, with the light following the
+ * pointer at 90% while scrolling (QA H-14).
  */
 const DEMO_SETTINGS: ShaderSettings = {
-  ...BASE_SETTINGS,
-  background: { color: "#ffffff", transparent: true },
-  vignette: { ...BASE_SETTINGS.vignette, radius: 0.53, falloff: 2.6, skew: 0.0, angle: 0 },
-  sine: { ...BASE_SETTINGS.sine, frequency: 0.32, amplitude: 7.4, rotation: 0, mixRadius: 0.8, trackMouse: 1 },
-  shatter: { scale: 0.5, amount: 2.5, angle: 10, skew: 0.9, mixRadius: 1, trackMouse: 1 },
-  bokeh: { radius: 0.82, tilt: 0.5, mixRadius: 1, trackMouse: 0 },
-  output: { color: "#ffffff", aberration: 0.006, blendStrength: 0.85 },
+  ...TUNED_SETTINGS,
+  tune: { ...TUNED_SETTINGS.tune, vignetteFollow: 0.9 },
 };
-/** The demo's plain end-of-page look: the same, with a finer shatter. */
+/** Their end-of-page look: the same, with the full shatter. */
 const DEMO_END_SETTINGS: ShaderSettings = {
-  ...DEMO_SETTINGS,
-  shatter: { ...DEMO_SETTINGS.shatter, scale: 0.2, amount: 1.0 },
+  ...TUNED_SETTINGS,
+  shatter: { ...TUNED_SETTINGS.shatter, amount: 1 },
 };
+
+/** Their heights (% of the screen) and top fades: the fade runs from
+ *  fadeStart% to fadeEnd% of the layer, eased by fadeCurve. */
+const BLEND_LAYER = { hostHeight: 50, fadeStart: 10, fadeEnd: 80, fadeCurve: 1.5 };
+const END_LAYER = { hostHeight: 60, fadeStart: 10, fadeEnd: 70, fadeCurve: 1.25 };
+const BLEND_LAYOUT = makeBottomShaderLayout(BLEND_LAYER.hostHeight);
+const END_LAYOUT = makeBottomShaderLayout(END_LAYER.hostHeight);
+
+function fadeMask(c: typeof BLEND_LAYER): CSSProperties {
+  const span = c.fadeEnd - c.fadeStart || 1e-6;
+  const stops: [number, number][] = [[0, 0]];
+  for (let i = 0; i <= 8; i++) {
+    const t = i / 8;
+    stops.push([c.fadeStart + span * t, t ** c.fadeCurve]);
+  }
+  stops.push([100, 1]);
+  const mask = `linear-gradient(to bottom, ${stops.map(([p, a]) => `rgba(0,0,0,${a.toFixed(3)}) ${p}%`).join(", ")})`;
+  return { WebkitMaskImage: mask, maskImage: mask };
+}
+const BLEND_MASK = fadeMask(BLEND_LAYER);
+const END_MASK = fadeMask(END_LAYER);
 
 /** The demo's "scrolled to the true end": a few px of slack for fractional
  *  scroll positions. */
@@ -308,17 +324,19 @@ export function ScreenShader() {
         key={`blend-${generation}`}
         {...common}
         settings={DEMO_SETTINGS}
+        layout={BLEND_LAYOUT}
         overlay
         paused={!show}
-        style={{ opacity: show && !atEnd ? 1 : 0 }}
+        style={{ ...BLEND_MASK, opacity: show && !atEnd ? 1 : 0 }}
       />
       {nearEnd || warm ? (
         <BottomShader
           key={`end-${generation}`}
           {...common}
           settings={DEMO_END_SETTINGS}
+          layout={END_LAYOUT}
           paused={!nearEnd}
-          style={{ opacity: atEnd ? 1 : 0 }}
+          style={{ ...END_MASK, opacity: atEnd ? 1 : 0 }}
         />
       ) : null}
     </>
