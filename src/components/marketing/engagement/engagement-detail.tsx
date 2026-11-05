@@ -3,26 +3,35 @@ import { notFound } from "next/navigation";
 import { SectionTitle } from "@/components/marketing/home/primitives";
 import { CountUp } from "@/components/marketing/count-up";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
-import { getServiceTheme } from "@/components/marketing/services/service-theme";
 import { ServiceReveal } from "@/components/marketing/services/service-reveal";
+import { serviceHref } from "@/components/hll/variants";
+import { getServicePageByVariant } from "@/data/services";
 import type {
   Engagement,
   EngagementBlock,
   EngagementMedia,
 } from "@/data/engagements";
 import { loadEngagements, relatedEngagements } from "@/lib/payload/engagements";
+import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
+import { getServiceBySlug } from "@/lib/payload/queries";
 
 import { EngagementArtSlot } from "./engagement-art";
 import {
   EngagementCard,
   EngagementMediaBox,
   FUNCTIONAL_STYLE,
-  withAlpha,
 } from "./engagement-card";
-import { EngagementSidebar } from "./engagement-sidebar";
+import { EngagementSidebar, type SidebarService } from "./engagement-sidebar";
 
 /** `text`: the client colour for text, or null where it's too light to read on white. */
-type Tone = { accent: string | null; text: string | null; story: boolean };
+type Tone = {
+  accent: string | null;
+  text: string | null;
+  story: boolean;
+  /** The quote's first sentence: the brand colour, or the artwork's theme
+   *  colour when the brand colour is a grey (Lesielle's #202020). */
+  highlight: string | null;
+};
 
 const BODY =
   "text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]";
@@ -80,65 +89,33 @@ function TextRow({
   );
 }
 
-/** Figma "Media Block": image / video, or the quote on the textured colour. */
-function QuoteBlock({
+/**
+ * House of Katha's case study redesign (5 Nov): "Quote comes as its own
+ * section within the page. The first sentence is highlighted in the main
+ * brand colour." The attribution sits to the left of the quote.
+ */
+function QuoteSection({
   block,
-  accent,
+  tone,
 }: {
   block: Extract<EngagementBlock, { kind: "quote" }>;
-  accent: string;
+  tone: Tone;
 }) {
-  // A very light client colour (Parrot Finance's neon) washes out white text.
-  const ink = !block.media?.src && luminance(accent) > 0.7 ? "text-[var(--hll-dark-grey)]" : "text-[#FAFAFA]";
+  const text = block.quote.trim().replace(/^[“"]|[”"]$/g, "");
+  const cut = text.search(/[.!?](\s|$)/);
+  const first = cut >= 0 ? text.slice(0, cut + 1) : text;
+  const rest = cut >= 0 ? text.slice(cut + 1) : "";
   return (
-    // Mobile: the box keeps Figma's 386 × 244 shape but grows with the quote
-    // (an aspect-ratio box only grows when it doesn't clip, so the clipping
-    // and corners live on the background layer instead).
-    <div
-      data-service-media
-      className="relative aspect-[386/244] rounded-lg lg:aspect-[1118/617] lg:overflow-hidden"
-    >
-      <div className="absolute inset-0 overflow-hidden rounded-lg">
-      {block.media?.src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={block.media.src}
-          alt=""
-          className="absolute inset-0 size-full object-cover"
-        />
-      ) : (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/assets/engagements/quote-texture.webp"
-            alt=""
-            className="absolute inset-0 size-full object-cover grayscale"
-          />
-          <div
-            className="absolute inset-0 mix-blend-color"
-            style={{ background: accent }}
-          />
-          <div
-            className="absolute inset-0 opacity-[0.34] mix-blend-hard-light"
-            style={{ background: accent }}
-          />
-        </>
-      )}
-      </div>
-      {/* Figma Story mobile: a 14px quote 90px down, 12px in, the name
-          50px under it and 14px off the bottom. */}
-      <div className="relative px-3 pb-[14px] pt-[90px] lg:absolute lg:inset-x-0 lg:top-[32.4%] lg:p-0 lg:pl-[22.47%] lg:pr-[22%]">
-        <blockquote className={`text-[14px] leading-[1.25] ${ink} lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]`}>
-          {block.quote}
-        </blockquote>
-        {block.name || block.role ? (
-          <p className={`mt-[50px] text-[14px] leading-[1.25] ${ink} lg:mt-[clamp(2rem,calc(9.26*var(--vw)),8.75rem)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] lg:text-black`}>
-            {block.name}
-            {block.role ? <span className="block">{block.role}</span> : null}
-          </p>
-        ) : null}
-      </div>
-    </div>
+    <figure className="grid grid-cols-[minmax(0,90px)_minmax(0,1fr)] gap-x-3 lg:grid-cols-[331fr_766fr_20fr] lg:gap-x-0">
+      <figcaption className="pt-[3px] text-[12px] leading-[1.25] text-[var(--hll-dark-grey)] lg:pt-[6px] lg:text-[clamp(0.875rem,calc(0.99*var(--vw)),1rem)]">
+        {block.role ? <span className="block">{block.role}</span> : null}
+        {block.name ? <span className="block">{block.name}</span> : null}
+      </figcaption>
+      <blockquote className="text-[20px] leading-[1.16] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)]">
+        &ldquo;<span style={{ color: tone.highlight ?? undefined }}>{first}</span>
+        {rest}&rdquo;
+      </blockquote>
+    </figure>
   );
 }
 
@@ -185,9 +162,6 @@ function Block({
   /** The phone hero (in the sidebar). */
   mobile?: boolean;
 }) {
-  // The desktop hero carries the quote as live text (17 Oct handoff), so the
-  // quote block below it only shows on phones, under the phone hero.
-  const heroHasQuote = Boolean(art?.slots["hero-desktop"]?.live && art?.quote?.text);
   switch (block.kind) {
     case "media":
       if (isHero && art) {
@@ -205,11 +179,7 @@ function Block({
         </div>
       );
     case "quote":
-      return (
-        <div className={heroHasQuote ? "lg:hidden" : undefined}>
-          <QuoteBlock block={block} accent={tone.accent ?? "#444444"} />
-        </div>
-      );
+      return <QuoteSection block={block} tone={tone} />;
     case "mediaGrid":
       return (
         <div className={MEDIA_INSET}>
@@ -264,36 +234,38 @@ function Block({
           <div>
             <Label tone={tone}>{block.label}</Label>
           </div>
-          {/* Mobile: hairlines out to 8px from the edges, the 64px number
-              above its copy, 146px from line to line. */}
+          {/* House of Katha's redesign (5 Nov): a stat that is a figure
+              (30+, 65%, $5M) shows large beside its sentence; one in words
+              ("Two paths", "Stabilised") drops the figure and keeps the
+              sentence ("Up to 4" leads it). The two can mix in one block.
+              Mobile: hairlines out to 8px from the edges. */}
           <ul className="-mx-3 lg:mx-0">
-            {block.items.map((item, i) => (
-              <li key={item.stat + item.text}>
-                <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
-                {/* Figma: the first row sits level with the label (number
-                    10px, copy 20px under the line); later rows 25 / 31px. */}
-                <div
-                  className={`grid grid-cols-1 px-3 pt-[10px] lg:grid-cols-[165fr_345fr] lg:px-0 ${i < block.items.length - 1 ? "pb-4 lg:pb-[28px]" : ""} ${i === 0 ? "lg:pt-[10px]" : "lg:pt-[25px]"}`}
-                >
-                  {/* Client review 21 Oct: a figure in words ("Expert-vetted",
-                      "1 senior specialist") at number size pushed into the
-                      copy beside it, so words take the smaller title size. */}
-                  <CountUp
-                    value={item.stat}
-                    className={`min-w-0 pl-px font-light leading-[1.16] text-black lg:pl-[6px] ${
-                      /[A-Za-z]{5,}/.test(item.stat)
-                        ? "text-[32px] lg:pr-4 lg:text-[clamp(1.25rem,calc(1.85*var(--vw)),1.75rem)]"
-                        : "text-[64px] lg:text-[clamp(2.5rem,calc(4.23*var(--vw)),4rem)]"
-                    }`}
-                  />
-                  <p
-                    className={`min-w-0 pt-[10px] ${i === 0 ? "" : "lg:pt-[6px]"} ${BODY}`}
+            {block.items.map((item, i) => {
+              const figure = isFigure(item.stat);
+              const sentence = figure
+                ? item.text
+                : /\d/.test(item.stat)
+                  ? `${item.stat} ${item.text.charAt(0).toLowerCase()}${item.text.slice(1)}`
+                  : item.text;
+              return (
+                <li key={item.stat + item.text}>
+                  <div data-line className="h-px bg-[var(--hll-mid-grey)]" />
+                  <div
+                    className={`grid grid-cols-1 px-3 pt-[10px] lg:px-0 ${figure ? "lg:grid-cols-[165fr_345fr]" : "lg:pl-[13px] lg:pr-[17%]"} ${i < block.items.length - 1 ? "pb-4 lg:pb-[28px]" : ""} ${i === 0 ? "lg:pt-[10px]" : "lg:pt-[25px]"}`}
                   >
-                    {item.text}
-                  </p>
-                </div>
-              </li>
-            ))}
+                    {figure ? (
+                      <CountUp
+                        value={item.stat}
+                        className="min-w-0 pl-px text-[64px] font-light leading-[1.16] text-black lg:pl-[6px] lg:text-[clamp(2.5rem,calc(4.23*var(--vw)),4rem)]"
+                      />
+                    ) : null}
+                    <p className={`min-w-0 ${figure ? "pt-[10px]" : ""} ${figure && i > 0 ? "lg:pt-[6px]" : ""} ${BODY}`}>
+                      {sentence}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       );
@@ -400,16 +372,11 @@ function Spacer({
  * colour, all case studies in it will be of the same service". Story:
  * "gradient is based on the colours of this project".
  */
-function RelatedBand({ items, color }: { items: Engagement[]; color: string }) {
+function RelatedBand({ items }: { items: Engagement[] }) {
   if (!items.length) return null;
+  // House of Katha's redesign (5 Nov): on the page's own background.
   return (
-    <section
-      data-related-band
-      className="pb-12 pt-10 lg:px-[10px] lg:pb-[82px] lg:pt-[65px]"
-      style={{
-        background: `linear-gradient(180deg, ${withAlpha(color, 0)}, ${withAlpha(color, 0.7)})`,
-      }}
-    >
+    <section data-related-band className="pb-12 pt-10 lg:px-[10px] lg:pb-[82px] lg:pt-[65px]">
       <div className="px-5 [--related-title:24px] lg:px-[20px] lg:[--related-title:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
         <SectionTitle
           variant="engagement"
@@ -467,10 +434,68 @@ function themeColour(palette: readonly string[] | undefined) {
   return hexes.length ? hexes.reduce((a, b) => (chroma(b) > chroma(a) ? b : a)) : null;
 }
 
+/** A stat that is a figure (30+, 65%, $5M, 4x, 3.2s) rather than words. */
+function isFigure(stat: string) {
+  return /^[~<>≈$€£₹]?\s*\d[\d.,]*\s*(%|\+|x|×|k|m|b|bn|s|ms|d|h|hrs?|days?|weeks?|months?|years?)?\+?$/i.test(stat.trim());
+}
+
 /** Relative brightness of a #rrggbb colour, 0 (black) to 1 (white). */
 function luminance(hex: string) {
   const n = parseInt(hex.replace("#", "").slice(0, 6), 16);
   return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+}
+
+/**
+ * The case study hero (House of Katha's redesign, 5 Nov): "Hero Image with
+ * logo - hero image can be mockup, or a brand image. Static ripples that
+ * match the brand's palette." A named client's brand still from the 5 Nov
+ * handoff, else the still ripple with the logo, else the page's first image.
+ */
+function HeroArt({
+  engagement,
+  heroBlock,
+  tone,
+}: {
+  engagement: Engagement;
+  heroBlock: EngagementBlock | null;
+  tone: Tone;
+}) {
+  const art = engagement.art;
+  const slot = "feature-wide_1492x843";
+  const still = art?.cardMedia?.[slot]?.poster;
+  if (still) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={still}
+        alt={engagement.client}
+        className="block aspect-[1492/843] w-full rounded-lg object-cover"
+      />
+    );
+  }
+  if (art?.slots[slot]) {
+    return <EngagementArtSlot art={art} slot={slot} alt={engagement.client} client={engagement.client} still />;
+  }
+  return heroBlock ? (
+    <Block block={heroBlock} tone={tone} isHero art={art} client={engagement.client} mobile />
+  ) : null;
+}
+
+/**
+ * The page's blocks under the hero, with the quote moved to follow the
+ * opening run of text sections ("Quote comes as its own section within the
+ * page", House of Katha, 5 Nov). The first image block becomes the hero.
+ */
+function arrange(blocks: EngagementBlock[]) {
+  const heroBlock = blocks[0]?.kind === "media" ? blocks[0] : null;
+  const body = heroBlock ? blocks.slice(1) : blocks;
+  const quotes = body.filter((b) => b.kind === "quote");
+  const rest: EngagementBlock[] = body.filter((b) => b.kind !== "quote");
+  const isText = (b: EngagementBlock) => b.kind === "text" || b.kind === "showcase";
+  let at = Math.max(0, rest.findIndex(isText));
+  while (at < rest.length && isText(rest[at])) at++;
+  rest.splice(at, 0, ...quotes);
+  return { heroBlock, body: rest };
 }
 
 /** Figma Desktop › Case Study Template (1068:4964) / Engagement Story Template (1192:8048). */
@@ -483,12 +508,34 @@ export async function EngagementDetail({ slug }: { slug: string }) {
   // Ma'am's review 22 Oct: an engagement without a brand colour takes its
   // artwork's theme colour (the strongest in its ripple palette), not grey.
   const accent = engagement.primaryColor ?? themeColour(engagement.art?.ripple.palette) ?? null;
-  const tone: Tone = { accent, text: readableOnWhite(accent), story };
-  const serviceColor = engagement.services[0]
-    ? getServiceTheme(engagement.services[0]).accent
-    : "#444444";
-  const bandColor = story ? (accent ?? serviceColor) : serviceColor;
-  const { blocks } = engagement;
+  const greyish = (hex: string | null) => {
+    if (!hex || !/^#[0-9a-f]{6}$/i.test(hex)) return true;
+    const n = parseInt(hex.slice(1), 16);
+    const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    return Math.max(...rgb) - Math.min(...rgb) < 40;
+  };
+  const text = readableOnWhite(accent);
+  const highlight =
+    text && !greyish(text) ? text : readableOnWhite(themeColour(engagement.art?.ripple.palette)) ?? text;
+  const tone: Tone = { accent, text, story, highlight };
+  const { heroBlock, body } = arrange(engagement.blocks);
+  // "Service is listed in its own tab and leads you to the service page",
+  // with the capability page's own headline under its name.
+  const services: SidebarService[] = await Promise.all(
+    engagement.services.map(async (variant) => {
+      const page = getServicePageByVariant(variant);
+      let tagline = page?.hero.headline ?? "";
+      if (page) {
+        try {
+          tagline = mapServiceToPage(await getServiceBySlug(page.slug), page).hero.headline || tagline;
+        } catch {
+          // the static headline stays
+        }
+      }
+      return { variant, href: serviceHref(variant), tagline };
+    }),
+  );
+  const hero = <HeroArt engagement={engagement} heroBlock={heroBlock} tone={tone} />;
 
   return (
     // The header mark takes the client colour, unless that's too light to
@@ -496,38 +543,32 @@ export async function EngagementDetail({ slug }: { slug: string }) {
     <MarketingShell markTint={accent && luminance(accent) < 0.7 ? accent : undefined}>
       <ServiceReveal>
         <div className="hll-home hll-service-page">
-          <div className="lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
+          {/* House of Katha's redesign (5 Nov): the hero runs the page's
+              width at the top; the sticky sidebar starts below it. */}
+          <div className="hidden px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pt-[clamp(2rem,calc(3.57*var(--vw)),3.375rem)] lg:block">
+            {hero}
+          </div>
+          <div className="lg:mt-3 lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
             <EngagementSidebar
               engagement={engagement}
-              accent={accent}
-              mobileHero={
-                blocks[0] ? (
-                  <Block block={blocks[0]} tone={tone} isHero art={engagement.art} client={engagement.client} mobile />
-                ) : null
-              }
+              services={services}
+              palette={engagement.art?.ripple.palette}
+              mobileHero={hero}
             />
             <div
-              className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-16 ${story ? "pt-[139px]" : "pt-[154px]"}`}
+              className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-[clamp(4rem,calc(8.6*var(--vw)),8.125rem)] ${story ? "pt-[139px]" : "pt-[154px]"}`}
             >
-              {blocks.map((block, i) => (
-                <div key={block.id} className={i === 0 ? "hidden lg:block" : undefined}>
+              {body.map((block, i) => (
+                <div key={block.id}>
                   {i > 0 ? (
-                    <Spacer
-                      prev={blocks[i - 1]}
-                      cur={block}
-                      story={story}
-                      afterHero={i === 1}
-                    />
+                    <Spacer prev={body[i - 1]} cur={block} story={story} afterHero={false} />
                   ) : null}
-                  <Block block={block} tone={tone} isHero={i === 0} art={engagement.art} client={engagement.client} />
+                  <Block block={block} tone={tone} isHero={false} art={engagement.art} client={engagement.client} />
                 </div>
               ))}
             </div>
           </div>
-          <RelatedBand
-            items={relatedEngagements(engagement, all)}
-            color={bandColor}
-          />
+          <RelatedBand items={relatedEngagements(engagement, all)} />
         </div>
       </ServiceReveal>
     </MarketingShell>

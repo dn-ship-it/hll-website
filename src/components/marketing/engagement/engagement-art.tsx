@@ -39,6 +39,7 @@ export function EngagementArtSlot({
   client,
   live = false,
   hoverOnly = false,
+  still = false,
   cardMedia,
   className = "",
   children,
@@ -52,6 +53,9 @@ export function EngagementArtSlot({
   live?: boolean;
   /** Hold the ripple still until the pointer is over it (engagement cards). */
   hoverOnly?: boolean;
+  /** Hold the ripple on one frame (the case study hero: "Static ripples that
+   *  match the brand's palette", House of Katha, 5 Nov). */
+  still?: boolean;
   /** A named client's card video or still (5 Nov handoff), in place of the
    *  ripple and its layer: the logo is already in the media. */
   cardMedia?: { video?: string; poster: string };
@@ -80,7 +84,7 @@ export function EngagementArtSlot({
   if (typeof s.speed === "number") attrs.speed = String(s.speed);
   // Cards hold their ripple on one frame and run it only while hovered
   // (5 Nov); it picks up where it stopped.
-  if (hoverOnly && !hovered) attrs.paused = "";
+  if ((hoverOnly && !hovered) || still) attrs.paused = "";
 
   const fill = "absolute inset-0 size-full";
   const L = live ? s.live : undefined;

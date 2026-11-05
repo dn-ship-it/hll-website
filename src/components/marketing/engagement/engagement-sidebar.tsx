@@ -1,18 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createPortal } from "react-dom";
 import { ArrowUpRight, Clock, Factory, MapPin, MonitorCog } from "lucide-react";
 
 import { GradientRevealTextNormal } from "@/components/hll";
 import { CountUp } from "@/components/marketing/count-up";
+import type { ServiceVariant } from "@/components/hll/variants";
 import {
   SERVICE_LABELS,
   type Engagement,
   type EngagementStat,
 } from "@/data/engagements";
 
-import { FUNCTIONAL_STYLE, withAlpha } from "./engagement-card";
+import { FUNCTIONAL_STYLE } from "./engagement-card";
+
+/** A capability the engagement sits under, as its own sidebar tab. */
+export type SidebarService = { variant: ServiceVariant; href: string; tagline: string };
+
+/** House of Katha's redesign (5 Nov): the sidebar's grey cards. */
+const CARD = "rounded-lg bg-[#F0F0F0]";
 
 const META =
   "hll-label text-[10px] uppercase leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]";
@@ -59,7 +67,18 @@ const tickText = (v: number) => String(Number(v.toPrecision(3)));
  * the axis now runs from 0 to just above the largest bar, and each bar shows
  * its value as written in the ledger (3.2s, $60M, 22%).
  */
-function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
+function StatCard({
+  stat,
+  shown,
+  palette,
+}: {
+  stat: EngagementStat;
+  shown: boolean;
+  /** "The graph colours are in the same ripple palette" (HoK, 5 Nov). */
+  palette?: string[];
+}) {
+  const hexes = (palette ?? []).filter((c) => /^#[0-9a-f]{6}$/i.test(c));
+  const stops = hexes.length >= 2 ? hexes.slice(0, 4) : ["#FA4288", "#FB8E97", "#FF836B", "#FEE253"];
   const bars = stat.chart.slice(0, 6);
   const max = niceCeil(Math.max(...bars.map((b) => b.value), 0) * 1.05);
   // Chart box in card px (Figma): gridlines 150–236, bars from x 29, 67px apart.
@@ -125,10 +144,9 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
               y2="0"
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0" stopColor="#FA4288" />
-              <stop offset="0.42" stopColor="#FB8E97" />
-              <stop offset="0.63" stopColor="#FF836B" />
-              <stop offset="0.86" stopColor="#FEE253" />
+              {stops.map((c, i) => (
+                <stop key={i} offset={stops.length > 1 ? (i / (stops.length - 1)) * 0.86 : 0} stopColor={c} />
+              ))}
             </linearGradient>
             <linearGradient id="stat-bar-fade" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0" stopColor="#fff" stopOpacity="1" />
@@ -206,7 +224,7 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
                   x2={x + 63}
                   y1={top}
                   y2={top}
-                  stroke="#FEE253"
+                  stroke={stops[stops.length - 1]}
                   strokeWidth="3"
                   filter="url(#stat-glow)"
                   opacity="0.9"
@@ -254,89 +272,116 @@ function StatCard({ stat, shown }: { stat: EngagementStat; shown: boolean }) {
 }
 
 /**
- * The left column of both templates: "this section remains sticky throughout
- * the entire page". The artifact shows from page load (QA E-04). The strip
- * behind it takes the client's colour.
+ * The left column of both templates, as House of Katha's redesign (5 Nov):
+ * "The sticky side bar starts from below the hero image section" — grey
+ * cards for the name and details, each capability ("listed in its own tab
+ * and leads you to the service page") and the artifact. Phones: the name,
+ * the hero, then the cards; the artifact folds into its sticky pill.
  */
 export function EngagementSidebar({
   engagement,
-  accent,
+  services,
+  palette,
   mobileHero,
 }: {
   engagement: Engagement;
-  accent: string | null;
-  /** Figma mobile: the hero media sits between the name and the details. */
+  services: SidebarService[];
+  palette?: string[];
+  /** Figma mobile: the hero sits between the name and the details. */
   mobileHero?: React.ReactNode;
 }) {
   const [artifactShown, setArtifactShown] = useState(false);
-
-  // QA E-04: the artifact loads with the rest of the page (it used to wait
-  // for its supporting section to scroll into view, leaving the column
-  // empty). Shown just after mount, so its count-up and bars still play.
+  // QA E-04: the artifact loads with the rest of the page. Shown just after
+  // mount, so its count-up and bars still play.
   useEffect(() => {
     const timer = window.setTimeout(() => setArtifactShown(true), 300);
     return () => window.clearTimeout(timer);
   }, []);
 
-  const strip = accent ?? "#444444";
+  const name = (
+    <GradientRevealTextNormal
+      as="h1"
+      text={engagement.client}
+      variant="engagement"
+      // The 8-character measure is the desktop card's; phones use the full
+      // width (HoK's mobile review, 5 Nov: one word per line).
+      className="block text-[var(--hll-dark-grey)] lg:max-w-[8ch]"
+      fontWeight={500}
+      fontSize="var(--eng-name-size)"
+      letterSpacing="0"
+      lineHeight="1.16"
+    />
+  );
 
   return (
-    <aside className="relative [--eng-name-size:24px] lg:sticky lg:top-[var(--nav-h)] lg:h-[calc(calc(100*var(--vh))-var(--nav-h))] lg:[--eng-name-size:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
-      <div
-        aria-hidden
-        className="absolute inset-y-0 left-0 hidden w-full lg:block lg:w-[97.4%]"
-        style={{
-          background: `linear-gradient(180deg, ${withAlpha(strip, 0.2)}, ${withAlpha(strip, 0.05)})`,
-        }}
-      />
-      {/* Figma Case Study mobile: name 8px under the nav, the hero 32px
-          below, then the details 32px below that. */}
-      <div className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pt-2 lg:h-full lg:pt-[52px]">
-        <GradientRevealTextNormal
-          as="h1"
-          text={engagement.client}
-          variant="engagement"
-          // The 8-character measure is the desktop sidebar's; phones use the
-          // full width (HoK's mobile review, 5 Nov: one word per line).
-          className="block text-[var(--hll-dark-grey)] lg:max-w-[8ch]"
-          fontWeight={500}
-          fontSize="var(--eng-name-size)"
-          letterSpacing="0"
-          lineHeight="1.16"
-        />
-        {mobileHero ? <div className="-mx-3 mt-8 lg:hidden">{mobileHero}</div> : null}
-        <ul data-fade-up className="mt-8 space-y-3 pl-[2px] lg:mt-9 lg:pl-0">
-          {engagement.period ? (
-            <MetaRow icon={Clock}>{engagement.period}</MetaRow>
-          ) : null}
-          {engagement.industry ? (
-            <MetaRow icon={Factory}>{engagement.industry}</MetaRow>
-          ) : null}
-          {engagement.location ? (
-            <MetaRow icon={MapPin}>{engagement.location}</MetaRow>
-          ) : null}
-          {engagement.services.length ? (
-            <MetaRow icon={MonitorCog}>
-              {engagement.services.map((s) => (
-                <span key={s} className="block leading-[16px]">
-                  {SERVICE_LABELS[s]}
-                </span>
-              ))}
-            </MetaRow>
-          ) : null}
-        </ul>
+    <aside className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pt-2 [--eng-name-size:24px] lg:sticky lg:top-[calc(var(--nav-h)+12px)] lg:pl-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pr-[11px] lg:pt-0 lg:[--eng-name-size:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
+      <div className="lg:hidden">{name}</div>
+      {mobileHero ? <div className="-mx-3 mt-8 lg:hidden">{mobileHero}</div> : null}
+
+      <div className="mt-8 space-y-2 lg:mt-0 lg:space-y-3">
+        <div className={`${CARD} p-3 lg:flex lg:min-h-[clamp(14rem,calc(26.5*var(--vw)),25rem)] lg:flex-col lg:justify-between lg:p-5`}>
+          <div className="hidden lg:block">{name}</div>
+          <ul data-fade-up className="space-y-3 pl-[2px] lg:mt-9 lg:pl-0">
+            {engagement.period ? (
+              <MetaRow icon={Clock}>{engagement.period}</MetaRow>
+            ) : null}
+            {engagement.industry ? (
+              <MetaRow icon={Factory}>{engagement.industry}</MetaRow>
+            ) : null}
+            {engagement.location ? (
+              <MetaRow icon={MapPin}>{engagement.location}</MetaRow>
+            ) : null}
+            {engagement.services.length ? (
+              <MetaRow icon={MonitorCog}>
+                {engagement.services.map((s) => (
+                  <span key={s} className="block leading-[16px]">
+                    {SERVICE_LABELS[s]}
+                  </span>
+                ))}
+              </MetaRow>
+            ) : null}
+          </ul>
+        </div>
+
+        {services.map((service) => (
+          <Link
+            key={service.variant}
+            href={service.href}
+            className={`${CARD} group relative block p-3 pr-12 transition-colors duration-300 hover:bg-[#E8E8E8] lg:p-5 lg:pr-14`}
+          >
+            <span className="flex items-center gap-[10px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/assets/services/${service.variant}-icon.svg`}
+                alt=""
+                className="size-6 shrink-0 rounded-[4px] lg:size-7"
+              />
+              <span className="text-[18px] leading-[1.16] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.46*var(--vw)),1.375rem)]">
+                {SERVICE_LABELS[service.variant]}
+              </span>
+            </span>
+            {service.tagline ? (
+              <span className="mt-3 block text-[12px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[13px]">
+                {service.tagline}
+              </span>
+            ) : null}
+            <span
+              aria-hidden
+              className="absolute right-3 top-3 grid size-7 place-items-center rounded-[4px] bg-white text-[var(--hll-dark-grey)] lg:right-4 lg:top-4"
+            >
+              <ArrowUpRight className="size-[14px]" strokeWidth={1.4} />
+            </span>
+          </Link>
+        ))}
 
         {engagement.stat ? (
-          // Ma'am's review 22 Oct: the card sat at the foot of the full-height
-          // panel, leaving a large gap under the details on tall screens; it
-          // now follows them.
-          <div className="hidden lg:-ml-4 lg:mr-[3.5%] lg:mt-[clamp(2rem,5vh,3.5rem)] lg:block">
-            <StatCard stat={engagement.stat} shown={artifactShown} />
+          <div className="hidden lg:block">
+            <StatCard stat={engagement.stat} shown={artifactShown} palette={palette} />
           </div>
         ) : null}
       </div>
       {engagement.stat ? (
-        <MobileArtifact stat={engagement.stat} available={artifactShown} />
+        <MobileArtifact stat={engagement.stat} available={artifactShown} palette={palette} />
       ) : null}
     </aside>
   );
@@ -351,9 +396,11 @@ export function EngagementSidebar({
 function MobileArtifact({
   stat,
   available,
+  palette,
 }: {
   stat: EngagementStat;
   available: boolean;
+  palette?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [atRelated, setAtRelated] = useState(false);
@@ -417,7 +464,7 @@ function MobileArtifact({
       <div
         className={`absolute bottom-[calc(100%+8px)] -left-[5px] w-[344px] max-w-[calc(100vw-30px)] ${open ? "" : "pointer-events-none"}`}
       >
-        <StatCard stat={stat} shown={open} />
+        <StatCard stat={stat} shown={open} palette={palette} />
       </div>
       <button
         type="button"
