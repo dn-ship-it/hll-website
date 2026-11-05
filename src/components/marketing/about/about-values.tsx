@@ -21,16 +21,23 @@ import type { AboutPageData } from "@/data/about";
  * Nav Bar and the scroll position drives every step, smoothed so it follows
  * the scroll speed without jumps. Phones keep the timed storyboard.
  */
-const STAGE = { w: 1451, h: 774 };
-const FOCUS = { x: 0, y: 0, w: 722, h: 700 };
-const THUMB = { size: 62, gap: 13.5, y: 712 };
+// House of Katha's refined storyboard (Figma HLL-Website-Feedback 116:5150,
+// 5 Nov), in its 1454 × 762 stage: the focus is a 758px square; the other
+// values first gather as tall strips on the right, then settle into a row of
+// 65px thumbnails under the copy. The focused value leaves the row.
+const STAGE = { w: 1454, h: 762 };
+const FOCUS = { x: 0, y: 0, w: 758, h: 758 };
+const STRIP = { x: 907.8, pitch: 92.4, y: 350.9, w: 84.2, h: 407.1 };
+const THUMB = { x: 1027.6, pitch: 72, y: 695.2, size: 65 };
+const COPY = { x: 822, w: 612 };
 const SLIT = { w: 17, h: 225, gap: 13 };
+const PANEL_GAP = 13;
 const HOLD_MS = 7000;
 
 /** Desktop timeline, in screen heights of scroll. */
 const LEAD = 0.35; // the intro starts this far before the stage pins
-const INTRO = 0.9; // slits → panels → first value
-const STEP = 0.75; // one value to the next
+const INTRO = 1.2; // slits → panels → strips → first value
+const STEP = 0.8; // one value to the next
 const END_HOLD = 0.35; // the last value rests before the page moves on
 
 type Phase = "hidden" | "slits" | "panels" | "settled";
@@ -63,29 +70,38 @@ const slitBox = (index: number, count: number, span = STAGE.w): Box => {
   };
 };
 const panelBox = (index: number, count: number, span = STAGE.w): Box => {
-  const w = (span - (count - 1) * SLIT.gap) / count;
-  return { x: index * (w + SLIT.gap), y: 0, w, h: FOCUS.h };
+  const w = (span - (count - 1) * PANEL_GAP) / count;
+  return { x: index * (w + PANEL_GAP), y: 0, w, h: FOCUS.h };
 };
-// Thumbnails keep their order (the focused value's slot is drawn separately).
-const thumbBox = (index: number): Box => ({
-  x: index * (THUMB.size + THUMB.gap),
+const stripBox = (slot: number): Box => ({
+  x: STRIP.x + slot * STRIP.pitch,
+  y: STRIP.y,
+  w: STRIP.w,
+  h: STRIP.h,
+});
+const thumbBox = (slot: number): Box => ({
+  x: THUMB.x + slot * THUMB.pitch,
   y: THUMB.y,
   w: THUMB.size,
   h: THUMB.size,
 });
+/** A value's place in the row while `focus` has the focus (the row skips it). */
+const slotOf = (index: number, focus: number) => (index < focus ? index : index - 1);
 
 /** Where the desktop storyboard is at timeline position `t` (screens). */
 function timelineAt(t: number, count: number) {
   const intro = clamp01(t / INTRO);
-  const toPanels = smooth(intro / 0.45);
-  const toSettled = smooth((intro - 0.45) / 0.55);
+  const toPanels = smooth(intro / 0.3);
+  const toStrips = smooth((intro - 0.3) / 0.35);
+  const toThumbs = smooth((intro - 0.65) / 0.35);
   const f = Math.min(count - 1, Math.max(0, (t - INTRO) / STEP));
   const from = Math.floor(f);
   const to = Math.min(count - 1, from + 1);
-  // Each step holds a moment, then moves: the swap runs over its last 80%,
-  // so it glides rather than snaps.
-  const k = from === to ? 0 : smooth((f - from - 0.2) / 0.8);
-  return { toPanels, toSettled, from, to, k };
+  // Hannan (3 Nov): each value should "land", so people go through them one
+  // by one rather than in one fluid run. Each step holds for its first 40%,
+  // then moves over the rest.
+  const k = from === to ? 0 : smooth((f - from - 0.4) / 0.6);
+  return { toPanels, toStrips, toThumbs, from, to, k };
 }
 
 export function AboutValuesSection({
@@ -293,12 +309,14 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
     });
   };
 
-  const { toPanels, toSettled, from, to, k } = timelineAt(shown, count);
-  const settled = toSettled >= 1;
+  const { toPanels, toStrips, toThumbs, from, to, k } = timelineAt(shown, count);
+  const settled = toThumbs >= 1;
   const current = k < 0.5 ? from : to;
   const item = data.items[current];
-  // The copy fades out as the swap starts and back in as it lands.
-  const copyOpacity = toSettled * Math.abs(k - 0.5) * 2;
+  // The copy sharpens in from a blur as the thumbnails settle (the
+  // storyboard's 4th frame), then fades out and in around each swap.
+  const copyOpacity = toThumbs * Math.abs(k - 0.5) * 2;
+  const copyBlur = (1 - toThumbs) * 12;
 
   return (
     <div
@@ -319,12 +337,21 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
             // How much this value is the focus: the outgoing one shrinks
             // while the incoming one grows.
             const weight = index === from ? 1 - k : index === to ? k : 0;
-            const settledBox = lerpBox(thumbBox(index), FOCUS, weight);
-            const box = lerpBox(
-              lerpBox(slitBox(index, count, span), panelBox(index, count, span), toPanels),
-              settledBox,
-              toSettled,
-            );
+            // Its place in the row before and after the swap (the focused
+            // value has none: it's the square).
+            const rowBox = (make: (slot: number) => Box) =>
+              lerpBox(
+                index === from ? FOCUS : make(slotOf(index, from)),
+                index === to ? FOCUS : make(slotOf(index, to)),
+                k,
+              );
+            // The intro: slits → panels → the first value takes the square
+            // while the rest gather as strips → strips become thumbnails.
+            const opening = lerpBox(slitBox(index, count, span), panelBox(index, count, span), toPanels);
+            const gathered = lerpBox(opening, index === 0 ? FOCUS : stripBox(slotOf(index, 0)), toStrips);
+            const box = toThumbs < 1 && from === 0 && k === 0
+              ? lerpBox(gathered, index === 0 ? FOCUS : thumbBox(slotOf(index, 0)), toThumbs)
+              : rowBox(thumbBox);
             const isFocus = settled && index === current;
             // The video fades with the focus, out as its value shrinks and
             // in as the next grows, rather than cutting at the halfway point.
@@ -343,7 +370,7 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
                   top: pct(box.y, STAGE.h),
                   width: pct(box.w, STAGE.w),
                   height: pct(box.h, STAGE.h),
-                  borderRadius: lerp(4, 10, weight * toSettled),
+                  borderRadius: lerp(4, 10, weight * toThumbs),
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -353,7 +380,7 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
                   className="size-full object-cover"
                   // Thumbnails are monochrome; the incoming value saturates
                   // into colour as it grows (the "loader").
-                  style={{ filter: `grayscale(${toSettled * (1 - weight)})` }}
+                  style={{ filter: `grayscale(${toThumbs * (1 - weight)})` }}
                 />
                 {videoOpacity > 0 && value.video ? (
                   <video
@@ -370,44 +397,18 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
             );
           })}
 
-          {/* The focused value keeps its place in the thumbnail row, in
-              colour, its outline sliding along as the focus moves. */}
-          <span
-            aria-hidden
-            className="absolute overflow-hidden rounded-[4px] outline outline-1 outline-offset-2 outline-[var(--hll-dark-grey)]"
-            style={{
-              left: pct(lerp(from, to, k) * (THUMB.size + THUMB.gap), STAGE.w),
-              top: pct(THUMB.y, STAGE.h),
-              width: pct(THUMB.size, STAGE.w),
-              height: pct(THUMB.size, STAGE.h),
-              opacity: toSettled,
-            }}
-          >
-            {/* The outgoing value's image fades into the incoming one's. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={data.items[from].image} alt="" className="absolute inset-0 size-full object-cover" />
-            {to !== from ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={data.items[to].image}
-                alt=""
-                className="absolute inset-0 size-full object-cover"
-                style={{ opacity: k }}
-              />
-            ) : null}
-          </span>
-
           <div
             className="absolute"
             style={{
-              left: pct(819, STAGE.w),
+              left: pct(COPY.x, STAGE.w),
               top: 0,
-              width: pct(632, STAGE.w),
+              width: pct(COPY.w, STAGE.w),
               opacity: copyOpacity,
+              filter: copyBlur > 0.05 ? `blur(${copyBlur.toFixed(2)}px)` : undefined,
             }}
             aria-live="polite"
           >
-            {toSettled > 0 ? (
+            {toThumbs > 0 ? (
               <div key={item.id}>
                 <GradientRevealTextNormal
                   as="h3"
