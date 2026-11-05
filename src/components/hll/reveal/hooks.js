@@ -86,17 +86,21 @@ export function useTextReveal(rootRef, options = {}) {
 
 /* --------------------------------------------------------------- image */
 
-const CANDIDATES = "img, video, [style*='url(']";
+// Site addition: [data-reveal-media] reveals a whole media box (a card's
+// image with its tags and arrow) as one, so the overlays don't float over a
+// half-revealed image; the media inside it is then left to the box.
+const CANDIDATES = "img, video, [style*='url('], [data-reveal-media]";
 const NUMERIC = ['rate', 'startOffset', 'heightRange', 'margin', 'maxBlur'];
 
 function imageEligible(el) {
   if (el.closest("[data-no-image-reveal], nav, [role='dialog'], [data-image-scrub]")) return false;
+  if (el.parentElement && el.parentElement.closest('[data-reveal-media]')) return false;
   for (let node = el; node && node !== document.body; node = node.parentElement) {
     const pos = getComputedStyle(node).position;
     if (pos === 'fixed' || pos === 'sticky') return false;
   }
   const style = getComputedStyle(el);
-  if (!el.matches('img, video') && style.backgroundImage === 'none') return false;
+  if (!el.matches('img, video, [data-reveal-media]') && style.backgroundImage === 'none') return false;
   if (style.clipPath !== 'none') return false;
   return true;
 }

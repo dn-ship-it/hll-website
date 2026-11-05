@@ -99,6 +99,8 @@ export function EngagementCard({
     );
   return (
     <Link href={`/engagement/${engagement.slug}`} className="group block">
+      {/* The scroll reveal takes the media box whole, tags and all. */}
+      <div data-reveal-media>
       <Media>
         <span
           aria-hidden
@@ -119,6 +121,7 @@ export function EngagementCard({
           </span>
         ) : null}
       </Media>
+      </div>
       <span className="mt-2 flex items-start justify-between gap-4">
         <span className="text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] leading-[1.16] text-[var(--hll-dark-grey)]">
           {engagement.client}

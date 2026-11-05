@@ -42,6 +42,7 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
     <CardLink href={card.href}>
     <article className="group">
       <div
+        data-reveal-media
         className={`relative grid aspect-[386/242] place-items-center overflow-hidden rounded-[6px] lg:aspect-[490/308] lg:rounded-lg ${MEDIA_STYLES[card.variant]}`}
       >
         {card.image ? (

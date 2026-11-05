@@ -60,6 +60,7 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
   const body = (
     <>
       <div
+        data-reveal-media
         className="relative overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:rounded-lg"
         style={{
           aspectRatio: ratio,
