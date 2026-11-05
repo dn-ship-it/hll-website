@@ -61,6 +61,13 @@ export function AiBubble({ index }: { index: SearchEntry[] }) {
   const [query, setQuery] = useState("");
   // Lift the bubble above the footer's Email / LinkedIn row while it's in view.
   const [lift, setLift] = useState(0);
+  // The orb's loop starts once mounted; with reduced motion it stays on its
+  // still (the poster).
+  const orbRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    void orbRef.current?.play().catch(() => undefined);
+  }, []);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
@@ -191,10 +198,17 @@ export function AiBubble({ index }: { index: SearchEntry[] }) {
         className="absolute bottom-[30px] grid size-[57px] place-items-center rounded-full transition-[right] duration-300 ease-out"
         style={{ right: stage === "rest" ? 51 : 41 }}
       >
-        <span
+        {/* House of Katha's "shape" loop (5 Nov), cropped to the orb, in
+            place of the still. */}
+        <video
           aria-hidden
-          className="size-full rounded-full bg-[length:158%_158%] bg-center blur-[5.2px] saturate-[0.86] transition-transform duration-300 hover:scale-105"
-          style={{ backgroundImage: "url(/assets/ai/orb.png)" }}
+          src="/assets/ai/orb.mp4"
+          ref={orbRef}
+          poster="/assets/ai/orb-poster.jpg"
+          muted
+          loop
+          playsInline
+          className="size-full rounded-full object-cover blur-[5.2px] saturate-[0.86] transition-transform duration-300 hover:scale-105"
         />
       </button>
     </div>

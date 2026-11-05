@@ -95,8 +95,10 @@ export function SiteFooter({
   ctaHeadline = "Let’s start a conversation",
   ctaLabel = "Write to us",
   ctaHref = "/contact",
-  ctaVideo,
-  ctaStill = "/assets/footer/cta-still.webp",
+  // Anoushka's crop of the Intelligence & Imagination loop (5 Nov), cut to
+  // the band's shape; its first frame is the still, so nothing jumps.
+  ctaVideo = "/video/cta-intelligence.mp4",
+  ctaStill = "/video/cta-intelligence-poster.jpg",
   industries = DEFAULT_INDUSTRY_MENU,
 }: SiteFooterProps) {
   services = withEveryService(services);

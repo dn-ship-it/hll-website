@@ -18,7 +18,9 @@ import { supportsWebGL2 } from "@/lib/webgl-support";
  * conversation above will have a video playing as its background which plays
  * when write to us is hovered on. each page will play a different video."
  * The Figma still shows until a page supplies `videoSrc`, and stays as the
- * video's poster so nothing jumps when playback starts.
+ * video's poster so nothing jumps when playback starts. Hannan's tracker
+ * (HOME-018) asks for the motion to show, looping, so a video plays whenever
+ * the band is on screen rather than only on hover.
  */
 export function FooterCta({
   headline,
@@ -41,21 +43,28 @@ export function FooterCta({
   // page supplies one; `playing` fades the video in once it actually plays.
   const [active, setActive] = useState(false);
 
-  const play = () => {
-    setActive(true);
+  // Hover drifts the still; a video plays on its own (below).
+  const play = () => setActive(true);
+  const pause = () => setActive(false);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-      return;
-    void video
-      .play()
-      .then(() => setPlaying(true))
-      .catch(() => undefined);
-  };
-  const pause = () => {
-    setActive(false);
-    videoRef.current?.pause();
-    setPlaying(false);
-  };
+      return undefined;
+    // Only while the band is on screen, so it costs nothing elsewhere.
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        void video
+          .play()
+          .then(() => setPlaying(true))
+          .catch(() => undefined);
+      } else {
+        video.pause();
+      }
+    });
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [videoSrc]);
 
   return (
     // Figma Footer Mobile: a 228px band, headline and button centred in it
