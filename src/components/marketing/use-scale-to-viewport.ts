@@ -27,6 +27,7 @@ export function useScaleToViewport(
       if (desktopOnly && mobile.matches) {
         node.style.transform = "";
         node.style.borderRadius = "";
+        node.style.marginBottom = "";
         return;
       }
       let top = 0;
@@ -51,6 +52,11 @@ export function useScaleToViewport(
       );
       node.style.transform = `scale(${1 + (cover - 1) * eased})`;
       node.style.borderRadius = `${8 * (1 - eased)}px`;
+      // The window grows from its centre, so at full size it reaches this far
+      // past its own bottom. Room for that underneath, or it covered what
+      // follows: Home's See our work, the industry pages' capability buttons
+      // (Hannan, 5 Nov). Fixed, not eased, so the page doesn't shift on scroll.
+      node.style.marginBottom = `${((cover - 1) * node.offsetHeight) / 2}px`;
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
