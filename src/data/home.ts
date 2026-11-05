@@ -23,6 +23,8 @@ export type HomeImpactCard = {
   tags: string[];
   image?: string | null;
   href?: string | null;
+  /** The engagement's card video or still (5 Nov handoff), in place of the image. */
+  media?: { video?: string; poster: string };
 };
 
 export type HomeImpactStat = { value: string; label: string };

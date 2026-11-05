@@ -7,6 +7,7 @@ import {
 } from "@/lib/payload/service-demo";
 import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
 import { getServiceBySlug } from "@/lib/payload/queries";
+import { loadEngagements, withRelatedStills } from "@/lib/payload/engagements";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 import { CapabilitiesSection } from "./capabilities-section";
 import {
@@ -23,7 +24,12 @@ import { ServiceReveal } from "./service-reveal";
 async function loadServicePage(fallback: ServicePageData) {
   try {
     const service = await getServiceBySlug(fallback.slug);
-    const data = mapServiceToPage(service, fallback);
+    const mapped = mapServiceToPage(service, fallback);
+    const engagements = await loadEngagements();
+    const data = {
+      ...mapped,
+      engagement: { ...mapped.engagement, cards: withRelatedStills(mapped.engagement.cards, engagements) },
+    };
     const resolved = resolveServiceDemoConfig(service);
     const demo = normalizeServiceDemoConfig(resolved ?? defaultFoundationDemo);
     return { data, demo };

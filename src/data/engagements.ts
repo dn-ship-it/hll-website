@@ -179,6 +179,10 @@ export type EngagementArt = {
   /** The list card's shape, e.g. "card-portrait_490x551". */
   listSlot?: string;
   slots: Record<string, EngagementArtSlot>;
+  /** Named clients' card media (5 Nov handoff), by card slot: a looping
+   *  video and its poster, or a still alone. Cards show it in place of the
+   *  ripple; the engagement's own page keeps its artwork. */
+  cardMedia?: Record<string, { video?: string; poster: string }>;
 };
 
 // PLACEHOLDER — Figma's own stand-in copy until the engagement write-ups are

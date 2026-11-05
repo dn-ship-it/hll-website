@@ -10,6 +10,7 @@ import {
   WhoWeAre,
 } from "@/components/marketing/home/sections-bottom";
 import { getMarketingContent } from "@/lib/payload/queries";
+import { loadEngagements } from "@/lib/payload/engagements";
 import { homePageContent } from "@/data/home";
 import { getCmsImageUrl, mapHomePage } from "@/lib/payload/marketing-mappers";
 
@@ -58,6 +59,27 @@ export default async function HomePage() {
     // defaults in HomeHero
   }
   const capabilities = await getCapabilitiesWheel();
+
+  // A tile on a named client's engagement plays its card video (5 Nov
+  // handoff): the slot is the one its image was cut for, and the wide tile,
+  // which had its own still, takes the wide card.
+  const engagements = await loadEngagements();
+  content = {
+    ...content,
+    impact: {
+      ...content.impact,
+      cards: content.impact.cards.map((card, i, all) => {
+        const slug = card.href?.match(/^\/engagement\/([^/?#]+)/)?.[1];
+        const cardMedia = engagements.find((e) => e.slug === slug)?.art?.cardMedia;
+        if (!cardMedia) return card;
+        const slot =
+          card.image?.match(/--(card-[a-z]+_\d+x\d+)/)?.[1] ??
+          (i === all.length - 1 ? "card-wide_991x490" : undefined);
+        const media = slot ? cardMedia[slot] : undefined;
+        return media ? { ...card, media } : card;
+      }),
+    },
+  };
 
   return (
     <MarketingShell>

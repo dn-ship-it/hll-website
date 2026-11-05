@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { HLLButton } from "@/components/hll";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { CountUp } from "@/components/marketing/count-up";
+import { CardMedia } from "@/components/marketing/engagement/card-media";
 
 import type { HomeImpactCard, HomeImpactStat, HomePageContent } from "@/data/home";
 
@@ -62,9 +63,12 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
         className="relative overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:rounded-lg"
         style={{
           aspectRatio: ratio,
-          background: tile.image ? `#D9D9D9 url(${tile.image}) center / cover` : undefined,
+          background: tile.image && !tile.media ? `#D9D9D9 url(${tile.image}) center / cover` : undefined,
         }}
       >
+        {tile.media ? (
+          <CardMedia video={tile.media.video} poster={tile.media.poster} className="absolute inset-0" />
+        ) : null}
         <span
           aria-hidden
           className="absolute right-2 top-2 grid size-9 place-items-center rounded-[4px] bg-white text-[var(--hll-dark-grey)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"

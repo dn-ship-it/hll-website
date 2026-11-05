@@ -7,6 +7,7 @@ import {
 } from "@/components/marketing/services/expert-and-related";
 import { mapIndustryMenu, mapIndustryPage } from "@/lib/payload/marketing-mappers";
 import { getIndustryBySlug, getMarketingContent } from "@/lib/payload/queries";
+import { loadEngagements, withRelatedStills } from "@/lib/payload/engagements";
 
 import { IndustryCapabilitiesSection } from "./industry-capabilities";
 import { IndustryHero } from "./industry-hero";
@@ -17,7 +18,18 @@ import { NamedExpertsSection } from "./named-experts-section";
 async function loadIndustry(fallback: IndustryPageData) {
   try {
     const industry = await getIndustryBySlug(fallback.slug);
-    return mapIndustryPage(industry, fallback);
+    const data = mapIndustryPage(industry, fallback);
+    const engagements = await loadEngagements();
+    return {
+      ...data,
+      capabilities: {
+        ...data.capabilities,
+        items: data.capabilities.items.map((item) => ({
+          ...item,
+          cards: withRelatedStills(item.cards, engagements),
+        })),
+      },
+    };
   } catch {
     return fallback;
   }

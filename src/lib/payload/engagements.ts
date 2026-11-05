@@ -178,6 +178,22 @@ export async function loadEngagements(): Promise<Engagement[]> {
 }
 
 /**
+ * A tile linking to a named client's engagement shows that client's new
+ * related-card still (5 Nov handoff) in place of its ripple render; other
+ * tiles keep their image.
+ */
+export function withRelatedStills<T extends { href?: string; image?: string }>(
+  cards: T[],
+  all: Engagement[],
+): T[] {
+  return cards.map((card) => {
+    const slug = card.href?.match(/^\/engagement\/([^/?#]+)/)?.[1];
+    const still = all.find((e) => e.slug === slug)?.art?.cardMedia?.["card-related_490x308"]?.poster;
+    return still ? { ...card, image: still } : card;
+  });
+}
+
+/**
  * "Explore related engagements": picked in the CMS, else chosen here. On a
  * case study "all case studies in it will be of the same service"; a story
  * takes any that share a service, then the latest.

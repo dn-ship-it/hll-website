@@ -4,6 +4,8 @@ import { createElement, useEffect, useState } from "react";
 
 import type { EngagementArt } from "@/data/engagements";
 
+import { CardMedia } from "./card-media";
+
 /** Handoff ripple settings → <hll-ripple> attribute names. */
 const ATTR: Record<string, string> = {
   bands: "bands",
@@ -37,6 +39,7 @@ export function EngagementArtSlot({
   client,
   live = false,
   hoverOnly = false,
+  cardMedia,
   className = "",
   children,
 }: {
@@ -49,6 +52,9 @@ export function EngagementArtSlot({
   live?: boolean;
   /** Hold the ripple still until the pointer is over it (engagement cards). */
   hoverOnly?: boolean;
+  /** A named client's card video or still (5 Nov handoff), in place of the
+   *  ripple and its layer: the logo is already in the media. */
+  cardMedia?: { video?: string; poster: string };
   className?: string;
   /** Overlays drawn on top, such as the card's tags and arrow. */
   children?: React.ReactNode;
@@ -86,12 +92,20 @@ export function EngagementArtSlot({
       onPointerEnter={hoverOnly ? () => setHovered(true) : undefined}
       onPointerLeave={hoverOnly ? () => setHovered(false) : undefined}
     >
-      {createElement("hll-ripple", { ...attrs, class: fill, style: { position: "absolute" } })}
-      {s.scrim ? <div aria-hidden className={fill} style={{ background: s.scrim }} /> : null}
-      {s.layer ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={s.layer} alt={alt} className={fill} loading="lazy" decoding="async" draggable={false} />
-      ) : null}
+      {cardMedia ? (
+        <div className={fill}>
+          <CardMedia video={cardMedia.video} poster={cardMedia.poster} />
+        </div>
+      ) : (
+        <>
+          {createElement("hll-ripple", { ...attrs, class: fill, style: { position: "absolute" } })}
+          {s.scrim ? <div aria-hidden className={fill} style={{ background: s.scrim }} /> : null}
+          {s.layer ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={s.layer} alt={alt} className={fill} loading="lazy" decoding="async" draggable={false} />
+          ) : null}
+        </>
+      )}
       {s.texts?.map((t, i) => (
         <p
           key={i}

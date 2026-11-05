@@ -123,10 +123,12 @@ async function upload(payload: Payload, file: string, prefix: string, alt: strin
   });
   if (found.docs[0]) return found.docs[0].id;
   const data = fs.readFileSync(file);
+  // Card videos (5 Nov handoff) as well as the images.
+  const video = /\.mp4$/i.test(filename);
   const doc = await payload.create({
     collection: "media",
-    data: { alt, mediaType: "image" },
-    file: { data, name: filename, mimetype: "image/webp", size: data.length },
+    data: { alt, mediaType: video ? "video" : "image" },
+    file: { data, name: filename, mimetype: video ? "video/mp4" : "image/webp", size: data.length },
   });
   return doc.id;
 }
@@ -580,6 +582,55 @@ async function serviceEngagementCards(payload: Payload, serviceId: string) {
   return cards;
 }
 
+/**
+ * Named clients' card media (5 Nov handoff, DEVELOPER-UPDATE.md): for each
+ * engagement whose engagement.json has a card_media entry with a video
+ * treatment, every card slot's looping video and poster, and the still-only
+ * slots' stills, uploaded and set as art.cardMedia. Ripple treatments and
+ * engagements without the entry are left as they are.
+ */
+async function importCardMedia(payload: Payload) {
+  const base = path.join(root!, "02-engagements");
+  for (const id of fs.readdirSync(base).sort()) {
+    const dir = path.join(base, id);
+    const file = path.join(dir, "engagement.json");
+    if (!fs.existsSync(file)) continue;
+    const cm = JSON.parse(fs.readFileSync(file, "utf8")).card_media;
+    if (!cm || !["video", "generated-video"].includes(cm.treatment)) continue;
+    const mdir = path.join(dir, path.dirname(cm.manifest));
+    const manifest = JSON.parse(fs.readFileSync(path.join(dir, cm.manifest), "utf8"));
+    const found = await payload.find({ collection: "engagements", where: { slug: { equals: id } }, limit: 1, depth: 0 });
+    const doc = found.docs[0];
+    if (!doc) {
+      report.push(`card media ${id}: not in the CMS – skipped`);
+      continue;
+    }
+    // The sharper @2x still where there is one.
+    const still = (rel: string) => {
+      const at2 = path.join(mdir, rel.replace(/(\.webp)$/, "@2x$1"));
+      return fs.existsSync(at2) ? at2 : path.join(mdir, rel);
+    };
+    const media: Record<string, { video?: string; poster: string }> = {};
+    for (const [slot, v] of Object.entries(manifest.video ?? {}) as [string, { file: string; poster: string }][]) {
+      const poster = await uploadUrl(payload, still(v.poster), `cardmedia-${id}`, doc.client ?? id);
+      const video = await uploadUrl(payload, path.join(mdir, v.file), `cardmedia-${id}`, doc.client ?? id);
+      if (poster) media[slot] = { poster, ...(video ? { video } : {}) };
+    }
+    // Stills come as alternatives (-1, -2, -3); the handoff: "use -1".
+    for (const [slot, rel] of Object.entries(manifest.stills ?? {}) as [string, string | string[]][]) {
+      if (media[slot]) continue;
+      const f = Array.isArray(rel) ? rel[0] : rel;
+      if (!f) continue;
+      const poster = await uploadUrl(payload, still(f), `cardmedia-${id}`, doc.client ?? id);
+      if (poster) media[slot] = { poster };
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const art = (doc as any).art ?? {};
+    await payload.update({ collection: "engagements", id: doc.id, data: { art: { ...art, cardMedia: media } } });
+    console.log(`card media ${id}: ${Object.entries(media).map(([s, m]) => `${s.split("_")[0]}${m.video ? "▶" : ""}`).join(" ")}`);
+  }
+}
+
 /** Replaces only each service page's engagement cards. */
 async function importServiceEngagements(payload: Payload) {
   const base = path.join(root!, "03-services");
@@ -937,6 +988,7 @@ if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
 if (only === "engagement-layouts") await importEngagementLayouts(payload);
 if (only === "engagement-order") await importEngagementOrder(payload);
+if (only === "card-media") await importCardMedia(payload);
 if (!only || only === "services") await importServices(payload);
 if (only === "service-quotes") await importServices(payload, "quotes");
 if (only === "service-outcomes") await importServices(payload, "outcomes");
