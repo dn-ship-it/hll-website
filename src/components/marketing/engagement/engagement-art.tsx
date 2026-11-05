@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, useEffect } from "react";
+import { createElement, useEffect, useState } from "react";
 
 import type { EngagementArt } from "@/data/engagements";
 
@@ -36,6 +36,7 @@ export function EngagementArtSlot({
   alt,
   client,
   live = false,
+  hoverOnly = false,
   className = "",
   children,
 }: {
@@ -46,6 +47,8 @@ export function EngagementArtSlot({
   client: string;
   /** Draw the hero's lockup, quote and attribution (desktop hero only). */
   live?: boolean;
+  /** Hold the ripple still until the pointer is over it (engagement cards). */
+  hoverOnly?: boolean;
   className?: string;
   /** Overlays drawn on top, such as the card's tags and arrow. */
   children?: React.ReactNode;
@@ -53,6 +56,7 @@ export function EngagementArtSlot({
   useEffect(() => {
     void import("@/lib/design/hll-ripple.js");
   }, []);
+  const [hovered, setHovered] = useState(false);
 
   const s = art.slots[slot];
   if (!s) return null;
@@ -68,6 +72,9 @@ export function EngagementArtSlot({
     if (ATTR[key]) attrs[ATTR[key]] = String(value);
   }
   if (typeof s.speed === "number") attrs.speed = String(s.speed);
+  // Cards hold their ripple on one frame and run it only while hovered
+  // (5 Nov); it picks up where it stopped.
+  if (hoverOnly && !hovered) attrs.paused = "";
 
   const fill = "absolute inset-0 size-full";
   const L = live ? s.live : undefined;
@@ -76,6 +83,8 @@ export function EngagementArtSlot({
     <div
       className={`relative overflow-hidden rounded-lg [container-type:inline-size] ${className}`}
       style={{ aspectRatio: `${s.w} / ${s.h}` }}
+      onPointerEnter={hoverOnly ? () => setHovered(true) : undefined}
+      onPointerLeave={hoverOnly ? () => setHovered(false) : undefined}
     >
       {createElement("hll-ripple", { ...attrs, class: fill, style: { position: "absolute" } })}
       {s.scrim ? <div aria-hidden className={fill} style={{ background: s.scrim }} /> : null}

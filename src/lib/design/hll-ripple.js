@@ -416,13 +416,23 @@ class HLLRipple extends HTMLElement {
       this._ctx = this._canvas.getContext("2d", { alpha: false });
     }
     if (this.getAttribute("poster")) Object.assign(this.style, { backgroundImage: `url(${this.getAttribute("poster")})`, backgroundSize: "cover", backgroundPosition: "center" });
-    this._last = 0; this._read();
+    this._last = 0; this._elapsed = 0; this._runStart = performance.now() / 1000; this._read();
     this._ro = new ResizeObserver(() => this._resize()); this._ro.observe(this);
-    this._io = new IntersectionObserver(([e]) => { this._visible = e.isIntersecting; if (this._visible) { if (this._still) this._draw(this._t0); else wake(); } }, { rootMargin: "100px" });
+    this._io = new IntersectionObserver(([e]) => { this._visible = e.isIntersecting; if (this._visible) { if (this._still) this._draw(performance.now() / 1000); else wake(); } }, { rootMargin: "100px" });
     this._io.observe(this); R.items.add(this);
   }
   disconnectedCallback() { this._ro && this._ro.disconnect(); this._io && this._io.disconnect(); R.items.delete(this); }
-  attributeChangedCallback() { if (this._canvas) { this._read(); if (this._still && this._visible) this._draw(this._t0); } }
+  attributeChangedCallback() {
+    if (!this._canvas) return;
+    const was = this._still;
+    this._read();
+    // Pausing keeps the frame it was on; unpausing carries on from it (no
+    // jump), so a card can run only while it's hovered.
+    const now = performance.now() / 1000;
+    if (!was && this._still) this._elapsed = now - this._runStart;
+    if (was && !this._still) { this._runStart = now - this._elapsed; this._visible && wake(); }
+    if (this._still && this._visible) this._draw(now);
+  }
   _read() {
     const a = n => this.getAttribute(n), v = a("variant") || "hll-application";
     this._params = { ...(VARIANTS[v] || VARIANTS["hll-application"]) };
@@ -442,7 +452,7 @@ class HLLRipple extends HTMLElement {
     const r = this.getBoundingClientRect(), k = Math.min(devicePixelRatio || 1, 2) * this._res;
     let w = Math.max(1, Math.round(r.width * k)), h = Math.max(1, Math.round(r.height * k));
     if (w > 1280) { h = Math.round(h * 1280 / w); w = 1280; }
-    if (w !== this._canvas.width || h !== this._canvas.height) { this._canvas.width = w; this._canvas.height = h; if (this._visible) this._draw(this._still ? this._t0 : performance.now() / 1000); }
+    if (w !== this._canvas.width || h !== this._canvas.height) { this._canvas.width = w; this._canvas.height = h; if (this._visible) this._draw(performance.now() / 1000); }
   }
   _draw(t) {
     const g = gl(); if (!g) return;
@@ -453,7 +463,7 @@ class HLLRipple extends HTMLElement {
     g.bindBuffer(g.ARRAY_BUFFER, R.quad); g.enableVertexAttribArray(pr.aPos); g.vertexAttribPointer(pr.aPos, 3, g.FLOAT, false, 0, 0);
     if (pr.aUv >= 0) { g.bindBuffer(g.ARRAY_BUFFER, R.uv); g.enableVertexAttribArray(pr.aUv); g.vertexAttribPointer(pr.aUv, 2, g.FLOAT, false, 0, 0); }
     const u = pr.u, f1 = (n, x) => u[n] && g.uniform1f(u[n], x);
-    f1("uTime", this._still ? this._t0 : t + this._t0); g.uniform2f(u.uResolution, w, h);
+    f1("uTime", this._t0 + (this._still ? this._elapsed : t - this._runStart)); g.uniform2f(u.uResolution, w, h);
     f1("uBands", P.bands); f1("uSpeed", P.speed); f1("uFlowStrength", P.flow); f1("uShearStrength", P.shear); f1("uRippleShape", P.shape);
     f1("uRippleNoise", P.rippleNoise); f1("uRippleGap", P.rippleSpacing); g.uniform2f(u.uOrigin, this._origin[0], this._origin[1]);
     u.uTapRippleMode && g.uniform1i(u.uTapRippleMode, 0); u.uRippleCount && g.uniform1i(u.uRippleCount, 0);

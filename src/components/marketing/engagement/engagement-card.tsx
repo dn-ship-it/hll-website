@@ -82,7 +82,7 @@ export function EngagementCard({
     : undefined;
   const Media = ({ children }: { children: React.ReactNode }) =>
     engagement.art && artSlot && engagement.art.slots[artSlot] ? (
-      <EngagementArtSlot art={engagement.art} slot={artSlot} alt={engagement.client} client={engagement.client}>
+      <EngagementArtSlot art={engagement.art} slot={artSlot} alt={engagement.client} client={engagement.client} hoverOnly>
         {children}
       </EngagementArtSlot>
     ) : (
