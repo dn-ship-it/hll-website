@@ -103,7 +103,10 @@ body {
   --color-card: var(--card);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
+  /* 8px: House of Katha's review (5 Nov), "rounded corners to be 8px" on
+     the cards, tiles and windows of every page. The other steps stay on
+     --radius. */
+  --radius-lg: 8px;
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);

@@ -9,7 +9,6 @@ import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
 import { ReachMapEmbed } from "./reach-map-embed";
-import { TeamSkyline } from "./team-skyline/team-skyline";
 
 /** Figma "HLL": 198 × 264 portrait from 35% across, quote beside it.
  *  Mobile: a hairline, then a 245 × 253 portrait at x 79 with the quote
@@ -158,14 +157,18 @@ export function AboutCareersSection({
   return (
     <section className={`pb-[84px] ${className} ${SERVICE_GUTTER}`}>
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      {/* Hannan, 28 Oct: the team skyline in place of the still image. It sets
-          its own height from its width. */}
-      <TeamSkyline className="mt-8 lg:ml-[24.5%] lg:mt-[84px] lg:!w-[75.5%]" />
+      {/* No image for now (Hannan, 5 Nov: "remove this image section until we
+          work out a good alternative"; House of Katha: the team skyline
+          "doesn't fit our visual language"). TeamSkyline is kept for when one
+          is chosen. */}
 
       {/* Mobile: the numbers at x 51, the points at x 75, 18px apart. */}
       <div className="mt-8 grid gap-[37px] lg:ml-[41.7%] lg:mt-[67px] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
         <p className="text-[10px] uppercase leading-[1.15] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[12px]">{data.label}</p>
-        <ol className="space-y-[18px] lg:col-span-2 lg:grid lg:grid-cols-subgrid lg:space-y-[30px]">
+        {/* Desktop: the points are grid rows (their items are display:
+            contents, so space-y never applied); the row gap spaces them
+            (House of Katha's review, 5 Nov). */}
+        <ol className="space-y-[18px] lg:col-span-2 lg:grid lg:grid-cols-subgrid lg:gap-y-[30px] lg:space-y-0">
           {data.points.map((point, i) => (
             <li key={point.id} className="flex gap-[9px] pl-[31px] lg:contents">
               <span className="hll-label block w-[15px] shrink-0 pt-[2px] text-[12px] leading-[1.2] text-black lg:pt-[3px]" style={{ fontFamily: "var(--hll-font-functional)" }}>

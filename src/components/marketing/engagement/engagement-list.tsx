@@ -175,7 +175,9 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
 
       {/* Sticky Filter button, 37px off the bottom (mobile 23px, the 34px
           "Button Mobile"), opening the expanded view 8px above it. */}
-      <div className="pointer-events-none sticky bottom-[23px] z-30 mt-[60px] flex justify-center lg:bottom-[37px]">
+      {/* Above the page shader (z-30, later in the page): it drew over the
+          button (House of Katha's review, 5 Nov). */}
+      <div className="pointer-events-none sticky bottom-[23px] z-40 mt-[60px] flex justify-center lg:bottom-[37px]">
         <div ref={panelRef} className="pointer-events-auto relative">
           {open ? (
             <div

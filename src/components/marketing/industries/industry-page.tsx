@@ -59,11 +59,7 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
         />
         <NamedExpertsSection data={data.experts} accentColor={accent} />
         <IndustryLabSection data={data.lab} />
-        <RelatedServicesSection
-          title="Related Industries"
-          items={data.relatedIndustries}
-          washFrom={accent}
-        />
+        <RelatedServicesSection title="Related Industries" items={data.relatedIndustries} />
       </div>
     </MarketingShell>
   );

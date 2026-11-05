@@ -74,12 +74,7 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
             breadcrumb={data.breadcrumb}
             variant={data.variant}
           />
-          <RelatedServicesSection
-            items={data.relatedServices}
-            // QA G-06: the wash into "Let's start a conversation" in the
-            // capability's own colour rather than grey, as Industry pages do.
-            washFrom={getServiceTheme(data.variant).accent}
-          />
+          <RelatedServicesSection items={data.relatedServices} />
         </ServiceReveal>
       </div>
     </MarketingShell>

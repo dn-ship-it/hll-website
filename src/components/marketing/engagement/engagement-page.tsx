@@ -18,7 +18,7 @@ export async function EngagementPage() {
           <div className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
             <GradientRevealTextSlow
               as="h1"
-              text="Engagements/ Work"
+              text="Engagements / Work"
               variant="engagement"
               className="block font-light text-[var(--hll-dark-grey)]"
               fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"

@@ -76,9 +76,14 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
         </span>
       </div>
 
-      <h3 className="mt-[9px] text-[24px] font-normal leading-[1.16] text-[var(--hll-dark-grey)] lg:mt-2 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
-        {card.title}
-      </h3>
+      {/* The case study's card image already carries the client's name, so
+          a title that only repeats it is left out (House of Katha's review,
+          5 Nov: "repeating project name twice"). */}
+      {card.image && card.title.trim().toLowerCase() === card.client?.trim().toLowerCase() ? null : (
+        <h3 className="mt-[9px] text-[24px] font-normal leading-[1.16] text-[var(--hll-dark-grey)] lg:mt-2 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
+          {card.title}
+        </h3>
+      )}
       <p className="mt-3 text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
         {card.description}
       </p>

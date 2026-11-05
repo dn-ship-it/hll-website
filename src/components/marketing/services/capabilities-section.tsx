@@ -8,7 +8,10 @@ import { getServiceTheme } from "./service-theme";
 // Figma service template columns at 1512px: nav list 436 | index 45 |
 // title 500 | body 366 | empty 105. Expressed as fractions so the proportions
 // hold at other desktop widths.
-const ROW_GRID = "lg:grid-cols-[45fr_500fr_366fr_105fr]";
+// The body and the hairline run to the page's right margin; an empty 105fr
+// column after them left a wide gap there (House of Katha's review, 5 Nov:
+// "right margin space needs to be fixed").
+const ROW_GRID = "lg:grid-cols-[45fr_500fr_471fr]";
 
 /** Figma pill: Mid Grey hairline, 18px radius, logo then name, 12px in.
  *  Mobile: 27px tall, 14.9px name, 10px in. */
@@ -73,7 +76,7 @@ export function CapabilitiesSection({
             <article
               key={item.id}
               id={item.id}
-              className={`grid scroll-mt-28 grid-cols-1 pb-8 pl-[54px] lg:pb-[clamp(2.3125rem,calc(4.43*var(--vw)),4.1875rem)] lg:pl-0 ${ROW_GRID}`}
+              className={`grid scroll-mt-28 grid-cols-1 pb-8 pl-[54px] lg:pb-[72px] lg:pl-0 ${ROW_GRID}`}
             >
               <CapabilityRule index={item.index} accent={accent} />
               <h3 className="mt-[6px] text-[24px] font-normal leading-[1.16] text-black lg:mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)] lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] lg:col-start-2 lg:pr-8">
@@ -90,7 +93,7 @@ export function CapabilitiesSection({
 
           {data.tools ? (
             <article
-              className={`grid scroll-mt-28 grid-cols-1 pb-8 pl-[54px] lg:pb-[clamp(2.3125rem,calc(4.43*var(--vw)),4.1875rem)] lg:pl-0 ${ROW_GRID}`}
+              className={`grid scroll-mt-28 grid-cols-1 pb-8 pl-[54px] lg:pb-[72px] lg:pl-0 ${ROW_GRID}`}
             >
               <CapabilityRule accent={accent} />
               <h3 className="mt-[6px] text-[24px] font-normal leading-[1.16] text-black lg:mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)] lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)] lg:col-start-2">
@@ -151,7 +154,7 @@ function ToolGroup({
   );
 }
 
-/** Foundation's sub-services carry a body, so they render as a two-column list;
+/** Foundation's sub-services carry a body, so they render as a list of rows;
     the other verticals are name-only and render as Figma's bulleted list. */
 function SubServices({
   items,
@@ -177,7 +180,9 @@ function SubServices({
   }
 
   return (
-    <dl className="mt-6 grid gap-x-[clamp(1.5rem,calc(3*var(--vw)),2.5rem)] gap-y-5 sm:grid-cols-2">
+    // One sub-service to a row, not two columns (House of Katha's review,
+    // 5 Nov: "sub paragraphs should come as rows").
+    <dl className="mt-6 grid gap-y-5">
       {items.map((sub) => (
         <div key={sub.name}>
           <dt className="text-[11px] uppercase tracking-[0.16em] text-black/70">

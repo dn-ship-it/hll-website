@@ -157,10 +157,13 @@ export function SiteFooter({
           </span>
         </Link>
 
-        <div className="relative mt-[22px] grid grid-cols-[455fr_151fr_260fr_281fr_305fr]">
+        {/* House of Katha's footer (5 Nov): columns at x 512, 662, 884 and
+            1162 of the 1512 frame; the page links and the column headings in
+            the medium weight and dark. */}
+        <div className="relative mt-[22px] grid grid-cols-[482fr_150fr_222fr_278fr_320fr]">
           <div />
 
-          <ul className={`${LIST} text-[var(--hll-dark-grey)]`}>
+          <ul className={`${LIST} font-medium text-[var(--hll-dark-grey)]`}>
             {FOOTER_NAV.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="hover:text-black">
@@ -171,7 +174,7 @@ export function SiteFooter({
           </ul>
 
           <ul className={`${LIST} text-[var(--hll-dark-grey)]`}>
-            <li className="text-[var(--hll-mid-grey)]">Capabilities</li>
+            <li className="font-medium">Capabilities</li>
             {services.map((label) => (
               <li key={label}>
                 <FooterItem label={label} href={serviceHref(label)} />
@@ -185,7 +188,7 @@ export function SiteFooter({
               className={`${LIST} text-[var(--hll-dark-grey)] ${col === 1 ? "pt-[28px]" : ""}`}
             >
               {col === 0 ? (
-                <p className="text-[var(--hll-mid-grey)]">Industry</p>
+                <p className="font-medium">Industry</p>
               ) : null}
               {groups.map((group, i) => (
                 <ul

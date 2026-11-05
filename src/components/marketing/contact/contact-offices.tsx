@@ -75,7 +75,9 @@ export function ContactOffices({ offices }: { offices: readonly ContactOffice[] 
               </span>
             </button>
             <div id={id} hidden={!isOpen}>
-              <ul className="space-y-12 pb-12 pt-6 lg:ml-[28.4%] lg:space-y-[70px] lg:pb-[50px] lg:pt-[18px]">
+              {/* Desktop: a country's offices side by side, two to a row
+                  (House of Katha's review, 5 Nov); phones stack them. */}
+              <ul className="space-y-12 pb-12 pt-6 lg:ml-[28.4%] lg:grid lg:grid-cols-2 lg:gap-x-10 lg:gap-y-[70px] lg:space-y-0 lg:pb-[50px] lg:pt-[18px]">
                 {(byCountry.get(country) ?? []).map((office) => (
                   <li key={office.id}>
                     <p className="text-[20px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(1.92*var(--vw)),1.8125rem)]">

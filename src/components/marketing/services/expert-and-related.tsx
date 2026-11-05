@@ -53,21 +53,15 @@ function relatedVariant(href: string): HLLVariant {
 export function RelatedServicesSection({
   items,
   title = "Related Capabilities",
-  washFrom = "#B1B1B1",
 }: {
   items: ServicePageData["relatedServices"];
   title?: string;
-  /** Industry pages wash from their own colour (Figma "Industry Colours"). */
-  washFrom?: string;
 }) {
-  // Figma paints this wash in place of the page's bottom shader overlay; it is
-  // what lifts the light buttons off the page.
+  // On the page's own background: the colour wash under it went (House of
+  // Katha's review, 5 Nov: "remove the gradient").
   return (
     <section
       className={`relative overflow-hidden pb-[163px] pt-[193px] lg:pb-[clamp(5.125rem,calc(9.85*var(--vw)),9.3125rem)] lg:pt-[clamp(5.1875rem,calc(9.99*var(--vw)),9.4375rem)] ${SERVICE_GUTTER}`}
-      style={{
-        background: `linear-gradient(0deg, ${washFrom} 0%, #FAFAFA 100%)`,
-      }}
     >
       <div className="relative text-center">
         <h2 className="text-[24px] font-normal leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">

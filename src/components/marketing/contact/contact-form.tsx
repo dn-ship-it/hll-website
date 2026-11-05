@@ -12,6 +12,11 @@ const LABEL =
   "block text-[10px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[14px]";
 const FIELD =
   "block w-full bg-transparent text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] outline-none lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]";
+/** The field's name as grey placeholder text in the label's type (House of
+ *  Katha's review, 5 Nov: "text fields need to be placeholder and not the
+ *  title of input", "field names greyed out"). */
+const PLACEHOLDER =
+  "placeholder:text-[10px] placeholder:uppercase placeholder:tracking-[0.25em] placeholder:text-[var(--hll-mid-grey)] lg:placeholder:text-[14px]";
 
 /**
  * Figma Contact form: uppercase labels 13px in from a Mid Grey hairline that
@@ -47,10 +52,8 @@ function EnquiryForm({
         const tall = field.type === "textarea";
         return (
           <div key={field.id} className="mb-8 lg:mb-[84px]">
-            <label
-              htmlFor={`contact-${field.id}`}
-              className={`lg:pl-[13px] ${LABEL}`}
-            >
+            {/* Kept for screen readers; the placeholder shows the name. */}
+            <label htmlFor={`contact-${field.id}`} className={`sr-only ${LABEL}`}>
               {field.label}
             </label>
             {tall ? (
@@ -60,7 +63,8 @@ function EnquiryForm({
                 required={field.required}
                 aria-invalid={Boolean(error)}
                 rows={5}
-                className={`${FIELD} mt-[6px] h-[148px] resize-none lg:mt-[7px] lg:h-[182px] lg:px-[13px]`}
+                placeholder={field.label}
+                className={`${FIELD} ${PLACEHOLDER} h-[148px] resize-none lg:h-[182px] lg:px-[13px]`}
               />
             ) : (
               <input
@@ -76,7 +80,8 @@ function EnquiryForm({
                       ? "name"
                       : "off"
                 }
-                className={`${FIELD} h-[18px] lg:mt-[7px] lg:h-[25px] lg:px-[13px]`}
+                placeholder={field.label}
+                className={`${FIELD} ${PLACEHOLDER} h-[28px] lg:h-[34px] lg:px-[13px]`}
               />
             )}
             <div
