@@ -994,3 +994,25 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
   --reach-font-light: "Aeonik TRIAL", system-ui, sans-serif;
   --reach-mono: var(--hll-font-functional);
 }
+
+/* House of Katha's text reveal (HLL-UI-Demo reveal.css, 5 Nov): one word.
+   Visible by default; .is-hidden is the pre-reveal state. Every timing and
+   amount is a custom property, so one instance can be tuned inline. */
+.reveal-word {
+  display: inline-block;
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+  transition:
+    opacity var(--reveal-opacity-ms, 150ms) linear,
+    filter var(--reveal-blur-ms, 220ms) linear,
+    transform var(--reveal-transform-ms, 450ms) var(--reveal-ease, cubic-bezier(.075, .82, .165, 1));
+}
+.reveal-word.is-hidden {
+  opacity: var(--reveal-hidden-opacity, .4);
+  filter: blur(var(--reveal-hidden-blur, 15px));
+  transform: scale(var(--reveal-hidden-scale, .85));
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-word { transition: none; }
+}

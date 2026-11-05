@@ -101,6 +101,7 @@ export function HomeHero({
 
   return (
     <section
+      data-no-text-scroll
       className={`hll-home-section flex min-h-[calc(100*var(--svh)-var(--nav-h))] flex-col justify-end pb-10 lg:block lg:min-h-0 lg:pb-0 lg:pt-[max(8rem,min(calc(23.2*var(--vw)),21.9rem,calc(42.4*var(--svh)-var(--nav-h))))] ${HOME_GUTTER}`}
     >
       {/* Mobile: the first screen, its content set on the bottom edge
@@ -586,7 +587,8 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
     : Array.from({ length: 8 }, () => null);
 
   return (
-    <section className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
+    // HoK's reveal: the logos finish growing in once fully on screen.
+    <section data-image-reveal="fit" className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
       <div className={HOME_GUTTER}>
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>

@@ -1,5 +1,6 @@
 import { OurPromise } from "@/components/hll";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { HomeHero, OurClients } from "@/components/marketing/home/hero-and-services";
 import { AllCapabilities } from "@/components/marketing/services/all-capabilities";
 import { getCapabilitiesWheel } from "@/components/marketing/services/all-capabilities-page";
@@ -83,7 +84,14 @@ export default async function HomePage() {
 
   return (
     <MarketingShell>
-      <div className="hll-home">
+      {/* House of Katha's reveal animations (5 Nov): paragraphs fade in word
+          by word, images grow in from a blur. Headings (.hll-display) and
+          eyebrows (.hll-label) keep their own reveal. */}
+      <RevealRoot
+        className="hll-home"
+        skip=".hll-display, .hll-label"
+        card={{ card: "[data-reveal-card]", text: ".reveal-card-text", image: ".reveal-card-photo" }}
+      >
         <HomeHero
           heading={heroHeading}
           ctaLabel={heroCtaLabel}
@@ -104,7 +112,7 @@ export default async function HomePage() {
         <HowWeWork data={content.howWeWork} />
         <WhoWeAre data={content.whoWeAre} />
         <InsideTheLab data={content.lab} />
-      </div>
+      </RevealRoot>
     </MarketingShell>
   );
 }

@@ -123,7 +123,8 @@ export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
   const tiles = tilesFor(data);
   const mobileTiles = MOBILE_ORDER.flatMap((id) => tiles.filter((t) => t.id === id));
   return (
-    <section id="impact" className="hll-home-section">
+    // HoK's reveal: the tiles' images grow in 1.5x faster than elsewhere.
+    <section id="impact" data-image-reveal="scrub" data-image-rate="1.5" className="hll-home-section">
       {/* No divider on top (QA H-15): the knowledge graph above fades into
           the page, and a line here read as a divider under the graph. */}
       <div className={`pt-[154px] ${HOME_GUTTER}`}>

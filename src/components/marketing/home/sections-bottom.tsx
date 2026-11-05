@@ -333,14 +333,22 @@ export function WhoWeAre({ data }: { data: HomePageContent["whoWeAre"] }) {
       {/* Figma: four 366px cards, 10px apart and 10px from the frame edges. */}
       <div className="mt-[84px] hidden grid-cols-4 gap-[10px] px-[10px] lg:grid">
         {team.map((person) => (
-          <article key={person.id}>
-            <div className="aspect-square w-full rounded-lg bg-[#D9D9D9]" style={photo(person.photo)} />
-            <p className="mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
-              {person.name}
-            </p>
-            <p className="hll-label mt-[2px] text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]">
-              {person.role}
-            </p>
+          // HoK's card reveal: name, role and photo play together as the
+          // card comes in.
+          <article key={person.id} data-reveal-card data-no-text-scroll>
+            <div
+              className="reveal-card-photo aspect-square w-full rounded-lg bg-[#D9D9D9]"
+              data-no-image-reveal
+              style={photo(person.photo)}
+            />
+            <div>
+              <p className="reveal-card-text mt-2 text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-[var(--hll-dark-grey)]">
+                {person.name}
+              </p>
+              <p className="reveal-card-text hll-label mt-[2px] text-[12px] uppercase leading-[1.2] text-[var(--hll-dark-grey)]">
+                {person.role}
+              </p>
+            </div>
           </article>
         ))}
       </div>

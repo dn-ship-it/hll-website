@@ -544,6 +544,8 @@ export function AllCapabilities({
           and a strip below that scrolls the page on to the footer. */}
       <section
         aria-label="Capabilities"
+        data-no-text-scroll
+        data-no-image-reveal
         className="flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col lg:hidden"
       >
         <div className="px-5 pt-8">
@@ -647,7 +649,7 @@ export function AllCapabilities({
         <div aria-hidden className="h-16 shrink-0" />
       </section>
 
-      <section aria-label="Capabilities" className="hidden lg:block">
+      <section aria-label="Capabilities" data-no-text-scroll data-no-image-reveal className="hidden lg:block">
         <div className="h-[calc(calc(100*var(--svh))-var(--nav-h))] overflow-hidden pt-[58px]">
           <div
             ref={stageRef}
