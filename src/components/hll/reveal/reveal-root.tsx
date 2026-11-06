@@ -22,6 +22,7 @@ export function RevealRoot({
   children,
   skip,
   card,
+  card2,
   className,
 }: {
   children: ReactNode;
@@ -29,12 +30,15 @@ export function RevealRoot({
   skip?: string;
   /** Cards whose text and photo reveal together, as on HoK's Team cards. */
   card?: { card: string; text?: string; image?: string };
+  /** A second set of cards (Home: the Impact tiles, image only). */
+  card2?: { card: string; text?: string; image?: string };
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useImageReveal(ref);
   useTextReveal(ref, skip ? { skip } : {});
   useCardReveal(ref, card ?? {});
+  useCardReveal(ref, card2 ?? {});
   return (
     <div ref={ref} className={className}>
       {children}

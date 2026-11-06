@@ -91,6 +91,9 @@ export default async function HomePage() {
         className="hll-home"
         skip=".hll-display, .hll-label"
         card={{ card: "[data-reveal-card]", text: ".reveal-card-text", image: ".reveal-card-photo" }}
+        // Impact tiles: the image plays in as the tile enters the screen,
+        // rather than following the scroll (House of Katha, 6 Nov).
+        card2={{ card: "[data-impact-card]", image: ".reveal-impact-media" }}
       >
         <HomeHero
           heading={heroHeading}

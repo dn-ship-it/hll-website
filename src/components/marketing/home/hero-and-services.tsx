@@ -39,7 +39,10 @@ function HeroWindow({
       ref={ref}
       // 16:9, the intro video's own shape: in Figma's 1452 × 982 window the
       // sides were cut, and with them the start of its industry titles.
-      className="relative z-10 mt-3 aspect-video w-full origin-center overflow-hidden rounded-[6px] bg-[#D9D9D9] will-change-transform lg:mt-[31px] lg:rounded-lg"
+      // Transparent: the reveal grows the video in from the top, and a grey
+      // window showed under it as a grey bar (Hannan, 6 Nov). The grey sits
+      // on the video instead, as House of Katha's demo (6 Nov).
+      className="relative z-10 mt-3 aspect-video w-full origin-center overflow-hidden rounded-[6px] will-change-transform lg:mt-[31px] lg:rounded-lg"
     >
       {videoUrl ? (
         <video
@@ -52,14 +55,14 @@ function HeroWindow({
           // No play button or progress bar (Hannan, 3 Nov): a background loop.
           // Client review 21 Oct: fill the box – fitting it inside left dark
           // bars above and below wherever the video's shape differs.
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full bg-[#D9D9D9] object-cover"
         />
       ) : imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageUrl}
           alt=""
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full bg-[#D9D9D9] object-cover"
         />
       ) : null}
     </div>

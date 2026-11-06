@@ -60,8 +60,8 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
   const body = (
     <>
       <div
-        data-reveal-media
-        className="relative overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:rounded-lg"
+        data-no-image-reveal
+        className="reveal-impact-media relative overflow-hidden rounded-[6px] bg-[#D9D9D9] lg:rounded-lg"
         style={{
           aspectRatio: ratio,
           background: tile.image && !tile.media ? `#D9D9D9 url(${tile.image}) center / cover` : undefined,
@@ -94,7 +94,7 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
     </>
   );
   return (
-    <article className="group">
+    <article className="group" data-impact-card>
       {tile.href ? (
         <a href={tile.href} className="block">
           {body}
@@ -124,8 +124,7 @@ export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
   const tiles = tilesFor(data);
   const mobileTiles = MOBILE_ORDER.flatMap((id) => tiles.filter((t) => t.id === id));
   return (
-    // HoK's reveal: the tiles' images grow in 1.5x faster than elsewhere.
-    <section id="impact" data-image-reveal="scrub" data-image-rate="1.5" className="hll-home-section">
+    <section id="impact" className="hll-home-section">
       {/* No divider on top (QA H-15): the knowledge graph above fades into
           the page, and a line here read as a divider under the graph. */}
       <div className={`pt-[154px] ${HOME_GUTTER}`}>

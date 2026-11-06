@@ -71,7 +71,7 @@ export function FooterCta({
     // with equal space above and below, so a wrapped headline grows the band
     // evenly. Desktop: 237px, headline left and button right, on the home
     // sections' gutter.
-    <div className="relative flex flex-col items-center overflow-hidden bg-[#FFFBD6] px-5 py-[73px] text-center lg:min-h-[237px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:py-10 lg:text-left">
+    <div className="relative flex flex-col items-center overflow-hidden bg-[#FFFBD6] px-5 pb-6 pt-[37px] text-center lg:min-h-[237px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:py-10 lg:text-left">
       {/* Mobile crops the still to its middle (Figma image fill at 155.5%
           of the band's height); desktop covers. */}
       <div
@@ -95,13 +95,16 @@ export function FooterCta({
         />
       ) : null}
 
-      <p className="relative text-[30px] font-light leading-[34.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] lg:leading-[1.16]">
+      {/* House of Katha's mobile footer (6 Nov, "text and button alignment
+          fixed"): the title on two lines, the button 66px under it near
+          the band's foot. */}
+      <p className="relative max-w-[240px] text-[30px] font-light lg:max-w-none leading-[34.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] lg:leading-[1.16]">
         {headline}
       </p>
       {/* The Figma "Button" component: the LightFX button, which blooms
           into its gradient on hover (see the "Buttons" motion reference). */}
       <span
-        className="relative mt-[13px] inline-flex lg:mt-3"
+        className="relative mt-[66px] inline-flex lg:mt-3"
         onMouseEnter={play}
         onMouseLeave={pause}
         onFocusCapture={play}
