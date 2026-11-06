@@ -64,8 +64,16 @@ export function EngagementCard({
   engagement,
   ratio,
   showYear = true,
+  slot,
+  media = "auto",
 }: {
   engagement: Engagement;
+  /** A card shape from the handoff (e.g. "card-square_490x490") in place of
+   *  the engagement's own list shape (the Engagements grid). */
+  slot?: string;
+  /** "video": its card video; "still": the video's still only; "auto": as
+   *  the handoff gives it. */
+  media?: "auto" | "video" | "still";
   /** Fixed card ratio (the related row's 490 × 308) instead of the image's. */
   ratio?: number;
   showYear?: boolean;
@@ -76,19 +84,22 @@ export function EngagementCard({
   // The handoff's live artwork when imported: the related row's 490 × 308,
   // else the list card's own shape.
   const artSlot = engagement.art
-    ? ratio
-      ? "card-related_490x308"
-      : engagement.art.listSlot
+    ? slot ??
+      (ratio
+        ? "card-related_490x308"
+        : engagement.art.listSlot)
     : undefined;
+  const found = artSlot ? engagement.art?.cardMedia?.[artSlot] : undefined;
+  const cardMedia = found && media === "still" ? { poster: found.poster } : found;
   const Media = ({ children }: { children: React.ReactNode }) =>
-    engagement.art && artSlot && engagement.art.slots[artSlot] ? (
+    engagement.art && artSlot && (engagement.art.slots[artSlot] || cardMedia) ? (
       <EngagementArtSlot
         art={engagement.art}
         slot={artSlot}
         alt={engagement.client}
         client={engagement.client}
         hoverOnly
-        cardMedia={engagement.art.cardMedia?.[artSlot]}
+        cardMedia={cardMedia}
       >
         {children}
       </EngagementArtSlot>

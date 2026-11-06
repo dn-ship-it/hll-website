@@ -56,6 +56,47 @@ function Option({
   );
 }
 
+type GridItem = {
+  engagement: Engagement;
+  media: "video" | "still" | "auto";
+  slot?: string;
+  big?: boolean;
+};
+
+// Figma Engagement Main (1068:4392): two rows of three, then one card across
+// the full width, repeating. Shapes per row (the Figma's): square, landscape,
+// portrait; then mid, square, landscape.
+const ROW_SHAPES = [
+  ["card-square_490x490", "card-landscape_490x317"],
+  ["card-mid_490x403", "card-square_490x490"],
+];
+const BIG = "feature-wide_1492x843";
+
+/**
+ * The grid's order (6 Nov): in each row of three, a named client's card video
+ * first, then a named client's still, then a ripple card (moving on hover);
+ * the full-width card is always a video. Once the named clients run out the
+ * ripple cards carry on in rows of three.
+ */
+function arrangeGrid(list: Engagement[]): GridItem[] {
+  const hasVideo = (e: Engagement) => Object.values(e.art?.cardMedia ?? {}).some((m) => m.video);
+  const named = list.filter(hasVideo);
+  const ripple = list.filter((e) => !hasVideo(e));
+  const out: GridItem[] = [];
+  let n = 0;
+  let r = 0;
+  while (n < named.length) {
+    for (const [videoShape, stillShape] of ROW_SHAPES) {
+      if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: videoShape });
+      if (n < named.length) out.push({ engagement: named[n++], media: "still", slot: stillShape });
+      if (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
+    }
+    if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: BIG, big: true });
+  }
+  while (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
+  return out;
+}
+
 /**
  * Figma Engagement Main + Engagement Filter Expanded.
  * "Dynamic custom layout: mainly follows a 3 column grid, but elements can be
@@ -156,14 +197,14 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
       {/* Figma Engagements mobile: "Layout becomes linear" — one 386px column,
           8px from the edges, cards 34px apart. Large screens (1800px and
           up) get a fourth column rather than ever-bigger cards (QA E-03). */}
-      <div className="mt-8 grid grid-cols-1 items-start gap-x-[10px] gap-y-[34px] px-2 lg:mt-[47px] [--eng-cols:3] lg:grid-cols-[repeat(var(--eng-cols),minmax(0,1fr))] lg:gap-y-[40px] lg:px-[10px] min-[1800px]:[--eng-cols:4]">
-        {shown.map((engagement) => (
+      <div className="mt-8 grid grid-cols-1 items-start gap-x-[10px] gap-y-[34px] px-2 lg:mt-[47px] lg:grid-cols-3 lg:gap-y-[40px] lg:px-[10px]">
+        {arrangeGrid(shown).map((item) => (
           <div
-            key={engagement.id}
+            key={item.engagement.id}
             data-fade-up
-            className={engagement.featured ? "lg:col-span-full" : undefined}
+            className={item.big ? "lg:col-span-full" : undefined}
           >
-            <EngagementCard engagement={engagement} />
+            <EngagementCard engagement={item.engagement} slot={item.slot} media={item.media} />
           </div>
         ))}
         {shown.length === 0 ? (

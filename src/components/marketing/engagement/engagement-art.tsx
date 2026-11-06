@@ -2,7 +2,7 @@
 
 import { createElement, useEffect, useState } from "react";
 
-import type { EngagementArt } from "@/data/engagements";
+import type { EngagementArt, EngagementArtSlot as SlotData } from "@/data/engagements";
 
 import { CardMedia } from "./card-media";
 
@@ -68,8 +68,12 @@ export function EngagementArtSlot({
   }, []);
   const [hovered, setHovered] = useState(false);
 
-  const s = art.slots[slot];
-  if (!s) return null;
+  // A named client's card media can fill a shape the ripple artwork wasn't
+  // cut for (the Engagements grid's own shapes); its size is in the name.
+  const size = /_(\d+)x(\d+)/.exec(slot);
+  const own = art.slots[slot];
+  if (!own && !(cardMedia && size)) return null;
+  const s: SlotData = own ?? { w: Number(size![1]), h: Number(size![2]), poster: cardMedia!.poster };
 
   const attrs: Record<string, string> = {
     variant: art.ripple.variant,
