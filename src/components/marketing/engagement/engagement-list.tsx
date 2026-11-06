@@ -63,9 +63,9 @@ type GridItem = {
   big?: boolean;
 };
 
-// Figma Engagement Main (1068:4392): a row of three, one card across the full
-// width, then a row of three, repeating (6 Nov: 3, 1, 3). Shapes per row (the Figma's): square, landscape,
-// portrait; then mid, square, landscape.
+// Figma Engagement Main (1068:4392): a row of three, then one card across the
+// full width, all the way down (6 Nov: 3, 1, 3, 1). Row shapes alternate as
+// the Figma's: square, landscape, portrait; then mid, square, landscape.
 const ROW_SHAPES = [
   ["card-square_490x490", "card-landscape_490x317"],
   ["card-mid_490x403", "card-square_490x490"],
@@ -73,29 +73,40 @@ const ROW_SHAPES = [
 const BIG = "feature-wide_1492x843";
 
 /**
- * The grid's order (6 Nov): in each row of three, a named client's card video
- * first, then a named client's still, then a ripple card (moving on hover);
- * the full-width card is always a video. Once the named clients run out the
- * ripple cards carry on in rows of three.
+ * The grid's order (6 Nov): each row of three is a named client's card video,
+ * an image card, then a ripple card (moving on hover). A client with a video
+ * always plays it; with no image card to hand, the middle takes a ripple and
+ * the next video waits for the next row. The full-width card is a video while
+ * there are named clients left, then a ripple. Sequence otherwise free.
  */
 function arrangeGrid(list: Engagement[]): GridItem[] {
-  const hasVideo = (e: Engagement) => Object.values(e.art?.cardMedia ?? {}).some((m) => m.video);
-  const named = list.filter(hasVideo);
-  const ripple = list.filter((e) => !hasVideo(e));
+  const media = (e: Engagement) => Object.values(e.art?.cardMedia ?? {});
+  const hasVideo = (e: Engagement) => media(e).some((m) => m.video);
+  // An image card: a still from the handoff with no video, or a plain image.
+  const hasImage = (e: Engagement) => !hasVideo(e) && (media(e).length > 0 || !e.art);
+  const videos = list.filter(hasVideo);
+  const images = list.filter(hasImage);
+  const ripples = list.filter((e) => !hasVideo(e) && !hasImage(e));
   const out: GridItem[] = [];
-  let n = 0;
-  let r = 0;
-  const row = ([videoShape, stillShape]: string[]) => {
-    if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: videoShape });
-    if (n < named.length) out.push({ engagement: named[n++], media: "still", slot: stillShape });
-    if (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
-  };
-  while (n < named.length) {
-    row(ROW_SHAPES[0]);
-    if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: BIG, big: true });
-    row(ROW_SHAPES[1]);
+  const take = (pool: Engagement[]) => pool.shift();
+  const left = () => videos.length + images.length + ripples.length;
+  for (let row = 0; left() > 0; row++) {
+    const [videoShape] = ROW_SHAPES[row % 2];
+    const first = take(videos);
+    if (first) out.push({ engagement: first, media: "video", slot: videoShape });
+    const middle = take(images) ?? take(ripples);
+    if (middle) out.push({ engagement: middle, media: "auto" });
+    const last = take(ripples) ?? take(images);
+    if (last) out.push({ engagement: last, media: "auto" });
+    // Rows short of a video fill up with what's left.
+    if (!first) {
+      const extra = take(ripples) ?? take(images);
+      if (extra) out.push({ engagement: extra, media: "auto" });
+    }
+    const big = take(videos);
+    if (big) out.push({ engagement: big, media: "video", slot: BIG, big: true });
+    else if (ripples[0]?.art?.slots[BIG]) out.push({ engagement: ripples.shift()!, media: "auto", slot: BIG, big: true });
   }
-  while (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
   return out;
 }
 
