@@ -183,6 +183,8 @@ export type EngagementArt = {
    *  video and its poster, or a still alone. Cards show it in place of the
    *  ripple; the engagement's own page keeps its artwork. */
   cardMedia?: Record<string, { video?: string; poster: string }>;
+  /** The client's white logo for the case study hero (handoff logo-white.png). */
+  logo?: string;
 };
 
 // PLACEHOLDER — Figma's own stand-in copy until the engagement write-ups are

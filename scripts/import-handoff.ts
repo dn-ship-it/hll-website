@@ -631,6 +631,32 @@ async function importCardMedia(payload: Payload) {
   }
 }
 
+/**
+ * The client's white logo (logo-white.png, else logo.png) for the case study
+ * hero, top left as House of Katha's case study design (6 Nov): art.logo.
+ * Engagements without a logo (anonymised clients) are left as they are.
+ */
+async function importLogos(payload: Payload) {
+  const base = path.join(root!, "02-engagements");
+  for (const id of fs.readdirSync(base).sort()) {
+    const dir = path.join(base, id);
+    const file = ["logo-white.png", "logo.png"].map((f) => path.join(dir, f)).find((f) => fs.existsSync(f));
+    if (!file) continue;
+    const found = await payload.find({ collection: "engagements", where: { slug: { equals: id } }, limit: 1, depth: 0 });
+    const doc = found.docs[0];
+    if (!doc) {
+      report.push(`logo ${id}: not in the CMS – skipped`);
+      continue;
+    }
+    const logo = await uploadUrl(payload, file, `logo-${id}`, `${doc.client ?? id} logo`);
+    if (!logo) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const art = (doc as any).art ?? {};
+    await payload.update({ collection: "engagements", id: doc.id, data: { art: { ...art, logo } } });
+    console.log(`logo ${id}: ${path.basename(file)}`);
+  }
+}
+
 /** Replaces only each service page's engagement cards. */
 async function importServiceEngagements(payload: Payload) {
   const base = path.join(root!, "03-services");
@@ -988,6 +1014,7 @@ if (only === "engagement-industries") await importEngagementIndustries(payload);
 if (only === "service-engagements") await importServiceEngagements(payload);
 if (only === "engagement-layouts") await importEngagementLayouts(payload);
 if (only === "engagement-order") await importEngagementOrder(payload);
+if (only === "logos") await importLogos(payload);
 if (only === "card-media") await importCardMedia(payload);
 if (!only || only === "services") await importServices(payload);
 if (only === "service-quotes") await importServices(payload, "quotes");

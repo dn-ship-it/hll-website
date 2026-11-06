@@ -311,7 +311,9 @@ export function ScreenShader() {
     variant: variant ?? ("contact" as const),
     // Home has no section palette of its own; the Figma Home footer runs
     // pink and peach rather than Contact's blues (QA G-07).
-    colors: variant ? undefined : HOME_SHADER_COLORS,
+    // Engagement pages take the Home colours too (House of Katha, 6 Nov:
+    // "reuse the Home page's bottom shader colors on the Engagement page").
+    colors: variant && variant !== "engagement" ? undefined : HOME_SHADER_COLORS,
     passthrough: true,
     scrollResponse: SCROLL_RESPONSE,
     // A fresh canvas if the browser ever drops one's WebGL context.

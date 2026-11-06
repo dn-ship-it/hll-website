@@ -40,6 +40,7 @@ export function EngagementArtSlot({
   live = false,
   hoverOnly = false,
   still = false,
+  noText = false,
   cardMedia,
   className = "",
   children,
@@ -56,6 +57,8 @@ export function EngagementArtSlot({
   /** Hold the ripple on one frame (the case study hero: "Static ripples that
    *  match the brand's palette", House of Katha, 5 Nov). */
   still?: boolean;
+  /** Leave out the slot's live client name (the hero draws its own). */
+  noText?: boolean;
   /** A named client's card video or still (5 Nov handoff), in place of the
    *  ripple and its layer: the logo is already in the media. */
   cardMedia?: { video?: string; poster: string };
@@ -114,7 +117,7 @@ export function EngagementArtSlot({
           ) : null}
         </>
       )}
-      {s.texts?.map((t, i) => (
+      {(noText ? [] : s.texts ?? []).map((t, i) => (
         <p
           key={i}
           aria-hidden={i > 0}

@@ -446,10 +446,11 @@ function luminance(hex: string) {
 }
 
 /**
- * The case study hero (House of Katha's redesign, 5 Nov): "Hero Image with
- * logo - hero image can be mockup, or a brand image. Static ripples that
- * match the brand's palette." A named client's brand still from the 5 Nov
- * handoff, else the still ripple with the logo, else the page's first image.
+ * The case study hero, House of Katha's revised design (Figma 127:8943,
+ * 6 Nov): "Hero image with logo – hero image can be mockup, or a brand image.
+ * Static ripples that match the brand's palette." The handoff's feature-wide
+ * artwork (the mockups on the still ripple) with the client's white logo top
+ * left; a client without a logo gets its name there instead.
  */
 function HeroArt({
   engagement,
@@ -462,19 +463,23 @@ function HeroArt({
 }) {
   const art = engagement.art;
   const slot = "feature-wide_1492x843";
-  const still = art?.cardMedia?.[slot]?.poster;
-  if (still) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={still}
-        alt={engagement.client}
-        className="block aspect-[1492/843] w-full rounded-lg object-cover"
-      />
-    );
-  }
   if (art?.slots[slot]) {
-    return <EngagementArtSlot art={art} slot={slot} alt={engagement.client} client={engagement.client} still />;
+    return (
+      <EngagementArtSlot art={art} slot={slot} alt={engagement.client} client={engagement.client} still noText>
+        {art.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={art.logo}
+            alt={engagement.client}
+            className="absolute left-[3.2%] top-[5.5%] h-[7%] w-auto max-w-[40%] object-contain object-left"
+          />
+        ) : (
+          <p className="absolute left-[3.2%] top-[5.5%] m-0 max-w-[60%] text-[4.5cqw] font-medium leading-[1.15] text-white lg:text-[2.4cqw]">
+            {engagement.client}
+          </p>
+        )}
+      </EngagementArtSlot>
+    );
   }
   return heroBlock ? (
     <Block block={heroBlock} tone={tone} isHero art={art} client={engagement.client} mobile />
@@ -515,8 +520,11 @@ export async function EngagementDetail({ slug }: { slug: string }) {
     return Math.max(...rgb) - Math.min(...rgb) < 40;
   };
   const text = readableOnWhite(accent);
+  // "The first sentence is highlighted in the main brand colour": the brand
+  // colour, or where that's a grey (Lesielle's #202020) the artwork's main
+  // colour, the first of its palette (Lesielle's red).
   const highlight =
-    text && !greyish(text) ? text : readableOnWhite(themeColour(engagement.art?.ripple.palette)) ?? text;
+    text && !greyish(text) ? text : readableOnWhite(engagement.art?.ripple.palette?.[0] ?? null) ?? text;
   const tone: Tone = { accent, text, story, highlight };
   const { heroBlock, body } = arrange(engagement.blocks);
   // "Service is listed in its own tab and leads you to the service page",
@@ -543,12 +551,10 @@ export async function EngagementDetail({ slug }: { slug: string }) {
     <MarketingShell markTint={accent && luminance(accent) < 0.7 ? accent : undefined}>
       <ServiceReveal>
         <div className="hll-home hll-service-page">
-          {/* House of Katha's redesign (5 Nov): the hero runs the page's
-              width at the top; the sticky sidebar starts below it. */}
-          <div className="hidden px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pt-[clamp(2rem,calc(3.57*var(--vw)),3.375rem)] lg:block">
-            {hero}
-          </div>
-          <div className="lg:mt-3 lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
+          {/* House of Katha's revised design (6 Nov): the sticky sidebar and
+              the hero side by side at the top, the page's sections under
+              the hero. */}
+          <div className="lg:mt-[clamp(1.5rem,calc(2.65*var(--vw)),2.5rem)] lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
             <EngagementSidebar
               engagement={engagement}
               services={services}
@@ -556,8 +562,9 @@ export async function EngagementDetail({ slug }: { slug: string }) {
               mobileHero={hero}
             />
             <div
-              className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-[clamp(4rem,calc(8.6*var(--vw)),8.125rem)] ${story ? "pt-[139px]" : "pt-[154px]"}`}
+              className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-0 ${story ? "pt-[139px]" : "pt-[154px]"}`}
             >
+              <div className="mb-[clamp(4rem,calc(8.6*var(--vw)),8.125rem)] hidden lg:block">{hero}</div>
               {body.map((block, i) => (
                 <div key={block.id}>
                   {i > 0 ? (
