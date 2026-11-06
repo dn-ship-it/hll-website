@@ -63,8 +63,8 @@ type GridItem = {
   big?: boolean;
 };
 
-// Figma Engagement Main (1068:4392): two rows of three, then one card across
-// the full width, repeating. Shapes per row (the Figma's): square, landscape,
+// Figma Engagement Main (1068:4392): a row of three, one card across the full
+// width, then a row of three, repeating (6 Nov: 3, 1, 3). Shapes per row (the Figma's): square, landscape,
 // portrait; then mid, square, landscape.
 const ROW_SHAPES = [
   ["card-square_490x490", "card-landscape_490x317"],
@@ -85,13 +85,15 @@ function arrangeGrid(list: Engagement[]): GridItem[] {
   const out: GridItem[] = [];
   let n = 0;
   let r = 0;
+  const row = ([videoShape, stillShape]: string[]) => {
+    if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: videoShape });
+    if (n < named.length) out.push({ engagement: named[n++], media: "still", slot: stillShape });
+    if (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
+  };
   while (n < named.length) {
-    for (const [videoShape, stillShape] of ROW_SHAPES) {
-      if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: videoShape });
-      if (n < named.length) out.push({ engagement: named[n++], media: "still", slot: stillShape });
-      if (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
-    }
+    row(ROW_SHAPES[0]);
     if (n < named.length) out.push({ engagement: named[n++], media: "video", slot: BIG, big: true });
+    row(ROW_SHAPES[1]);
   }
   while (r < ripple.length) out.push({ engagement: ripple[r++], media: "auto" });
   return out;

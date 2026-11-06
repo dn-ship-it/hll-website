@@ -11,6 +11,7 @@ export function PageHero({
   lead,
   image,
   collage,
+  noMedia = false,
   children,
 }: {
   title: string;
@@ -18,6 +19,9 @@ export function PageHero({
   image?: string | null;
   /** Shown instead of the single media window (Careers: the About collage). */
   collage?: React.ReactNode;
+  /** No media under the title and lead (Team: HoK's note "People grid
+   *  becomes redundant on this page, can be removed from here"). */
+  noMedia?: boolean;
   children?: React.ReactNode;
 }) {
   return (
@@ -39,7 +43,7 @@ export function PageHero({
         </div>
         <p className="max-w-[344px] text-[24px] leading-[1.16] text-[var(--hll-dark-grey)] lg:max-w-none lg:pt-5 lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)]">{lead}</p>
       </div>
-      {collage ? (
+      {noMedia ? null : collage ? (
         // The About page's four-image layout in place of the single window.
         <div className="mt-8 lg:mt-0">{collage}</div>
       ) : (
