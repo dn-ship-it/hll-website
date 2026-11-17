@@ -29,7 +29,12 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
               onClick={() => setOpen(isOpen ? null : i)}
               className={`flex w-full cursor-pointer items-center justify-between text-left lg:items-start lg:px-[23px] ${
                 i > 0 ? "pt-[27px] lg:pt-[57px]" : ""
-              } ${isOpen ? "" : "pb-[27px] lg:pb-[51px]"}`}
+              } ${isOpen ? "" : "pb-[27px] lg:pb-[51px]"} ${
+                // The first section, open on load, has no padding, so its
+                // header was a 12px tap target on phones: reach 12px past it
+                // either way, without moving anything.
+                i === 0 && isOpen ? "relative before:absolute before:inset-x-0 before:-inset-y-3 before:content-['']" : ""
+              }`}
             >
               <span className="text-[10px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:pt-[3px] lg:text-[14px]">
                 {section.title}

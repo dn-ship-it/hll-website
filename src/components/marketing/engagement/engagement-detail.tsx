@@ -570,7 +570,9 @@ export async function EngagementDetail({ slug }: { slug: string }) {
               mobileHero={hero}
             />
             <div
-              className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-0 ${story ? "pt-[139px]" : "pt-[154px]"}`}
+              // HoK's revised Case Study mobile (174:11079): 112px from the
+              // service card to the first label (it was 162px).
+              className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-0 ${story ? "pt-[139px]" : "pt-[104px]"}`}
             >
               <div className="mb-[clamp(4rem,calc(8.6*var(--vw)),8.125rem)] hidden lg:block">{hero}</div>
               {body.map((block, i) => (
