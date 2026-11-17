@@ -874,17 +874,47 @@ export interface Tender {
   createdAt: string;
 }
 /**
+ * Articles for the Insights page; the latest three also show in the menu's "In the News".
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface Post {
   id: number;
+  /**
+   * The headline, in bold.
+   */
   title: string;
+  /**
+   * Optional. Shown under the headline, in regular.
+   */
+  byline?: string | null;
+  /**
+   * The page address: /insights/<slug>.
+   */
   slug: string;
+  /**
+   * e.g. Data, Payments, Wealth.
+   */
+  tags?: string[] | null;
+  /**
+   * Shown under the featured article on the Insights page.
+   */
   excerpt?: string | null;
   coverImage?: (number | null) | Media;
+  author?: {
+    name?: string | null;
+    photo?: (number | null) | Media;
+  };
   publishedAt?: string | null;
-  body: {
+  /**
+   * Leads the Insights page. Without one, the latest article does.
+   */
+  featured?: boolean | null;
+  /**
+   * Optional opening text under the cover image.
+   */
+  body?: {
     root: {
       type: string;
       children: {
@@ -898,7 +928,105 @@ export interface Post {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
+  /**
+   * The article's sections, in order. Drag to rearrange.
+   */
+  sections?:
+    | (
+        | {
+            /**
+             * Shown to the left of the section. Optional.
+             */
+            label?: string | null;
+            /**
+             * Leave a blank line between paragraphs.
+             */
+            body: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightText';
+          }
+        | {
+            /**
+             * Shown to the left of the section. Optional.
+             */
+            label?: string | null;
+            items?:
+              | {
+                  /**
+                   * e.g. 30+, 65%. Counts up from 0.
+                   */
+                  stat: string;
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightStats';
+          }
+        | {
+            /**
+             * Without one the section shows grey, as in the design.
+             */
+            image?: (number | null) | Media;
+            /**
+             * Optional. Plays in place of the image.
+             */
+            video?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightMedia';
+          }
+        | {
+            /**
+             * The first sentence shows in the colour below.
+             */
+            quote: string;
+            name?: string | null;
+            role?: string | null;
+            /**
+             * Colour of the first sentence, e.g. #086EE8.
+             */
+            colour?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightQuote';
+          }
+        | {
+            /**
+             * Box colour, e.g. #086EE8.
+             */
+            colour?: string | null;
+            content: 'quote' | 'demo' | 'outcomes';
+            quote?: string | null;
+            name?: string | null;
+            role?: string | null;
+            /**
+             * The demo tool's address, shown inside the box.
+             */
+            demoUrl?: string | null;
+            items?:
+              | {
+                  /**
+                   * e.g. 30+, 65%. Counts up from 0.
+                   */
+                  stat: string;
+                  text: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'insightBox';
+          }
+      )[]
+    | null;
+  /**
+   * Related Articles. Left empty, the latest articles sharing a tag show.
+   */
+  related?: (number | Post)[] | null;
   seo?: {
     title?: string | null;
     description?: string | null;
@@ -1018,8 +1146,7 @@ export interface Engagement {
         | 'Manufacturing'
         | 'Real Estate'
         | 'Logistics'
-        | 'Public Sector – External Affairs'
-        | 'Public Sector – Tax & Commerce'
+        | 'Public Sector & Government Services'
         | 'International Organization'
         | 'Consulting Firms'
       )
@@ -1900,11 +2027,84 @@ export interface TendersSelect<T extends boolean = true> {
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
+  byline?: T;
   slug?: T;
+  tags?: T;
   excerpt?: T;
   coverImage?: T;
+  author?:
+    | T
+    | {
+        name?: T;
+        photo?: T;
+      };
   publishedAt?: T;
+  featured?: T;
   body?: T;
+  sections?:
+    | T
+    | {
+        insightText?:
+          | T
+          | {
+              label?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        insightStats?:
+          | T
+          | {
+              label?: T;
+              items?:
+                | T
+                | {
+                    stat?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        insightMedia?:
+          | T
+          | {
+              image?: T;
+              video?: T;
+              id?: T;
+              blockName?: T;
+            };
+        insightQuote?:
+          | T
+          | {
+              quote?: T;
+              name?: T;
+              role?: T;
+              colour?: T;
+              id?: T;
+              blockName?: T;
+            };
+        insightBox?:
+          | T
+          | {
+              colour?: T;
+              content?: T;
+              quote?: T;
+              name?: T;
+              role?: T;
+              demoUrl?: T;
+              items?:
+                | T
+                | {
+                    stat?: T;
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  related?: T;
   seo?:
     | T
     | {

@@ -89,12 +89,15 @@ export function NewsPanel({
 }) {
   return (
     <Panel className={`h-[242px] pt-[19px] ${className}`} opacity={opacity}>
-      <p
-        className="hll-label text-[12px] uppercase leading-[1.2] text-black"
+      {/* House of Katha (13 Nov): the Insights page is reached from here for
+          now, not from its own menu item. */}
+      <Link
+        href="/insights"
+        className="hll-label block text-[12px] uppercase leading-[1.2] text-black underline-offset-[3px] hover:underline"
         style={{ fontFamily: "var(--hll-font-functional)" }}
       >
         In the News
-      </p>
+      </Link>
       <div
         className="mt-2 h-[87px] rounded-[4px] bg-[var(--hll-bg)]"
         style={

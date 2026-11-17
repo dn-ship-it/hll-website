@@ -51,7 +51,7 @@ export async function MarketingShell({
     if (posts.length) {
       news = {
         image: resolveMediaUrl(posts[0].coverImage),
-        items: posts.map((post) => ({ title: post.title })),
+        items: posts.map((post) => ({ title: post.title, href: `/insights/${post.slug}` })),
       };
     }
 

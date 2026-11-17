@@ -21,11 +21,14 @@ import { HomeHeading, HOME_GUTTER } from "./primitives";
 function HeroWindow({
   imageUrl,
   videoUrl,
+  webmUrl,
   ctaLabel,
   ctaHref,
 }: {
   imageUrl?: string | null;
   videoUrl?: string | null;
+  /** A WebM of the same video, offered first (smaller for Chrome and Firefox). */
+  webmUrl?: string | null;
   ctaLabel: string;
   ctaHref: string;
 }) {
@@ -46,17 +49,28 @@ function HeroWindow({
     >
       {videoUrl ? (
         <video
-          src={videoUrl}
+          // Arjun's handoff notes (17 Nov): WebM first, MP4 for Safari;
+          // preloaded; on #F6F6F6, the film's first and last frame, so the
+          // box matches the page while it loads and at the loop point.
+          src={webmUrl ? undefined : videoUrl}
           poster={imageUrl ?? undefined}
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
           // No play button or progress bar (Hannan, 3 Nov): a background loop.
           // Client review 21 Oct: fill the box – fitting it inside left dark
           // bars above and below wherever the video's shape differs.
-          className="absolute inset-0 size-full bg-[#D9D9D9] object-cover"
-        />
+          className={`absolute inset-0 size-full object-cover ${webmUrl ? "bg-[#F6F6F6]" : "bg-[#D9D9D9]"}`}
+        >
+          {webmUrl ? (
+            <>
+              <source src={webmUrl} type="video/webm" />
+              <source src={videoUrl} type="video/mp4" />
+            </>
+          ) : null}
+        </video>
       ) : imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -78,11 +92,13 @@ function HeroWindow({
   );
 }
 
-/** Until the CMS supplies a hero: Arjun's HLL intro (v05, 3 Nov), the loop
- *  Hannan wants playing as visitors land. The old site's loop stays in
- *  public/video as home-hero.mp4. */
-const PLACEHOLDER_HERO_VIDEO = "/video/home-intro.mp4";
-const PLACEHOLDER_HERO_POSTER = "/video/home-intro-poster.jpg";
+/** Until the CMS supplies a hero: Arjun's HLL intro film, loop version (v7,
+ *  17 Nov: "please upload this file as the hero film"), the loop Hannan wants
+ *  playing as visitors land. The old site's loop stays in public/video as
+ *  home-hero.mp4. */
+const PLACEHOLDER_HERO_VIDEO = "/video/HLL_intro_loop_v7.mp4";
+const PLACEHOLDER_HERO_WEBM = "/video/HLL_intro_loop_v7.webm";
+const PLACEHOLDER_HERO_POSTER = "/video/HLL_intro_loop_v7-poster.jpg";
 
 export function HomeHero({
   heading,
@@ -123,6 +139,7 @@ export function HomeHero({
       <HeroWindow
         imageUrl={usePlaceholder ? PLACEHOLDER_HERO_POSTER : heroImageUrl}
         videoUrl={usePlaceholder ? PLACEHOLDER_HERO_VIDEO : heroVideoUrl}
+        webmUrl={usePlaceholder ? PLACEHOLDER_HERO_WEBM : null}
         ctaLabel={ctaLabel}
         ctaHref={ctaHref}
       />
