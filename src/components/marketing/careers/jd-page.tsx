@@ -13,25 +13,21 @@ import { OutlineTag, roleTags } from "./role-tags";
 import { JdAccordion } from "./jd-accordion";
 import { JdApply } from "./jd-apply";
 
-/** Figma Desktop › JD (1116:7340): the detail page of one open role. */
 export async function JdPage({ slug }: { slug: string }) {
   const [roles, content] = await Promise.all([loadRoles(), loadCareersContent()]);
   const role = roles.find((r) => r.slug === slug);
   if (!role) notFound();
 
   const tags = roleTags(role);
-  // Figma: "Apply button takes you to the email."
   const applyHref = role.applyUrl ?? `mailto:spoorthi@hyperlycheelabs.com?subject=${encodeURIComponent(role.title)}`;
   const sections = role.sections?.length ? role.sections : placeholderJdSections;
 
   return (
     <MarketingShell>
-      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
-          reveal animation should go onto all pages"). */}
+      
       <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-home hll-service-page">
-        {/* Figma JD mobile: title at y 385, tags 12px under it, the summary
-            24px below, Apply 84px under that (see JdApply). */}
+        
         <section className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
           <div className="grid gap-6 lg:grid-cols-[653fr_799fr] lg:gap-0">
             <div>
@@ -61,7 +57,6 @@ export async function JdPage({ slug }: { slug: string }) {
         </section>
 
         <section className={`grid gap-[54px] pt-[54px] lg:grid-cols-[534fr_864fr_54fr] lg:gap-0 lg:pt-[131px] ${SERVICE_GUTTER}`}>
-          {/* QA J-06: the label stays in view while the accordion scrolls. */}
           <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
             <HomeHeading eyebrow="Careers" title="About" eyebrowColor="var(--hll-mid-grey)" />
           </div>

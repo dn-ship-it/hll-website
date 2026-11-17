@@ -14,7 +14,7 @@ export type CapabilityItem = {
   subServices?: SubService[];
 };
 
-/** Figma "Tools and Technologies" pill: a logo and a name, both set in the CMS. */
+/** "Tools and Technologies" pill: a logo and a name, both set in the CMS. */
 export type ServiceTool = { name: string; icon?: string | null };
 
 export type OutcomeCard = {
@@ -38,11 +38,11 @@ export type EngagementCard = {
   tag: EngagementCardType;
   description: string;
   variant: "navy" | "orange" | "image";
-  /** Full-bleed photo for the card's media block (Figma: "Banking"). */
+  /** Full-bleed photo for the card's media block. */
   image?: string;
-  /** Client logo centred on the coloured block (Figma: McKinsey, KTM). */
+  /** Client logo centred on the coloured block. */
   logo?: string;
-  /** The engagement page the card opens (handoff cross-link). */
+  /** The engagement page the card opens. */
   href?: string;
 };
 

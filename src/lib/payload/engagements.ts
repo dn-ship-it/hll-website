@@ -125,8 +125,7 @@ export function mapEngagement(doc: CmsEngagement): Engagement {
     year: doc.year,
     type: TYPE_LABELS[doc.engagementType],
     template: doc.template,
-    // Only the services the site has pages for (Cloud's arrives with the
-    // service pages from the 17 Oct handoff).
+    // Only the services the site has pages for.
     services: (doc.services ?? []).filter((s): s is ServiceVariant =>
       (SERVICE_VARIANTS as readonly string[]).includes(s),
     ),
@@ -159,7 +158,7 @@ export function mapEngagement(doc: CmsEngagement): Engagement {
   };
 }
 
-/** Published engagements from the CMS, or the Figma placeholders until there are any. */
+/** Published engagements from the CMS, or the placeholders until there are any. */
 export async function loadEngagements(): Promise<Engagement[]> {
   try {
     const payload = await getPayloadClient();
@@ -177,11 +176,8 @@ export async function loadEngagements(): Promise<Engagement[]> {
   return fallbackEngagements;
 }
 
-/**
- * A tile linking to a named client's engagement shows that client's new
- * related-card still (5 Nov handoff) in place of its ripple render; other
- * tiles keep their image.
- */
+/** A tile linking to a named client's engagement shows that client's related-card still
+ *  in place of its ripple render; other tiles keep their image. */
 export function withRelatedStills<T extends { href?: string; image?: string }>(
   cards: T[],
   all: Engagement[],
@@ -193,11 +189,8 @@ export function withRelatedStills<T extends { href?: string; image?: string }>(
   });
 }
 
-/**
- * "Explore related engagements": picked in the CMS, else chosen here. On a
- * case study "all case studies in it will be of the same service"; a story
- * takes any that share a service, then the latest.
- */
+/** "Explore related engagements": picked in the CMS, else chosen here. A case study takes the same
+ *  service; a story takes any that share a service, then the latest. */
 export function relatedEngagements(
   current: Engagement,
   all: Engagement[],

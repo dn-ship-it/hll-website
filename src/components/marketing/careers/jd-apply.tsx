@@ -6,10 +6,8 @@ import { HLLButton } from "@/components/hll";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 
 /**
- * The JD's Apply button. It sits under the summary (phones: on the text's left
- * edge; desktop: centred, 84px down), and once it has scrolled up out of view
- * a copy stays fixed at the bottom centre of the screen (QA J-01, J-03) until
- * the footer comes in, so Apply is always one tap away while reading.
+ * The JD's Apply button: once the inline one has scrolled out of view, a copy stays fixed at the bottom centre of
+ * the screen until the footer comes in.
  */
 export function JdApply({ href }: { href: string }) {
   const inlineRef = useRef<HTMLDivElement>(null);

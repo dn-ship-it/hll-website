@@ -37,10 +37,8 @@ export function SectionEyebrow({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Section headings run the demo's 600ms sweep reveal, held until the heading
- * scrolls into view. `children` stays a ReactNode for call-site convenience,
- * but the reveal needs the plain string it animates, so anything richer falls
- * back to a static heading.
+ * Section headings run a 600ms sweep reveal once scrolled into view; it needs a plain string,
+ * so richer `children` fall back to a static heading.
  */
 export function SectionTitle({
   children,
@@ -88,11 +86,7 @@ export function SectionTitle({
   );
 }
 
-/**
- * The site's CTA affordance is the demo's outline button: same uppercase,
- * letter-spaced label in a hairline pill that blooms into the variant's
- * gradient border under the cursor.
- */
+/** The site's CTA: an outline button, a hairline pill that blooms into the variant's gradient border under the cursor. */
 export function OutlinePillButton({
   href,
   variant = "hll-ai",
@@ -109,13 +103,10 @@ export function OutlinePillButton({
   );
 }
 
-/** Page gutter from the Figma home frame: 30px at 1512px. */
+/** Page gutter: 30px at 1512px. */
 export const HOME_GUTTER = "px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]";
 
-/**
- * Figma home section heading: Functional eyebrow, then a 64px light title 12px
- * below. Mobile frames set it at 10px and 30px, 6px apart.
- */
+/** Section heading: Functional eyebrow, then a 64px light title 12px below (10px and 30px on mobile). */
 export function HomeHeading({
   eyebrow,
   title,
@@ -141,7 +132,7 @@ export function HomeHeading({
         className={`hll-label text-[10px] uppercase leading-[1.2] lg:text-[12px] ${eyebrowMedium ? "font-medium" : ""}`}
         style={{ color: eyebrowColor ?? ink, fontFamily: "var(--hll-font-functional)" }}
       >
-        {/* "Industry  Healthcare": Figma sets two-part eyebrows 14px apart. */}
+        {/* Two-part eyebrows ("Industry  Healthcare") sit 14px apart. */}
         {eyebrow.split(/:\s*|\s{2,}/).map((part, i) => (
           <span key={part} className={i > 0 ? "ml-[14px]" : undefined}>
             {part}

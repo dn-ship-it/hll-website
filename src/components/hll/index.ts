@@ -11,9 +11,7 @@ export {
   type ServiceVariant,
 } from "./variants";
 
-// The real animation kit ported from HLL-UI-Demo. These replace the CSS
-// stand-ins that used to live in ./hll-button.tsx, ./shader.tsx and
-// ./gradient-reveal-text.tsx.
+// The animation kit ported from HLL-UI-Demo.
 export {
   BottomShader,
   CornerRipple,

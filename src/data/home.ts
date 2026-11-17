@@ -1,7 +1,7 @@
 import type { ServiceVariant } from "@/components/hll/variants";
 
-/** Figma Desktop › Home: the sections below the hero. Each one falls back to
- *  this copy until the CMS fills it in (Marketing content › Home page). */
+/** The sections below the hero. Each falls back to this copy until the CMS fills it in
+ *  (Marketing content › Home page). */
 
 export type HomeHeadingContent = { eyebrow: string; title: string };
 
@@ -23,7 +23,7 @@ export type HomeImpactCard = {
   tags: string[];
   image?: string | null;
   href?: string | null;
-  /** The engagement's card video or still (5 Nov handoff), in place of the image. */
+  /** The engagement's card video or still, in place of the image. */
   media?: { video?: string; poster: string };
 };
 
@@ -112,8 +112,7 @@ export const homePageContent: HomePageContent = {
     eyebrow: "Work",
     title: "Our Impact",
     cards: [
-      // Hannan's canvas (25 Oct): DocuPet, McKinsey & Company, Galeries
-      // Lafayette / Wataniya, KTM / WeWork. Images come from the CMS.
+      // Images come from the CMS.
       { title: "DocuPet", tags: ["Applications"], href: "/engagement/docupet" },
       { title: "McKinsey & Company", tags: ["People & Policy"], href: "/engagement/fraud-model-recovery-government-tax-auth" },
       { title: "Galeries Lafayette", tags: ["Applications"], href: "/engagement/galeries-lafayette" },
@@ -157,7 +156,6 @@ export const homePageContent: HomePageContent = {
   whoWeAre: {
     eyebrow: "Team",
     title: "Who are we",
-    // Hannan's canvas (25 Oct). Photos to come from Rima.
     people: [
       { id: "hannan-hakim", name: "Hannan Hakim", role: "Founding Partner" },
       { id: "arjun-pathni", name: "Arjun Pathni", role: "Senior Partner" },

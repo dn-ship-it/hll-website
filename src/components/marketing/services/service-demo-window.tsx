@@ -12,13 +12,9 @@ type ServiceDemoWindowProps = {
   activeTabKey: string;
   /** CSS background for the frame around the demo — the service's colours. */
   background: string;
-  /**
-   * Figma: "Live corner ripple animation in the back according to the colours
-   * of the service" — drawn over `background`, which stays as the fallback.
-   */
+  /** Corner ripple animation in the service's colours, drawn over `background` (the fallback). */
   ripple?: RippleVariant;
-  /** A capability demo block: on phones it needs a tall window for its
-   *  portrait layout (the handoff's own phone size). */
+  /** A capability demo block: on phones it needs a tall window for its portrait layout. */
   tall?: boolean;
 };
 
@@ -59,20 +55,15 @@ export function ServiceDemoWindow({
   const [loaded, setLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  // Keyed on the resolved source rather than on activeTabKey. Switching tabs
-  // usually resolves to the same demo (pickDemo falls back to items[0] for any
-  // tab without its own entry), so the iframe never reloads and never fires
-  // another load event — resetting on the tab would strand the overlay on
-  // every tab click.
+  // Keyed on the resolved source, not activeTabKey: tabs usually resolve to the same demo
+  // (pickDemo falls back to items[0]), so resetting on the tab would strand the overlay.
   const srcKey = demo.html ?? demo.htmlUrl ?? "";
 
   useEffect(() => {
     const el = iframeRef.current;
 
-    // A server-rendered iframe starts fetching while the HTML is still being
-    // parsed, so it can finish loading before React has attached onLoad. That
-    // event is then gone for good, leaving the overlay up forever, so check
-    // the document directly instead of trusting the event alone.
+    // A server-rendered iframe can finish loading before React attaches onLoad, leaving the
+    // overlay up forever, so check the document directly.
     const alreadyLoaded = () => {
       if (!el) return false;
       try {
@@ -97,7 +88,7 @@ export function ServiceDemoWindow({
   }, [srcKey]);
 
   const hasContent = Boolean(demo.html || demo.htmlUrl);
-  // Figma Services mobile: a 362 × 244 frame around a 337 × 215 window.
+  // Mobile: a 362 × 244 frame around a 337 × 215 window.
   const iframeHeight = `${
     tall ? "h-[min(calc(100svh-96px),820px)] min-h-[560px]" : "h-[215px] min-h-[215px]"
   } lg:h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)] lg:min-h-[clamp(20rem,calc(42.2*var(--vw)),39.9rem)]`;
@@ -107,8 +98,6 @@ export function ServiceDemoWindow({
       className="service-demo-window relative mt-8 overflow-hidden rounded-[6px] lg:mt-[clamp(1.125rem,calc(2.18*var(--vw)),2.0625rem)] lg:rounded-lg"
       data-service-media
     >
-      {/* QA C-11: the same, smaller padding on every side of the gradient
-          box (60px at 1512), so more of the demo shows above the fold. */}
       <div
         className="relative px-3 pb-[15px] pt-[14px] lg:p-[clamp(1.25rem,calc(3.97*var(--vw)),3.75rem)]"
         style={{ background }}
@@ -122,8 +111,6 @@ export function ServiceDemoWindow({
           />
         ) : null}
         <div className="relative mx-auto w-full overflow-hidden rounded-[3px] bg-[var(--hll-bg)] shadow-none lg:overflow-visible lg:rounded-lg lg:p-[clamp(0.75rem,calc(2*var(--vw)),1rem)]">
-          {/* QA C-12: no "Data & Analytics ⌄" selector over the demo. It did
-              nothing, so the window starts at the top of its frame. */}
           <div
             className={`relative overflow-hidden bg-white lg:rounded-sm ${iframeHeight}`}
           >
@@ -155,8 +142,7 @@ export function ServiceDemoWindow({
               />
             )}
 
-            {/* pointer-events-none so this can never swallow interaction with
-                the demo underneath, even if it somehow stays mounted. */}
+            {/* pointer-events-none so this never swallows interaction with the demo underneath. */}
             {hasContent && !loaded ? (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white/80">
                 <p className="text-[10px] uppercase tracking-[0.28em] text-black/35">

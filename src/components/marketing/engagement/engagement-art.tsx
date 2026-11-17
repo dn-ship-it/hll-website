@@ -6,7 +6,7 @@ import type { EngagementArt, EngagementArtSlot as SlotData } from "@/data/engage
 
 import { CardMedia } from "./card-media";
 
-/** Handoff ripple settings → <hll-ripple> attribute names. */
+/** Ripple settings → <hll-ripple> attribute names. */
 const ATTR: Record<string, string> = {
   bands: "bands",
   speed: "speed",
@@ -24,13 +24,9 @@ const ATTR: Record<string, string> = {
 };
 
 /**
- * One image slot of an engagement, built the way the 17 Oct handoff's
- * EngagementMedia does it: the engagement's own live ripple (hll-ripple.js:
- * one shared WebGL context for every ripple on the page, only visible ones
- * draw, 30 fps), the transparent layer with its mockups and logo, the client
- * name as live text where the slot has one, and on the desktop hero the
- * service lockup, quote and attribution. The poster shows until the first
- * frame, and on its own under reduced motion.
+ * One image slot of an engagement: its live ripple (one shared WebGL context, only visible ripples draw, 30 fps),
+ * the transparent layer with mockups and logo, the client name as live text, and on the desktop hero the service
+ * lockup, quote and attribution. The poster shows until the first frame, and alone under reduced motion.
  */
 export function EngagementArtSlot({
   art,
@@ -54,13 +50,11 @@ export function EngagementArtSlot({
   live?: boolean;
   /** Hold the ripple still until the pointer is over it (engagement cards). */
   hoverOnly?: boolean;
-  /** Hold the ripple on one frame (the case study hero: "Static ripples that
-   *  match the brand's palette", House of Katha, 5 Nov). */
+  /** Hold the ripple on one frame (the case study hero). */
   still?: boolean;
   /** Leave out the slot's live client name (the hero draws its own). */
   noText?: boolean;
-  /** A named client's card video or still (5 Nov handoff), in place of the
-   *  ripple and its layer: the logo is already in the media. */
+  /** A named client's card video or still, in place of the ripple and its layer: the logo is already in the media. */
   cardMedia?: { video?: string; poster: string };
   className?: string;
   /** Overlays drawn on top, such as the card's tags and arrow. */
@@ -71,8 +65,7 @@ export function EngagementArtSlot({
   }, []);
   const [hovered, setHovered] = useState(false);
 
-  // A named client's card media can fill a shape the ripple artwork wasn't
-  // cut for (the Engagements grid's own shapes); its size is in the name.
+  // A named client's card media can fill a shape the ripple artwork wasn't cut for; its size is in the name.
   const size = /_(\d+)x(\d+)/.exec(slot);
   const own = art.slots[slot];
   if (!own && !(cardMedia && size)) return null;
@@ -89,8 +82,7 @@ export function EngagementArtSlot({
     if (ATTR[key]) attrs[ATTR[key]] = String(value);
   }
   if (typeof s.speed === "number") attrs.speed = String(s.speed);
-  // Cards hold their ripple on one frame and run it only while hovered
-  // (5 Nov); it picks up where it stopped.
+  // Cards hold their ripple on one frame and run it only while hovered; it picks up where it stopped.
   if ((hoverOnly && !hovered) || still) attrs.paused = "";
 
   const fill = "absolute inset-0 size-full";

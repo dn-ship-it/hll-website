@@ -42,7 +42,6 @@ export const teamPageContent: TeamPageContent = {
     headline: "Team",
     description:
       "We are as good as our people. As our ecosystem expands, so does our momentum. Our strength comes from our people.",
-    // Hannan's "team grid picture.zip" (canvas, 25 Oct).
     image: "/assets/team/team-grid.webp",
   },
   grid: {
@@ -62,7 +61,6 @@ export const teamPageContent: TeamPageContent = {
     ctaLabel: "View open roles",
     ctaHref: "/careers",
   },
-  // Hannan's canvas (25 Oct), /team. Photos to come from Rima.
   members: [
     {
       id: "hannan-hakim",

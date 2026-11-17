@@ -15,7 +15,6 @@ const DEFAULT_NAV: SiteNavItem[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-// PLACEHOLDER — Figma's "In the News" items until Posts are published in the CMS.
 export const DEFAULT_NEWS: NewsData = {
   items: [
     { title: "Fresh Recruit: John Doe joins HLL" },
@@ -42,10 +41,7 @@ export function SiteHeader({
 }) {
   return (
     <header className="sticky top-0 z-50 h-[var(--nav-h)] bg-white lg:bg-[#fafafa]">
-      {/* Figma Nav Mobile: logo at (20, 21) with the mark cropped to 25 × 34,
-          the menu dot 19px from the edge. Nav Bar (desktop): logo block at
-          (30, 11.5), menu buttons 36px tall on y 20, 20px apart, ending 12px
-          from the edge. */}
+      
       <div className="flex h-full items-center justify-between pl-5 pr-[19px] pt-[2px] lg:pl-[30px] lg:pr-3 lg:pt-[9px]">
         <Link
           href="/"

@@ -1,11 +1,6 @@
 import { serviceVariantForSlug, type HLLVariant } from "@/components/hll/variants";
 
-/**
- * The palette a page belongs to: its service's own on a service page, else
- * its nav section's (the colours of that section's nav button). Home has none.
- * The footer shader and footer button follow it ("The shader overlay shifts
- * variant").
- */
+/** The palette a page belongs to: its service's own on a service page, else its nav section's. Home has none. */
 export function variantForPath(pathname: string): HLLVariant | null {
   const slug = pathname.match(/^\/services\/([^/]+)/)?.[1];
   const service = slug ? serviceVariantForSlug(slug) : null;

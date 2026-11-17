@@ -6,17 +6,14 @@ import { loadEngagements } from "@/lib/payload/engagements";
 
 import { EngagementList } from "./engagement-list";
 
-/** Figma Desktop › Engagement Main (1068:4392) and Filter Expanded (1341:20475). */
 export async function EngagementPage() {
   const engagements = await loadEngagements();
 
   return (
     <MarketingShell>
-      {/* House of Katha's reveal animations (5 Nov), in place of the fade-up:
-          card images grow in from a blur, card text fades in word by word. */}
+      {/* Card images grow in from a blur, card text fades in word by word. */}
       <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page pb-[154px]">
-          {/* Figma Engagements mobile: the title at y 385 of the first screen. */}
           <div className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
             <GradientRevealTextSlow
               as="h1"

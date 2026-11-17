@@ -9,29 +9,23 @@ import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
 import { RIPPLE_FILL, getServiceTheme } from "./service-theme";
 
-/**
- * Figma sets a trailing "%" at roughly half the stat size ("60%"). A trailing
- * unit word ("5+ Years") gets the same treatment so it stays on one line in a
- * 366px card instead of wrapping at display size.
- */
+/** A trailing "%" or unit word ("5+ Years") is set at about half the stat size so it stays on one
+ *  line in a 366px card. */
 function Stat({ value }: { value: string }) {
   // "%" or a whole unit word ("Years", "Days"); a single letter such as the
   // "x" in "Up to 8x" stays at display size with its number.
   const match = value.match(/^(.*?\d\+?)\s*(%|[A-Za-z]{2,}.*)$/);
   const main = match ? match[1] : value;
   const unit = match ? match[2] : "";
-  // Hannan, 28 Oct: long figures ("16% → 85%", "$400 million+") ran over the
-  // card's edge or wrapped. Anything wider than about five display-size
-  // characters scales down so the figure keeps to one line.
+  // Long figures ("16% → 85%", "$400 million+") scale down past about five display-size
+  // characters so they stay on one line.
   const width = main.length + unit.length * 0.55;
   const scale = Math.min(1, 5 / width);
 
   return (
-    // QA C-23: 64px on phones (Figma's 104px reads far too large on a real
-    // phone), the size the engagement pages' outcome figures use.
+    // 64px on phones, the size the engagement pages' outcome figures use.
     <p className="text-[64px] font-light leading-[1.16] text-black lg:text-[clamp(3.5rem,calc(6.88*var(--vw)),6.5rem)]">
       <span className="whitespace-nowrap" style={scale < 1 ? { fontSize: `${scale}em` } : undefined}>
-        {/* Figma: "Number counter". */}
         <CountUp value={main} />
         {unit ? (
           <span className="text-[0.55em] tracking-normal">
@@ -61,9 +55,8 @@ export function OutcomeSection({
       className="relative overflow-hidden py-10 lg:pb-[clamp(5.9375rem,calc(11.38*var(--vw)),10.75rem)] lg:pt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)]"
       style={{ background: outcomeBackground }}
     >
-      {/* Figma: "Live centered ripple animation in the back according to the
-          colours of the service". At full strength it covers the frame's
-          still, which only shows where the animation can't run (QA C-13). */}
+      {/* Ripple in the service's colours; at full strength it covers the frame's still, which
+          only shows where the animation can't run. */}
       <Ripple
         variant={SERVICE_TO_RIPPLE[variant]}
         origin="center"
@@ -80,9 +73,8 @@ export function OutcomeSection({
         />
       </div>
 
-      {/* Figma: cards run to 10px from the frame edge, 10px apart, and each is
-          only as tall as its content — the uneven heights are intentional.
-          Mobile: one column in the 20px gutter, 9px between the parts. */}
+      {/* Cards are only as tall as their content (the uneven heights are intentional).
+          Mobile: one column in the 20px gutter. */}
       <div className="relative mt-8 grid grid-cols-1 items-start gap-[10px] px-5 lg:mt-[clamp(2.8125rem,calc(5.42*var(--vw)),5.125rem)] lg:grid-cols-4 lg:px-[10px]">
         {data.cards.map((card) => (
           <article
@@ -110,10 +102,8 @@ export function OutcomeSection({
 }
 
 /**
- * Hannan's review: under an outcome, the small card of the case study it
- * comes from (the engagement's 490×308 card, at its own shape), opening that
- * engagement. An image of the tile's own (Applications' 4:3 mock-ups, 29 Oct
- * handoff) shows at its shape, uncropped.
+ * Under an outcome, the small card of the case study it comes from, opening that engagement;
+ * an image of the tile's own shows at its shape, uncropped.
  */
 function OutcomeCaseStudy({ image, ratio, href }: { image: string; ratio?: number; href?: string }) {
   const img = (

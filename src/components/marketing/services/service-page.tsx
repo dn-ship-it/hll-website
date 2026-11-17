@@ -47,14 +47,13 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
   return (
     <MarketingShell markTint={getServiceTheme(data.variant).accent}>
       <div className="hll-service-page">
-        {/* Figma Services mobile: the brand row 8px under the nav, at x 16. */}
+        {/* Mobile: the brand row 8px under the nav. */}
         <div className="pl-4 pr-5 pt-2 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pt-[18px]">
           <ServiceBrandHeader brand={data.brand} variant={data.variant} />
         </div>
 
-        {/* House of Katha's reveal animations (5 Nov), in place of the
-            fade-up. The hero's demo window and the quote carousel change
-            their own text, so they opt out. */}
+        {/* Reveal animations in place of the fade-up; the hero's demo window and quote carousel
+            change their own text, so they opt out. */}
         <RevealRoot skip=".hll-display, .hll-label">
           <ServiceHero
             data={data.hero}

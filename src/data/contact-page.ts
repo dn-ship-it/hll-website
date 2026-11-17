@@ -10,17 +10,16 @@ export type ContactOffice = {
   country: string;
   company: string;
   address: string;
-  /** Shown under the address when filled in (QA CT-02). */
+  /** Shown under the address when filled in. */
   phone?: string;
   email?: string;
   taxLabel?: string;
   taxId?: string;
 };
 
-/** Figma Desktop › Contact (1341:11841). */
 export type ContactPageContent = {
   title: string;
-  /** The line under the title (QA CT-02). */
+  /** The line under the title. */
   intro: string;
   form: {
     fields: ContactFormField[];
@@ -56,7 +55,7 @@ export const contactPageContent: ContactPageContent = {
       { id: "source", label: "How did you hear about us?", type: "text" },
     ],
     submitLabel: "Send message",
-    // Figma "Contact – Message sent": follows "Thanks, <first name>."
+    // Follows "Thanks, <first name>."
     successMessage: "We’ll reply within 2 working days.",
     errorMessage: "Something went wrong sending your message. Please try again, or email us directly.",
   },
@@ -97,7 +96,6 @@ export const contactPageContent: ContactPageContent = {
     text: "Prefer to talk it through? Book a call with us, or reach the office closest to you.",
     email: "hannan@hyperlycheelabs.com",
     scheduleLabel: "Schedule a call",
-    // Hannan's canvas (25 Oct): "schedule a call link should be: rima@hyperlycheelabs.com".
     scheduleHref: "mailto:rima@hyperlycheelabs.com?subject=Schedule%20a%20call",
   },
 };

@@ -2,7 +2,6 @@ import { GradientRevealTextSlow } from "@/components/hll";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
-// Figma About_02 collage: four media tiles in a 1452 × 400 band.
 const BAND = { w: 1452, h: 400 };
 const TILES = [
   { x: 0, y: 0, w: 300, h: 400 },
@@ -11,8 +10,7 @@ const TILES = [
   { x: 310, y: 212, w: 333, h: 187 },
 ];
 
-// Figma About mobile: four tiles in a 374 × 318 band from x 14 (the other
-// two sit off-frame).
+// Mobile: four tiles in a 374 × 318 band from x 14 (the other two sit off-frame).
 const MOBILE_BAND = { w: 374, h: 318 };
 const MOBILE_TILES = [
   { x: 0, y: 0, w: 88, h: 81 },
@@ -59,8 +57,7 @@ function Band({
   );
 }
 
-/** The About hero's four-image collage (mobile and desktop bands). Careers
- *  shows the same layout at the top of its page (QA CR-05). */
+/** The About hero's four-image collage (mobile and desktop bands); Careers shows it too. */
 export function HeroCollage({ images }: { images: AboutPageData["hero"]["images"] }) {
   return (
     <>

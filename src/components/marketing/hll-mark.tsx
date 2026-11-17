@@ -1,9 +1,6 @@
 /**
- * The Hyper Lychee Labs hourglass from the Figma Nav Bar component (25.5 × 51
- * vector, radial grey gradient). With `tint`, the gradient takes the tint's
- * hue and saturation at each stop's own lightness, which is what Figma's
- * COLOR-blend overlay does on the service frames ("logo in the navbar changes
- * colour according to the service or industries").
+ * The Hyper Lychee Labs hourglass (25.5 × 51 vector, radial grey gradient). With `tint`, the gradient takes the
+ * tint's hue and saturation at each stop's own lightness (a COLOR-blend overlay).
  */
 const STOPS: [offset: number, grey: number, opacity: number][] = [
   [0.03, 0x3b, 1],
@@ -39,8 +36,7 @@ export function HllMark({ tint, className }: { tint?: string; className?: string
   const id = `hll-mark-${tint?.slice(1) ?? "grey"}`;
 
   return (
-    // "slice": the mobile Nav and Footer crop the mark to a 25 × 34 box
-    // (Figma image fill), keeping its middle; the desktop box shows it whole.
+    // "slice": the mobile Nav and Footer crop the mark to a 25 × 34 box, keeping its middle; desktop shows it whole.
     <svg
       viewBox="0 0 25.5054 50.9556"
       preserveAspectRatio="xMidYMid slice"

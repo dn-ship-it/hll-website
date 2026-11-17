@@ -2,8 +2,7 @@ import { HomeHeading } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { IndustryPageData } from "@/types/industry";
 
-/** Figma "Inside the Lab": one screen-high band on its ripple still, a 1171 × 658 window.
- *  Mobile: a 395px band, the 312 × 238 window 32px under the heading. */
+/** One screen-high band on its ripple still with a 1171 × 658 window. Mobile: a 395px band, the 312 × 238 window 32px under the heading. */
 export function IndustryLabSection({
   data,
 }: {
@@ -20,9 +19,7 @@ export function IndustryLabSection({
       <div className="[&_p:first-child]:!text-[var(--hll-light-grey)]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} tone="dark" />
       </div>
-      {/* QA I-08: back to the design's centred 1171 × 658 window, and never
-          taller than the screen leaves under the heading, so the whole demo
-          sits in view on smaller laptops. */}
+      {/* Centred 1171 × 658 window, never taller than the screen leaves under the heading, so the demo stays in view on small laptops. */}
       <div className="mt-8 aspect-[312/238] w-full overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mx-auto lg:mt-[60px] lg:aspect-[1171/658] lg:w-[min(calc(77.45*var(--vw)),calc((100*var(--svh)-var(--nav-h)-330px)*1.7796))] lg:rounded-lg">
         <iframe
           title={`${data.selectorLabel} lab demo`}

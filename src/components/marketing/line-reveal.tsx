@@ -3,12 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-/**
- * Figma glossary: "Horizontal lines in the website are to be animated to
- * appear gracefully from left to right when in screen." Every [data-line] on
- * the page draws in once, including lines added later (an opened accordion,
- * a filtered list).
- */
+/** Draws every [data-line] horizontal line in from left to right once on screen, including lines added later (an opened accordion, a filtered list). */
 export function LineReveal() {
   const pathname = usePathname();
 

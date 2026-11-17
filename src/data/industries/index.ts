@@ -3,10 +3,8 @@ import type { IndustryPageData } from "@/types/industry";
 import { healthcareIndustry } from "./healthcare";
 
 /**
- * Payments and Insurance follow the Figma "Industry_Image Test" frames
- * (Imagery section), and Pharmaceuticals the "Industries Color Palettes"
- * frame: the Healthcare template with their own name, colour and hero image. Everything below the hero is the template's placeholder copy
- * until each industry's content is written.
+ * Payments, Insurance and Pharmaceuticals use the Healthcare template with their own name, colour and
+ * hero image; everything below the hero is placeholder copy until each industry's content is written.
  */
 function fromTemplate(overrides: {
   slug: string;
@@ -43,8 +41,7 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
   }),
   insurance: fromTemplate({
     slug: "insurance",
-    // The Figma test frame repeats "Health & Life Sciences" here; Insurance
-    // sits under Financial Services in the industry palette.
+    // Insurance sits under Financial Services in the industry palette.
     category: "Financial Services",
     title: "Insurance",
     image: "/assets/industries/insurance-hero.webp",
@@ -57,19 +54,13 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
     slug: "pharmaceuticals",
     category: "Health & Life Sciences",
     title: "Pharmaceuticals",
-    // Figma Imagery › "HLL_Pharma".
     image: "/assets/industries/pharmaceuticals-hero.webp",
     related: [
       { label: "Healthcare", href: "/industries/healthcare" },
       { label: "Insurance", href: "/industries/insurance" },
     ],
-  }),  // The rest of the 17 Oct handoff's industries (its permanent IDs). Their
-  // copy comes from the CMS. Hero images: Figma › Final › Imagery, shared by
-  // Hannan's groups (canvas 19/10/26): Financial Services the Payments image,
-  // Commerce & Consumer the Commerce one, Public Sector and International
-  // Organizations Governance, Consulting Professional Services; Logistics has
-  // its own. PetTech, Manufacturing and Real Estate have none yet and keep
-  // the template's.
+  }),
+  // Copy for these comes from the CMS. Hero images are shared by group; PetTech, Manufacturing and Real Estate keep the template's.
   "banking": fromTemplate({
     slug: "banking",
     category: "Financial Services",
@@ -126,8 +117,7 @@ export const INDUSTRY_PAGES: Record<string, IndustryPageData> = {
     image: "/assets/industries/logistics-hero.webp",
     related: [],
   }),
-  // External Affairs and Tax & Commerce, merged (handoff 29 Oct); their old
-  // addresses redirect here (next.config).
+  // External Affairs and Tax & Commerce, merged; their old addresses redirect here (next.config).
   "public-sector-government-services": fromTemplate({
     slug: "public-sector-government-services",
     category: "Government & Public Institutions",

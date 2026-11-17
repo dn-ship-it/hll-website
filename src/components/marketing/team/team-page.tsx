@@ -38,11 +38,9 @@ async function loadTeamPage() {
   }
 }
 
-/** Figma person card: 490px square photo, 36px name, Functional role, body. */
 function PersonCard({ person }: { person: TeamMember }) {
   return (
-    // House of Katha's Team card reveal: photo, name and role play together
-    // as the card comes in.
+    // Photo, name and role play their reveal together as the card comes in.
     <article data-reveal-card>
       <div
         className="reveal-card-photo aspect-square w-full rounded-lg bg-[#D9D9D9]"
@@ -73,7 +71,6 @@ function PersonCard({ person }: { person: TeamMember }) {
   );
 }
 
-/** Figma Desktop › Team (1098:5219). */
 export async function TeamPage() {
   const { content, members, careers } = await loadTeamPage();
   // The founder is the first featured leader; everyone else is in the grid.
@@ -84,8 +81,7 @@ export async function TeamPage() {
 
   return (
     <MarketingShell>
-      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
-          reveal animation should go onto all pages"). */}
+      
       <RevealRoot skip=".hll-display, .hll-label"
         card={{ card: "[data-reveal-card]", text: ".reveal-card-text", image: ".reveal-card-photo" }}
       >
@@ -106,7 +102,6 @@ export async function TeamPage() {
           </section>
         ) : null}
 
-        {/* Figma Team mobile has no hairline between Founder and Leadership. */}
         <div data-line className="hidden h-px w-[98.6%] bg-[var(--hll-mid-grey)] lg:block" />
         <section className="pb-[84px] pt-[84px] lg:pb-[154px]">
           <div className={`flex items-end gap-[17px] ${SERVICE_GUTTER}`}>

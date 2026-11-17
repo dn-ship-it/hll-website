@@ -6,10 +6,8 @@ import { useEffect } from "react";
 const MAX_WAIT_MS = 1600;
 
 /**
- * Client feedback: pages showed their content while the title was still
- * animating in. <main> is rendered with data-intro="pending", which CSS uses to
- * hide everything but the page's <h1>; once the title's reveal animation ends
- * this flips it to "done" and the rest of the page fades in.
+ * Hides everything but the page's <h1> (<main> starts as data-intro="pending") until the title's reveal ends,
+ * then flips it to "done" and the rest of the page fades in.
  */
 export function PageIntro() {
   useEffect(() => {

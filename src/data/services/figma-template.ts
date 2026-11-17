@@ -3,10 +3,8 @@ import type { ServiceVariant } from "@/components/hll/variants";
 import type { ServicePageData } from "./types";
 
 /**
- * PLACEHOLDER content for services that have a Figma frame but no copy yet
- * (AI 1341:16956, Ontology 1341:16568). Everything below the headline
- * mirrors the Figma service template verbatim, including its stand-in text,
- * so the page matches the design until the real copy lands in the CMS.
+ * PLACEHOLDER content for services that have a design but no copy yet; mirrors the template
+ * until the real copy lands in the CMS.
  */
 const BODY =
   "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker, it takes center stage.";

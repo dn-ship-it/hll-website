@@ -4,8 +4,7 @@ import { useState } from "react";
 
 import type { ContactOffice } from "@/data/contact-page";
 
-/** Figma "Contact – v2 (accordion)": the countries in this order; any other
- *  country in the CMS follows them. */
+/** The countries in this order; any other country in the CMS follows them. */
 const COUNTRY_ORDER = ["India", "United States", "Saudi Arabia", "Netherlands"];
 const FLAGS: Record<string, string> = {
   India: "/assets/contact/flags/in.svg",
@@ -28,12 +27,7 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
   );
 }
 
-/**
- * QA CT-02: one accordion row per country (flag, name, plus / minus), the
- * first open on load and one open at a time, as the job description's. An
- * open country lists its offices: company, address, and phone and email
- * where they're filled in the CMS.
- */
+/** One accordion row per country (flag, name, plus / minus), the first open on load, one open at a time; open rows list offices. */
 export function ContactOffices({ offices }: { offices: readonly ContactOffice[] }) {
   const byCountry = new Map<string, ContactOffice[]>();
   for (const office of offices) {
@@ -75,8 +69,7 @@ export function ContactOffices({ offices }: { offices: readonly ContactOffice[] 
               </span>
             </button>
             <div id={id} hidden={!isOpen}>
-              {/* Desktop: a country's offices side by side, two to a row
-                  (House of Katha's review, 5 Nov); phones stack them. */}
+              {/* Desktop: a country's offices side by side, two to a row; phones stack them. */}
               <ul className="space-y-12 pb-12 pt-6 lg:ml-[28.4%] lg:grid lg:grid-cols-2 lg:gap-x-10 lg:gap-y-[70px] lg:space-y-0 lg:pb-[50px] lg:pt-[18px]">
                 {(byCountry.get(country) ?? []).map((office) => (
                   <li key={office.id}>

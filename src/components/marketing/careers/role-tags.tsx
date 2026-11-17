@@ -2,8 +2,7 @@ import type { CareerNotice } from "@/data/careers-page";
 
 export const BUTTON_TYPE = "text-[12px] uppercase leading-none tracking-[0.25em] text-[var(--hll-dark-grey)]";
 
-/** Figma "Button" outline state: 38px, Light Grey hairline. Careers mobile
- *  scales it to 30px with an 8px label. */
+/** Outline state: 38px, Light Grey hairline; scaled to 30px with an 8px label on Careers mobile. */
 export function OutlineTag({
   children,
   size = "row",

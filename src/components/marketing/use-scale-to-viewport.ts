@@ -5,11 +5,8 @@ import { useEffect, type RefObject } from "react";
 import { pageZoom } from "@/lib/page-zoom";
 
 /**
- * Figma (Home and Industry heroes): "window starts at given ratio with video
- * playing and then smoothly scales to viewport width and height to cover the
- * entire screen". Scales the element from its laid-out size at the top of the
- * page to covering the viewport once its centre reaches the viewport's
- * centre, rounding its corners off on the way.
+ * Scales the element from its laid-out size at the top of the page to covering the viewport once its centre
+ * reaches the viewport's centre, rounding its corners off on the way.
  */
 export function useScaleToViewport(
   ref: RefObject<HTMLElement | null>,
@@ -52,10 +49,8 @@ export function useScaleToViewport(
       );
       node.style.transform = `scale(${1 + (cover - 1) * eased})`;
       node.style.borderRadius = `${8 * (1 - eased)}px`;
-      // The window grows from its centre, so at full size it reaches this far
-      // past its own bottom. Room for that underneath, or it covered what
-      // follows: Home's See our work, the industry pages' capability buttons
-      // (Hannan, 5 Nov). Fixed, not eased, so the page doesn't shift on scroll.
+      // The window grows from its centre, so at full size it reaches this far past its own bottom;
+      // leave room for that so it doesn't cover what follows. Fixed, not eased, so the page doesn't shift on scroll.
       node.style.marginBottom = `${((cover - 1) * node.offsetHeight) / 2}px`;
     };
     const onScroll = () => {

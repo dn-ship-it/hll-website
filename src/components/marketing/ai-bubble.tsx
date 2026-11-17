@@ -11,7 +11,6 @@ type Stage = "rest" | "open" | "search";
 
 const GLASS = "backdrop-blur-[12.8px]";
 
-/** Figma's two-window mark, as on the stat card and the result rows. */
 function OpenIcon() {
   return (
     <svg
@@ -50,12 +49,7 @@ function rank(index: SearchEntry[], query: string) {
     .map((r) => r.entry);
 }
 
-/**
- * Figma "AI Bubble" (1707:7332 / 7492 / 7657): a soft orb bottom right; on
- * click it offers "How can I help?" and Search, and Search opens a frosted
- * panel whose results sit in rows with the service's colour tile, the page
- * name and "Learn more".
- */
+/** AI bubble: a soft orb bottom right that offers "How can I help?" and Search, which opens a frosted results panel. */
 export function AiBubble({ index }: { index: SearchEntry[] }) {
   const [stage, setStage] = useState<Stage>("rest");
   const [query, setQuery] = useState("");
@@ -184,8 +178,7 @@ export function AiBubble({ index }: { index: SearchEntry[] }) {
         </div>
       ) : null}
 
-      {/* The orb: Figma's image in a 57px circle under a 5.2px layer blur,
-          sitting 10px further left once the bubble opens. */}
+      {/* The orb: an image in a 57px circle under a 5.2px layer blur, 10px further left once the bubble opens. */}
       <button
         type="button"
         aria-label={
@@ -198,8 +191,7 @@ export function AiBubble({ index }: { index: SearchEntry[] }) {
         className="absolute bottom-[30px] grid size-[57px] place-items-center rounded-full transition-[right] duration-300 ease-out"
         style={{ right: stage === "rest" ? 51 : 41 }}
       >
-        {/* House of Katha's "shape" loop (5 Nov), cropped to the orb, in
-            place of the still. */}
+        {/* The "shape" loop, cropped to the orb, in place of the still. */}
         <video
           aria-hidden
           src="/assets/ai/orb.mp4"

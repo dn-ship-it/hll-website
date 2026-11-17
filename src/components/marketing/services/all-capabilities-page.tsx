@@ -12,9 +12,8 @@ import { AllCapabilities, type CapabilityService } from "./all-capabilities";
 // capability list; without the CMS their sub-services stay hidden.
 const PLACEHOLDER_CAPABILITIES = new Set(["hll-ai", "hll-ontology"]);
 
-/** A capability's headline and sub-services as its own page shows them: the
- *  CMS page over the bundled one, the same mapping the page uses, so the
- *  wheel's tags always match the page (Hannan, 3 Nov). */
+/** A capability's headline and sub-services as its own page shows them (CMS page over the
+ *  bundled one), so the wheel's tags always match the page. */
 async function pageCapabilities(variant: string) {
   const page = getServicePageByVariant(variant);
   if (!page) return null;
@@ -69,9 +68,8 @@ async function loadCmsWheel(): Promise<{ wheel: CapabilityService[]; start?: num
   }
 }
 
-/** The wheel's services and the one in focus at first: the CMS list if set,
- *  else the Figma wheel, top to bottom (Application in focus). Also the Home
- *  Capabilities section (Hannan, 2 Nov). */
+/** The wheel's services and the one in focus at first: the CMS list if set, else the default
+ *  wheel top to bottom (Application in focus). Also used by the Home Capabilities section. */
 export async function getCapabilitiesWheel(): Promise<{ services: CapabilityService[]; startIndex: number }> {
   const cms = await loadCmsWheel();
   if (cms) return { services: cms.wheel, startIndex: cms.start ?? Math.min(3, cms.wheel.length - 1) };
@@ -90,7 +88,7 @@ export async function getCapabilitiesWheel(): Promise<{ services: CapabilityServ
   return { services, startIndex: 3 };
 }
 
-/** Figma Capabilities › All Capabilities (2562:5155), the /services overview. */
+/** The /services overview. */
 export async function AllCapabilitiesPage() {
   const { services, startIndex } = await getCapabilitiesWheel();
 

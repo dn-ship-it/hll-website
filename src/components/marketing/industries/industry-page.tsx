@@ -43,8 +43,6 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
 
   return (
     <MarketingShell markTint={accent}>
-      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
-          reveal animation should go onto all pages"). */}
       <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-service-page">
         <IndustryHero

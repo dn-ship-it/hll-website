@@ -8,9 +8,8 @@ import { homePageContent, type HomePageContent, type HomeStep } from "@/data/hom
 
 import { HOME_GUTTER, HomeHeading } from "./primitives";
 
-// Figma "How we work": the active stage is a 530px image in the centre with
-// the other two at 250px either side. Offsets are inside the 1452 × 728 stage
-// below the heading.
+// Desktop: the active stage is a 530px image in the centre, the others 250px either side;
+// offsets are inside the stage below the heading.
 const STAGE = { w: 1452, h: 728 };
 const SLOTS = [
   { x: 110, y: 205, size: 250 },
@@ -18,21 +17,18 @@ const SLOTS = [
   { x: 1092, y: 206, size: 250 },
 ];
 
-// Figma Home mobile: a 333px card in the middle (x 32 of 402) with the others
-// peeking in at 287px (left, x -265) and 295px (right, x 375). Offsets are
-// from the screen's centre line.
+// Mobile: a 333px card in the middle, the others peeking in at the sides; offsets are from
+// the screen's centre line.
 const MOBILE_SLOTS = [
   { x: -467, y: 26, size: 287 },
   { x: -169, y: 0, size: 333 },
   { x: 174, y: 23, size: 295 },
 ];
 
-// The middle stage narrows to the screen (12px clear of each edge) on phones
-// narrower than Figma's 402px frame, so it never runs off the left (HoK's
-// mobile review, 5 Nov); the side stages keep Figma's gaps to it (11px left,
-// 10px right).
+// The middle stage narrows to the screen (12px clear of each edge) on phones under 402px wide,
+// so it never runs off the left; the side stages keep their gaps to it (11px left, 10px right).
 const MOBILE_ACTIVE_W = `min(${MOBILE_SLOTS[1].size}px, calc(100 * var(--vw) - 24px))`;
-// Figma sets the middle stage 2.5px left of centre (x -169 for 333px).
+// The middle stage sits 2.5px left of centre (x -169 for 333px).
 const mobileLeft = (slot: number) =>
   slot === 1
     ? `calc(50% - ${MOBILE_ACTIVE_W} / 2 - 2.5px)`
@@ -42,17 +38,11 @@ const mobileLeft = (slot: number) =>
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
-/** How long a stage without a motion piece holds before the carousel turns
- *  on its own. A stage with one holds for the video's length (Hannan's
- *  tracker HOME-009, 28 Oct: Shape runs 12s and Evolve 8.5s, and turning at
- *  6s cut them off). */
+/** How long a stage without a motion piece holds before the carousel turns; one with a
+ *  piece holds for its video's length. */
 const STAGE_MS = 6000;
 
-/**
- * Figma "carousel with timer delay": a 103 × 2 track that fills while the
- * stage holds, then turns the carousel. Keyed per stage, so a manual turn
- * starts it over; `paused` holds it where it is.
- */
+/** A 103 × 2 timer track that fills while the stage holds, then turns the carousel; keyed per stage. */
 function StageTimer({
   ms,
   paused,
@@ -105,14 +95,12 @@ export function HowWeWork({
   /** Space under the mobile hairline (Home 32px, About 84px). */
   dividerClassName?: string;
 } = {}) {
-  // Figma's carousel has three stages: the middle one large, one either side.
   const steps = data.steps.slice(0, 3);
   const [active, setActive] = useState(Math.min(1, steps.length - 1));
   const count = steps.length;
   const slotOf = (index: number, at = active) => (index - at + 1 + count) % count;
-  // With three stages in three slots, a turn sends one card from one end to
-  // the other. Rather than slide it across the middle card, it's remounted at
-  // its new slot (a new key) and fades in there.
+  // With three slots a turn sends one card from end to end; it is remounted at its new slot
+  // (a new key) and fades in rather than sliding across the middle card.
   const [wraps, setWraps] = useState<number[]>(() => steps.map(() => 0));
   const select = (next: number) => {
     if (next === active) return;
@@ -125,8 +113,7 @@ export function HowWeWork({
   };
   const go = (delta: number) => select((active + delta + count) % count);
 
-  // Drag (desktop) or swipe (mobile) left / right to bring the next stage to
-  // the middle; the click that ends a drag doesn't also pick a card.
+  // The click that ends a drag doesn't also pick a card.
   const swipeX = useRef<number | null>(null);
   const swiped = useRef(false);
   const swipeHandlers = {
@@ -213,7 +200,6 @@ export function HowWeWork({
 
   return (
     <section className={`hll-home-section pb-[154px] ${HOME_GUTTER}`}>
-      {/* Figma Home mobile: a hairline 8px in from each edge, 32px above. */}
       <div data-line className={`-mx-3 h-px bg-[var(--hll-mid-grey)] lg:hidden ${dividerClassName}`} />
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
 
@@ -263,10 +249,8 @@ export function HowWeWork({
         className="relative mx-auto hidden cursor-grab select-none active:cursor-grabbing lg:block"
         style={{
           aspectRatio: `${STAGE.w} / ${STAGE.h}`,
-          // QA A-06: heading and stage together fit one screen under the Nav
-          // Bar (the heading is its 14.4px eyebrow, 12px gap and a 1.16-line
-          // title), so on a short screen the stage narrows, centred, rather
-          // than running off the bottom.
+          // Heading and stage together fit one screen under the Nav Bar, so on a short screen the
+          // stage narrows rather than running off the bottom.
           width: `min(100%, calc((100 * var(--svh) - var(--nav-h) - 26.4px - 1.16 * clamp(30px, calc(4.23 * var(--vw)), 4rem) - 32px) * ${STAGE.w} / ${STAGE.h}))`,
         }}
         {...swipeHandlers}
@@ -326,7 +310,7 @@ export function WhoWeAre({ data }: { data: HomePageContent["whoWeAre"] }) {
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
-      {/* Figma Home mobile: rows of a 93px photo, name and role 12px right. */}
+      {/* Mobile: rows of a photo, name and role. */}
       <ul className="mt-8 space-y-[10px] px-[18px] lg:hidden">
         {team.map((person) => (
           <li key={person.id} className="flex gap-3">
@@ -344,11 +328,10 @@ export function WhoWeAre({ data }: { data: HomePageContent["whoWeAre"] }) {
         ))}
       </ul>
 
-      {/* Figma: four 366px cards, 10px apart and 10px from the frame edges. */}
+      {/* Four cards, 10px apart and from the frame edges. */}
       <div className="mt-[84px] hidden grid-cols-4 gap-[10px] px-[10px] lg:grid">
         {team.map((person) => (
-          // HoK's card reveal: name, role and photo play together as the
-          // card comes in.
+          // Name, role and photo play together as the card comes in.
           <article key={person.id} data-reveal-card data-no-text-scroll>
             <div
               className="reveal-card-photo aspect-square w-full rounded-lg bg-[#D9D9D9]"
@@ -387,12 +370,8 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
       style={{ background: `#F26A2E url(${data.background}) center / cover` }}
     >
       <HomeHeading eyebrow={data.eyebrow} title={data.title} tone="dark" />
-      {/* Hannan's Ports demo (Ports-Inside-the-Lab-handover, 30 Oct), one
-          self-contained file in public/lab. Figma's window: 1171 × 658 centred
-          in the 1512 frame, never taller than the screen leaves (HOME-013,
-          HOME-015: it ran edge to edge and past a 13" screen). Phones show
-          the demo's opening slide in the 312 × 238 slot; its Start button
-          goes full screen. */}
+      {/* The Ports demo, a self-contained file in public/lab, in a 1171 × 658 window never taller
+          than the screen leaves. Phones show its opening slide; its Start button goes full screen. */}
       <div className="relative mt-9 aspect-[312/238] w-full overflow-hidden rounded-[6px] bg-[var(--hll-bg)] lg:mx-auto lg:mt-[60px] lg:aspect-[1171/658] lg:w-[min(calc(77.45*var(--vw)),calc((100*var(--vh)-160px)*1171/658))] lg:rounded-lg">
         <iframe
           src="/lab/ports.html"
@@ -406,12 +385,7 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
   );
 }
 
-/**
- * A How we work step's square: its motion piece (client, 22 Oct: Shape and
- * Evolve) looping over the still, or just the still. Videos are muted so they
- * may autoplay; reduced motion shows the still only. Only the card in the
- * centre plays; the two either side hold on their first frame.
- */
+/** A How we work step's square: its motion piece looping over the still, or just the still. Only the centre card plays. */
 function StepMedia({
   step,
   playing,
@@ -431,10 +405,8 @@ function StepMedia({
 }
 
 /**
- * A muted looping video that only downloads once it comes near the screen
- * (performance, 24 Oct: Home fetched every motion piece at load), plays while
- * `playing` and on screen, and otherwise waits on its first frame. No poster:
- * the still under it shows until that first frame loads.
+ * A muted looping video that only downloads near the screen, plays while `playing` and on
+ * screen, and otherwise waits on its first frame. No poster: the still shows until it loads.
  */
 function NearVideo({
   src,

@@ -19,7 +19,7 @@ import { FUNCTIONAL_STYLE } from "./engagement-card";
 /** A capability the engagement sits under, as its own sidebar tab. */
 export type SidebarService = { variant: ServiceVariant; href: string; tagline: string };
 
-/** House of Katha's redesign (5 Nov): the sidebar's grey cards. */
+/** The sidebar's grey cards. */
 const CARD = "rounded-lg bg-[#F0F0F0]";
 
 const META =
@@ -60,13 +60,8 @@ function niceCeil(max: number) {
 /** An axis number without float noise: 0.48, 2.5, 400. */
 const tickText = (v: number) => String(Number(v.toPrecision(3)));
 
-/**
- * Figma stat card (344 × 382): label and value, then a four-bar chart with
- * each bar's value above it, then a short note. The value counts up and the
- * bars rise once the card shows. The Figma's 30K–90K scale was a placeholder:
- * the axis now runs from 0 to just above the largest bar, and each bar shows
- * its value as written in the ledger (3.2s, $60M, 22%).
- */
+/** Stat card: label and value, then a four-bar chart with each bar's value above it. The value counts up and the bars rise once shown.
+    The axis runs from 0 to just above the largest bar; bars show their value as written (3.2s, $60M, 22%). */
 function StatCard({
   stat,
   shown,
@@ -74,14 +69,14 @@ function StatCard({
 }: {
   stat: EngagementStat;
   shown: boolean;
-  /** "The graph colours are in the same ripple palette" (HoK, 5 Nov). */
+  /** Graph colours come from the ripple palette. */
   palette?: string[];
 }) {
   const hexes = (palette ?? []).filter((c) => /^#[0-9a-f]{6}$/i.test(c));
   const stops = hexes.length >= 2 ? hexes.slice(0, 4) : ["#FA4288", "#FB8E97", "#FF836B", "#FEE253"];
   const bars = stat.chart.slice(0, 6);
   const max = niceCeil(Math.max(...bars.map((b) => b.value), 0) * 1.05);
-  // Chart box in card px (Figma): gridlines 150–236, bars from x 29, 67px apart.
+  // Chart box in card px: gridlines 150–236, bars from x 29, 67px apart.
   const scaleY = (v: number) => 236 - (Math.max(0, v) / max) * 86;
   const pitch = bars.length > 1 ? 204 / (bars.length - 1) : 0;
   const ticks = [1, 2 / 3, 1 / 3, 0].map((f) => tickText(max * f));
@@ -104,7 +99,7 @@ function StatCard({
         >
           {stat.label}
         </p>
-        {/* Figma's two-window mark in a 29 × 31 white tile. */}
+        {/* Two-window mark in a 29 × 31 white tile. */}
         <span
           aria-hidden
           className="grid h-[31px] w-[29px] shrink-0 place-items-center rounded-[4px] bg-white"
@@ -127,8 +122,7 @@ function StatCard({
         {stat.unit ? <span className="text-[18px]">{stat.unit}</span> : null}
       </p>
 
-      {/* Client review 21 Oct: KPIs without chart points (the People &
-          Policy placements) show no empty chart and made-up axis. */}
+      {/* KPIs without chart points show no empty chart or made-up axis. */}
       {bars.length ? (
         <svg
           viewBox="0 136 344 116"
@@ -271,13 +265,8 @@ function StatCard({
   );
 }
 
-/**
- * The left column of both templates, as House of Katha's redesign (5 Nov):
- * "The sticky side bar starts from below the hero image section" — grey
- * cards for the name and details, each capability ("listed in its own tab
- * and leads you to the service page") and the artifact. Phones: the name,
- * the hero, then the cards; the artifact folds into its sticky pill.
- */
+/** The left column of both templates: grey cards for the name, details, each capability and the artifact.
+    Phones: name, hero, then cards; the artifact folds into its sticky pill. */
 export function EngagementSidebar({
   engagement,
   services,
@@ -287,12 +276,11 @@ export function EngagementSidebar({
   engagement: Engagement;
   services: SidebarService[];
   palette?: string[];
-  /** Figma mobile: the hero sits between the name and the details. */
+  /** Mobile: the hero sits between the name and the details. */
   mobileHero?: React.ReactNode;
 }) {
   const [artifactShown, setArtifactShown] = useState(false);
-  // QA E-04: the artifact loads with the rest of the page. Shown just after
-  // mount, so its count-up and bars still play.
+  // The artifact shows just after mount, so its count-up and bars still play.
   useEffect(() => {
     const timer = window.setTimeout(() => setArtifactShown(true), 300);
     return () => window.clearTimeout(timer);
@@ -303,8 +291,7 @@ export function EngagementSidebar({
       as="h1"
       text={engagement.client}
       variant="engagement"
-      // The 8-character measure is the desktop card's; phones use the full
-      // width (HoK's mobile review, 5 Nov: one word per line).
+      // The 8-character measure is the desktop card's; phones use the full width.
       className="block text-[var(--hll-dark-grey)] lg:max-w-[8ch]"
       fontWeight={500}
       fontSize="var(--eng-name-size)"
@@ -389,12 +376,8 @@ export function EngagementSidebar({
   );
 }
 
-/**
- * Figma Case Study mobile + Artifact Expanded View: the stat card folds into a
- * sticky "Operational Efficiency ↗" pill at the bottom left. "An artifact
- * shows up when the sticky button is pressed"; "clicking anywhere on screen
- * closes it or when it reaches a related section".
- */
+/** Mobile: the stat card folds into a sticky "Operational Efficiency ↗" pill at the bottom left;
+    it opens on press and closes on a tap anywhere or on reaching the related section. */
 function MobileArtifact({
   stat,
   available,

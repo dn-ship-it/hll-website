@@ -43,8 +43,7 @@ const colourField = (defaultValue: string, description: string): Field => ({
   admin: { description },
 });
 
-// Figma Insights (209:830): "The page is created with a dynamic CMS grid which
-// allows the content blocks after the hero to be rearranged."
+// Content blocks after the hero can be rearranged.
 const insightBlocks: Block[] = [
   {
     slug: "insightText",
@@ -90,9 +89,7 @@ const insightBlocks: Block[] = [
     ],
   },
   {
-    // "This is an open section in the CMS, the content within the box can be
-    // a quote, a demo tool or outcome cards. The colour of the box can be
-    // changed as well."
+    // Open section: a quote, demo tool or outcome cards; the box colour is editable.
     slug: "insightBox",
     labels: { singular: "Coloured box", plural: "Coloured boxes" },
     fields: [
@@ -171,7 +168,7 @@ export const Posts: CollectionConfig = {
       admin: { description: "The headline, in bold." },
     },
     {
-      // "Title is split into Headline (in bold) and Byline (in regular)."
+      // Title is split into Headline (bold) and Byline (regular).
       name: "byline",
       type: "text",
       admin: { description: "Optional. Shown under the headline, in regular." },

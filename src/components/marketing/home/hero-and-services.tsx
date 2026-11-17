@@ -11,13 +11,7 @@ import { useScaleToViewport } from "@/components/marketing/use-scale-to-viewport
 import { HomeHeading, HOME_GUTTER } from "./primitives";
 
 
-/**
- * Figma: "window starts at given ratio with video playing and then smoothly
- * scales to viewport width and height to cover the entire screen, video
- * continues playing." The window grows from its 1452 × 982 frame to cover the
- * viewport as it scrolls up to the centre of the screen; "See our work is
- * within the video card, takes user to engagements".
- */
+/** The window grows from its frame size to cover the viewport as it scrolls to the screen centre. */
 function HeroWindow({
   imageUrl,
   videoUrl,
@@ -40,18 +34,13 @@ function HeroWindow({
     <>
     <div
       ref={ref}
-      // 16:9, the intro video's own shape: in Figma's 1452 × 982 window the
-      // sides were cut, and with them the start of its industry titles.
-      // Transparent: the reveal grows the video in from the top, and a grey
-      // window showed under it as a grey bar (Hannan, 6 Nov). The grey sits
-      // on the video instead, as House of Katha's demo (6 Nov).
+      // 16:9, the intro video's own shape. Transparent: the reveal grows the video in from
+      // the top, so no grey window shows under it.
       className="relative z-10 mt-3 aspect-video w-full origin-center overflow-hidden rounded-[6px] will-change-transform lg:mt-[31px] lg:rounded-lg"
     >
       {videoUrl ? (
         <video
-          // Arjun's handoff notes (17 Nov): WebM first, MP4 for Safari;
-          // preloaded; on #F6F6F6, the film's first and last frame, so the
-          // box matches the page while it loads and at the loop point.
+          // WebM first, MP4 for Safari; #F6F6F6 matches the film's first and last frame.
           src={webmUrl ? undefined : videoUrl}
           poster={imageUrl ?? undefined}
           autoPlay
@@ -59,9 +48,7 @@ function HeroWindow({
           loop
           playsInline
           preload="auto"
-          // No play button or progress bar (Hannan, 3 Nov): a background loop.
-          // Client review 21 Oct: fill the box – fitting it inside left dark
-          // bars above and below wherever the video's shape differs.
+          // A background loop: no controls; fills the box so no dark bars show.
           className={`absolute inset-0 size-full object-cover ${webmUrl ? "bg-[#F6F6F6]" : "bg-[#D9D9D9]"}`}
         >
           {webmUrl ? (
@@ -80,9 +67,7 @@ function HeroWindow({
         />
       ) : null}
     </div>
-    {/* Under the window on every screen (Hannan, 3 Nov): over the intro it
-        sat on the industry titles. The outline button, whose edge lights up
-        on hover, in place of the grey one. Figma Home mobile: 54px under. */}
+    {/* The outline button sits under the window on every screen. */}
     <div className="mt-[54px] flex justify-center lg:mt-8">
       <HLLOutlineButton href={ctaHref} variant="engagement">
         {ctaLabel}
@@ -92,10 +77,7 @@ function HeroWindow({
   );
 }
 
-/** Until the CMS supplies a hero: Arjun's HLL intro film, loop version (v7,
- *  17 Nov: "please upload this file as the hero film"), the loop Hannan wants
- *  playing as visitors land. The old site's loop stays in public/video as
- *  home-hero.mp4. */
+/** Placeholder hero film (loop version) until the CMS supplies one. */
 const PLACEHOLDER_HERO_VIDEO = "/video/HLL_intro_loop_v7.mp4";
 const PLACEHOLDER_HERO_WEBM = "/video/HLL_intro_loop_v7.webm";
 const PLACEHOLDER_HERO_POSTER = "/video/HLL_intro_loop_v7-poster.jpg";
@@ -123,10 +105,8 @@ export function HomeHero({
       data-no-text-scroll
       className={`hll-home-section flex min-h-[calc(100*var(--svh)-var(--nav-h))] flex-col justify-end pb-10 lg:block lg:min-h-0 lg:pb-0 lg:pt-[max(8rem,min(calc(23.2*var(--vw)),21.9rem,calc(42.4*var(--svh)-var(--nav-h))))] ${HOME_GUTTER}`}
     >
-      {/* Mobile: the first screen, its content set on the bottom edge
-          (button 40px up), as the 874px Figma Hero frame. Desktop: the
-          heading sits 42% down the screen as in the 1512 × 982 frame, so a
-          shorter laptop screen doesn't push it lower (QA H-17). */}
+      {/* Mobile: first screen with content on the bottom edge. Desktop: the heading sits 42%
+          down so a short laptop screen doesn't push it lower. */}
       <GradientRevealTextSlow
         as="h1"
         text={title}
@@ -147,12 +127,7 @@ export function HomeHero({
   );
 }
 
-/**
- * "On scroll the services change shifting through the list of names as you
- * scroll. the content and icon opposite to it changes accordingly as well"
- * (Figma note). The active service is set large with its neighbours listed
- * small above and below it, as a wheel.
- */
+/** The services as a wheel: the active one is large, its neighbours small above and below. */
 export function WhatWeDo({ data }: { data: HomePageContent["whatWeDo"] }) {
   if (!data.items.length) return null;
   return (
@@ -163,9 +138,7 @@ export function WhatWeDo({ data }: { data: HomePageContent["whatWeDo"] }) {
   );
 }
 
-/** The capability's demo still: the CMS image, else the bundled one. The
- *  glyph on it is shown in black and white (QA H-26): the card carries the
- *  colour. */
+/** The capability's demo still (CMS image, else bundled), its glyph in black and white. */
 const demoImage = (service: HomeService) =>
   service.image ?? `/assets/services/${service.variant}-demo.webp`;
 
@@ -173,13 +146,7 @@ const CARD = 253;
 const CARD_GAP = 10;
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
-/**
- * Figma Home mobile › What we do: the services as a row of 253px cards from
- * x 74, a "01/06" counter with "<  >" arrows at x 30, and the card in front's
- * name and line under it. "On pressing the arrows the services change
- * shifting through the list of names … the content and icon changes too";
- * the row also swipes.
- */
+/** Mobile What we do: a swipeable row of cards with a counter and arrows. */
 function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
   const services = data.items;
   const rowRef = useRef<HTMLDivElement>(null);
@@ -217,9 +184,7 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
       </div>
 
       <div className="relative mt-8">
-        {/* QA H-03: the counter and arrows sit in their own row 12px above
-            the cards, lined up with the card in front, so a dragged card
-            never slides under them and the arrows keep a clear tap area. */}
+        {/* The counter and arrows sit in their own row so a dragged card never slides under them. */}
         <div
           className="mb-3 ml-[74px] flex w-[253px] items-center justify-between text-[10px] uppercase leading-[12px] text-[var(--hll-dark-grey)]"
           style={{ fontFamily: "var(--hll-font-functional)" }}
@@ -227,8 +192,7 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
           <p aria-live="polite">
             {pad2(active + 1)}/{pad2(count)}
           </p>
-          {/* 32px tap areas around the 10px glyphs, pulled back so the
-              glyphs line up with the card's edge. */}
+          {/* 32px tap areas around the 10px glyphs, pulled back to line up with the card's edge. */}
           <div className="-my-[10px] -mr-[11px] flex">
             <button
               type="button"
@@ -275,10 +239,8 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
               </span>
             </a>
           ))}
-          {/* Lets the last card come to rest at x 74, in line with its name
-              (Hannan, 26 Oct: Ontology sat 64px right of its text). 100% is
-              the row's width inside its 74px padding, so the spacer needs
-              the screen less one card and one gap. */}
+          {/* Lets the last card rest in line with its name; 100% is the row's width inside its
+              padding, so the spacer is the screen less one card and one gap. */}
           <span aria-hidden className="w-[calc(100%-263px)] shrink-0" />
         </div>
 
@@ -298,7 +260,7 @@ function WhatWeDoMobile({ data }: { data: HomePageContent["whatWeDo"] }) {
   );
 }
 
-/** Figma Home: the What we do description sits 163px above "Clients". */
+/** The What we do description sits 163px above "Clients". */
 const DESIGN_GAP_TO_CLIENTS = 163;
 /** Our Clients' desktop top padding (lg:pt-[76px] below). */
 const CLIENTS_TOP_PAD = 76;
@@ -313,11 +275,8 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
   const count = services.length;
   const selected = services[active];
 
-  // QA H-21: the pinned content is centred in a screen-high panel, so the
-  // space under the description (and with it the gap down to "Our Clients")
-  // grew and shrank with the window's height. Measure that leftover space and
-  // trim or extend the section's bottom so the description sits the design's
-  // 163px (at 1512, scaled with the width) above the Clients eyebrow.
+  // The pinned content is centred in a screen-high panel, so measure the leftover space and
+  // trim the section's bottom to keep the description 163px (scaled) above the Clients eyebrow.
   const [tail, setTail] = useState(0);
   useEffect(() => {
     const fit = () => {
@@ -383,18 +342,15 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
     window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
-  // Figma shows two neighbours above the active service and three below.
-  // QA H-29: every service is always rendered and sits in a slot by its
-  // distance from the active one, so a change of service slides the labels
-  // into their new places instead of swapping the text (~0.6s ease-in-out).
+  // Two neighbours above the active service and three below. Every service is always
+  // rendered in a slot by its distance from the active one, so labels slide (~0.6s) not swap.
   const offsetOf = (index: number, from: number) => {
     const o = (index - from + count) % count;
     return o >= count - 2 ? o - count : o;
   };
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const lastTransform = useRef<string[]>([]);
-  // Our own slide/fade per label. The labels' CSS opacity transition is left
-  // alone, so it isn't mistaken for a slide in progress.
+  // Our own slide/fade per label; the CSS opacity transition is left alone so it isn't mistaken for one.
   const slides = useRef<(Animation | undefined)[]>([]);
   const prevActive = useRef(active);
   const bigRef = useRef<HTMLDivElement>(null);
@@ -448,8 +404,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, count]);
 
-  // Slot tops: 14.4px labels 12px apart, the big name 21px under the second
-  // label and 12px above the next one (the same spacing as before).
+  // Slot tops: 14.4px labels 12px apart, the big name 21px under the second label.
   const slotTop = (offset: number) => {
     if (offset <= -2) return `${(offset + 2) * 26.4}px`;
     if (offset === -1) return "26.4px";
@@ -466,9 +421,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
     >
       <div
         ref={stickyRef}
-        // QA H-29: 56px (at 1512, scaled with the width) above "Capabilities"
-        // on every screen height (was H-18's 158px). On a short screen the
-        // image card gives up height instead, so the block still fits.
+        // 56px (scaled with width) above "Capabilities"; on a short screen the image card gives up height.
         className={`sticky top-[var(--nav-h)] flex h-[calc(calc(100*var(--svh))-var(--nav-h))] flex-col pb-6 pt-[calc(3.7*var(--vw))] ${HOME_GUTTER}`}
       >
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
@@ -507,9 +460,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
                   );
                 })}
               </ul>
-              {/* The big name crossfades in place with a small slide in the
-                  direction of travel. All names share one cell, so the box is
-                  as tall as the longest one. */}
+              {/* The big name crossfades in place with a small slide; all names share one cell, so the box fits the longest. */}
               <div ref={bigRef} className="absolute inset-x-0 top-[61.8px] grid">
                 {services.map((service, index) => {
                   const on = index === active;
@@ -534,8 +485,7 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
           </div>
 
           <div className="flex min-h-0 min-w-0 flex-col">
-            {/* QA H-29: the description sits inside the card, bottom left in
-                white, with an arrow that shows on hover. */}
+            {/* The description sits inside the card, bottom left, with an arrow that shows on hover. */}
             <a
               ref={cardRef}
               href={selected.href}
@@ -595,11 +545,8 @@ function WhatWeDoWheel({ data }: { data: HomePageContent["whatWeDo"] }) {
   );
 }
 
-/** Figma: "marquee runner displaying the clients logos (PNG or webp images)".
- *  Hannan, 26 Oct: the logos float on the page background, with no tile or
- *  edge, and run faster on phones, where smaller logos show more at a time.
- *  It keeps running under the pointer (QA H-27). Until logos are added in the
- *  CMS it runs eight grey slots. */
+/** Marquee of client logos on the page background; keeps running under the pointer.
+ *  With no CMS logos it runs eight grey slots. */
 export function OurClients({ data }: { data: HomePageContent["clients"] }) {
   const logos = data.logos.filter((item) => item.logo);
   const slots: (HomePageContent["clients"]["logos"][number] | null)[] = logos.length
@@ -607,12 +554,11 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
     : Array.from({ length: 8 }, () => null);
 
   return (
-    // HoK's reveal: the logos finish growing in once fully on screen.
+    // The logos finish growing in once fully on screen.
     <section data-image-reveal="fit" className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
       <div className={HOME_GUTTER}>
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
-      {/* QA H-27: keeps running under the pointer. */}
       {/* Phones: 120px logos at about 90px a second; desktop keeps 220px at
           about 63px a second. */}
       <div className="mt-[49px] flex w-max gap-[10px] lg:mt-[76px] [animation:home-marquee_16s_linear_infinite] lg:[animation-duration:40s]">

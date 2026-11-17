@@ -134,8 +134,6 @@ export function mapServiceToPage(
           role: pc.expertVoice.role ?? "",
           company: pc.expertVoice.company ?? undefined,
           companyLogo: resolveMediaUrl(pc.expertVoice.companyLogo as CmsImageRef) ?? undefined,
-          // The main quote's portrait was never read before (only the extra
-          // slides' were).
           portrait: resolveMediaUrl(pc.expertVoice.portrait as CmsImageRef) ?? undefined,
         }
       : fallback.expertVoice,

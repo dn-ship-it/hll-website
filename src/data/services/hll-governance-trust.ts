@@ -128,8 +128,7 @@ export const hllGovernanceTrust: ServicePageData = {
       },
     ],
   },
-  // PLACEHOLDER — copied from the Figma HLL TG frame so the section renders;
-  // the copy spec has no Trust & Governance quote yet. Replace via the CMS.
+  // PLACEHOLDER: stand-in quote so the section renders; replace via the CMS.
   expertVoice: {
     quote:
       "Senior talent deployed across the stack with a knowledge graph window showing what customers see. Momentum is the money-maker.",

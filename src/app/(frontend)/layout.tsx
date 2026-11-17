@@ -19,11 +19,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * The desktop design is a 1512px-wide Figma frame. From 1280px up, the page is
- * laid out at that width and zoomed to fit the screen, so spacing, type and
- * media keep the Figma proportions on every desktop size instead of drifting
- * apart. --vw / --vh / --svh stand in for the viewport units (which CSS zoom would
- * otherwise scale a second time). Runs before first paint, then on resize.
+ * The desktop design is a 1512px-wide frame. From 1280px up, the page is laid out at that width and zoomed
+ * to fit. --vw / --vh / --svh stand in for viewport units (CSS zoom would scale them twice).
+ * Runs before first paint, then on resize.
  */
 const DESIGN_SCALE = `(() => {
   const root = document.documentElement;

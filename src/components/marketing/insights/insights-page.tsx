@@ -10,16 +10,13 @@ import { FUNCTIONAL_STYLE, EngagementMediaBox } from "../engagement/engagement-c
 
 import { InsightCard, InsightCarousel, InsightTags, insightHref } from "./insight-card";
 
-// Figma Insights (209:929): the line beside "What's New".
+// The line beside "What's New".
 const INTRO =
   "Senior talent deployed across the stack with a knowledge graph window showing what customers see.";
 
 const LATEST_COUNT = 6;
 
-/**
- * Figma Insights list (209:929): "What's New" with the featured article, the
- * Latest articles on the gradient band, then every other article in threes.
- */
+/** "What's New" with the featured article, the Latest articles on the gradient band, then every other article in threes. */
 export async function InsightsPage() {
   const all = await loadInsights();
   const featured = all.find((i) => i.featured) ?? all[0];
@@ -56,9 +53,7 @@ export async function InsightsPage() {
               href={insightHref(featured)}
               className={`group mt-12 block lg:mt-[clamp(3rem,calc(4.96*var(--vw)),4.7rem)] ${SERVICE_GUTTER}`}
             >
-              {/* The featured article leads the page like a hero: shown whole
-                  on arrival (as a triggered card it waited for 30% of its
-                  tall image, so the top of the page sat empty). */}
+              {/* The featured article leads like a hero, shown whole on arrival: as a triggered card it waited for 30% of its tall image. */}
               <div data-no-image-reveal>
                 <EngagementMediaBox
                   media={featured.cover}
@@ -94,15 +89,12 @@ export async function InsightsPage() {
             </p>
           )}
 
-          {/* Figma: a 982px band of the gradient, "Latest" 110px in and the
-              cards 268px in, running off the right edge. */}
+          {/* A 982px band of the gradient, "Latest" 110px in and the cards 268px in, running off the right edge. */}
           {latest.length ? (
             <section
               className="relative mt-[100px] overflow-hidden bg-[#1FA7D8] pb-[60px] pt-[60px] lg:mt-[clamp(5rem,calc(9.85*var(--vw)),9.3rem)] lg:pb-[clamp(5rem,calc(15.9*var(--vw)),15rem)] lg:pt-[clamp(4rem,calc(7.28*var(--vw)),6.9rem)]"
               style={{ background: "#1FA7D8 url(/assets/industries/lab-bg.webp) center / cover" }}
             >
-              {/* The section headings' gradient reveal, as everywhere else,
-                  in white on the band. */}
               <div className={SERVICE_GUTTER}>
                 <GradientRevealTextSlow
                   as="h2"

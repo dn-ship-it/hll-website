@@ -5,18 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import type { ExpertVoice } from "@/data/services/types";
 import { MediaPlaceholder } from "@/components/marketing/home/primitives";
 
-/** How long each testimonial shows before the next one (the timer bar).
- *  Hannan's tracker (CAP-002, 28 Oct): 5 seconds. */
+/** How long each testimonial shows before the next one (the timer bar). */
 const SLIDE_MS = 5000;
 /** A horizontal drag this long (px) turns to the next or previous slide. */
 const SWIPE_PX = 40;
 
 /**
- * Figma testimonial block (service "Expert Voice", industry "Client Voice",
- * careers "Team Voice"): counter + arrows, 300×400 portrait, 115px logo tile,
- * quote from 60% across. A carousel over `slides` (QA T-01, T-02): the arrows,
- * a swipe or drag (phones and mouse) and, where there's a timer, the timer
- * itself move between them. With one slide the arrows stay inert.
+ * Testimonial carousel (counter + arrows, portrait, logo tile, quote): the arrows, a swipe or
+ * drag and the timer move between slides. With one slide the arrows stay inert.
  */
 export function VoiceSection({
   slides,
@@ -34,7 +30,7 @@ export function VoiceSection({
   divider?: boolean;
   /** Industry pages show the carousel's timer bar under the portrait. */
   timerColor?: string;
-  /** Figma Industry mobile: a 253px square portrait at x 75 (Services: 245 × 253 at x 79). */
+  /** Industry mobile: a 253px square portrait at x 75 (Services: 245 × 253 at x 79). */
   wide?: boolean;
   /** Industry / Careers mobile set the heading in the 20px gutter (Services: 8px). */
   headingInset?: boolean;
@@ -112,8 +108,7 @@ export function VoiceSection({
   const affiliation = [data.role, data.company].filter(Boolean).join(", ");
   const running = many && inView && !dragging;
 
-  // QA T-04: a single testimonial shows no counter, arrows or timer bar,
-  // and doesn't rotate.
+  // A single testimonial shows no counter, arrows or timer bar, and doesn't rotate.
   const timer = (className: string) =>
     timerColor && many ? (
       <VoiceTimer
@@ -127,10 +122,8 @@ export function VoiceSection({
     ) : null;
 
   return (
-    // Figma Services mobile: an 8px gutter, the counter at x 34, a 245 × 253
-    // portrait at x 79 and a 57px logo tile on the right edge, the quote
-    // indented under the portrait. On narrower phones the portrait gives way
-    // so it always clears the logo tile by 8px.
+    // Services mobile: 8px gutter, 245 × 253 portrait and a 57px logo tile on the right edge;
+    // on narrower phones the portrait gives way to clear the logo by 8px.
     <section
       ref={sectionRef}
       data-no-text-scroll
@@ -148,8 +141,7 @@ export function VoiceSection({
         {heading}
       </div>
 
-      {/* Figma: counter + arrows | 300×400 portrait | 115px logo tile, with the
-          quote starting at 60% of the frame. */}
+      {/* Counter + arrows | 300×400 portrait | 115px logo tile, with the quote starting at 60%. */}
       <div
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -158,13 +150,10 @@ export function VoiceSection({
         onClickCapture={onClickCapture}
         className={`mt-6 grid gap-4 lg:mt-[clamp(2.875rem,calc(5.56*var(--vw)),5.25rem)] lg:grid-cols-[878fr_574fr] lg:gap-0 ${many ? "touch-pan-y select-none" : ""} ${dragging ? "cursor-grabbing" : ""}`}
       >
-        {/* Mobile: counter from x 26, portrait from x 71 (67 wide), logo on
-            the right edge; the row is as tall as the portrait, which gives
-            way on narrow phones to keep 8px clear of the logo. */}
+        {/* Mobile: the row is as tall as the portrait, which gives way on narrow phones to keep 8px clear of the logo. */}
         <div className="flex items-start lg:gap-[10px]">
           <div className="ml-[26px] mt-1 w-[30px] shrink-0 lg:ml-0 lg:mt-0 lg:w-9" data-service-label>
-            {/* The column keeps its width with one slide, so the portrait
-                stays where the design has it. */}
+            {/* The column keeps its width with one slide, so the portrait stays put. */}
             {many ? (
               <>
                 <p
@@ -239,7 +228,7 @@ export function VoiceSection({
             </span>
           </footer>
         </blockquote>
-        {/* Figma Industry mobile: the timer sits 54px under the name. */}
+        {/* Industry mobile: the timer sits 54px under the name. */}
         {timer("ml-[67px] mt-[38px] lg:hidden")}
       </div>
     </section>
@@ -271,8 +260,7 @@ function ArrowButton({
   );
 }
 
-/** Figma: "carousel with timer delay" — a 103 × 2 track filling in the page
- *  colour until the next testimonial. With one slide it just loops. */
+/** A 103 × 2 track filling in the page colour until the next testimonial. With one slide it just loops. */
 function VoiceTimer({
   color,
   running,

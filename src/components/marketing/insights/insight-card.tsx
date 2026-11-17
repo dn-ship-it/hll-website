@@ -7,7 +7,7 @@ import { EngagementMediaBox } from "../engagement/engagement-card";
 
 export const insightHref = (insight: Pick<Insight, "slug">) => `/insights/${insight.slug}`;
 
-/** Figma Insights tags: 36px tiles, 12px caps spaced 0.25em. */
+/** Tags: 36px tiles, 12px caps spaced 0.25em. */
 export function InsightTags({
   tags,
   className = "",
@@ -33,11 +33,7 @@ export function InsightTags({
   );
 }
 
-/**
- * Figma Insights card (209:944 / 209:959): cover at 514 × 384 (the grid's
- * 471 × 352 is the same shape) with the tags 8px in from its bottom left and
- * the arrow tile on hover; the headline and "By <author>" under it.
- */
+/** Cover at 514 × 384 (the grid's 471 × 352 is the same shape) with tags 8px in from its bottom left and an arrow tile on hover; headline and "By <author>" under it. */
 export function InsightCard({
   insight,
   onColour = false,
@@ -49,7 +45,6 @@ export function InsightCard({
   const ink = onColour ? "text-white" : "text-[var(--hll-dark-grey)]";
   return (
     <Link href={insightHref(insight)} className="group block" data-trigger-card>
-      {/* Scroll-triggered, as Home's Our Impact (House of Katha, 17 Nov). */}
       <div data-no-image-reveal data-trigger-media>
         <EngagementMediaBox media={insight.cover} fallbackRatio={514 / 384} className="!aspect-[514/384]">
           <span

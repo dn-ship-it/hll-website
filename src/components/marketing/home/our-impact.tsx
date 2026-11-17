@@ -9,8 +9,8 @@ import type { HomeImpactCard, HomeImpactStat, HomePageContent } from "@/data/hom
 
 import { HOME_GUTTER, HomeHeading } from "./primitives";
 
-/** Figma slot for a card: its media height (px at the 490px card width, and
- *  at the 386px mobile width) and whether it spans two columns. */
+/** Slot for a card: its media height (px at the 490px card width, and at the 386px mobile
+ *  width) and whether it spans two columns. */
 type CardSlot = { kind: "card"; id: string; mediaH: number; mobileH?: number; wide?: boolean };
 type StatSlot = { kind: "stat"; id: string };
 type Slot = (CardSlot | StatSlot) & { x: number; y: number };
@@ -18,10 +18,8 @@ type Card = CardSlot & HomeImpactCard;
 type Stat = StatSlot & HomeImpactStat;
 type Tile = (Card | Stat) & { x: number; y: number };
 
-// Figma "Our Impact" (1512px frame): three 490px columns 10px apart, laid out
-// as a staggered grid rather than equal rows. x / y are offsets inside the
-// 1491 × 1761 block that starts 10px from the frame's left edge. The CMS fills
-// the six card slots and two counters in order; the layout stays Figma's.
+// Three 490px columns 10px apart in a staggered grid; x / y are offsets inside the 1491 × 1761
+// block that starts 10px from the left edge. The CMS fills the six card slots and two counters in order.
 const BLOCK = { w: 1491, h: 1761 };
 const CARD_SLOTS: (CardSlot & { x: number; y: number })[] = [
   { kind: "card", id: "card-1", mediaH: 490, mobileH: 385, x: 1, y: 0 },
@@ -36,7 +34,7 @@ const STAT_SLOTS: (StatSlot & { x: number; y: number })[] = [
   { kind: "stat", id: "stat-2", x: 1002, y: 1533 },
 ];
 
-// Figma Home mobile reading order: the clients counter follows the third card.
+// Mobile reading order: the clients counter follows the third card.
 const MOBILE_ORDER = ["card-1", "card-2", "card-3", "stat-1", "card-4", "card-5", "card-6", "stat-2"];
 
 function tilesFor(data: HomePageContent["impact"]): Tile[] {
@@ -109,7 +107,6 @@ function ImpactCard({ tile, mobile = false }: { tile: Card; mobile?: boolean }) 
 function ImpactStat({ tile }: { tile: Stat }) {
   return (
     <div className="text-black">
-      {/* Figma: "Number counter". */}
       <p className="hll-display text-[128px] font-light leading-[1.16] lg:text-[clamp(4rem,calc(8.47*var(--vw)),8rem)]">
         <CountUp value={tile.value} />
       </p>
@@ -125,13 +122,12 @@ export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
   const mobileTiles = MOBILE_ORDER.flatMap((id) => tiles.filter((t) => t.id === id));
   return (
     <section id="impact" className="hll-home-section">
-      {/* No divider on top (QA H-15): the knowledge graph above fades into
-          the page, and a line here read as a divider under the graph. */}
+      {/* No divider on top: the knowledge graph above fades into the page. */}
       <div className={`pt-[154px] ${HOME_GUTTER}`}>
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
-      {/* Desktop: Figma's staggered placement, scaled with the block width. */}
+      {/* Desktop: staggered placement, scaled with the block width. */}
       <div
         className="relative mx-[10px] mt-[84px] hidden lg:block"
         style={{ aspectRatio: `${BLOCK.w} / ${BLOCK.h}` }}
@@ -158,8 +154,7 @@ export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
         ))}
       </div>
 
-      {/* Figma Home mobile: one 386px column, 8px from the edges; cards 32px
-          apart, 84px around a counter. */}
+      {/* Mobile: one 386px column, 8px from the edges; cards 32px apart, 84px around a counter. */}
       <div className="mt-8 px-2 lg:hidden">
         {mobileTiles.map((tile, i) => {
           const prev = mobileTiles[i - 1];
@@ -183,10 +178,8 @@ export function OurImpact({ data }: { data: HomePageContent["impact"] }) {
         })}
       </div>
 
-      {/* Figma: "View All work button will be sticky and leads to the
-          engagements page". Phones set it on the cards' left edge. */}
-      {/* QA H-28: rides higher on desktop (10% of the screen off the
-          bottom) so it's noticed, and its glow comes on quicker. */}
+      {/* Sticky "View All work" button: on phones it sits on the cards' left edge; on desktop it rides
+          higher (10% of the screen off the bottom) so it's noticed. */}
       <div className="pointer-events-none sticky bottom-8 z-10 mb-20 mt-10 flex justify-start px-2 lg:bottom-[calc(10*var(--svh))] lg:my-[59px] lg:justify-center lg:px-0">
         <span className="pointer-events-auto">
           <HLLButton href={data.ctaHref} variant="engagement" size="md" className={`hll-button--quick ${BUTTON_MOBILE}`}>

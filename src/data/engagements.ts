@@ -1,11 +1,8 @@
 import { SERVICE_NAMES, type ServiceVariant } from "@/components/hll/variants";
 
 /**
- * Engagements (Figma Desktop › Engagement Main, Case Study Template and
- * Engagement Story Template). Each engagement is a card on /engagement and a
- * detail page at /engagement/[slug] built from content blocks the CMS can
- * reorder ("a custom cms page that allows the user to switch content blocks
- * around").
+ * Engagements: a card on /engagement and a detail page at /engagement/[slug],
+ * built from content blocks the CMS can reorder.
  */
 
 export const ENGAGEMENT_TYPES = [
@@ -19,10 +16,10 @@ export type EngagementType = (typeof ENGAGEMENT_TYPES)[number];
  *  Story: the whole page takes the client's colour. */
 export type EngagementTemplate = "case-study" | "story";
 
-/** The services as the site names them: no "HLL" in front (17 Oct handoff). */
+/** The services as the site names them: no "HLL" in front. */
 export const SERVICE_LABELS: Record<ServiceVariant, string> = SERVICE_NAMES;
 
-/** The expanded filter's industry columns (Figma Engagement Filter Expanded). */
+/** The expanded filter's industry columns. */
 export const INDUSTRY_GROUPS = [
   {
     title: "Financial services",
@@ -39,7 +36,6 @@ export const INDUSTRY_GROUPS = [
   },
   {
     title: "Government & Public Institutions",
-    // The two Public Sector pages merged into one (handoff 29 Oct, Hannan 3 Nov).
     items: ["Public Sector & Government Services", "International Organization"],
   },
   { title: "Professional Services", items: ["Consulting Firms"] },
@@ -66,8 +62,7 @@ export type EngagementStat = {
 export type EngagementBlock =
   | { kind: "media"; id: string; media: EngagementMedia }
   | {
-      /** Figma "Media Block": with no image it shows the quote on the
-       *  textured background in the page colour. */
+      /** With no image it shows the quote on the textured background in the page colour. */
       kind: "quote";
       id: string;
       quote: string;
@@ -119,20 +114,20 @@ export type Engagement = {
   industry?: string;
   period?: string;
   location?: string;
-  /** "Colours of the page will be the primary colour of the client". */
+  /** The page takes the client's primary colour. */
   primaryColor?: string;
-  /** "Elements can be put in focus and made bigger (see Zelish)". */
+  /** Elements can be put in focus and made bigger. */
   featured?: boolean;
   card: EngagementMedia;
   stat?: EngagementStat;
   blocks: EngagementBlock[];
   /** Picked in the CMS; otherwise engagements sharing a service. */
   related?: string[];
-  /** The handoff's live artwork (ripple, layers, live text), when imported. */
+  /** Live artwork (ripple, layers, live text), when imported. */
   art?: EngagementArt;
 };
 
-/** One image slot of an engagement's artwork (handoff engagement.json). */
+/** One image slot of an engagement's artwork. */
 export type EngagementArtSlot = {
   w: number;
   h: number;
@@ -142,7 +137,7 @@ export type EngagementArtSlot = {
   layer?: string;
   /** Ripple speed for this slot (cards run slower than the hero). */
   speed?: number;
-  /** This slot's own palette (the handoff says to use it over the top-level one). */
+  /** This slot's own palette, used over the top-level one. */
   palette?: string[];
   /** Dark text colour when the slot's background is light. */
   ink?: string;
@@ -179,16 +174,14 @@ export type EngagementArt = {
   /** The list card's shape, e.g. "card-portrait_490x551". */
   listSlot?: string;
   slots: Record<string, EngagementArtSlot>;
-  /** Named clients' card media (5 Nov handoff), by card slot: a looping
-   *  video and its poster, or a still alone. Cards show it in place of the
-   *  ripple; the engagement's own page keeps its artwork. */
+  /** Named clients' card media by card slot: a looping video and poster, or a still alone.
+   *  Cards show it in place of the ripple; the engagement's own page keeps its artwork. */
   cardMedia?: Record<string, { video?: string; poster: string }>;
-  /** The client's white logo for the case study hero (handoff logo-white.png). */
+  /** The client's white logo for the case study hero. */
   logo?: string;
 };
 
-// PLACEHOLDER — Figma's own stand-in copy until the engagement write-ups are
-// entered in the CMS.
+// PLACEHOLDER: stand-in copy until the engagement write-ups are entered in the CMS.
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet velit, sagittis laoreet neque tincidunt at. Vestibulum euismod nec lacus vel volutpat. Aenean scelerisque sagittis metus, in luctus nibh rhoncus nec.";
 const LOREM_SHORT =
@@ -249,7 +242,7 @@ const TEAM = {
   ],
 };
 
-/** Figma Case Study Template, top to bottom. */
+/** Case Study template, top to bottom. */
 function caseStudyBlocks(): EngagementBlock[] {
   return [
     { kind: "media", id: "hero", media: { width: 1117, height: 617 } },
@@ -294,7 +287,7 @@ function caseStudyBlocks(): EngagementBlock[] {
   ];
 }
 
-/** Figma Engagement Story Template, top to bottom. */
+/** Engagement Story template, top to bottom. */
 function storyBlocks(): EngagementBlock[] {
   return [
     {
@@ -346,9 +339,7 @@ type Seed = Pick<Engagement, "slug" | "client" | "services" | "featured"> & {
   template?: EngagementTemplate;
 };
 
-// PLACEHOLDER — the Figma Engagement Main grid (names, 2021, card ratios);
-// service tags as on the Home "Our Impact" cards. The sidebar's period,
-// industry and location are the template's own sample values.
+// PLACEHOLDER: sample grid; service tags as on the Home "Our Impact" cards.
 const SEEDS: Seed[] = [
   {
     slug: "bajaj",
@@ -428,7 +419,7 @@ export const fallbackEngagements: Engagement[] = SEEDS.map((seed) => {
     period: "2024-2026",
     industry: "Transport & Shipping",
     location: "Mumbai",
-    // Figma Story sample colour; case studies stay neutral until one is set.
+    // Story sample colour; case studies stay neutral until one is set.
     primaryColor: template === "story" ? "#FE5844" : undefined,
     card: seed.card,
     stat: PLACEHOLDER_STAT,

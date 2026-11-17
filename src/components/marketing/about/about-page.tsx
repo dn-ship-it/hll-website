@@ -22,14 +22,12 @@ async function loadAboutData() {
   }
 }
 
-/** Figma Desktop › About_02 (About_01 differs only in the hero collage). */
 export async function AboutPage() {
   const { data, howWeWork } = await loadAboutData();
 
   return (
     <MarketingShell>
-      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
-          reveal animation should go onto all pages"). */}
+      
       <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-home hll-service-page">
         <AboutHero data={data.hero} />

@@ -2,11 +2,8 @@ import { revalidatePath } from "next/cache";
 import type { CollectionConfig, GlobalConfig } from "payload";
 
 /**
- * The marketing pages are prerendered at build time, so without this a CMS
- * edit only reaches the live site on the next deploy. Any saved or deleted
- * content marks every page stale; each is rebuilt on its next visit. The site
- * is small and its pages share globals (nav, footer), so refreshing all of it
- * is simpler and safer than tracking which page shows which document.
+ * Marks every page stale on a CMS save or delete so each rebuilds on its next visit; refreshing all is
+ * simpler than tracking which page shows which document, since pages share globals.
  */
 function revalidateSite() {
   try {

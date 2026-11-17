@@ -130,7 +130,7 @@ export const hllMomentum: ServicePageData = {
         description:
           "Banking, insurance, and enterprise technology hiring carries its own constraints: compliance screening, clearance timelines, and a technical bar built for regulated environments specifically.",
         variant: "image",
-        // The service frames' Industry card image (Figma "Banking").
+        // Industry card image.
         image: "/assets/engagement/banking.webp",
       },
     ],

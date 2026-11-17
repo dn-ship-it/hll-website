@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { IndustryPage } from "@/components/marketing/industries/industry-page";
 import { getIndustryPage } from "@/data/industries";
 
-// Rendered on first visit, then served from the cache (it rendered on every
-// visit before, ~0.6s). CMS changes refresh it through revalidatePath.
+// Rendered on first visit, then served from the cache; CMS changes refresh it
+// through revalidatePath.
 export async function generateStaticParams() {
   return [];
 }

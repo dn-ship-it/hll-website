@@ -13,15 +13,7 @@ import { BUTTON_MOBILE } from "./button-sizes";
 import { variantForPath } from "./page-variant";
 import { supportsWebGL2 } from "@/lib/webgl-support";
 
-/**
- * The footer's "Let's start a conversation" band. Figma note: "let's start a
- * conversation above will have a video playing as its background which plays
- * when write to us is hovered on. each page will play a different video."
- * The Figma still shows until a page supplies `videoSrc`, and stays as the
- * video's poster so nothing jumps when playback starts. Hannan's tracker
- * (HOME-018) asks for the motion to show, looping, so a video plays whenever
- * the band is on screen rather than only on hover.
- */
+/** The footer's "Let's start a conversation" band: a per-page video plays while it is on screen, over a still that doubles as the poster. */
 export function FooterCta({
   headline,
   label,
@@ -43,7 +35,6 @@ export function FooterCta({
   // page supplies one; `playing` fades the video in once it actually plays.
   const [active, setActive] = useState(false);
 
-  // Hover drifts the still; a video plays on its own (below).
   const play = () => setActive(true);
   const pause = () => setActive(false);
 
@@ -67,13 +58,9 @@ export function FooterCta({
   }, [videoSrc]);
 
   return (
-    // Figma Footer Mobile: a 228px band, headline and button centred in it
-    // with equal space above and below, so a wrapped headline grows the band
-    // evenly. Desktop: 237px, headline left and button right, on the home
-    // sections' gutter.
+    // Mobile: 228px band, content centred. Desktop: 237px, headline left, button right.
     <div className="relative flex flex-col items-center overflow-hidden bg-[#FFFBD6] px-5 pb-6 pt-[37px] text-center lg:min-h-[237px] lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-6 lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:py-10 lg:text-left">
-      {/* Mobile crops the still to its middle (Figma image fill at 155.5%
-          of the band's height); desktop covers. */}
+      {/* Mobile crops the still to its middle; desktop covers. */}
       <div
         aria-hidden
         className={`footer-cta-still pointer-events-none absolute inset-0 bg-[length:auto_155.5%] bg-[position:50%_39.6%] lg:bg-cover lg:bg-center ${active && !videoSrc ? "is-active" : ""}`}
@@ -95,14 +82,11 @@ export function FooterCta({
         />
       ) : null}
 
-      {/* House of Katha's mobile footer (6 Nov, "text and button alignment
-          fixed"): the title on two lines, the button 66px under it near
-          the band's foot. */}
+      
       <p className="relative max-w-[240px] text-[30px] font-light lg:max-w-none leading-[34.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(2rem,calc(4.23*var(--vw)),4rem)] lg:leading-[1.16]">
         {headline}
       </p>
-      {/* The Figma "Button" component: the LightFX button, which blooms
-          into its gradient on hover (see the "Buttons" motion reference). */}
+      
       <span
         className="relative mt-[66px] inline-flex lg:mt-3"
         onMouseEnter={play}
@@ -110,10 +94,8 @@ export function FooterCta({
         onFocusCapture={play}
         onBlurCapture={pause}
       >
-        {/* The button's hover shader takes the page's palette, like the
-            footer strip below it; Home keeps Contact's. */}
-        {/* Figma: this Button sits at 50% opacity over the desktop band;
-            the mobile "Button Mobile" is opaque, 34px tall, 10px label. */}
+        {/* The button's hover shader takes the page's palette; Home keeps Contact's. */}
+        {/* Desktop: 50% opacity until hovered; mobile: opaque. */}
         <HLLButton
           href={href}
           variant={variantForPath(pathname) ?? "contact"}
@@ -127,11 +109,7 @@ export function FooterCta({
   );
 }
 
-/**
- * Figma footer Email / LinkedIn: the same Button component as every CTA, so
- * the same LightFX hover, in the page's palette. Footer Mobile scales it to
- * 81%: 29px tall, 17px padding, a 9.73px label.
- */
+/** Footer Email / LinkedIn button, in the page's palette; scaled to 81% on mobile. */
 export function FooterButton({
   href,
   children,
@@ -152,7 +130,6 @@ export function FooterButton({
   );
 }
 
-/** Figma Home footer strip: pink, a deeper pink and peach (sampled). */
 const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
 /** Sections whose bottom shader takes the Home colours instead of their own. */
 const HOME_COLOUR_VARIANTS = new Set<string>(["engagement", "services"]);
@@ -171,10 +148,8 @@ function useShaderAble() {
 }
 
 /**
- * The footer's shader strip. QA H-14: the live shader is now ScreenShader,
- * pinned to the bottom of the screen on every page, so it already sits
- * behind this strip when the footer is reached. The Figma still stays only
- * where that can't run: reduced motion or no WebGL2.
+ * The footer's shader strip. The live ScreenShader already sits behind it,
+ * so the still shows only with reduced motion or no WebGL2.
  */
 export function FooterShaderStrip({
   className,
@@ -196,23 +171,17 @@ export function FooterShaderStrip({
   );
 }
 
-/**
- * House of Katha's tuned bottom shader (HLL-UI-Demo, 3 Nov, ServicesScrollDemo
- * and the Home Media page): their tuned look, with the light following the
- * pointer at 90% while scrolling (QA H-14).
- */
+/** Tuned bottom shader: the light follows the pointer at 90% while scrolling. */
 const DEMO_SETTINGS: ShaderSettings = {
   ...TUNED_SETTINGS,
   tune: { ...TUNED_SETTINGS.tune, vignetteFollow: 0.9 },
 };
-/** Their end-of-page look: the same, with the full shatter. */
 const DEMO_END_SETTINGS: ShaderSettings = {
   ...TUNED_SETTINGS,
   shatter: { ...TUNED_SETTINGS.shatter, amount: 1 },
 };
 
-/** Their heights (% of the screen) and top fades: the fade runs from
- *  fadeStart% to fadeEnd% of the layer, eased by fadeCurve. */
+/** Layer heights (% of the screen) and top fades: from fadeStart% to fadeEnd%, eased by fadeCurve. */
 const BLEND_LAYER = { hostHeight: 50, fadeStart: 10, fadeEnd: 80, fadeCurve: 1.5 };
 const END_LAYER = { hostHeight: 60, fadeStart: 10, fadeEnd: 70, fadeCurve: 1.25 };
 const BLEND_LAYOUT = makeBottomShaderLayout(BLEND_LAYER.hostHeight);
@@ -232,26 +201,17 @@ function fadeMask(c: typeof BLEND_LAYER): CSSProperties {
 const BLEND_MASK = fadeMask(BLEND_LAYER);
 const END_MASK = fadeMask(END_LAYER);
 
-/** The demo's "scrolled to the true end": a few px of slack for fractional
- *  scroll positions. */
+/** A few px of slack for fractional scroll positions when detecting the true end. */
 const END_THRESHOLD_PX = 4;
-/** Animation time per scrolled pixel: a screen's worth of scrolling moves
- *  the effect about as far as 1.5s of its own drift (Hannan, 16 Oct: "not
- *  supposed to be static … it should move on scroll too"). */
+/** Animation time per scrolled pixel: a screen of scrolling moves the effect about as far as 1.5s of its own drift. */
 const SCROLL_RESPONSE = 0.0035;
 /** Start the end-of-page layer this far ahead, so it's running in time. */
 const END_LAYER_AHEAD = 1600;
 
 /**
- * QA H-14, built as HLL-UI-Demo's ServicesScrollDemo: the page's shader
- * pinned to the bottom of the screen, blended over the content (hard-light,
- * so what passes through it takes its colours). At the true end of the page
- * it crossfades (0.6s) to a second, unblended layer with a finer shatter. A
- * blend mode can't be transitioned, hence two layers and an opacity fade.
- *
- * The end layer is only created once the end is near, and phones bring the
- * whole thing in near the footer only: they allow few WebGL contexts and pay
- * for every frame. It starts once the page has settled, after first paint.
+ * Page shader pinned to the bottom of the screen, hard-light blended over the content; crossfades (0.6s) to an
+ * unblended, finer-shatter layer at the true end (a blend mode can't be transitioned). Created near the end only, and
+ * phones show it near the footer only: few WebGL contexts, and every frame costs.
  */
 export function ScreenShader() {
   const pathname = usePathname();
@@ -259,9 +219,8 @@ export function ScreenShader() {
   const [started, setStarted] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
   const [nearEnd, setNearEnd] = useState(false);
-  // Built in the first idle moment after load (performance, 24 Oct): creating
-  // a layer compiles its five shader passes, a 100ms+ block that used to land
-  // mid-scroll as the end of the page came near. Built early, it waits paused.
+  // Built in the first idle moment after load: compiling its five shader passes
+  // blocks for 100ms+, which would otherwise land mid-scroll near the end.
   const [warm, setWarm] = useState(false);
   const [desktop, setDesktop] = useState(false);
   const [generation, setGeneration] = useState(0);
@@ -314,13 +273,8 @@ export function ScreenShader() {
   const variant = variantForPath(pathname);
   const common = {
     variant: variant ?? ("contact" as const),
-    // Home has no section palette of its own; the Figma Home footer runs
-    // pink and peach rather than Contact's blues (QA G-07).
-    // Engagement pages take the Home colours too (House of Katha, 6 Nov:
-    // "reuse the Home page's bottom shader colors on the Engagement page"),
-    // and so does the Capabilities page, whose orange-reds tinted the
-    // content under the blend (House of Katha, 17 Nov: "the same issue …
-    // reuse the same bottom shader implementation").
+    // Home has no palette of its own, so Home, Engagement and Capabilities use
+    // the Home footer's pink and peach.
     colors: variant && !HOME_COLOUR_VARIANTS.has(variant) ? undefined : HOME_SHADER_COLORS,
     passthrough: true,
     scrollResponse: SCROLL_RESPONSE,

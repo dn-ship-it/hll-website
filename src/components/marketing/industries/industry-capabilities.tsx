@@ -5,9 +5,8 @@ import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { IndustryPageData } from "@/types/industry";
 
 /**
- * Figma Industry "Capabilities": a service list on the left and, per service,
- * a row of number + hairline, title, body and two engagement cards. Columns at
- * the 1512px frame: list 436 | number 51 | title 493 | body/card 490.
+ * A service list on the left and, per service, a row of number + hairline, title, body and two engagement cards.
+ * Columns at the 1512px frame: list 436 | number 51 | title 493 | body/card 490.
  */
 export function IndustryCapabilitiesSection({
   data,
@@ -24,14 +23,10 @@ export function IndustryCapabilitiesSection({
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>
 
-      {/* Figma Industry mobile: the service row 29px under the heading, the
-          first service 54px below it. */}
+      {/* Mobile: the service row 29px under the heading, the first service 54px below it. */}
       <div className="mt-[29px] grid grid-cols-[minmax(0,1fr)] gap-[54px] px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:mt-0 lg:grid-cols-[436fr_1036fr] lg:gap-0 lg:pr-[10px]">
-        {/* Figma: "as you scroll it highlights according to the section you
-            are in". Labels without a capability row yet stay unlinked.
-            QA I-07: on desktop the "Capabilities" heading rides in this
-            sticky column with the list, so both stay in view through the
-            cards and scroll away together after the last one. */}
+        {/* Highlights the section in view as you scroll; labels without a capability row stay unlinked.
+            On desktop the heading rides in this sticky column so both stay in view. */}
         <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
           <div className="mb-[72px] hidden lg:block">
             <HomeHeading eyebrow={data.eyebrow} title={data.title} />
@@ -46,9 +41,7 @@ export function IndustryCapabilitiesSection({
           />
         </div>
 
-        {/* Desktop: starts where it did under the full-width heading (the
-            heading's height plus its 72px gap), now that the heading sits
-            in the sticky column. */}
+        {/* Desktop: offset by the heading's height plus its 72px gap, since the heading sits in the sticky column. */}
         <div className="lg:pt-[calc(14.4px+12px+1.16*clamp(30px,calc(4.23*var(--vw)),4rem)+72px)]">
           {data.items.map((item) => (
             <article
@@ -77,7 +70,6 @@ export function IndustryCapabilitiesSection({
               <h3 className="mt-3 text-[24px] font-normal leading-[1.16] text-black lg:col-start-2 lg:mt-9 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
                 {item.title}
               </h3>
-              {/* The handoff's panel copy comes in paragraphs. */}
               <div className="mt-4 max-w-[368px] space-y-3 text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:col-start-3 lg:mt-9 lg:space-y-4 lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
                 {item.description
                   .split(/\n\s*\n/)

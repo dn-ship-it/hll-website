@@ -2,8 +2,7 @@ import { HomeHeading } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { IndustryPageData } from "@/types/industry";
 
-/** Figma: four 366px cards 10px apart, name then a three-line Functional bio.
- *  Mobile: rows of a 93px photo with the name and bio 12px to its right. */
+/** Four 366px cards 10px apart, name then a three-line Functional bio. Mobile: rows of a 93px photo with the name and bio 12px to its right. */
 export function NamedExpertsSection({
   data,
   accentColor,

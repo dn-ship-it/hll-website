@@ -52,9 +52,8 @@ export function resolveServiceDemoConfig(service: Service | null): ServiceDemoCo
   };
 }
 
-// One demo per hero tab. Every tab used to resolve to the data-engineering
-// panel, because pickDemo falls back to items[0] for any tab without an entry
-// of its own, so switching tabs appeared to do nothing.
+// One demo per hero tab: pickDemo falls back to items[0] for a tab without an entry,
+// which made every tab show the same panel.
 export const defaultFoundationDemo: ServiceDemoConfig = {
   selectorLabel: "Data & Analytics",
   items: [

@@ -10,17 +10,13 @@ import type { AboutPageData } from "@/data/about";
 
 import { ReachMapEmbed } from "./reach-map-embed";
 
-/** Figma "HLL": 198 × 264 portrait from 35% across, quote beside it.
- *  Mobile: a hairline, then a 245 × 253 portrait at x 79 with the quote
- *  indented under it (as the service Expert Voice). */
+/** Portrait with the quote beside it; on mobile a hairline, then the portrait with the quote indented under it. */
 export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) {
   return (
     <section className={`pt-[84px] lg:pt-[221px] ${SERVICE_GUTTER}`}>
       <div data-line className="-mx-3 mb-[84px] h-px bg-[var(--hll-mid-grey)] lg:hidden" />
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      {/* Phones narrower than Figma's 402px frame: the portrait narrows
-          rather than pushing the quote off the right edge (HoK's mobile
-          review, 5 Nov). */}
+      {/* Narrow phones: the portrait narrows rather than pushing the quote off the right edge. */}
       <div className="mt-[47px] grid grid-cols-[minmax(0,1fr)] gap-3 lg:ml-[34.5%] lg:mt-[-26px] lg:grid-cols-[198fr_721fr] lg:gap-[33px]">
         <div
           className="ml-[59px] aspect-[245/253] w-[min(245px,calc(100%-59px))] rounded-[6px] bg-[#D9D9D9] lg:ml-0 lg:aspect-[198/264] lg:w-[198px] lg:rounded-[4px]"
@@ -28,7 +24,6 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
         />
         <blockquote className="ml-[55px] flex max-w-[311px] flex-col justify-between gap-6 lg:ml-0 lg:max-w-none lg:gap-8">
           <p className="text-[24px] leading-[27.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]">
-            {/* One text node, so the word reveal can take it (Hannan, 17 Nov). */}
             {`“${data.quote}”`}
           </p>
           <footer className="text-[14px] leading-[1.25] text-black lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
@@ -41,15 +36,10 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
   );
 }
 
-/**
- * Our Reach: the design team's interactive map (offices, partners and the
- * work done in each place, see ReachMapEmbed), then the heading and numbers,
- * as in their approved About page.
- */
+/** Our Reach: the interactive map (see ReachMapEmbed), then the heading and numbers. */
 export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
   return (
-    // How we work ends with its own 154px; Figma puts the map 223px below
-    // (mobile: 84px).
+    // How we work ends with its own 154px; the map sits 223px below (mobile: 84px).
     <section className="-mt-[70px] lg:mt-0 lg:pt-[69px]">
       <div className="px-2 lg:px-[10px]">
         <ReachMapEmbed />
@@ -57,10 +47,7 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
 
       <div className="mt-8 flex flex-wrap items-start justify-between gap-3 px-4 lg:mt-[26px] lg:gap-8 lg:px-[10px] lg:pb-[29px]">
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-        {/* Figma About: a number with its label under it (96 / 30px on
-            phones). Three stats since the 25 Oct canvas (4 Offices, 12+
-            Countries, 150+ People deployed): from 640px they sit side by
-            side (64 / 22px on tablets), so the map keeps its size. */}
+        {/* A number with its label under it; from 640px the stats sit side by side so the map keeps its size. */}
         <div className="w-full space-y-3 sm:flex sm:gap-10 sm:space-y-0 lg:mr-[19px] lg:mt-[26px] lg:flex lg:w-auto lg:gap-[clamp(2rem,calc(4.2*var(--vw)),4.5rem)] lg:space-y-0">
           {data.stats.map((line) => {
             const [number, ...label] = line.split(" ");
@@ -82,12 +69,7 @@ export function AboutReachSection({ data }: { data: AboutPageData["reach"] }) {
   );
 }
 
-/**
- * The Reach map with its project pins: on About, and on Contact as "the same
- * interactive map as the About page" (QA CT-02). The box fills its parent's
- * height on desktop where the parent gives it one (About fits it to a
- * screen), otherwise it keeps the map's shape.
- */
+/** The Reach map with its project pins; fills its parent's height on desktop when given one, else keeps the map's shape. */
 export function ReachMap({
   map,
   pins,
@@ -96,8 +78,7 @@ export function ReachMap({
   pins: AboutPageData["reach"]["pins"];
 }) {
   const data = { map, pins };
-  // Mobile: a 386 × 551 crop of the same map, over the Americas (Figma image
-  // fill x 2–26%, y 15–93%); the pins follow the crop.
+  // Mobile: a 386 × 551 crop of the map over the Americas; the pins follow the crop.
   return (
     <div className="relative mx-[6px] aspect-[386/551] overflow-hidden rounded-lg bg-[#E6E6E6] lg:mx-0 lg:aspect-[1492/540] lg:h-full lg:max-h-[calc((100*var(--vw)-20px)*636/1492)] lg:max-w-full lg:[container-type:inline-size]">
       <div
@@ -150,7 +131,6 @@ function PinCard({ pin }: { pin: AboutPageData["reach"]["pins"][number] }) {
   );
 }
 
-/** Figma "Careers": 1096 × 551 image, "why work at HLL?" with numbered points. */
 export function AboutCareersSection({
   data,
   className = "pt-[154px] lg:pt-[214px]",
@@ -161,17 +141,10 @@ export function AboutCareersSection({
   return (
     <section className={`pb-[84px] ${className} ${SERVICE_GUTTER}`}>
       <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      {/* No image for now (Hannan, 5 Nov: "remove this image section until we
-          work out a good alternative"; House of Katha: the team skyline
-          "doesn't fit our visual language"). TeamSkyline is kept for when one
-          is chosen. */}
-
-      {/* Mobile: the numbers at x 51, the points at x 75, 18px apart. */}
+      
       <div className="mt-8 grid gap-[37px] lg:ml-[41.7%] lg:mt-[67px] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
         <p className="text-[10px] uppercase leading-[1.15] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[12px]">{data.label}</p>
-        {/* Desktop: the points are grid rows (their items are display:
-            contents, so space-y never applied); the row gap spaces them
-            (House of Katha's review, 5 Nov). */}
+        {/* The points are grid rows (their items are display: contents), so the row gap spaces them. */}
         <ol className="space-y-[18px] lg:col-span-2 lg:grid lg:grid-cols-subgrid lg:gap-y-[30px] lg:space-y-0">
           {data.points.map((point, i) => (
             <li key={point.id} className="flex gap-[9px] pl-[31px] lg:contents">

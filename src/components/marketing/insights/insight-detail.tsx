@@ -22,8 +22,7 @@ import { InsightCarousel, InsightTags } from "./insight-card";
 const INK = "text-[#1E1E1E]";
 const BODY =
   "text-[16px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]";
-// Figma Insights article (209:831), on the 1452px inner width: labels at 30,
-// body copy and quotes from 415 (the 385px label column), 755px wide.
+// Offsets on the 1452px inner width: labels at 30, body copy and quotes from 415 (385px label column), 755px wide.
 const TEXT_GRID = "grid gap-4 lg:grid-cols-[385fr_755fr_312fr] lg:gap-0";
 const LABEL =
   "text-[24px] leading-[1.16] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)]";
@@ -62,7 +61,7 @@ function splitQuote(quote: string) {
   return cut >= 0 ? [text.slice(0, cut + 1), text.slice(cut + 1)] : [text, ""];
 }
 
-/** Figma 30+ / 65% rows: the figure, its sentence, hairlines between. */
+/** Stat rows: the figure, its sentence, hairlines between. */
 function Stats({ items, light = false }: { items: InsightStat[]; light?: boolean }) {
   return (
     <ul className="max-w-[590px]">
@@ -88,12 +87,7 @@ function Stats({ items, light = false }: { items: InsightStat[]; light?: boolean
   );
 }
 
-/**
- * "This is an open section in the CMS, the content within the box can be a
- * quote, a demo tool or outcome cards. The colour of the box can be changed
- * as well." Figma 209:859: 1452 × 771, the quote centred in white with the
- * attribution bottom left.
- */
+/** An open box (quote, demo tool or outcome cards, colour changeable): 1452 × 771, quote centred in white, attribution bottom left. */
 function ColourBox({ block }: { block: Extract<InsightBlock, { kind: "box" }> }) {
   return (
     <div
@@ -158,14 +152,14 @@ function Block({ block }: { block: InsightBlock }) {
         </TextRow>
       );
     case "media":
-      // Figma 209:872: 8px further in than the page, 1430 × 695.
+      // 8px further in than the page, 1430 ×695.
       return (
         <div data-reveal-media className="-mx-3 lg:mx-2">
           <EngagementMediaBox media={block.media} fallbackRatio={1430 / 695} className="lg:!aspect-[1430/695]" />
         </div>
       );
     case "quote": {
-      // Figma 209:879: 64px, the first sentence in colour, from the body column.
+      // 64px, the first sentence in colour, from the body column.
       const [first, rest] = splitQuote(block.quote);
       return (
         <figure className={TEXT_GRID}>
@@ -193,7 +187,6 @@ function Block({ block }: { block: InsightBlock }) {
   }
 }
 
-/** Figma Insights article (209:831). */
 export async function InsightDetail({ slug }: { slug: string }) {
   const all = await loadInsights();
   const insight = all.find((i) => i.slug === slug);
@@ -205,8 +198,7 @@ export async function InsightDetail({ slug }: { slug: string }) {
     <MarketingShell>
       <RevealRoot skip=".hll-display, .hll-label">
         <article className={`hll-home hll-service-page ${SERVICE_GUTTER}`}>
-          {/* "Title is split into Headline (in bold) and Byline (in regular)":
-              Figma sets them in Regular (400) and Light (300). */}
+          {/* Headline in Regular (400), byline in Light (300). */}
           <header className="pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)]">
             <h1 className={INK}>
               <GradientRevealTextSlow
@@ -258,8 +250,7 @@ export async function InsightDetail({ slug }: { slug: string }) {
             />
           </div>
 
-          {/* "The page is created with a dynamic CMS grid which allows the
-              content blocks after the hero to be rearranged." 154px apart. */}
+          {/* A dynamic grid of content blocks after the hero, 154px apart. */}
           <div className="space-y-[84px] pt-[84px] lg:space-y-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pt-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)]">
             {insight.intro ? (
               <TextRow>

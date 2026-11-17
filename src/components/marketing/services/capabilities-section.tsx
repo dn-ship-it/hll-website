@@ -5,16 +5,11 @@ import { CapabilityNav } from "./capability-nav";
 import { SERVICE_GUTTER, ServiceSectionHeading } from "./service-chrome";
 import { getServiceTheme } from "./service-theme";
 
-// Figma service template columns at 1512px: nav list 436 | index 45 |
-// title 500 | body 366 | empty 105. Expressed as fractions so the proportions
-// hold at other desktop widths.
-// The body and the hairline run to the page's right margin; an empty 105fr
-// column after them left a wide gap there (House of Katha's review, 5 Nov:
-// "right margin space needs to be fixed").
+// Columns at 1512px (nav list 436 | index 45 | title 500 | body 366 | empty 105) as fractions,
+// so proportions hold at other widths; the body and hairline run to the page's right margin.
 const ROW_GRID = "lg:grid-cols-[45fr_500fr_471fr]";
 
-/** Figma pill: Mid Grey hairline, 18px radius, logo then name, 12px in.
- *  Mobile: 27px tall, 14.9px name, 10px in. */
+/** Pill: Mid Grey hairline, 18px radius, logo then name, 12px in. Mobile: 27px tall, 14.9px name, 10px in. */
 function ToolPill({ tool }: { tool: ServiceTool }) {
   return (
     <span className="inline-flex h-[27px] items-center gap-[9px] rounded-[16px] border-[0.75px] border-[var(--hll-mid-grey)] px-[10px] text-[14.87px] leading-[1.25] text-[var(--hll-dark-grey)] lg:h-[33px] lg:gap-[11px] lg:rounded-[18px] lg:border lg:px-3 lg:text-[18.6px]">
@@ -43,8 +38,7 @@ export function CapabilitiesSection({
       id="capabilities"
       className={`pb-[52px] pt-[84px] lg:pb-[clamp(3rem,calc(5.75*var(--vw)),5.4375rem)] lg:pt-[clamp(5.375rem,calc(10.32*var(--vw)),9.75rem)] ${SERVICE_GUTTER}`}
     >
-      {/* Phones: the heading above the list. Desktop shows it in the sticky
-          column below instead. */}
+      {/* Phones: the heading above the list; desktop shows it in the sticky column below. */}
       <div className="lg:hidden">
         <ServiceSectionHeading
           breadcrumb={breadcrumb}
@@ -54,9 +48,8 @@ export function CapabilitiesSection({
       </div>
 
       <div className="mt-8 grid gap-[clamp(2rem,calc(5*var(--vw)),4rem)] lg:mt-0 lg:grid-cols-[436fr_1016fr] lg:gap-0">
-        {/* QA C-15: on desktop the "Capabilities" heading rides in this
-            sticky column with the list, so both stay in view through the
-            capabilities and scroll away together after the last one. */}
+        {/* On desktop the heading rides in this sticky column with the list, so both scroll away
+            together after the last item. */}
         <div className="hidden lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:block lg:self-start">
           <div className="mb-[clamp(2.5rem,calc(4.76*var(--vw)),4.5rem)]">
             <ServiceSectionHeading
@@ -68,9 +61,7 @@ export function CapabilitiesSection({
           <CapabilityNav items={data.items} accent={accent} />
         </div>
 
-        {/* Desktop: starts where it did under the full-width heading (the
-            heading's height plus its gap), now that the heading sits in
-            the sticky column. */}
+        {/* Desktop: offset by the heading's height plus its gap, since it sits in the sticky column. */}
         <div className="lg:pt-[calc(14.4px+12px+1.16*clamp(30px,calc(4.23*var(--vw)),4rem)+clamp(2.5rem,calc(4.76*var(--vw)),4.5rem))]">
           {data.items.map((item) => (
             <article
@@ -132,7 +123,7 @@ function CapabilityRule({ index, accent }: { index?: string; accent: string }) {
   );
 }
 
-/** Figma: the group name at 20px, then its pills 11px apart. */
+/** The group name at 20px, then its pills 11px apart. */
 function ToolGroup({
   label,
   tools,
@@ -154,8 +145,8 @@ function ToolGroup({
   );
 }
 
-/** Foundation's sub-services carry a body, so they render as a list of rows;
-    the other verticals are name-only and render as Figma's bulleted list. */
+/** Foundation's sub-services carry a body, so they render as rows; the other verticals are
+    name-only and render as a bulleted list. */
 function SubServices({
   items,
 }: {
@@ -170,7 +161,7 @@ function SubServices({
       <ul className="mt-3 text-[14px] leading-[28px] text-[var(--hll-mid-grey)] lg:mt-[clamp(0.8125rem,calc(1.59*var(--vw)),1.5rem)]">
         {items.map((sub) => (
           <li key={sub.name} className="flex gap-[9px]">
-            {/* Figma Services mobile lists sub-services without bullets. */}
+            {/* Mobile lists sub-services without bullets. */}
             <span aria-hidden className="hidden lg:inline">•</span>
             {sub.name}
           </li>
@@ -180,8 +171,7 @@ function SubServices({
   }
 
   return (
-    // One sub-service to a row, not two columns (House of Katha's review,
-    // 5 Nov: "sub paragraphs should come as rows").
+    // One sub-service to a row, not two columns.
     <dl className="mt-6 grid gap-y-5">
       {items.map((sub) => (
         <div key={sub.name}>

@@ -26,10 +26,8 @@ export function ServiceHero({
   demo: ServiceDemoConfig;
   variant?: ServiceVariant;
   /**
-   * The page's capabilities. When given, the tags under the headline are
-   * these and take you to each one's section (Hannan's review, 22 Oct:
-   * "buttons that help people swap to the different sub-capabilities on the
-   * page"; Figma "On tags"); the demo window keeps its first view.
+   * The page's capabilities. When given, the tags under the headline are these and take you to
+   * each one's section; the demo window keeps its first view.
    */
   capabilities?: { id: string; label: string }[];
 }) {
@@ -47,8 +45,7 @@ export function ServiceHero({
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const rippleVariant = SERVICE_TO_RIPPLE[variant] ?? "hll-foundation";
-  // Hannan, 29 Oct: the design team's demo blocks (hll-capability-demos-v1)
-  // in each page's demo window, built into public/capability-demos.
+  // The design team's capability demos, built into public/capability-demos.
   const storyDemo: ServiceDemoConfig = {
     ...demo,
     items: [{ tabKey: activeTab, htmlUrl: `/capability-demos/embed.html#/embed/${SERVICE_SLUGS[variant]}` }],
@@ -59,8 +56,7 @@ export function ServiceHero({
     <section
       data-no-text-scroll
       data-no-image-reveal
-      // QA C-10: less space above the title (240px at 1512), so the top
-      // third of the demo window shows on load on a 13" laptop.
+      // Less space above the title so the top third of the demo window shows on a 13" laptop.
       className={`relative overflow-hidden pb-0 pt-[154px] lg:pt-[clamp(7.5rem,calc(15.87*var(--vw)),15rem)] ${SERVICE_GUTTER}`}
     >
       <div className="relative">
@@ -74,15 +70,12 @@ export function ServiceHero({
           lineHeight="1.16"
         />
 
-        {/* Buttons, not anchors. These used to be href="#<id>" links, and
-            because each id also matches a capability section further down the
-            page, clicking one jumped the demo out of view — so switching tabs
-            looked like it did nothing at all. */}
+        {/* Buttons, not anchors: an href="#<id>" link matched a capability section further down and
+            jumped the demo out of view. */}
         <div
           role={capabilities.length ? "navigation" : "tablist"}
           aria-label={capabilities.length ? "Capabilities on this page" : "Capability demos"}
-          // Figma "Button Mobile" outline tabs: 36px, 3px corners, a 10px
-          // label, 6px apart; the desktop tabs are 38px with a 12px label.
+          // Outline tabs: 36px, 3px corners, 10px label, 6px apart; desktop tabs are 38px with a 12px label.
           className="mt-3 flex flex-wrap gap-[6px] [--tab-h:36px] [--tab-r:3px] [--tab-size:10px] [--tab-track:2.5px] lg:mt-[clamp(1.1875rem,calc(2.25*var(--vw)),2.125rem)] lg:gap-2 lg:[--tab-h:38px] lg:[--tab-r:4px] lg:[--tab-size:12px] lg:[--tab-track:0.25em]"
         >
           {tags.map((tab) => (
@@ -103,18 +96,15 @@ export function ServiceHero({
               strokeWidth={0.028}
               style={{
                 width: "max-content",
-                // A chip wider than the screen (narrow phones, larger text
-                // settings) wraps onto two lines instead of running off the
-                // edge (HoK's mobile review, 5 Nov); one that fits is as before.
+                // A chip wider than the screen wraps onto two lines instead of running off the edge.
                 maxWidth: "100%",
                 whiteSpace: "normal",
                 height: "auto",
                 minHeight: "var(--tab-h)",
                 padding: "6px 21px",
                 borderRadius: "var(--tab-r)",
-                // Read by .service-tab: Figma marks the active tab with a
-                // solid hairline in the service colour, drawn above the
-                // canvas's resting grey hairline.
+                // Read by .service-tab: the active tab gets a solid hairline in the service colour, above the
+                // resting grey one.
                 ["--service-tab-accent" as string]: theme.accent,
               }}
               labelStyle={{

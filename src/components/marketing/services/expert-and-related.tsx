@@ -27,8 +27,7 @@ export function ExpertVoiceSection({
     <VoiceSection
       slides={[data, ...more]}
       counterColor={accent}
-      // QA T-03: the timer bar under the portrait, and the slides turn on
-      // their own, as on Industry pages.
+      // The timer bar under the portrait, and the slides turn on their own, as on Industry pages.
       timerColor={accent}
       heading={
         <ServiceSectionHeading
@@ -57,8 +56,7 @@ export function RelatedServicesSection({
   items: ServicePageData["relatedServices"];
   title?: string;
 }) {
-  // On the page's own background: the colour wash under it went (House of
-  // Katha's review, 5 Nov: "remove the gradient").
+  // On the page's own background, with no colour wash.
   return (
     <section
       className={`relative overflow-hidden pb-[163px] pt-[193px] lg:pb-[clamp(5.125rem,calc(9.85*var(--vw)),9.3125rem)] lg:pt-[clamp(5.1875rem,calc(9.99*var(--vw)),9.4375rem)] ${SERVICE_GUTTER}`}
@@ -67,11 +65,10 @@ export function RelatedServicesSection({
         <h2 className="text-[24px] font-normal leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
           {title}
         </h2>
-        {/* Mobile: "Button Mobile" pills, 34px and 6px apart. */}
+        {/* Mobile: 34px pills, 6px apart. */}
         <div className="mx-auto mt-3 flex max-w-[37rem] flex-wrap justify-center gap-[6px] lg:mt-9 lg:gap-2">
           {items.map((item) => (
-            // QA C-18: the site's light-up button, in the colours of the
-            // capability (or industry) it leads to.
+            // The site's light-up button, in the colours of the capability (or industry) it leads to.
             <HLLButton
               key={item.label}
               href={item.href}

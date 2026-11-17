@@ -1,9 +1,6 @@
 /**
- * Whether WebGL (and WebGL2) works here, checked once per page load and
- * shared. Each check creates a real WebGL context, which takes time; every
- * ripple and shader used to run its own, several per page (performance,
- * 24 Oct). The probe context is given straight back so it doesn't count
- * against the browser's per-page limit.
+ * Whether WebGL (and WebGL2) works here, checked once per page load and shared: each check creates a real context.
+ * The probe context is given straight back so it doesn't count against the browser's per-page limit.
  */
 let cached: { webgl: boolean; webgl2: boolean } | null = null;
 

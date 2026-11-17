@@ -8,23 +8,9 @@ import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
 /**
- * "Storyboarding for Our Values" (Figma 1391:4410):
- *   1. slits    — the value media appear as thin slits in the middle
- *   2. panels   — the slits zoom up to full-height panels
- *   3. settled  — the value in focus expands to the 722 × 700 frame and the
- *                 rest contract into the 62px thumbnail row below it
- * then each value in turn takes the focus, the next thumbnail saturating from
- * monochrome into colour as it grows. Coordinates are the Desktop About
- * frame's, in a 1451 × 774 stage.
- *
- * Desktop plays it with the scroll (QA A-01, A-02): the stage pins under the
- * Nav Bar and the scroll position drives every step, smoothed so it follows
- * the scroll speed without jumps. Phones keep the timed storyboard.
+ * "Our Values" storyboard on a 1454 × 762 stage: slits → panels → strips → a 65px thumbnail row, then each value
+ * takes the 758px square in turn. Desktop plays it with the scroll; phones use a timer.
  */
-// House of Katha's refined storyboard (Figma HLL-Website-Feedback 116:5150,
-// 5 Nov), in its 1454 × 762 stage: the focus is a 758px square; the other
-// values first gather as tall strips on the right, then settle into a row of
-// 65px thumbnails under the copy. The focused value leaves the row.
 const STAGE = { w: 1454, h: 762 };
 const FOCUS = { x: 0, y: 0, w: 758, h: 758 };
 const STRIP = { x: 907.8, pitch: 92.4, y: 350.9, w: 84.2, h: 407.1 };
@@ -97,20 +83,12 @@ function timelineAt(t: number, count: number) {
   const f = Math.min(count - 1, Math.max(0, (t - INTRO) / STEP));
   const from = Math.floor(f);
   const to = Math.min(count - 1, from + 1);
-  // Hannan (3 Nov): each value should "land", so people go through them one
-  // by one rather than in one fluid run. Each step holds for its first 40%,
-  // then moves over the rest.
+  // Each step holds for its first 40%, then moves, so every value lands before the next.
   const k = from === to ? 0 : smooth((f - from - 0.4) / 0.6);
   return { toPanels, toStrips, toThumbs, from, to, k };
 }
 
-/**
- * A value's motion piece (Hannan, 17 Nov: "as they are coming up they should
- * start from zero and … land as one motion, and then when somebody scrolls the
- * next one can grow into that"). Loaded and held on its first frame while its
- * value grows, it plays from the start once the value has landed in the
- * focus, and from the start again each time it lands.
- */
+/** A value's motion piece: held on its first frame while the value grows, then plays from the start each time it lands. */
 function LandingVideo({
   src,
   landed,
@@ -156,8 +134,7 @@ export function AboutValuesSection({
   const [phase, setPhase] = useState<Phase>("hidden");
   const [active, setActive] = useState(0);
   const [cycle, setCycle] = useState(0);
-  // Each motion piece's length once loaded, so a value holds until its piece
-  // has played through (it was cut at 7s; the pieces run 6–12s).
+  // Each motion piece's length once loaded, so a value holds until its piece has played through.
   const [videoMs, setVideoMs] = useState<Record<string, number>>({});
   const mobileRef = useRef<HTMLDivElement>(null);
   const count = data.items.length;
@@ -169,8 +146,7 @@ export function AboutValuesSection({
     if (Number.isFinite(ms) && ms > 0) setVideoMs((m) => (m[id] === ms ? m : { ...m, [id]: ms }));
   };
 
-  // Phones: run the storyboard the first time it is on screen. (Desktop's
-  // stage is hidden there, and plays with the scroll instead.)
+  // Phones: run the storyboard the first time it is on screen.
   useEffect(() => {
     const stages = [mobileRef.current].filter(
       (el): el is HTMLDivElement => el !== null,
@@ -223,8 +199,7 @@ export function AboutValuesSection({
 
       <ValuesScrollStage data={data} />
 
-      {/* Figma About mobile: the value in focus at 376px, the 42px "up next"
-          thumbnails 5px under it, then its title and body. */}
+      
       <div
         ref={mobileRef}
         className={`-mx-[5px] mt-3 transition-opacity duration-700 lg:hidden ${phase === "hidden" ? "opacity-0" : "opacity-100"}`}
@@ -261,8 +236,7 @@ export function AboutValuesSection({
                 aria-label={value.title}
                 aria-pressed={isFocus}
                 onClick={() => pick(index)}
-                // Narrow phones: the thumbnails shrink to fit the strip instead of
-                // running off the edge (HoK's mobile review, 5 Nov).
+                // Narrow phones: the thumbnails shrink to fit the strip instead of running off the edge.
                 className={`relative aspect-square w-[42px] min-w-0 shrink overflow-hidden rounded-[4px] bg-[#D9D9D9] ${isFocus ? "outline outline-1 outline-offset-2 outline-[var(--hll-dark-grey)]" : ""}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -292,8 +266,7 @@ export function AboutValuesSection({
   );
 }
 
-/** Desktop: the storyboard played by the scroll, on a stage pinned under the
- *  Nav Bar. */
+/** Desktop: the storyboard played by the scroll, on a stage pinned under the Nav Bar. */
 function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
   const count = data.items.length;
   const trackRef = useRef<HTMLDivElement>(null);

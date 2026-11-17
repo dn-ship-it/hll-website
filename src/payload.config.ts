@@ -36,12 +36,8 @@ const s3Enabled = Boolean(process.env.S3_BUCKET);
 // wins when both are configured.
 const blobEnabled = !s3Enabled && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
-// A misconfigured deploy is hard to spot here, because it does not look broken:
-// every marketing page wraps its CMS query in try/catch and falls back to
-// static data, so the site renders completely while serving no CMS content at
-// all, with only /admin returning 500. These warn loudly rather than throwing,
-// so the marketing pages keep degrading gracefully instead of the whole site
-// going down over a CMS misconfiguration. See docs/DEPLOY.md.
+// A misconfigured deploy looks fine: pages fall back to static data and only /admin returns 500.
+// These warn loudly instead of throwing, so the marketing pages keep degrading gracefully. See docs/DEPLOY.md.
 if (process.env.NODE_ENV === "production") {
   if (!usePostgres) {
     console.warn(
@@ -89,9 +85,7 @@ export default buildConfig({
         pool: {
           connectionString: process.env.DATABASE_URI,
         },
-        // Applies any pending migrations (src/migrations) when production
-        // boots, since Vercel has no separate migrate step. Create a new one
-        // with `npx payload migrate:create <name>` after changing the schema.
+        // Applies pending migrations (src/migrations) on production boot; Vercel has no migrate step.
         prodMigrations: migrations,
       })
     : sqliteAdapter({
@@ -235,9 +229,7 @@ export default buildConfig({
     }
 
     try {
-      // Data & Analytics was HLL Foundation (slug hll-foundation) before the
-      // 17 Oct handoff renamed it; either slug counts as already seeded, or a
-      // renamed service would be seeded again on every boot.
+      // Data & Analytics used to be slug hll-foundation; either slug counts as seeded, or it would re-seed every boot.
       const foundation = await payload.find({
         collection: "services",
         where: { or: [{ slug: { equals: "data-analytics" } }, { slug: { equals: "hll-foundation" } }] },
@@ -256,15 +248,8 @@ export default buildConfig({
             variant: "hll-foundation",
             summary: "Data your business can finally trust.",
             _status: "published",
-            // Deliberately seeded without any `demos` entries. This used to
-            // inline the contents of public/demos/*.html into the row, which
-            // snapshotted the file into the database on first boot: the two
-            // then diverged permanently, and editing the file had no effect on
-            // an already-seeded environment. Leaving it empty makes
-            // resolveServiceDemoConfig return null, so the files in
-            // public/demos stay the single source of truth via
-            // defaultFoundationDemo, and an editor can still override any tab
-            // from the admin when they want to.
+            // Seeded without `demos` entries so public/demos stays the single source of truth via
+            // defaultFoundationDemo; an editor can still override any tab from the admin.
             demoWindow: {
               selectorLabel: "Data & Analytics",
             },

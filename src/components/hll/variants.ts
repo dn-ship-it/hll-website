@@ -19,10 +19,8 @@ export const SERVICE_VARIANTS = [
 export const HLL_VARIANTS = [...NAV_VARIANTS, ...SERVICE_VARIANTS] as const;
 
 /**
- * The service lines as the site shows them (17 Oct content handoff): the
- * names exactly as the Service Pages ledger has them, never with "HLL" in
- * front, and their page URLs. The `hll-*` variant names are code identifiers
- * only and are never shown.
+ * The service lines as the site shows them (never with "HLL" in front) and their page URLs.
+ * The `hll-*` variant names are code identifiers only.
  */
 export const SERVICE_NAMES: Record<(typeof SERVICE_VARIANTS)[number], string> = {
   "hll-foundation": "Data & Analytics",
@@ -35,8 +33,7 @@ export const SERVICE_NAMES: Record<(typeof SERVICE_VARIANTS)[number], string> = 
 };
 
 /**
- * Service names as older content and the CMS may still have them, mapped to
- * the names the site shows. Applied to service names that come from the CMS,
+ * Service names the CMS may still hold, mapped to the names the site shows,
  * so the "no HLL in front" rule holds whatever was typed there.
  */
 const OLD_SERVICE_NAMES: Record<string, string> = {

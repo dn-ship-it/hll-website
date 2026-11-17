@@ -28,8 +28,7 @@ type Tone = {
   accent: string | null;
   text: string | null;
   story: boolean;
-  /** The quote's first sentence: the brand colour, or the artwork's theme
-   *  colour when the brand colour is a grey (Lesielle's #202020). */
+  /** The quote's first sentence: the brand colour, or the artwork's theme colour when the brand is a grey. */
   highlight: string | null;
 };
 
@@ -37,14 +36,13 @@ const BODY =
   "text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]";
 const MEDIA_KINDS = new Set<EngagementBlock["kind"]>(["media", "mediaGrid"]);
 
-// Offsets inside the 1117px main column (Figma x 385–1502): labels at 636,
-// body copy at 886 running 595px, media ending at 1482. Mobile: text in the
-// 20px gutter, media out to 8px from the edges.
+// Offsets inside the 1117px main column: labels at 636, body copy at 886 (595px wide), media ending at 1482.
+// Mobile: text in the 20px gutter, media out to 8px from the edges.
 const LABEL_COL = "lg:pl-[22.47%]";
 const TEXT_GRID = "grid gap-4 lg:grid-cols-[250fr_595fr_21fr] lg:gap-0";
 const MEDIA_INSET = "-mx-3 lg:mx-0 lg:mr-[1.79%]";
 
-/** "colour of subheading will be PRIMARY COLOR OF THE CLIENT/CASE STUDY". */
+/** Subheading label, in the client's colour. */
 function Label({ children, tone }: { children: React.ReactNode; tone: Tone }) {
   return (
     <p
@@ -89,11 +87,7 @@ function TextRow({
   );
 }
 
-/**
- * House of Katha's case study redesign (5 Nov): "Quote comes as its own
- * section within the page. The first sentence is highlighted in the main
- * brand colour." The attribution sits to the left of the quote.
- */
+/** The quote as its own section: the first sentence in the brand colour, the attribution to its left. */
 function QuoteSection({
   block,
   tone,
@@ -119,8 +113,7 @@ function QuoteSection({
   );
 }
 
-/** Figma "media grid": each row shares one height, widths follow the images.
- *  Mobile stacks every image full width, 10px apart. */
+/** Media grid: each row shares one height, widths follow the images. Mobile stacks every image full width, 10px apart. */
 function MediaGrid({ rows }: { rows: EngagementMedia[][] }) {
   return (
     <div className="space-y-[10px] lg:space-y-2">
@@ -156,7 +149,7 @@ function Block({
   block: EngagementBlock;
   tone: Tone;
   isHero: boolean;
-  /** The handoff's live artwork, when the engagement has it. */
+  /** The live artwork, when the engagement has it. */
   art?: Engagement["art"];
   client?: string;
   /** The phone hero (in the sidebar). */
@@ -195,8 +188,6 @@ function Block({
         </div>
       );
     case "showcase":
-      // "This section can be adapted to whatever the user needs: a demo
-      // window, image/video, or text."
       return (
         <TextRow label={block.label} tone={tone}>
           {block.display === "media" && art?.slots["feature-wide_1492x843"] ? (
@@ -234,10 +225,7 @@ function Block({
           <div>
             <Label tone={tone}>{block.label}</Label>
           </div>
-          {/* House of Katha's redesign (5 Nov): a stat that is a figure
-              (30+, 65%, $5M) shows large beside its sentence; one in words
-              ("Two paths", "Stabilised") drops the figure and keeps the
-              sentence ("Up to 4" leads it). The two can mix in one block.
+          {/* A stat that is a figure shows large beside its sentence; one in words drops the figure.
               Mobile: hairlines out to 8px from the edges. */}
           <ul className="-mx-3 lg:mx-0">
             {block.items.map((item, i) => {
@@ -329,11 +317,8 @@ function Block({
   }
 }
 
-/**
- * Gaps from the templates: 64px from the hero, and between copy and media;
- * 8px between media; 154px between sections, which on a Story also get a
- * hairline with 84px under it.
- */
+/** Gaps: 64px from the hero and between copy and media, 8px between media, 154px between sections
+    (a Story also gets a hairline with 84px under it). */
 function Spacer({
   prev,
   cur,
@@ -365,16 +350,10 @@ function Spacer({
   return <div className="h-[84px] lg:h-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)]" />;
 }
 
-/**
- * Figma "Explore related engagements": a 611px band, clear at the top and
- * 70% of the colour at the bottom (the Figma rectangle is rotated 180°, which
- * flips its fill; QA client review 21 Oct: it was upside down). Case study: "gradient is according to the service
- * colour, all case studies in it will be of the same service". Story:
- * "gradient is based on the colours of this project".
- */
+/** A 611px band, clear at the top and 70% of the colour at the bottom (the design rectangle is rotated 180°, which flips its fill). */
 function RelatedBand({ items }: { items: Engagement[] }) {
   if (!items.length) return null;
-  // House of Katha's redesign (5 Nov): on the page's own background.
+  // On the page's own background.
   return (
     <section data-related-band className="pb-12 pt-10 lg:px-[10px] lg:pb-[82px] lg:pt-[65px]">
       <div className="px-5 [--related-title:24px] lg:px-[20px] lg:[--related-title:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
@@ -406,11 +385,8 @@ function RelatedBand({ items }: { items: Engagement[] }) {
   );
 }
 
-/**
- * The client colour for text on the page's white, or null when it's too light
- * to read there (QA client review 21 Oct: Parrot Finance's neon labels): WCAG
- * contrast against #FAFAFA under 2.5. Keeps strong colours like KTM orange.
- */
+/** The client colour for text on white, or null when too light to read there
+    (WCAG contrast against #FAFAFA under 2.5). Keeps strong colours like KTM orange. */
 function readableOnWhite(hex: string | null) {
   if (!hex || !/^#[0-9a-f]{6}$/i.test(hex)) return null;
   const channel = (v: number) => {
@@ -445,13 +421,7 @@ function luminance(hex: string) {
   return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
 }
 
-/**
- * The case study hero, House of Katha's revised design (Figma 127:8943,
- * 6 Nov): "Hero image with logo – hero image can be mockup, or a brand image.
- * Static ripples that match the brand's palette." The handoff's feature-wide
- * artwork (the mockups on the still ripple) with the client's white logo top
- * left; a client without a logo gets its name there instead.
- */
+/** The case study hero: feature-wide artwork on a static ripple with the client's white logo top left, or its name when it has no logo. */
 function HeroArt({
   engagement,
   heroBlock,
@@ -486,11 +456,7 @@ function HeroArt({
   ) : null;
 }
 
-/**
- * The page's blocks under the hero, with the quote moved to follow the
- * opening run of text sections ("Quote comes as its own section within the
- * page", House of Katha, 5 Nov). The first image block becomes the hero.
- */
+/** The blocks under the hero, with the quote after the opening run of text sections. The first image block becomes the hero. */
 function arrange(blocks: EngagementBlock[]) {
   const heroBlock = blocks[0]?.kind === "media" ? blocks[0] : null;
   const body = heroBlock ? blocks.slice(1) : blocks;
@@ -503,15 +469,13 @@ function arrange(blocks: EngagementBlock[]) {
   return { heroBlock, body: rest };
 }
 
-/** Figma Desktop › Case Study Template (1068:4964) / Engagement Story Template (1192:8048). */
 export async function EngagementDetail({ slug }: { slug: string }) {
   const all = await loadEngagements();
   const engagement = all.find((e) => e.slug === slug);
   if (!engagement) notFound();
 
   const story = engagement.template === "story";
-  // Ma'am's review 22 Oct: an engagement without a brand colour takes its
-  // artwork's theme colour (the strongest in its ripple palette), not grey.
+  // Without a brand colour, take the artwork's strongest theme colour, not grey.
   const accent = engagement.primaryColor ?? themeColour(engagement.art?.ripple.palette) ?? null;
   const greyish = (hex: string | null) => {
     if (!hex || !/^#[0-9a-f]{6}$/i.test(hex)) return true;
@@ -520,15 +484,12 @@ export async function EngagementDetail({ slug }: { slug: string }) {
     return Math.max(...rgb) - Math.min(...rgb) < 40;
   };
   const text = readableOnWhite(accent);
-  // "The first sentence is highlighted in the main brand colour": the brand
-  // colour, or where that's a grey (Lesielle's #202020) the artwork's main
-  // colour, the first of its palette (Lesielle's red).
+  // The brand colour, or where that's a grey the artwork's main colour (first of its palette).
   const highlight =
     text && !greyish(text) ? text : readableOnWhite(engagement.art?.ripple.palette?.[0] ?? null) ?? text;
   const tone: Tone = { accent, text, story, highlight };
   const { heroBlock, body } = arrange(engagement.blocks);
-  // "Service is listed in its own tab and leads you to the service page",
-  // with the capability page's own headline under its name.
+  // Each service leads to its page, with the capability page's headline under its name.
   const services: SidebarService[] = await Promise.all(
     engagement.services.map(async (variant) => {
       const page = getServicePageByVariant(variant);
@@ -552,16 +513,10 @@ export async function EngagementDetail({ slug }: { slug: string }) {
   );
 
   return (
-    // The header mark takes the client colour, unless that's too light to
-    // see on the white Nav Bar (pale brand colours from the handoff).
+    // The header mark takes the client colour, unless that's too light to see on the white Nav Bar.
     <MarketingShell markTint={accent && luminance(accent) < 0.7 ? accent : undefined}>
-      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
-          reveal animation should go onto all pages"). */}
       <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page">
-          {/* House of Katha's revised design (6 Nov): the sticky sidebar and
-              the hero side by side at the top, the page's sections under
-              the hero. */}
           <div className="lg:mt-[clamp(1.5rem,calc(2.65*var(--vw)),2.5rem)] lg:grid lg:grid-cols-[385fr_1127fr] lg:items-start">
             <EngagementSidebar
               engagement={engagement}
@@ -570,8 +525,6 @@ export async function EngagementDetail({ slug }: { slug: string }) {
               mobileHero={hero}
             />
             <div
-              // HoK's revised Case Study mobile (174:11079): 112px from the
-              // service card to the first label (it was 162px).
               className={`px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pb-[154px] lg:pb-[clamp(5rem,calc(10.2*var(--vw)),9.625rem)] lg:pl-0 lg:pr-[10px] lg:pt-0 ${story ? "pt-[139px]" : "pt-[104px]"}`}
             >
               <div className="mb-[clamp(4rem,calc(8.6*var(--vw)),8.125rem)] hidden lg:block">{hero}</div>

@@ -1,11 +1,7 @@
 import { GradientRevealTextSlow } from "@/components/hll";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 
-/**
- * Figma Team / Careers hero: H1 at the left, a 36px lead from halfway across,
- * then the 1452 × 982 media window. `children` sits inside the window (the
- * Careers "See open roles" button).
- */
+/** Team / Careers hero: H1 at the left, a 36px lead from halfway across, then the media window (children sit inside it). */
 export function PageHero({
   title,
   lead,
@@ -19,16 +15,13 @@ export function PageHero({
   image?: string | null;
   /** Shown instead of the single media window (Careers: the About collage). */
   collage?: React.ReactNode;
-  /** No media under the title and lead (Team: HoK's note "People grid
-   *  becomes redundant on this page, can be removed from here"). */
+  /** No media under the title and lead. */
   noMedia?: boolean;
   children?: React.ReactNode;
 }) {
   return (
     <section className={`pt-[311px] lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}>
-      {/* The media sits 104px under the title or 32px under the lead,
-          whichever is lower (Figma: 32px under a three-line lead). Mobile:
-          title at y 385, the lead 54px under it, a 386 × 244 window. */}
+      {/* The media sits 104px under the title or 32px under the lead, whichever is lower. */}
       <div className="grid items-start gap-[54px] lg:grid-cols-[731fr_721fr] lg:gap-0">
         <div className="lg:pb-[72px]">
           <GradientRevealTextSlow

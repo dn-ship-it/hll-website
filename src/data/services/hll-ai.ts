@@ -1,7 +1,6 @@
 import { figmaTemplateService } from "./figma-template";
 
-// Headline from the home page's service list; the rest is the Figma template
-// placeholder (see figma-template.ts) until the AI copy is written.
+// Headline from the home page's service list; the rest is placeholder copy (see figma-template.ts).
 export const hllAi = figmaTemplateService({
   slug: "ai",
   variant: "hll-ai",

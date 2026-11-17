@@ -15,10 +15,8 @@ import { loadEngagements } from "@/lib/payload/engagements";
 import { homePageContent } from "@/data/home";
 import { getCmsImageUrl, mapHomePage } from "@/lib/payload/marketing-mappers";
 
-/** "Line one. / Line two." with the design's coloured full stop; undefined
- *  keeps the component's own headline. A first line that doesn't end its
- *  sentence ("…move faster,") runs on into the second instead of breaking,
- *  which left "faster," alone on a line (Hannan, 28 Oct). */
+/** "Line one. / Line two." with the design's coloured full stop; undefined keeps the component's
+ *  own headline. A first line that doesn't end its sentence runs on into the second. */
 function promiseHeadline(line1?: string | null, line2?: string | null) {
   const first = line1?.trim();
   if (!first) return undefined;
@@ -61,9 +59,8 @@ export default async function HomePage() {
   }
   const capabilities = await getCapabilitiesWheel();
 
-  // A tile on a named client's engagement plays its card video (5 Nov
-  // handoff): the slot is the one its image was cut for, and the wide tile,
-  // which had its own still, takes the wide card.
+  // A tile on a named client's engagement plays its card video: the slot is the one its image
+  // was cut for, and the wide tile takes the wide card.
   const engagements = await loadEngagements();
   content = {
     ...content,
@@ -84,15 +81,13 @@ export default async function HomePage() {
 
   return (
     <MarketingShell>
-      {/* House of Katha's reveal animations (5 Nov): paragraphs fade in word
-          by word, images grow in from a blur. Headings (.hll-display) and
-          eyebrows (.hll-label) keep their own reveal. */}
+      {/* Reveal animations: paragraphs fade in word by word, images grow in from a blur; headings
+          (.hll-display) and eyebrows (.hll-label) keep their own reveal. */}
       <RevealRoot
         className="hll-home"
         skip=".hll-display, .hll-label"
         card={{ card: "[data-reveal-card]", text: ".reveal-card-text", image: ".reveal-card-photo" }}
-        // Impact tiles: the image plays in as the tile enters the screen,
-        // rather than following the scroll (House of Katha, 6 Nov).
+        // Impact tiles: the image plays in as the tile enters the screen, not following the scroll.
         card2={{ card: "[data-impact-card]", image: ".reveal-impact-media" }}
       >
         <HomeHero
@@ -102,8 +97,7 @@ export default async function HomePage() {
           heroImageUrl={heroImageUrl}
           heroVideoUrl={heroVideoUrl}
         />
-        {/* The All Capabilities wheel, which Hannan preferred to the Home
-            one (2 Nov); here the page's scroll turns it, from the top. */}
+        {/* The All Capabilities wheel; here the page's scroll turns it, from the top. */}
         <AllCapabilities services={capabilities.services} scrollDriven headingAs="h2" />
         <OurClients data={content.clients} />
         <OurPromise

@@ -21,7 +21,6 @@ async function loadContactData() {
   }
 }
 
-/** Figma Desktop › Contact (1341:11841). */
 export async function ContactPage() {
   const { content } = await loadContactData();
   const { getInTouch } = content;
@@ -30,8 +29,7 @@ export async function ContactPage() {
     <MarketingShell>
       <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page">
-          {/* Figma "Contact – v2 (accordion)" (QA CT-02): the title (slow
-              anim) with the reply-time line under it, the form beside. */}
+          {/* The title with the reply-time line under it, the form beside. */}
           <section
             className={`grid gap-[55px] pt-[311px] lg:grid-cols-[547fr_865fr_40fr] lg:gap-0 lg:pt-[clamp(8rem,calc(23.2*var(--vw)),21.9rem)] ${SERVICE_GUTTER}`}
           >
@@ -59,13 +57,11 @@ export async function ContactPage() {
             </div>
           </section>
 
-          {/* "The same interactive map as the About page." */}
           <div className="px-2 pt-[84px] lg:px-[20px] lg:pt-[clamp(5rem,calc(10.6*var(--vw)),10rem)]">
             <ReachMapEmbed />
           </div>
 
-          {/* Get in touch: book a call, or the office closest to you – an
-              accordion per country in the form's column. */}
+          {/* Get in touch: book a call, or the office closest to you, as an accordion per country in the form's column. */}
           <section className={`pb-[84px] pt-[84px] lg:pb-[152px] lg:pt-[clamp(3rem,calc(5.95*var(--vw)),5.625rem)] ${SERVICE_GUTTER}`}>
             <HomeHeading eyebrow={getInTouch.eyebrow} title={getInTouch.title} />
             {getInTouch.text ? (

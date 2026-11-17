@@ -4,11 +4,7 @@ import { useState } from "react";
 
 import type { CareerSection } from "@/data/careers-page";
 
-/**
- * Figma JD: "Simple accordion design where plus sign opens the section and
- * minus closes it. one always stays open on load." Headers in the Button style
- * at 14px, a hairline under each, the open body from 30% across.
- */
+/** Simple accordion: plus opens a section, minus closes it, one always open on load. Headers in the Button style at 14px. */
 export function JdAccordion({ sections }: { sections: readonly CareerSection[] }) {
   const [open, setOpen] = useState<number | null>(0);
 
@@ -19,9 +15,7 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
         const id = `jd-section-${i}`;
         return (
           <div key={section.title}>
-            {/* QA J-07: the whole row is the button – the space above the
-                title and down to its hairline too, not just the words and
-                the plus sign. Same spacing as before, moved inside. */}
+            {/* The whole row is the button, including the space above the title and down to its hairline. */}
             <button
               type="button"
               aria-expanded={isOpen}
@@ -30,9 +24,7 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
               className={`flex w-full cursor-pointer items-center justify-between text-left lg:items-start lg:px-[23px] ${
                 i > 0 ? "pt-[27px] lg:pt-[57px]" : ""
               } ${isOpen ? "" : "pb-[27px] lg:pb-[51px]"} ${
-                // The first section, open on load, has no padding, so its
-                // header was a 12px tap target on phones: reach 12px past it
-                // either way, without moving anything.
+                // The first section, open on load, has no padding, so its header was a 12px tap target on phones: reach 12px past it either way.
                 i === 0 && isOpen ? "relative before:absolute before:inset-x-0 before:-inset-y-3 before:content-['']" : ""
               }`}
             >
@@ -43,10 +35,7 @@ export function JdAccordion({ sections }: { sections: readonly CareerSection[] }
                 {isOpen ? "−" : "+"}
               </span>
             </button>
-            {/* Hairlines only between sections: a closed header has its own,
-                27px under it; an open one's comes after its body, so none sits
-                between the title and its text. Mobile: out to 8px from the
-                edges. */}
+            {/* Hairlines only between sections: a closed header has its own; an open one's comes after its body. */}
             {isOpen ? null : (
               <div data-line className="-mx-3 h-px bg-[var(--hll-mid-grey)] lg:mx-0" />
             )}

@@ -17,7 +17,6 @@ import { BUTTON_TYPE, OutlineTag, roleTags } from "./role-tags";
 
 const MID = "var(--hll-mid-grey)";
 
-/** Figma "Approach": a 2 × 2 grid from 36% across, each item numbered n/4. */
 export function CareersApproach({
   data,
 }: {
@@ -26,9 +25,7 @@ export function CareersApproach({
   const total = String(data.items.length).padStart(2, "0");
   return (
     <section className={`pb-[84px] pt-[84px] lg:grid lg:grid-cols-[36.8fr_63.2fr] lg:pb-[214px] lg:pt-[154px] ${SERVICE_GUTTER}`}>
-      {/* QA CR-02: on desktop the label stays in view beside the items
-          until the last one; an invisible copy (same width) holds the
-          items where they sat under it. */}
+      {/* On desktop the label stays in view beside the items until the last one; an invisible copy (same width) holds the items where they sat under it. */}
       <div className="lg:row-span-2 lg:self-stretch">
         <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)]">
           <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
@@ -37,7 +34,6 @@ export function CareersApproach({
       <div aria-hidden className="invisible hidden lg:block lg:w-[58.23%]">
         <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
       </div>
-      {/* Mobile: one column from x 74, 32px between items. */}
       <div className="mt-[54px] grid gap-y-8 pl-[54px] lg:mr-[90px] lg:mt-[14px] lg:grid-cols-2 lg:gap-x-[120px] lg:gap-y-[155px] lg:pl-0">
         {data.items.map((item, i) => (
           <article key={item.id}>
@@ -60,8 +56,7 @@ export function CareersApproach({
   );
 }
 
-/** One filter dropdown. Its parent owns which menu is open, so opening one
- *  closes the other (QA TM-05). */
+/** One filter dropdown. Its parent owns which menu is open, so opening one closes the other. */
 function FilterMenu({
   label,
   allLabel,
@@ -82,8 +77,7 @@ function FilterMenu({
 }) {
   return (
     <div data-filter-menu className="relative">
-      {/* QA CR-03: the site's stroke button, so the filters light up on
-          hover like the other outline buttons. */}
+      {/* The site's stroke button, so the filters light up on hover like the other outline buttons. */}
       <HLLOutlineButton
         as="button"
         type="button"
@@ -132,10 +126,7 @@ function FilterMenu({
   );
 }
 
-/**
- * Figma "Open Roles": filter bar on the left, role rows from 41.7% across.
- * "Clicking this leads you to the detailed view page of that specific role."
- */
+/** "Open Roles": filter bar on the left, role rows from 41.7% across. */
 export function CareersOpenRoles({
   roles,
   emptyMessage,
@@ -183,9 +174,7 @@ export function CareersOpenRoles({
           <HomeHeading eyebrow="Team" title="Open Roles" />
         </div>
 
-        {/* Mobile: the filters 12px under the title, the rows 54px below.
-            QA CR-02: on desktop the title and filters stay in view together
-            while the roles scroll. */}
+        {/* On desktop the title and filters stay in view together while the roles scroll. */}
         <div className="mt-3 grid items-start gap-[54px] lg:mt-0 lg:grid-cols-[600fr_852fr] lg:gap-0">
           <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
           <div className="mb-[72px] hidden lg:block">
@@ -214,10 +203,7 @@ export function CareersOpenRoles({
           </div>
           </div>
 
-          {/* Mobile: the hairlines on the gutter, in line with the heading,
-              with 20px around each role so the list can breathe. Desktop:
-              starts where it did under the full-width title (its height plus
-              the 72px gap), now that the title sits in the sticky column. */}
+          {/* Hairlines sit on the gutter, in line with the heading, with 20px around each role. Desktop: starts where it did under the full-width title (its height plus the 72px gap). */}
           <ul className="lg:mr-[100px] lg:pt-[calc(14.4px+12px+1.16*clamp(30px,calc(4.23*var(--vw)),4rem)+72px)]">
             <li
               aria-hidden
@@ -284,7 +270,6 @@ export function LabelledRows({
     <div>
       {rows.map((row, r) => (
         <div key={row.title}>
-          {/* Mobile: no hairline, the next block 54px down. */}
           {r > 0 ? (
             <div
               data-line
@@ -330,12 +315,10 @@ export function CareersProcess({
 }) {
   return (
     <section>
-      {/* Figma Careers mobile runs Process straight on from the roles. */}
       <div data-line className="hidden h-px bg-[var(--hll-mid-grey)] lg:block" />
       <div
         className={`grid gap-[54px] pb-[84px] lg:grid-cols-[529fr_960fr] lg:gap-0 lg:pb-[151px] lg:pt-[154px] ${SERVICE_GUTTER}`}
       >
-        {/* QA CR-02: the label stays in view while its rows scroll. */}
         <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
           <HomeHeading eyebrow="Careers" title={data.title} eyebrowColor={MID} />
         </div>
@@ -351,9 +334,8 @@ export function CareersProcess({
 const SEE_ROLES_FADE_PX = 160;
 
 /**
- * Figma: "see open roles is sticky and takes you to the open roles section."
- * QA TM-03: rather than coming to rest on the divider above Open Roles, it
- * fades away with the scroll over its last 160px, gone as Open Roles arrives.
+ * The sticky "see open roles" button: rather than resting on the divider above Open Roles, it fades
+ * away with the scroll over its last 160px, gone as Open Roles arrives.
  */
 export function SeeOpenRoles() {
   const [opacity, setOpacity] = useState(1);
@@ -364,8 +346,7 @@ export function SeeOpenRoles() {
     let frame = 0;
     const update = () => {
       frame = 0;
-      // The row stays stuck 32px (bottom-8) off the bottom of the screen
-      // until Open Roles' top reaches that line; fade out on the way there.
+      // The row stays stuck 32px (bottom-8) off the bottom of the screen until Open Roles' top reaches that line.
       const gap = target.getBoundingClientRect().top - (window.innerHeight - 32);
       setOpacity(Math.min(1, Math.max(0, gap / SEE_ROLES_FADE_PX)));
     };
@@ -385,14 +366,11 @@ export function SeeOpenRoles() {
   const hidden = opacity === 0;
 
   return (
-    // A zero-height sticky row at the end of the sections above Open Roles:
-    // the button hangs above it, 32px off the bottom of the screen.
-    // The fade sits on the link: the row itself runs the page's intro
-    // animation, whose fill would hold its opacity at 1.
+    // A zero-height sticky row ends the sections above Open Roles, the button hanging 32px off the bottom of the screen.
+    // The fade sits on the link: the row runs the page's intro animation, whose fill would hold its opacity at 1.
     <div className="pointer-events-none sticky bottom-8 z-20 flex h-0 justify-center">
       <a
         href="#open-roles"
-        // QA CR-01: glides down to Open roles instead of jumping there.
         onClick={(event) => {
           const target = document.getElementById("open-roles");
           if (!target) return;

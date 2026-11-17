@@ -12,17 +12,11 @@ const LABEL =
   "block text-[10px] uppercase leading-[1.16] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[14px]";
 const FIELD =
   "block w-full bg-transparent text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] outline-none lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]";
-/** The field's name as grey placeholder text in the label's type (House of
- *  Katha's review, 5 Nov: "text fields need to be placeholder and not the
- *  title of input", "field names greyed out"). */
+/** The field's name as grey placeholder text in the label's type. */
 const PLACEHOLDER =
   "placeholder:text-[10px] placeholder:uppercase placeholder:tracking-[0.25em] placeholder:text-[var(--hll-mid-grey)] lg:placeholder:text-[14px]";
 
-/**
- * Figma Contact form: uppercase labels 13px in from a Mid Grey hairline that
- * runs the 864px column; "How can we help?" gets the tall field. Mobile: 10px
- * labels at the gutter, hairlines to 8px from the edges, fields 32px apart.
- */
+/** Contact form: uppercase labels 13px in from a Mid Grey hairline along the 864px column; "How can we help?" gets the tall field. */
 export function ContactForm({ data }: { data: ContactPageContent["form"] }) {
   // "Send another message" starts a fresh form.
   const [round, setRound] = useState(0);
@@ -109,8 +103,7 @@ function EnquiryForm({
         </p>
       ) : null}
 
-      {/* Mobile: Submit centred 84px under the last hairline (its margin
-          collapses with the field's 32px below). */}
+      {/* Mobile: Submit centred 84px under the last hairline (its margin collapses with the field's 32px below). */}
       <div className="mt-[83px] flex justify-center lg:-mt-5 lg:justify-end lg:pr-[13px]">
         <HLLButton
           as="button"
@@ -132,12 +125,7 @@ const RECAP_LABEL =
 const RECAP_VALUE =
   "mt-2 text-[16px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]";
 
-/**
- * Figma "Contact – Message sent" (QA, 25 Oct: the old one-liner sat out of
- * line with the page): in the form's place, a ticked "Message sent" label,
- * "Thanks, <first name>." with the reply time, a recap of what was sent
- * between two hairlines, and "Send another message".
- */
+/** The "Message sent" state in the form's place: a recap of what was sent between two hairlines, and "Send another message". */
 function MessageSent({
   data,
   sent,

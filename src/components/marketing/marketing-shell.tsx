@@ -84,8 +84,7 @@ export async function MarketingShell({
         <style>{`main[data-intro] :has(h1) > * { visibility: visible !important; }`}</style>
       </noscript>
       {showFooter ? (
-        // Nav and industry columns are fixed to the Figma footer; the CMS
-        // footerLinks / footerIndustries fields don't carry its grouping.
+        // Nav and industry columns are fixed in the footer; the CMS footerLinks / footerIndustries fields don't carry its grouping.
         <SiteFooter
           siteName={siteName}
           socialLinks={socialLinks}

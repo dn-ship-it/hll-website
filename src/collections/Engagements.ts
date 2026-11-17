@@ -21,7 +21,7 @@ const bodyField = {
   admin: { description: "Leave a blank line between paragraphs." },
 } as const;
 
-// Figma: "a custom cms page that allows the user to switch content blocks around".
+// A custom CMS page where content blocks can be switched around.
 const engagementBlocks: Block[] = [
   {
     slug: "engagementMedia",

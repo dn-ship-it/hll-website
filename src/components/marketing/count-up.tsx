@@ -4,11 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 const DURATION_MS = 1400;
 
-/**
- * Figma glossary "number counter": the number counts from 0 to its target
- * when it comes on screen. Anything around the number ("30+", "65%") stays
- * as written, and the target's decimals are kept.
- */
+/** Counts the number from 0 to its target when it comes on screen; text around it ("30+", "65%") stays and the target's decimals are kept. */
 export function CountUp({
   value,
   className,

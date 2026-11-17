@@ -4,12 +4,7 @@ import { useState } from "react";
 
 import type { TeamMember } from "@/data/team-page";
 
-/**
- * Figma Team mobile › Leadership: "Simple accordion that expands. Name and
- * title move below, image expands and description comes in." Collapsed rows
- * are a 93px photo with the name and role 12px right and a "+"; the open row's
- * photo grows to 319px with the name, role and bio under it and a "–".
- */
+/** Mobile Leadership accordion: collapsed rows are a 93px photo with name, role and "+"; the open row's photo grows to 319px with the bio and "–". */
 export function TeamAccordion({ people }: { people: TeamMember[] }) {
   const [open, setOpen] = useState<string | null>(null);
 

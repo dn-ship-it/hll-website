@@ -1,9 +1,6 @@
 /**
- * Each industry page's primary colour, from the Figma "Industries Color
- * Palettes" section ("each industry page has its own primary colour
- * assigned"). It colours the capability numbers, the Named Experts eyebrow,
- * the Client Voice timer and the Related Industries wash. A design token, so
- * it lives here rather than in the CMS.
+ * Each industry page's primary colour: capability numbers, Named Experts eyebrow, Client Voice timer and
+ * Related Industries wash. A design token, so it lives here rather than in the CMS.
  */
 const INDUSTRY_ACCENTS: Record<string, string> = {
   banking: "#2B7265",

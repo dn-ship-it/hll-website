@@ -45,7 +45,7 @@ export type CareersPageContent = {
 };
 
 // PLACEHOLDER copy from the Figma Careers / JD frames, until real copy lands.
-/** Hannan's canvas (25 Oct), /about "ABOUT HLL: Intro"; also the job pages' About HLL. */
+/** About HLL intro for /about; also the job pages' About HLL. */
 export const ABOUT_HLL_INTRO = [
   "At our core, we believe in the power of technology to transform businesses, industries, and society as a whole. That's why we approach every project with a blend of creativity, expertise, and empathy - to truly understand our clients' needs and build solutions that drive impact.",
   "We know that success is not just about what we build, but how we build it. That's why we value transparency, accountability, and a commitment to doing what's right, even when it's not the easy choice. We believe in creating a culture that fosters creativity, diversity, and inclusivity - because we believe that the best ideas come from a range of perspectives.",
@@ -98,7 +98,6 @@ export const careersPageContent: CareersPageContent = {
       },
     ],
   },
-  // Hannan's canvas (25 Oct), /careers.
   teamVoice: {
     quote:
       "Our strength comes from our people, and we hire for capability and culture. We look for discerning people who strive for more and can lead from their first engagement.",

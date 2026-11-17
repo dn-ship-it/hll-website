@@ -63,18 +63,11 @@ type GridItem = {
   big?: boolean;
 };
 
-// Figma Engagement Main (1068:4392): a row of three, then one card across the
-// full width, all the way down (6 Nov: 3, 1, 3, 1). Cards keep the shape the
-// handoff cut them for ("ratio of cards depends on image ratio").
+// A row of three, then one card across the full width, repeating (3, 1, 3, 1). Cards keep their own shape.
 const BIG = "feature-wide_1492x843";
 
-/**
- * The grid's order (6 Nov): each row of three is a card video, an image card,
- * then a ripple card (moving on hover). The image cards are the named clients
- * whose list card the handoff gives as a still (McKinsey's fraud model,
- * Wataniya, UN India); once they run out, the row ends in ripples. The
- * full-width card is a video while there are any left, then a ripple.
- */
+/** The grid's order: each row of three is a card video, an image card, then a ripple card. Image cards are the named clients
+    with a still; once they run out, the row ends in ripples. The full-width card is a video while any are left, then a ripple. */
 function arrangeGrid(list: Engagement[]): GridItem[] {
   const listMedia = (e: Engagement) =>
     e.art?.listSlot ? e.art.cardMedia?.[e.art.listSlot] : undefined;
@@ -100,12 +93,7 @@ function arrangeGrid(list: Engagement[]): GridItem[] {
   return out;
 }
 
-/**
- * Figma Engagement Main + Engagement Filter Expanded.
- * "Dynamic custom layout: mainly follows a 3 column grid, but elements can be
- * put in focus and made bigger (see Zelish). Ratio of cards depends on image
- * ratio." "Filter button will be sticky to the bottom, with an expanded view."
- */
+/** The engagement grid with an expanded, sticky filter: mainly 3 columns, with some cards in focus and bigger. */
 export function EngagementList({ engagements }: { engagements: Engagement[] }) {
   const [filters, setFilters] = useState<Filters>(EMPTY);
   const [open, setOpen] = useState(false);
@@ -197,9 +185,8 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
         ))}
       </div>
 
-      {/* Figma Engagements mobile: "Layout becomes linear" — one 386px column,
-          8px from the edges, cards 34px apart. Large screens (1800px and
-          up) get a fourth column rather than ever-bigger cards (QA E-03). */}
+      {/* Mobile: one 386px column, 8px from the edges, cards 34px apart.
+          From 1800px up, a fourth column rather than ever-bigger cards. */}
       <div className="mt-8 grid grid-cols-1 items-start gap-x-[10px] gap-y-[34px] px-2 lg:mt-[47px] lg:grid-cols-3 lg:gap-y-[40px] lg:px-[10px]">
         {arrangeGrid(shown).map((item) => (
           <div
@@ -217,10 +204,8 @@ export function EngagementList({ engagements }: { engagements: Engagement[] }) {
         ) : null}
       </div>
 
-      {/* Sticky Filter button, 37px off the bottom (mobile 23px, the 34px
-          "Button Mobile"), opening the expanded view 8px above it. */}
-      {/* Above the page shader (z-30, later in the page): it drew over the
-          button (House of Katha's review, 5 Nov). */}
+      {/* Sticky Filter button, 37px off the bottom (mobile 23px), opening the expanded view 8px above it.
+          Above the page shader (z-30, later in the page), which would otherwise draw over it. */}
       <div className="pointer-events-none sticky bottom-[23px] z-40 mt-[60px] flex justify-center lg:bottom-[37px]">
         <div ref={panelRef} className="pointer-events-auto relative">
           {open ? (

@@ -48,8 +48,7 @@ export async function loadCareersContent() {
   }
 }
 
-/** The four hero images: the About collage's (QA CR-05), until Careers has
- *  photos of its own. */
+/** The four hero images: the About collage's, until Careers has photos of its own. */
 async function loadCollage() {
   try {
     return mapAboutPage(await getMarketingContent()).hero.images;
@@ -58,7 +57,6 @@ async function loadCollage() {
   }
 }
 
-/** Figma Desktop › Careers (1116:7183). */
 export async function CareersPage() {
   const [content, roles, collage] = await Promise.all([
     loadCareersContent(),
@@ -69,12 +67,10 @@ export async function CareersPage() {
 
   return (
     <MarketingShell>
-      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
-          reveal animation should go onto all pages"). */}
+      
       <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-home hll-service-page">
-        {/* "see open roles is sticky and takes you to the open roles
-            section": pinned to the bottom of the screen until Open Roles. */}
+        {/* The "see open roles" button is sticky: pinned to the bottom of the screen until Open Roles. */}
         <div className="relative">
           <PageHero
             title="Careers"

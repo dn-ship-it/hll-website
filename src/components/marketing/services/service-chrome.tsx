@@ -3,11 +3,10 @@ import { SectionTitle } from "@/components/marketing/home/primitives";
 
 import { getServiceTheme } from "./service-theme";
 
-/** Page gutter from the Figma service template: 30px at the 1512px frame. */
+/** Page gutter: 30px at 1512px. */
 export const SERVICE_GUTTER = "px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]";
 
-/** Service icon + name, as in the Figma service template (no breadcrumb).
- *  Mobile: a 34px icon and 24px name, 8px apart. */
+/** Service icon + name (no breadcrumb). Mobile: a 34px icon and 24px name, 8px apart. */
 export function ServiceBrandHeader({
   brand,
   variant,
@@ -34,9 +33,8 @@ export function ServiceBrandHeader({
 }
 
 /**
- * Eyebrow + H1 used by every section below the hero in the Figma service
- * template: "SERVICES  <service>" in the Functional style, the service name in
- * the service colour, then a 64px light title.
+ * Eyebrow + H1 used by every section below the hero: "SERVICES  <service>" in the Functional
+ * style, the service name in the service colour, then a 64px light title.
  */
 export function ServiceSectionHeading({
   breadcrumb,

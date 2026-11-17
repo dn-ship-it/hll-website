@@ -18,7 +18,7 @@ export type CapabilityService = {
   subServices: string[];
 };
 
-// Figma All Capabilities (2562:5155) tile gradients, top to bottom.
+// Tile gradients, top to bottom.
 const GRADIENT: Record<string, string> = {
   "hll-application": "linear-gradient(180deg, #FF1F1F 0%, #72AAFF 100%)",
   "hll-trust": "linear-gradient(180deg, #0F935F 0%, #4DC49C 100%)",
@@ -29,7 +29,7 @@ const GRADIENT: Record<string, string> = {
   "hll-cloud": "linear-gradient(180deg, #57B9E1 0%, #AAEBE3 100%)",
 };
 
-/** A gradient tile with the service's white glyph, as in the Figma tiles. */
+/** A gradient tile with the service's white glyph. */
 function Tile({
   id,
   className = "",
@@ -57,27 +57,21 @@ function Tile({
   );
 }
 
-// The desktop wheel in the Figma frame, relative to its top (y 124): the
-// focused tile (134px) centred at y 353 with its right edge at x 772,
-// neighbours (80px) 122px from it and 95px from each other. Names sit 26px
-// into their tile (30px for the focused one).
+// Desktop wheel layout in stage units, relative to the frame top: focused tile
+// (134px) centred at y 353, neighbours (80px) 122 away; names sit 26px into their tile.
 const STAGE = { w: 1512, h: 705 };
 const CENTER_Y = 353;
 const TILE_RIGHT = 772;
 const TILE_MIN = 80;
 const TILE_MAX = 134;
-// The focused name's top (316) and its height in the frame; with one row of
-// tags under it the block sits about centred on the tile.
+// The focused name's top and height; with one row of tags the block sits centred on the tile.
 const FOCUS_TOP = 316;
 const NAME_H = CENTER_Y - FOCUS_TOP;
-/** How far (stage units) to raise the focused name, tags and open button so
-    a block `h` tall sits centred on the tile, whatever the rows of tags. */
+/** Raise for the focused name, tags and button so a block `h` tall sits centred on the tile. */
 const liftFor = (h: number) => h / 2 - NAME_H;
 
-// The phone wheel, in px: 64px tiles, the focused one 84px, from the 20px
-// gutter with names 14px right of the widest tile. The focused row's
-// sub-services and open button wrap under it, so the row below sits as far
-// off as they need (see `below`).
+// Phone wheel in px; the focused row's sub-services wrap under it, so the row below
+// sits as far off as they need (see `below`).
 const PHONE = {
   gutter: 20,
   tileMin: 64,
@@ -92,26 +86,21 @@ const SPACING: Record<Wheel, { above: number; below: number; pitch: number }> = 
   desktop: { above: 122, below: 122, pitch: 95 },
   phone: { above: 88, below: 88, pitch: 76 },
 };
-/** Phone: the row below the focus clears its sub-services block (12px under
-    the tile, 14px over the next) when there is one. */
+/** Phone: the row below the focus clears its sub-services block when there is one. */
 const phoneBelow = (block: number) =>
   block ? PHONE.tileMax / 2 + 12 + block + 14 + PHONE.tileMin / 2 : SPACING.phone.above;
-/** Desktop: the same for a block `h` stage units tall, centred on the tile
-    (see liftFor): a capability with many sub-services wraps to more rows
-    than the design's two (Hannan, 3 Nov: all of a page's sub-services). */
+/** Desktop: the same for a block `h` stage units tall; many sub-services wrap to more rows. */
 const desktopBelow = (h: number) => Math.max(SPACING.desktop.below, h / 2 + 14 + TILE_MIN / 2);
 
 /** Rows shown each side of the focused one; the next one out fades in. */
 const REACH = 3;
 const hidden = (d: number) => Math.abs(d) >= REACH + 1;
-/** Copies of the list on the wheel, so a service leaving one end is never
-    the same element arriving at the other. */
+/** Copies of the list, so a service leaving one end is never the element arriving at the other. */
 const COPIES = 2;
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 const wrap = (v: number, m: number) => ((v % m) + m) % m;
 const signedWrap = (v: number, m: number) => wrap(v + m / 2, m) - m / 2;
-/** Offset of a row `d` places from the focus: stage units on desktop, px on
-    phones. */
+/** Offset of a row `d` places from the focus: stage units on desktop, px on phones. */
 const offsetFor = (wheel: Wheel, d: number, below = SPACING[wheel].below) => {
   const { above, pitch } = SPACING[wheel];
   const a = Math.abs(d);
@@ -146,15 +135,8 @@ function OpenIcon({ className = "text-[var(--hll-dark-grey)]" }: { className?: s
 }
 
 /**
- * Figma "All Capabilities": the services as an endless wheel beside the
- * Capabilities title — the mouse wheel, a drag or swipe, or the arrow keys
- * turn it, and the service in focus grows with its sub-services beside it.
- * Phones get the same wheel, sized down, under the title.
- *
- * `scrollDriven` (Home, Hannan 2 Nov): mid-page, a wheel that takes the
- * mouse wheel and swipes would trap the page, so there the section pins
- * under the Nav Bar and the page's own scroll turns it, one service per
- * stretch of scrolling, like the Home wheel it replaced.
+ * The services as an endless wheel beside the Capabilities title; wheel, drag, swipe or
+ * arrow keys turn it. `scrollDriven` pins it mid-page so the page's own scroll turns it.
  */
 export function AllCapabilities({
   services,
@@ -175,16 +157,13 @@ export function AllCapabilities({
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const spinRef = useRef<HTMLDivElement>(null);
-  // Continuous wheel position (in rows) and where it is easing to.
   const pos = useRef(startIndex);
   const target = useRef(startIndex);
   const frame = useRef(0);
-  // Phone: the gap under the focus, easing to fit its sub-services block.
   const pillsRef = useRef<HTMLDivElement>(null);
   const below = useRef(phoneBelow(0));
   const belowTarget = useRef(phoneBelow(0));
-  // Desktop: the lift that centres the focused block on its tile, easing
-  // between services as their tags take one row or two.
+  // Desktop: the lift that centres the focused block on its tile.
   const tagsRef = useRef<HTMLDivElement>(null);
   const lift = useRef(0);
   const liftTarget = useRef(0);
@@ -215,10 +194,8 @@ export function AllCapabilities({
         row.style.visibility = hidden(d) ? "hidden" : "";
         row.setAttribute("aria-hidden", String(slot >= count || Math.abs(d) > REACH));
       });
-    // The focused service's details (tags, open button) travel with its
-    // name: gone by the halfway point where the focus changes (QA C-06,
-    // C-07) and fully in by 0.3 of a row from it. QA C-08: they used to wait
-    // for the wheel's long ease-out to finish (~0.5s), so they showed late.
+    // The focused service's details travel with its name: gone by the halfway point
+    // where the focus changes, fully in by 0.3 of a row from it.
     const offset = Math.round(pos.current) - pos.current;
     const root = rootRef.current;
     if (root) {
@@ -246,14 +223,12 @@ export function AllCapabilities({
     [render],
   );
 
-  // Scroll-driven: how far the page has scrolled through the pinned stretch.
   const scrollRange = () => {
     const track = trackRef.current;
     const pinned = rootRef.current;
     if (!track || !pinned) return null;
     return { track, range: track.offsetHeight - pinned.offsetHeight };
   };
-  // Scroll the page to where a service is in focus.
   const scrollToService = (index: number) => {
     const found = scrollRange();
     if (!found || found.range <= 0) return;
@@ -274,10 +249,7 @@ export function AllCapabilities({
     let settle = 0;
     const navH = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 0;
     let nav = navH();
-    // The wheel follows the scroll as it happens, as the mouse wheel turns
-    // it on /services; turning only in whole steps once the page passed
-    // half way felt laggy next to it (Hannan, 3 Nov). When the scrolling
-    // stops it eases to the nearest service, so it never rests between two.
+    // The wheel follows the scroll live, then eases to the nearest service when it stops.
     const update = () => {
       raf = 0;
       const found = scrollRange();
@@ -306,9 +278,7 @@ export function AllCapabilities({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollDriven, count, spin]);
 
-  // Bring a slot to the focus the short way round.
-  // QA C-09: a click on the capability already in focus (tile, name or
-  // tags) opens its page; on any other row it turns the wheel to it.
+  // Bring a slot to the focus the short way round; clicking the focused one opens its page.
   const router = useRouter();
   const goTo = (slot: number) => {
     const step = signedWrap(slot - target.current, slots);
@@ -333,10 +303,7 @@ export function AllCapabilities({
     [],
   );
 
-  // Fit the phone gap under the focus to its sub-services block.
   // The first fit lands before paint, so the wheel doesn't shift on load.
-  // Desktop: centre the focused name and tags on the tile (in stage units, so
-  // it holds as the stage scales; re-fitted when the tags rewrap).
   const focusId = services[active].id;
   const hasTags = services[active].subServices.length > 0;
   const fitted = useRef(false);
@@ -498,13 +465,8 @@ export function AllCapabilities({
       style: rowStyle(wheel, d, wheel === "phone" ? below.current : deskBelow.current),
     };
   };
-  // QA C-22 (Figma "QA designs - 24 Oct"): hovering the card in focus (tile,
-  // name, tags or arrow), 200ms ease-out and back on leave: the tile scales
-  // to 1.04 with a soft shadow (0 12 28, black 14%), the arrow button fills
-  // #1A1A1A with the arrow white and nudged 2px up-right, and the tag
-  // outlines darken from #949494 to #1A1A1A.
-  // One state for all four, with a short grace on leave so moving between
-  // them doesn't flicker. Desktop wheel only.
+  // Hover state shared by tile, name, tags and arrow, with a short grace on leave so
+  // moving between them doesn't flicker. Desktop wheel only.
   const [hovered, setHovered] = useState(false);
   const leaveTimer = useRef(0);
   const hoverProps = {
@@ -523,7 +485,6 @@ export function AllCapabilities({
   }, [focus.id]);
   useEffect(() => () => window.clearTimeout(leaveTimer.current), []);
 
-  // All of them, as on the capability's own page (Hannan, 3 Nov).
   const pills = (className: string) =>
     focus.subServices.map((sub) => (
       <span
@@ -540,8 +501,7 @@ export function AllCapabilities({
       ref={rootRef}
       className={scrollDriven ? "sticky top-[var(--nav-h)]" : undefined}
     >
-      {/* Phones: the title, the wheel under it — a swipe there turns it —
-          and a strip below that scrolls the page on to the footer. */}
+      {/* Phones: the title, the wheel under it, and a strip below that scrolls on to the footer. */}
       <section
         aria-label="Capabilities"
         data-no-text-scroll
@@ -589,8 +549,7 @@ export function AllCapabilities({
               >
                 <Tile id={service.tile ?? service.id} className="aspect-square w-full" />
               </button>
-              {/* QA C-24: the focused service's open button sits 10px after
-                  its name, or under it when the name leaves no room. */}
+              {/* The open button sits after the name, or under it when there is no room. */}
               <div
                 className="absolute flex flex-wrap items-center gap-x-[10px] gap-y-1"
                 style={{
@@ -627,8 +586,7 @@ export function AllCapabilities({
             </div>
           ))}
 
-          {/* The focused service: its sub-services, wrapped under its row
-              (its open button sits beside the name, QA C-24). */}
+          {/* The focused service's sub-services, wrapped under its row. */}
           <div
             key={focus.id}
             ref={pillsRef}
@@ -660,11 +618,9 @@ export function AllCapabilities({
             onKeyDown={onKeyDown}
             {...dragHandlers("desktop")}
             className="relative mx-auto select-none rounded-lg outline-none focus-visible:ring-1 focus-visible:ring-[var(--hll-mid-grey)]"
-            // Scales with the width like the other stages, but never taller
-            // than the screen below the Nav Bar, so the whole wheel shows.
+            // Scales with width but never taller than the screen below the Nav Bar.
             style={{
               aspectRatio: `${STAGE.w} / ${STAGE.h}`,
-              // The tags size with the stage (QA C-08).
               containerType: "inline-size",
               width: `min(100%, calc((calc(100*var(--svh)) - var(--nav-h) - 58px - 40px) * ${STAGE.w / STAGE.h}))`,
             }}
@@ -684,7 +640,6 @@ export function AllCapabilities({
               />
             </div>
 
-            {/* The wheel column: the mouse wheel and drags turn it here. */}
             <div
               ref={spinRef}
               aria-hidden
@@ -693,9 +648,8 @@ export function AllCapabilities({
             />
 
             {rows.map(({ slot, service, d, primary }) => (
-              // Full-stage wrapper: the page-intro fade transforms each
-              // child of this stage, which would otherwise make a zero-size
-              // wrapper the items' containing block.
+              // Full-stage wrapper: the intro fade transforms each child, which would otherwise
+              // make a zero-size wrapper the items' containing block.
               <div
                 key={slot}
                 {...rowProps("desktop", slot, d, primary)}
@@ -752,21 +706,15 @@ export function AllCapabilities({
               </div>
             ))}
 
-            {/* The focused service: its sub-services as outlined pills and the
-                open tile to its page. A full-stage wrapper like the rows':
-                the stage's intro fade would otherwise hold their opacity. */}
+            {/* Full-stage wrapper like the rows', so the stage's intro fade doesn't hold their opacity. */}
             <div className="pointer-events-none absolute inset-0 [&_a]:pointer-events-auto">
               <div
                 key={focus.id}
                 ref={tagsRef}
                 onClick={() => focus.href && router.push(focus.href)}
                 {...hoverProps}
-                // QA C-08: the tags wrap within their design width and scale
-                // with the stage (10.7px at 1512, never under 9px), rather
-                // than running past the open button and off narrow screens.
-                // Hannan's review: the whole focused service opens its page –
-                // the block starts at the name (316) and runs to the open
-                // button's right edge, the tags 49 units under its top.
+                // Tags wrap within their design width and scale with the stage (never under 9px);
+                // the whole focused block opens its page.
                 className={`absolute flex flex-wrap content-start items-center gap-[max(8px,0.66cqw)] ${focus.href ? "pointer-events-auto cursor-pointer" : ""}`}
                 style={{
                   left: pct(815, STAGE.w),
@@ -801,8 +749,7 @@ export function AllCapabilities({
   );
 
   if (!scrollDriven) return wheel;
-  // A screen for the pinned wheel, then 45% of a screen of scrolling per
-  // service after the first.
+  // A screen for the pinned wheel, then 45% of a screen of scrolling per service after the first.
   return (
     <div
       ref={trackRef}

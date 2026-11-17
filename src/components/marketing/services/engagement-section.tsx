@@ -24,8 +24,7 @@ export type EngagementCardLike = {
   href?: string;
 };
 
-/** Figma "Component 4": 490 × 308 media block with its tag, then title and
- *  body. Mobile: 386 × 242, the 34px tag pill, 24px title, 14px body. */
+/** 490 × 308 media block with its tag, then title and body. Mobile: 386 × 242, 34px tag pill, 24px title, 14px body. */
 /** Opens the engagement the card is about, when it has one. */
 function CardLink({ href, children }: { href?: string; children: React.ReactNode }) {
   return href ? (
@@ -41,7 +40,7 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
   return (
     <CardLink href={card.href}>
     <article className="group" data-trigger-card>
-      {/* Scroll-triggered, as Home's Our Impact (House of Katha, 17 Nov). */}
+      {/* Scroll-triggered, as Home's Our Impact. */}
       <div
         data-no-image-reveal
         data-trigger-media
@@ -79,9 +78,7 @@ export function EngagementCardView({ card }: { card: EngagementCardLike }) {
         </span>
       </div>
 
-      {/* The case study's card image already carries the client's name, so
-          a title that only repeats it is left out (House of Katha's review,
-          5 Nov: "repeating project name twice"). */}
+      {/* The card image already carries the client's name, so a title that only repeats it is left out. */}
       {card.image && card.title.trim().toLowerCase() === card.client?.trim().toLowerCase() ? null : (
         <h3 className="mt-[9px] text-[24px] font-normal leading-[1.16] text-[var(--hll-dark-grey)] lg:mt-2 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
           {card.title}
@@ -122,9 +119,8 @@ export function EngagementSection({
 
   return (
     <section className="py-[84px] lg:grid lg:grid-cols-[calc(33.66*var(--vw))_minmax(0,1fr)] lg:py-[clamp(5.3125rem,calc(10.19*var(--vw)),9.625rem)]">
-      {/* Figma Services mobile sets this section on an 8px gutter. QA C-16:
-          on desktop the heading and intro stay in view (sticky) beside the
-          cards until the last card, then scroll away with it. */}
+      {/* Mobile uses an 8px gutter. On desktop the heading and intro stay sticky beside the cards
+          until the last one, then scroll away with it. */}
       <div className="px-2 lg:row-span-2 lg:self-stretch lg:px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)]">
         <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:w-[calc(33.66*var(--vw)-clamp(1.25rem,calc(1.98*var(--vw)),1.875rem))]">
           {heading}
@@ -137,8 +133,7 @@ export function EngagementSection({
         {heading}
       </div>
 
-      {/* Figma: two columns starting a third of the way across, running to
-          10px from the right edge of the frame. */}
+      {/* Two columns starting a third of the way across, running to 10px from the right edge. */}
       <div className="mt-8 grid grid-cols-1 gap-x-[14px] gap-y-8 px-2 lg:mt-[clamp(2.625rem,calc(5.09*var(--vw)),4.8125rem)] lg:grid-cols-2 lg:gap-y-[clamp(1.625rem,calc(3.17*var(--vw)),3rem)] lg:px-0 lg:pr-[10px]">
         {data.cards.map((card) => (
           <EngagementCardView key={card.id} card={card} />

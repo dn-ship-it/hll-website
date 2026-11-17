@@ -21,12 +21,10 @@ import {
   type NewsData,
 } from "./nav-menu";
 
-/** QA N-03: every menu size here is 2px over Figma, which read too small. */
 const NAV_FONT = {
   fontFamily: '"Aeonik TRIAL", var(--font-geist-sans), sans-serif',
 };
 
-/** Figma Menu Mobile › Industries: the list scrolls inside a 178px window. */
 const TRACK = 178;
 const THUMB = 35;
 
@@ -76,7 +74,6 @@ function IndustriesList({ industries }: { industries: IndustryMenuGroup[] }) {
 
   return (
     <div className="relative pl-[38px]">
-      {/* Figma's 3px scroll track and thumb, 20px in from the button. */}
       <span
         aria-hidden
         className="absolute left-5 top-0 w-[3px] rounded-[4px] bg-[var(--hll-light-grey)]"
@@ -162,10 +159,8 @@ const SUBMENUS: Partial<
   about: AboutList,
 };
 
-// Figma Menu Mobile: services' list starts 1px under its button and ends 32px
-// above the next; industries' window sits 20px under and 31px above.
-// Each opened list ends with a way to its own page, which the button itself
-// no longer goes to on mobile (it opens the list instead).
+// Services' list starts 1px under its button and ends 32px above the next; industries' window sits 20px under and 31px above.
+// Each opened list ends with a link to its own page, since on mobile the button opens the list instead.
 const VIEW_ALL: Partial<Record<NavVariant, { label: string; inset: string }>> = {
   services: { label: "View all capabilities", inset: "ml-[17px]" },
   industries: { label: "View all industries", inset: "ml-[38px]" },
@@ -180,12 +175,8 @@ const SUBMENU_SPACING: Partial<Record<NavVariant, string>> = {
 };
 
 /**
- * Figma Nav Mobile / Menu Mobile (1341:21563, 1341:20976 and its Services and
- * Industries states). Closed, the bar is the logo and a Mid Grey dot; the dot
- * opens a full-screen white menu: the five nav buttons 30px apart. Services
- * and Industries open their list in place, Engagement its "In the News",
- * About its About / Team / Careers, and
- * the buttons below close up to 3px apart.
+ * Mobile nav: the logo and a Mid Grey dot that opens a full-screen white menu. Services and Industries open their
+ * list in place, Engagement its "In the News", About its About / Team / Careers.
  */
 export function MobileMenu({
   siteName,
@@ -261,7 +252,6 @@ export function MobileMenu({
           aria-label="Close menu"
           className="absolute right-[19px] top-[26.5px] grid size-7 place-items-center"
         >
-          {/* Figma: two 18px hairlines crossed at 45°. */}
           <span aria-hidden className="relative size-[13px]">
             <span className="absolute left-1/2 top-1/2 h-px w-[18.4px] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-black" />
             <span className="absolute left-1/2 top-1/2 h-px w-[18.4px] -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-black" />
@@ -372,7 +362,6 @@ export function MobileMenu({
 
   return (
     <>
-      {/* Figma Nav Mobile: the 28px Mid Grey dot opens the menu. */}
       <button
         type="button"
         onClick={() => setOpen(true)}

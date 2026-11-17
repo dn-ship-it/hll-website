@@ -13,7 +13,7 @@ export function withAlpha(hex: string, alpha: number) {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
-/** A media slot at the image's own ratio: photo, video or the Figma grey. */
+/** A media slot at the image's own ratio: photo, video or a grey placeholder. */
 export function EngagementMediaBox({
   media,
   fallbackRatio,
@@ -55,11 +55,7 @@ export function EngagementMediaBox({
   );
 }
 
-/**
- * Figma "Component 1": "each case study card has client name, tagging of
- * services provided, and an image". Tags sit 8px in from the bottom left, the
- * arrow tile shows on hover, and the year runs opposite the name.
- */
+/** Card with the client name, service tags 8px in from the bottom left, an arrow tile on hover, and the year opposite the name. */
 export function EngagementCard({
   engagement,
   ratio,
@@ -68,11 +64,9 @@ export function EngagementCard({
   media = "auto",
 }: {
   engagement: Engagement;
-  /** A card shape from the handoff (e.g. "card-square_490x490") in place of
-   *  the engagement's own list shape (the Engagements grid). */
+  /** A card shape (e.g. "card-square_490x490") in place of the engagement's own list shape. */
   slot?: string;
-  /** "video": its card video; "still": the video's still only; "auto": as
-   *  the handoff gives it. */
+  /** "video": its card video; "still": the video's still only; "auto": as given. */
   media?: "auto" | "video" | "still";
   /** Fixed card ratio (the related row's 490 × 308) instead of the image's. */
   ratio?: number;
@@ -81,8 +75,7 @@ export function EngagementCard({
   const card = ratio
     ? { ...engagement.card, width: undefined, height: undefined }
     : engagement.card;
-  // The handoff's live artwork when imported: the related row's 490 × 308,
-  // else the list card's own shape.
+  // The live artwork when imported: the related row's 490 × 308, else the list card's own shape.
   const artSlot = engagement.art
     ? slot ??
       (ratio
@@ -110,8 +103,7 @@ export function EngagementCard({
     );
   return (
     <Link href={`/engagement/${engagement.slug}`} className="group block" data-trigger-card>
-      {/* The reveal takes the media box whole, tags and all, and plays as the
-          card enters the screen (scroll-triggered, as Home's Our Impact). */}
+      {/* The reveal takes the media box whole, tags and all, and plays as the card enters the screen. */}
       <div data-no-image-reveal data-trigger-media>
       <Media>
         <span

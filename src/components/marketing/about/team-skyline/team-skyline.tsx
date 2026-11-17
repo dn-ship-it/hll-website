@@ -1,11 +1,9 @@
 "use client";
 
-// Hannan's Careers image block (28 Oct, "Career page bottom image.zip"): the
-// team in pills with the HLL ripple moving behind them. The files beside this
-// one are the handoff's, unchanged (see README.md); this is its React wrapper.
+// The team in pills with the HLL ripple moving behind them; the files beside this one are unchanged (see README.md).
 import { useEffect, useRef } from "react";
 
-// @ts-expect-error — the handoff's vanilla ES module has no types.
+// @ts-expect-error -- plain ES module without types.
 import { mountTeamSkyline } from "./team-skyline.js";
 import { TEAM } from "./team.js";
 import "./team-skyline.css";

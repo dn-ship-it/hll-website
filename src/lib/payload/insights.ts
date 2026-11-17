@@ -143,7 +143,7 @@ export async function loadInsights(): Promise<Insight[]> {
   }
 }
 
-/** "12 November 2026", as the Figma date line (set in capitals there). */
+/** "12 November 2026", set in capitals in the design. */
 export function formatInsightDate(date: string | null) {
   if (!date) return "";
   return new Date(date).toLocaleDateString("en-GB", {

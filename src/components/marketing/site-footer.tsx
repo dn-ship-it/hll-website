@@ -8,11 +8,8 @@ import { FooterButton, FooterCta, FooterShaderStrip } from "./footer-cta";
 import { HllMark } from "./hll-mark";
 
 /*
- * Figma "Footer" component (1341:23164, 1512 × 980), used on every page:
- * a 237px "Let's start a conversation" band, then the body on Background with
- * the large logo, four text columns, and a shader strip behind the copyright.
- * All list type is the Button style: Aeonik 12px, uppercase, 0.25em tracking,
- * on a 28px line; group headings are Mid Grey, items Dark Grey.
+ * Site footer, used on every page: the "Let's start a conversation" band, then the logo, four text columns and a
+ * shader strip behind the copyright. List type is 12px uppercase, 0.25em tracking, on a 28px line.
  */
 
 const FOOTER_NAV: SiteNavItem[] = [
@@ -41,14 +38,12 @@ function serviceHref(label: string) {
   return variant ? `/services/${SERVICE_SLUGS[variant]}` : null;
 }
 
-/** The given list plus any capability it leaves out (the CMS list had no Cloud). */
 const withEveryService = (labels: string[]) => [
   ...labels,
   ...Object.values(SERVICE_NAMES).filter((name) => !labels.includes(name)),
 ];
 
-/** Hannan's tracker (FTR-001, 28 Oct): every capability and industry with a
- *  page links to it; a name without one stays plain text. */
+/** Every capability and industry with a page links to it; a name without one stays plain text. */
 function FooterItem({ label, href }: { label: string; href: string | null }) {
   return href ? (
     <Link href={href} className="hover:text-black">
@@ -59,18 +54,16 @@ function FooterItem({ label, href }: { label: string; href: string | null }) {
   );
 }
 
-// Figma lists industries as groups over two columns, three groups in each;
-// the second column has no "industry" heading, so it starts one line lower.
+// Industries are groups over two columns, three groups in each; the second column
+// has no "industry" heading, so it starts one line lower.
 const industryColumns = (groups: IndustryMenuGroup[]) => [groups.slice(0, 3), groups.slice(3)];
 
-// Figma sets every list line on one line (e.g. "Government & Public
-// Institutions" fills its 305px column exactly), so lines never wrap on desktop.
+// Every list line stays on one line (e.g. "Government & Public Institutions"
+// fills its 305px column exactly), so lines never wrap on desktop.
 const LIST =
   "text-[12px] uppercase leading-[28px] tracking-[0.25em] whitespace-nowrap";
 
-// Footer Mobile: 10px, 0.25em tracking, 20px lines; a name that wraps closes
-// up to 14px lines (Figma "Public Sector – / External Affairs", now
-// "Public Sector // up to 14px lines (Figma "Public Sector – / External Affairs"). / Government Services").
+// Mobile: 10px, 0.25em tracking, 20px lines; a name that wraps closes up to 14px lines.
 const MOBILE_LIST = "text-[10px] uppercase tracking-[0.25em]";
 const MOBILE_ITEM = "py-[3px] leading-[14px]";
 
@@ -81,7 +74,6 @@ type SiteFooterProps = {
   ctaHeadline?: string;
   ctaLabel?: string;
   ctaHref?: string;
-  /** This page's CTA background video (Figma: "each page will play a different video"). */
   ctaVideo?: string;
   /** The CTA band's still, behind the video. */
   ctaStill?: string;
@@ -95,8 +87,7 @@ export function SiteFooter({
   ctaHeadline = "Let’s start a conversation",
   ctaLabel = "Write to us",
   ctaHref = "/contact",
-  // Anoushka's crop of the Intelligence & Imagination loop (5 Nov), cut to
-  // the band's shape; its first frame is the still, so nothing jumps.
+  // Cut to the band's shape; its first frame is the still, so nothing jumps.
   ctaVideo = "/video/cta-intelligence.mp4",
   ctaStill = "/video/cta-intelligence-poster.jpg",
   industries = DEFAULT_INDUSTRY_MENU,
@@ -128,9 +119,7 @@ export function SiteFooter({
       />
 
       <div className="relative hidden min-h-[743px] overflow-hidden px-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] pt-[52px] lg:block">
-        {/* Shader strip behind the copyright row. Its still: Figma crops the
-            image to its middle band (x 22.9–100%, y 47.3–69.1%) and
-            stretches it. */}
+        {/* Shader strip behind the copyright row; its still is cropped to the image's middle band (x 22.9–100%, y 47.3–69.1%). */}
         <FooterShaderStrip
           className="inset-x-0 top-[514px] h-[241px]"
           stillStyle={{
@@ -157,9 +146,7 @@ export function SiteFooter({
           </span>
         </Link>
 
-        {/* House of Katha's footer (5 Nov): columns at x 512, 662, 884 and
-            1162 of the 1512 frame; the page links and the column headings in
-            the medium weight and dark. */}
+        
         <div className="relative mt-[22px] grid grid-cols-[482fr_150fr_222fr_278fr_320fr]">
           <div />
 
@@ -224,11 +211,7 @@ export function SiteFooter({
   );
 }
 
-/**
- * Figma Footer Mobile (1341:12761, 402 × 1103) under the CTA band: logo at
- * (20, 35), then two columns — nav and services at x 20, industries at x 190
- * — and the copyright row 26px from the bottom over the blurred strip.
- */
+/** Mobile footer under the CTA band: logo, then nav/services and industries columns, and the copyright row over the blurred strip. */
 function MobileFooterBody({
   siteName,
   services,
@@ -244,8 +227,7 @@ function MobileFooterBody({
 }) {
   return (
     <div className="relative overflow-hidden px-5 pb-[26px] pt-[35px] lg:hidden">
-      {/* Shader strip behind the copyright row. Its still: the image fill,
-          cropped to its centre band and under a 34px Figma layer blur. */}
+      {/* Shader strip behind the copyright row; its still is cropped to its centre band and blurred. */}
       <FooterShaderStrip
         className="inset-x-0 bottom-3 h-[241px]"
         stillClassName="blur-[17px]"
@@ -268,9 +250,8 @@ function MobileFooterBody({
       </Link>
 
       <div
-        // Figma's 150px + 192px columns at 402px, sharing out the width on
-        // narrower phones so the Industry column never runs off the edge
-        // (HoK's mobile review, 5 Nov); a long name breaks as a last resort.
+        // Columns share out the width on narrower phones so the Industry column
+        // never runs off the edge; a long name breaks as a last resort.
         className={`relative mt-[34px] grid grid-cols-[minmax(0,150fr)_minmax(0,192fr)] gap-x-5 [overflow-wrap:anywhere] ${MOBILE_LIST} text-[var(--hll-dark-grey)]`}
       >
         <div className="pt-1">

@@ -18,7 +18,6 @@ const NAV_FONT = {
   fontFamily: '"Aeonik TRIAL", var(--font-geist-sans), sans-serif',
 };
 
-// Figma Nav Bar order and the palette each button takes on hover / click.
 export const VARIANT_BY_HREF: Record<string, NavVariant> = {
   "/services": "services",
   "/industries": "industries",
@@ -27,8 +26,7 @@ export const VARIANT_BY_HREF: Record<string, NavVariant> = {
   "/contact": "contact",
 };
 
-// Figma Services Menu order (Kinetic, Momentum, Governance & Trust,
-// Foundation, Motion, Foundation → today's names).
+
 export const MENU_SERVICES: ServiceVariant[] = [
   "hll-application",
   "hll-people",
@@ -39,11 +37,8 @@ export const MENU_SERVICES: ServiceVariant[] = [
   "hll-ontology",
 ];
 
-// Figma: each menu's panel keeps its own place under the Nav Bar (right
-// edges at x 1247 / 1244 of 1512, News at 1503); About's sits under its button.
-// QA N-04: Services and Industries carry "In the News" beside them (that 250px
-// panel + 6px gap is why they ended 256px short of News's edge), so their row
-// is placed by its right edge, News, like Engagement's.
+// Each menu's panel keeps its own place under the Nav Bar (right edges at x 1247 / 1244 of 1512, News at 1503); About's
+// sits under its button. Services and Industries carry the 250px News panel + 6px gap, so they're placed by News's edge.
 const PANEL_RIGHT: Record<NavVariant, number> = {
   services: 9,
   industries: 9,
@@ -52,7 +47,6 @@ const PANEL_RIGHT: Record<NavVariant, number> = {
   contact: 9,
 };
 
-// Figma's panels: Light Grey at 80–90% over a background blur, 4px corners.
 function Panel({
   className = "",
   opacity = 0.8,
@@ -75,7 +69,6 @@ function Panel({
 const ITEM =
   "text-[12px] text-[var(--hll-dark-grey)] underline-offset-[3px] hover:underline";
 
-/** Figma "In the News": image slot, then three headlines split by hairlines. */
 export function NewsPanel({
   news,
   opacity,
@@ -89,8 +82,7 @@ export function NewsPanel({
 }) {
   return (
     <Panel className={`h-[242px] pt-[19px] ${className}`} opacity={opacity}>
-      {/* House of Katha (13 Nov): the Insights page is reached from here for
-          now, not from its own menu item. */}
+      {/* The Insights page is reached from here, not from its own menu item. */}
       <Link
         href="/insights"
         className="hll-label block text-[12px] uppercase leading-[1.2] text-black underline-offset-[3px] hover:underline"
@@ -168,7 +160,6 @@ function ServicesPanel() {
   );
 }
 
-// Figma Industries Menu: two rows of three groups.
 function IndustriesPanel({ industries }: { industries: IndustryMenuGroup[] }) {
   return (
     <Panel
@@ -231,17 +222,8 @@ function AboutPanel() {
 }
 
 /**
- * Figma Menu / Nav: "palettes for each menu button that changes on hover and
- * click gives the shader effect" — and from the glossary, "the shader also
- * covers the screen upon interacting with or clicking on any options in the
- * navbar". Hovering a button lights it with its palette; clicking opens its
- * menu over the shader in that palette. Clicking the open button again goes
- * to its page; Industries goes to the Home page's knowledge graph (NAV_TARGET).
- */
-/**
- * Nav items whose button goes somewhere other than their own href. Industries
- * has no landing page of its own: it takes you to the industries knowledge
- * graph on the Home page (QA N-06), and hovering still opens its menu.
+ * Nav items whose button goes elsewhere than their href: Industries has no landing page, so it goes to the Home
+ * knowledge graph (hover still opens its menu).
  */
 export const NAV_TARGET: Record<string, string> = {
   "/industries": "/#industries",
@@ -257,10 +239,8 @@ export function NavMenu({
   industries: IndustryMenuGroup[];
 }) {
   const [open, setOpen] = useState<NavVariant | null>(null);
-  // QA N-04, Figma Menu / Nav: "the shader also covers the screen upon
-  // interacting with … any options in the navbar", in the open button's
-  // palette (HLL-UI-Demo's MenuTriggerOverlay). Built on the first open and
-  // then kept, paused while closed, so reopening doesn't rebuild it.
+  // The shader covers the screen in the open button's palette. Built on first open,
+  // then kept paused so reopening doesn't rebuild it.
   const [shaderVariant, setShaderVariant] = useState<NavVariant | null>(null);
   useEffect(() => {
     if (open) setShaderVariant(open);
@@ -296,8 +276,7 @@ export function NavMenu({
       {open === "services" ? <ServicesPanel /> : null}
       {open === "industries" ? <IndustriesPanel industries={industries} /> : null}
       {open === "about" ? <AboutPanel /> : null}
-      {/* "In the News" beside Services and Industries, and alone under
-          Engagement (QA N-04). */}
+      {/* "In the News" beside Services and Industries, and alone under Engagement. */}
       {open === "services" || open === "industries" || open === "engagement" ? (
         <NewsPanel news={news} opacity={0.8} />
       ) : null}
@@ -310,8 +289,7 @@ export function NavMenu({
         {nav.map((item) => {
           const variant = VARIANT_BY_HREF[item.href];
           const active = open === variant;
-          // HLL-UI-Demo's HLLButton (Satyam, 29 Oct): the palette's shader
-          // blooms on hover and follows the cursor, as in the demo's nav.
+          // The palette's shader blooms on hover and follows the cursor.
           if (variant) {
             return (
               <HLLButton
@@ -336,7 +314,6 @@ export function NavMenu({
               </HLLButton>
             );
           }
-          // A link without a palette: just its label.
           const triggerProps = {
             "aria-expanded": variant ? active : undefined,
             onPointerEnter: () => variant && show(variant),
@@ -359,8 +336,7 @@ export function NavMenu({
               </span>
             </>
           );
-          // QA N-01: there's no general Industries page, so Industries only
-          // opens its menu and the visitor picks an industry from it.
+          // Industries has no page of its own, so it only opens its menu.
           return (
             <Link key={item.href} href={NAV_TARGET[item.href] ?? item.href} {...triggerProps}>
               {content}
@@ -369,9 +345,7 @@ export function NavMenu({
         })}
       </nav>
 
-      {/* Under the menu: the shader over the page, below the Nav Bar, in
-          House of Katha's tuned look (5 Nov), with their subtle blur of the
-          page just beneath it. */}
+      {/* Under the menu: the shader over the page, below the Nav Bar, with a subtle blur of the page beneath. */}
       {shaderVariant ? (
         <div
           aria-hidden
@@ -396,7 +370,6 @@ export function NavMenu({
         />
       ) : null}
 
-      {/* Hover: the menu, in the space under the Nav Bar. */}
       {open ? (
         <div
           onPointerEnter={() => show(open)}
