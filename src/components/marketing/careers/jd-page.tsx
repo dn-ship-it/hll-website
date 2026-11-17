@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { HomeHeading } from "@/components/marketing/home/primitives";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import { placeholderJdSections } from "@/data/careers-page";
@@ -25,6 +26,9 @@ export async function JdPage({ slug }: { slug: string }) {
 
   return (
     <MarketingShell>
+      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
+          reveal animation should go onto all pages"). */}
+      <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-home hll-service-page">
         {/* Figma JD mobile: title at y 385, tags 12px under it, the summary
             24px below, Apply 84px under that (see JdApply). */}
@@ -92,6 +96,7 @@ export async function JdPage({ slug }: { slug: string }) {
           </div>
         </section>
       </div>
+      </RevealRoot>
     </MarketingShell>
   );
 }

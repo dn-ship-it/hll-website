@@ -40,9 +40,11 @@ function CardLink({ href, children }: { href?: string; children: React.ReactNode
 export function EngagementCardView({ card }: { card: EngagementCardLike }) {
   return (
     <CardLink href={card.href}>
-    <article className="group">
+    <article className="group" data-trigger-card>
+      {/* Scroll-triggered, as Home's Our Impact (House of Katha, 17 Nov). */}
       <div
-        data-reveal-media
+        data-no-image-reveal
+        data-trigger-media
         className={`relative grid aspect-[386/242] place-items-center overflow-hidden rounded-[6px] lg:aspect-[490/308] lg:rounded-lg ${MEDIA_STYLES[card.variant]}`}
       >
         {card.image ? (

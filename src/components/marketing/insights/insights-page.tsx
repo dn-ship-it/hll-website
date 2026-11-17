@@ -56,7 +56,10 @@ export async function InsightsPage() {
               href={insightHref(featured)}
               className={`group mt-12 block lg:mt-[clamp(3rem,calc(4.96*var(--vw)),4.7rem)] ${SERVICE_GUTTER}`}
             >
-              <div data-reveal-media>
+              {/* The featured article leads the page like a hero: shown whole
+                  on arrival (as a triggered card it waited for 30% of its
+                  tall image, so the top of the page sat empty). */}
+              <div data-no-image-reveal>
                 <EngagementMediaBox
                   media={featured.cover}
                   fallbackRatio={1452 / 982}
@@ -98,11 +101,21 @@ export async function InsightsPage() {
               className="relative mt-[100px] overflow-hidden bg-[#1FA7D8] pb-[60px] pt-[60px] lg:mt-[clamp(5rem,calc(9.85*var(--vw)),9.3rem)] lg:pb-[clamp(5rem,calc(15.9*var(--vw)),15rem)] lg:pt-[clamp(4rem,calc(7.28*var(--vw)),6.9rem)]"
               style={{ background: "#1FA7D8 url(/assets/industries/lab-bg.webp) center / cover" }}
             >
-              <h2
-                className={`text-[30px] font-light leading-[1.16] text-white lg:text-[clamp(30px,calc(4.23*var(--vw)),4rem)] ${SERVICE_GUTTER}`}
-              >
-                Latest
-              </h2>
+              {/* The section headings' gradient reveal, as everywhere else,
+                  in white on the band. */}
+              <div className={SERVICE_GUTTER}>
+                <GradientRevealTextSlow
+                  as="h2"
+                  text="Latest"
+                  variant="engagement"
+                  ink="#ffffff"
+                  playOnView
+                  className="block font-light"
+                  fontSize="clamp(30px, calc(4.23*var(--vw)), 4rem)"
+                  letterSpacing="0"
+                  lineHeight="1.16"
+                />
+              </div>
               <div className="mt-8 lg:mt-[clamp(3rem,calc(5.56*var(--vw)),5.25rem)]">
                 <InsightCarousel items={latest} onColour />
               </div>

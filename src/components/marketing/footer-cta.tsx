@@ -154,6 +154,8 @@ export function FooterButton({
 
 /** Figma Home footer strip: pink, a deeper pink and peach (sampled). */
 const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
+/** Sections whose bottom shader takes the Home colours instead of their own. */
+const HOME_COLOUR_VARIANTS = new Set<string>(["engagement", "services"]);
 
 
 /** Whether the live shader can run here: WebGL2 and motion allowed. */
@@ -315,8 +317,11 @@ export function ScreenShader() {
     // Home has no section palette of its own; the Figma Home footer runs
     // pink and peach rather than Contact's blues (QA G-07).
     // Engagement pages take the Home colours too (House of Katha, 6 Nov:
-    // "reuse the Home page's bottom shader colors on the Engagement page").
-    colors: variant && variant !== "engagement" ? undefined : HOME_SHADER_COLORS,
+    // "reuse the Home page's bottom shader colors on the Engagement page"),
+    // and so does the Capabilities page, whose orange-reds tinted the
+    // content under the blend (House of Katha, 17 Nov: "the same issue …
+    // reuse the same bottom shader implementation").
+    colors: variant && !HOME_COLOUR_VARIANTS.has(variant) ? undefined : HOME_SHADER_COLORS,
     passthrough: true,
     scrollResponse: SCROLL_RESPONSE,
     // A fresh canvas if the browser ever drops one's WebGL context.

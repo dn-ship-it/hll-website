@@ -314,7 +314,9 @@ export function EngagementSidebar({
   );
 
   return (
-    <aside className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pt-2 [--eng-name-size:24px] lg:sticky lg:top-[calc(var(--nav-h)+12px)] lg:pl-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pr-[11px] lg:pt-0 lg:[--eng-name-size:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
+    // Logo and icons stay as they are: the scroll-mapped image reveal would
+    // start them part-clipped at the top of the page.
+    <aside data-no-image-reveal className="relative px-[clamp(1.25rem,calc(2.1*var(--vw)),2rem)] pt-2 [--eng-name-size:24px] lg:sticky lg:top-[calc(var(--nav-h)+12px)] lg:pl-[clamp(1.25rem,calc(1.98*var(--vw)),1.875rem)] lg:pr-[11px] lg:pt-0 lg:[--eng-name-size:clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
       <div className="lg:hidden">{name}</div>
       {mobileHero ? <div className="-mx-3 mt-8 lg:hidden">{mobileHero}</div> : null}
 

@@ -1,4 +1,5 @@
 import type { IndustryPageData } from "@/types/industry";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { HomeHeading } from "@/components/marketing/home/primitives";
 import {
@@ -42,6 +43,9 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
 
   return (
     <MarketingShell markTint={accent}>
+      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
+          reveal animation should go onto all pages"). */}
+      <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-service-page">
         <IndustryHero
           data={data.hero}
@@ -73,6 +77,7 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
         <IndustryLabSection data={data.lab} />
         <RelatedServicesSection title="Related Industries" items={data.relatedIndustries} />
       </div>
+      </RevealRoot>
     </MarketingShell>
   );
 }

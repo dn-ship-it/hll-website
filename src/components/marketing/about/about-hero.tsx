@@ -37,7 +37,8 @@ function Band({
   className: string;
 }) {
   return (
-    <div className={`relative ${className}`} style={{ aspectRatio: `${band.w} / ${band.h}` }}>
+    // A hero: shown whole on arrival, not through the scroll-mapped image reveal.
+    <div data-no-image-reveal className={`relative ${className}`} style={{ aspectRatio: `${band.w} / ${band.h}` }}>
       {tiles.map((tile, i) => {
         const image = images[i];
         return (

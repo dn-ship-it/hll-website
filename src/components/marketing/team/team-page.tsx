@@ -2,6 +2,7 @@ import { aboutPage } from "@/data/about";
 import { teamPageContent, type TeamMember } from "@/data/team-page";
 import { AboutCareersSection } from "@/components/marketing/about/about-sections";
 import { HomeHeading } from "@/components/marketing/home/primitives";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { PageHero } from "@/components/marketing/page-hero";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
@@ -40,24 +41,29 @@ async function loadTeamPage() {
 /** Figma person card: 490px square photo, 36px name, Functional role, body. */
 function PersonCard({ person }: { person: TeamMember }) {
   return (
-    <article>
+    // House of Katha's Team card reveal: photo, name and role play together
+    // as the card comes in.
+    <article data-reveal-card>
       <div
-        className="aspect-square w-full rounded-lg bg-[#D9D9D9]"
+        className="reveal-card-photo aspect-square w-full rounded-lg bg-[#D9D9D9]"
+        data-no-image-reveal
         style={
           person.photoUrl
             ? { background: `#D9D9D9 url(${person.photoUrl}) center / cover` }
             : undefined
         }
       />
-      <h3 className="mt-2 text-[24px] font-normal leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
+      <div data-no-text-scroll>
+      <h3 className="reveal-card-text mt-2 text-[24px] font-normal leading-[1.16] text-black lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
         {person.name}
       </h3>
       <p
-        className="hll-label mt-[2px] text-[10px] uppercase leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]"
+        className="reveal-card-text hll-label mt-[2px] text-[10px] uppercase leading-[1.2] text-[var(--hll-dark-grey)] lg:text-[12px]"
         style={{ fontFamily: "var(--hll-font-functional)" }}
       >
         {person.role}
       </p>
+      </div>
       {person.bio ? (
         <p className="mt-3 max-w-[470px] text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
           {person.bio}
@@ -78,6 +84,11 @@ export async function TeamPage() {
 
   return (
     <MarketingShell>
+      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
+          reveal animation should go onto all pages"). */}
+      <RevealRoot skip=".hll-display, .hll-label"
+        card={{ card: "[data-reveal-card]", text: ".reveal-card-text", image: ".reveal-card-photo" }}
+      >
       <div className="hll-home hll-service-page">
         <PageHero
           title={content.hero.headline}
@@ -120,6 +131,7 @@ export async function TeamPage() {
         <div data-line className="mx-2 h-px bg-[var(--hll-mid-grey)] lg:mx-0 lg:w-[98.6%]" />
         <AboutCareersSection data={careers} className="pt-[84px]" />
       </div>
+      </RevealRoot>
     </MarketingShell>
   );
 }

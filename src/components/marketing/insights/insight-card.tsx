@@ -48,8 +48,9 @@ export function InsightCard({
 }) {
   const ink = onColour ? "text-white" : "text-[var(--hll-dark-grey)]";
   return (
-    <Link href={insightHref(insight)} className="group block">
-      <div data-reveal-media>
+    <Link href={insightHref(insight)} className="group block" data-trigger-card>
+      {/* Scroll-triggered, as Home's Our Impact (House of Katha, 17 Nov). */}
+      <div data-no-image-reveal data-trigger-media>
         <EngagementMediaBox media={insight.cover} fallbackRatio={514 / 384} className="!aspect-[514/384]">
           <span
             aria-hidden

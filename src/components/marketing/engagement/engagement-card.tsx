@@ -109,9 +109,10 @@ export function EngagementCard({
       </EngagementMediaBox>
     );
   return (
-    <Link href={`/engagement/${engagement.slug}`} className="group block">
-      {/* The scroll reveal takes the media box whole, tags and all. */}
-      <div data-reveal-media>
+    <Link href={`/engagement/${engagement.slug}`} className="group block" data-trigger-card>
+      {/* The reveal takes the media box whole, tags and all, and plays as the
+          card enters the screen (scroll-triggered, as Home's Our Impact). */}
+      <div data-no-image-reveal data-trigger-media>
       <Media>
         <span
           aria-hidden

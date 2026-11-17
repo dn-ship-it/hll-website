@@ -28,7 +28,8 @@ export function AboutLeaderSection({ data }: { data: AboutPageData["leader"] }) 
         />
         <blockquote className="ml-[55px] flex max-w-[311px] flex-col justify-between gap-6 lg:ml-0 lg:max-w-none lg:gap-8">
           <p className="text-[24px] leading-[27.8px] text-[var(--hll-dark-grey)] lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] lg:leading-[1.16]">
-            &ldquo;{data.quote}&rdquo;
+            {/* One text node, so the word reveal can take it (Hannan, 17 Nov). */}
+            {`“${data.quote}”`}
           </p>
           <footer className="text-[14px] leading-[1.25] text-black lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
             <cite className="block not-italic">{data.name}</cite>

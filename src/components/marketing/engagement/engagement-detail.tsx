@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SectionTitle } from "@/components/marketing/home/primitives";
 import { CountUp } from "@/components/marketing/count-up";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
-import { ServiceReveal } from "@/components/marketing/services/service-reveal";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { serviceHref } from "@/components/hll/variants";
 import { getServicePageByVariant } from "@/data/services";
 import type {
@@ -543,13 +543,21 @@ export async function EngagementDetail({ slug }: { slug: string }) {
       return { variant, href: serviceHref(variant), tagline };
     }),
   );
-  const hero = <HeroArt engagement={engagement} heroBlock={heroBlock} tone={tone} />;
+  // The hero shows whole on arrival: it sits at the top, where the scroll-
+  // mapped image reveal would start it part-clipped (the logo cut off).
+  const hero = (
+    <div data-no-image-reveal>
+      <HeroArt engagement={engagement} heroBlock={heroBlock} tone={tone} />
+    </div>
+  );
 
   return (
     // The header mark takes the client colour, unless that's too light to
     // see on the white Nav Bar (pale brand colours from the handoff).
     <MarketingShell markTint={accent && luminance(accent) < 0.7 ? accent : undefined}>
-      <ServiceReveal>
+      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
+          reveal animation should go onto all pages"). */}
+      <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page">
           {/* House of Katha's revised design (6 Nov): the sticky sidebar and
               the hero side by side at the top, the page's sections under
@@ -577,7 +585,7 @@ export async function EngagementDetail({ slug }: { slug: string }) {
           </div>
           <RelatedBand items={relatedEngagements(engagement, all)} />
         </div>
-      </ServiceReveal>
+      </RevealRoot>
     </MarketingShell>
   );
 }

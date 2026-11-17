@@ -4,7 +4,7 @@ import { useRef, type ReactNode } from "react";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore -- plain JS module copied from HLL-UI-Demo
-import { useCardReveal, useImageReveal, useTextReveal } from "./hooks.js";
+import { useCardReveal, useImageReveal, useTextReveal, useTriggeredCards } from "./hooks.js";
 
 /**
  * House of Katha's reveal animations (HLL-UI-Demo, 5 Nov) on everything under
@@ -18,6 +18,15 @@ import { useCardReveal, useImageReveal, useTextReveal } from "./hooks.js";
  * Sticky and fixed elements are always left alone, and nothing animates with
  * reduced motion on.
  */
+/**
+ * Scroll-triggered card images, as Home's Our Impact tiles (House of Katha,
+ * 17 Nov: "The image animation should be scroll-triggered, not
+ * scroll-mapped … Please follow that implementation"): a card marked
+ * data-trigger-card plays its [data-trigger-media] in once as the card enters
+ * the screen, instead of the image following the scroll.
+ */
+const TRIGGERED_CARDS = { card: "[data-trigger-card]", image: "[data-trigger-media]" };
+
 export function RevealRoot({
   children,
   skip,
@@ -39,6 +48,7 @@ export function RevealRoot({
   useTextReveal(ref, skip ? { skip } : {});
   useCardReveal(ref, card ?? {});
   useCardReveal(ref, card2 ?? {});
+  useTriggeredCards(ref, TRIGGERED_CARDS);
   return (
     <div ref={ref} className={className}>
       {children}

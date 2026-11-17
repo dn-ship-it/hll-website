@@ -209,3 +209,35 @@ export function useCardReveal(rootRef, { card, text, image, textOptions, imageOp
 }
 
 export { IMAGE_REVEAL_DEFAULTS };
+
+/**
+ * Site addition: scroll-triggered card images (House of Katha, 17 Nov), the
+ * Our Impact behaviour for any card grid. Each `card` plays its `image` in
+ * once as the card enters the screen. Cards added later (a filter, a "load
+ * more") are picked up too; one that arrives already on screen is just shown.
+ */
+export function useTriggeredCards(rootRef, { card, image }) {
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || prefersReducedMotion()) return undefined;
+    const stops = new Map();
+    const watch = (scope, initial) => {
+      const cards = scope.matches?.(card) ? [scope] : [];
+      cards.push(...scope.querySelectorAll(card));
+      cards.forEach((cardEl) => {
+        if (stops.has(cardEl)) return;
+        const img = cardEl.querySelector(image);
+        if (!img) return;
+        const r = cardEl.getBoundingClientRect();
+        if (!initial && r.bottom > 0 && r.top < window.innerHeight) { stops.set(cardEl, () => {}); return; }
+        stops.set(cardEl, bindImageTrigger(img, { blur: true, target: cardEl }));
+      });
+    };
+    watch(root, true);
+    const mutations = new MutationObserver((records) => {
+      for (const rec of records) rec.addedNodes.forEach((n) => { if (n instanceof HTMLElement) watch(n, false); });
+    });
+    mutations.observe(root, { childList: true, subtree: true });
+    return () => { mutations.disconnect(); stops.forEach((stop) => stop()); };
+  }, [rootRef, card, image]);
+}

@@ -1,3 +1,4 @@
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
 import { getMarketingContent, getServiceBySlug } from "@/lib/payload/queries";
@@ -6,7 +7,6 @@ import { getServicePageByVariant } from "@/data/services";
 import { cleanServiceName, serviceHref } from "@/components/hll/variants";
 
 import { AllCapabilities, type CapabilityService } from "./all-capabilities";
-import { ServiceReveal } from "./service-reveal";
 
 // The bundled AI and Ontology pages still carry the template's (Foundation's)
 // capability list; without the CMS their sub-services stay hidden.
@@ -96,11 +96,11 @@ export async function AllCapabilitiesPage() {
 
   return (
     <MarketingShell>
-      <ServiceReveal>
+      <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page">
           <AllCapabilities services={services} startIndex={startIndex} />
         </div>
-      </ServiceReveal>
+      </RevealRoot>
     </MarketingShell>
   );
 }

@@ -1,9 +1,9 @@
 import { GradientRevealTextSlow, HLLButton } from "@/components/hll";
 import { BUTTON_MOBILE } from "@/components/marketing/button-sizes";
 import { HomeHeading } from "@/components/marketing/home/primitives";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
-import { ServiceReveal } from "@/components/marketing/services/service-reveal";
 import { ReachMapEmbed } from "@/components/marketing/about/reach-map-embed";
 import { contactPageContent } from "@/data/contact-page";
 import { mapContactPage } from "@/lib/payload/marketing-mappers";
@@ -28,7 +28,7 @@ export async function ContactPage() {
 
   return (
     <MarketingShell>
-      <ServiceReveal>
+      <RevealRoot skip=".hll-display, .hll-label">
         <div className="hll-home hll-service-page">
           {/* Figma "Contact – v2 (accordion)" (QA CT-02): the title (slow
               anim) with the reply-time line under it, the form beside. */}
@@ -86,7 +86,7 @@ export async function ContactPage() {
             </div>
           </section>
         </div>
-      </ServiceReveal>
+      </RevealRoot>
     </MarketingShell>
   );
 }

@@ -104,7 +104,8 @@ function ColourBox({ block }: { block: Extract<InsightBlock, { kind: "box" }> })
       <div className="flex flex-1 items-center justify-center">
         {block.content === "quote" && block.quote ? (
           <blockquote className="max-w-[920px] text-center text-[24px] leading-[1.16] lg:text-[clamp(1.75rem,calc(3.17*var(--vw)),3rem)]">
-            &ldquo;{block.quote.trim().replace(/^[“"]|[”"]$/g, "")}&rdquo;
+            {/* One text node, so the word reveal can take it. */}
+            {`“${block.quote.trim().replace(/^[“"]|[”"]$/g, "")}”`}
           </blockquote>
         ) : block.content === "demo" ? (
           <div className="aspect-[16/9] w-full max-w-[1100px] overflow-hidden rounded-lg bg-white/90">

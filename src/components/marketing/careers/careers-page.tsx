@@ -6,6 +6,7 @@ import {
 import { aboutPage } from "@/data/about";
 import { HeroCollage } from "@/components/marketing/about/about-hero";
 import { HomeHeading } from "@/components/marketing/home/primitives";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { PageHero } from "@/components/marketing/page-hero";
 import { VoiceSection } from "@/components/marketing/services/expert-and-related";
@@ -68,6 +69,9 @@ export async function CareersPage() {
 
   return (
     <MarketingShell>
+      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
+          reveal animation should go onto all pages"). */}
+      <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-home hll-service-page">
         {/* "see open roles is sticky and takes you to the open roles
             section": pinned to the bottom of the screen until Open Roles. */}
@@ -108,6 +112,7 @@ export async function CareersPage() {
         />
         <CareersProcess data={content.process} />
       </div>
+      </RevealRoot>
     </MarketingShell>
   );
 }

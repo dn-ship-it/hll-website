@@ -1,4 +1,5 @@
 import { HowWeWork } from "@/components/marketing/home/sections-bottom";
+import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { aboutPage } from "@/data/about";
 import { homePageContent } from "@/data/home";
@@ -27,6 +28,9 @@ export async function AboutPage() {
 
   return (
     <MarketingShell>
+      {/* House of Katha's reveal animations (Hannan, 17 Nov: "text and image
+          reveal animation should go onto all pages"). */}
+      <RevealRoot skip=".hll-display, .hll-label">
       <div className="hll-home hll-service-page">
         <AboutHero data={data.hero} />
         <AboutValuesSection data={data.values} />
@@ -37,6 +41,7 @@ export async function AboutPage() {
         <AboutReachSection data={data.reach} />
         <AboutCareersSection data={data.careers} />
       </div>
+      </RevealRoot>
     </MarketingShell>
   );
 }

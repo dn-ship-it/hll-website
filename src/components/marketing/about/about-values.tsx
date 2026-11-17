@@ -104,6 +104,50 @@ function timelineAt(t: number, count: number) {
   return { toPanels, toStrips, toThumbs, from, to, k };
 }
 
+/**
+ * A value's motion piece (Hannan, 17 Nov: "as they are coming up they should
+ * start from zero and … land as one motion, and then when somebody scrolls the
+ * next one can grow into that"). Loaded and held on its first frame while its
+ * value grows, it plays from the start once the value has landed in the
+ * focus, and from the start again each time it lands.
+ */
+function LandingVideo({
+  src,
+  landed,
+  opacity,
+}: {
+  src: string;
+  landed: boolean;
+  opacity: number;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    if (landed) {
+      video.currentTime = 0;
+      void video.play().catch(() => undefined);
+    } else if (video.currentTime > 0 && opacity <= 0) {
+      video.pause();
+      video.currentTime = 0;
+    }
+    // Only a change of `landed` starts it; the fade out lets it play on.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [landed]);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      muted
+      loop
+      playsInline
+      preload="auto"
+      className="absolute inset-0 size-full object-cover"
+      style={{ opacity }}
+    />
+  );
+}
+
 export function AboutValuesSection({
   data,
 }: {
@@ -112,10 +156,18 @@ export function AboutValuesSection({
   const [phase, setPhase] = useState<Phase>("hidden");
   const [active, setActive] = useState(0);
   const [cycle, setCycle] = useState(0);
+  // Each motion piece's length once loaded, so a value holds until its piece
+  // has played through (it was cut at 7s; the pieces run 6–12s).
+  const [videoMs, setVideoMs] = useState<Record<string, number>>({});
   const mobileRef = useRef<HTMLDivElement>(null);
   const count = data.items.length;
   const next = (active + 1) % count;
   const item = data.items[active];
+  const holdMs = Math.max(HOLD_MS, videoMs[item.id] ?? 0);
+  const noteLength = (id: string, seconds: number) => {
+    const ms = Math.round(seconds * 1000);
+    if (Number.isFinite(ms) && ms > 0) setVideoMs((m) => (m[id] === ms ? m : { ...m, [id]: ms }));
+  };
 
   // Phones: run the storyboard the first time it is on screen. (Desktop's
   // stage is hidden there, and plays with the scroll instead.)
@@ -154,10 +206,10 @@ export function AboutValuesSection({
       return undefined;
     const timer = window.setTimeout(
       () => setActive((a) => (a + 1) % count),
-      HOLD_MS,
+      holdMs,
     );
     return () => window.clearTimeout(timer);
-  }, [phase, active, cycle, count]);
+  }, [phase, active, cycle, count, holdMs]);
 
   const settled = phase === "settled";
   const pick = (index: number) => {
@@ -188,6 +240,12 @@ export function AboutValuesSection({
               muted
               loop
               playsInline
+              // Read on load, or straight away when it loaded before the
+              // page's script ran (the first value's, rendered with the page).
+              ref={(el) => {
+                if (el && el.readyState >= 1) noteLength(item.id, el.duration);
+              }}
+              onLoadedMetadata={(e) => noteLength(item.id, e.currentTarget.duration)}
               className="absolute inset-0 size-full object-cover"
             />
           ) : null}
@@ -216,7 +274,7 @@ export function AboutValuesSection({
                     src={value.image}
                     alt=""
                     className="absolute inset-0 size-full object-cover [animation:values-saturate_linear_forwards]"
-                    style={{ animationDuration: `${HOLD_MS}ms` }}
+                    style={{ animationDuration: `${holdMs}ms` }}
                   />
                 ) : null}
               </button>
@@ -356,6 +414,8 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
             // The video fades with the focus, out as its value shrinks and
             // in as the next grows, rather than cutting at the halfway point.
             const videoOpacity = settled ? smooth((weight - 0.4) / 0.6) : 0;
+            // Landed: the value fills the focus and holds there.
+            const landed = settled && weight > 0.995;
             return (
               <button
                 key={value.id}
@@ -382,16 +442,10 @@ function ValuesScrollStage({ data }: { data: AboutPageData["values"] }) {
                   // into colour as it grows (the "loader").
                   style={{ filter: `grayscale(${toThumbs * (1 - weight)})` }}
                 />
-                {videoOpacity > 0 && value.video ? (
-                  <video
-                    src={value.video}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="absolute inset-0 size-full object-cover"
-                    style={{ opacity: videoOpacity }}
-                  />
+                {/* Mounted as its value starts to grow, so it's loaded and
+                    on its first frame by the time the value lands. */}
+                {settled && weight > 0 && value.video ? (
+                  <LandingVideo src={value.video} landed={landed} opacity={videoOpacity} />
                 ) : null}
               </button>
             );

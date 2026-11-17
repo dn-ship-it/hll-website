@@ -89,6 +89,8 @@ export function IndustryHero({
 
         <div
           ref={windowRef}
+          // A hero: shown whole on arrival, not through the image reveal.
+          data-no-image-reveal
           // QA I-10: never taller than the screen under the Nav Bar, so the
           // hero takes one scroll; the image crops to fit.
           className="relative z-10 mt-8 aspect-[362/244] w-full origin-center overflow-hidden rounded-[6px] will-change-transform lg:aspect-[1452/982] lg:max-h-[calc(100*var(--svh)-var(--nav-h)-2rem)] lg:rounded-lg"
