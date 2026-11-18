@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 
-import { BottomShader, HLLButton, makeBottomShaderLayout } from "@/components/hll";
+import { BottomShader, HLLButton, getVariantColors, makeBottomShaderLayout } from "@/components/hll";
 import {
   TUNED_SETTINGS,
   type ShaderSettings,
@@ -133,6 +133,29 @@ export function FooterButton({
 const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
 /** Sections whose bottom shader takes the Home colours instead of their own. */
 const HOME_COLOUR_VARIANTS = new Set<string>(["engagement", "services"]);
+
+/** How light a shader colour must be: about Home's darkest. Darker colours, hard-light blended, cover the page like
+ *  a solid layer instead of tinting it (the Industries blues), so they are mixed with white up to this. */
+const MIN_SHADER_LUMINANCE = 0.4;
+
+function luminance([r, g, b]: number[]) {
+  const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+/** The colour, mixed with white just enough to reach MIN_SHADER_LUMINANCE; lighter colours are left as they are. */
+function shaderSafe(hex: string) {
+  const rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  if (rgb.some(Number.isNaN) || luminance(rgb) >= MIN_SHADER_LUMINANCE) return hex;
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 20; i++) {
+    const mid = (lo + hi) / 2;
+    if (luminance(rgb.map((c) => c + (1 - c) * mid)) < MIN_SHADER_LUMINANCE) lo = mid;
+    else hi = mid;
+  }
+  return `#${rgb.map((c) => Math.round((c + (1 - c) * hi) * 255).toString(16).padStart(2, "0")).join("")}`;
+}
 
 
 /** Whether the live shader can run here: WebGL2 and motion allowed. */
@@ -275,7 +298,8 @@ export function ScreenShader() {
     variant: variant ?? ("contact" as const),
     // Home has no palette of its own, so Home, Engagement and Capabilities use
     // the Home footer's pink and peach.
-    colors: variant && !HOME_COLOUR_VARIANTS.has(variant) ? undefined : HOME_SHADER_COLORS,
+    // Other pages keep their own hue, lifted to Home's lightness so the blend tints rather than covers.
+    colors: variant && !HOME_COLOUR_VARIANTS.has(variant) ? getVariantColors(variant).map(shaderSafe) : HOME_SHADER_COLORS,
     passthrough: true,
     scrollResponse: SCROLL_RESPONSE,
     // A fresh canvas if the browser ever drops one's WebGL context.
