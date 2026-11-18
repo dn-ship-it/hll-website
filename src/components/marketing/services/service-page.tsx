@@ -1,12 +1,14 @@
 import { MarketingShell } from "@/components/marketing/marketing-shell";
+import { InsideTheLab } from "@/components/marketing/home/sections-bottom";
+import { homePageContent } from "@/data/home";
 import type { ServicePageData } from "@/data/services/types";
 import {
   defaultFoundationDemo,
   normalizeServiceDemoConfig,
   resolveServiceDemoConfig,
 } from "@/lib/payload/service-demo";
-import { mapServiceToPage } from "@/lib/payload/marketing-mappers";
-import { getServiceBySlug } from "@/lib/payload/queries";
+import { mapHomePage, mapServiceToPage } from "@/lib/payload/marketing-mappers";
+import { getMarketingContent, getServiceBySlug } from "@/lib/payload/queries";
 import { loadEngagements, withRelatedStills } from "@/lib/payload/engagements";
 import type { ServiceDemoConfig } from "@/types/service-demo";
 import { CapabilitiesSection } from "./capabilities-section";
@@ -41,8 +43,17 @@ async function loadServicePage(fallback: ServicePageData) {
   }
 }
 
+/** The Home page's Inside the Lab (with its CMS edits), shown on capability pages until each has a lab demo of its own. */
+async function loadLab() {
+  try {
+    return mapHomePage(await getMarketingContent()).lab;
+  } catch {
+    return homePageContent.lab;
+  }
+}
+
 export async function ServicePage({ content }: { content: ServicePageData }) {
-  const { data, demo } = await loadServicePage(content);
+  const [{ data, demo }, lab] = await Promise.all([loadServicePage(content), loadLab()]);
 
   return (
     <MarketingShell markTint={getServiceTheme(data.variant).accent}>
@@ -82,6 +93,9 @@ export async function ServicePage({ content }: { content: ServicePageData }) {
             breadcrumb={data.breadcrumb}
             variant={data.variant}
           />
+          <div className="hll-home">
+            <InsideTheLab data={lab} />
+          </div>
           <RelatedServicesSection items={data.relatedServices} />
         </RevealRoot>
       </div>

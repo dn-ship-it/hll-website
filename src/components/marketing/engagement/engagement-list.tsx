@@ -66,6 +66,22 @@ type GridItem = {
 // A row of three, then one card across the full width, repeating (3, 1, 3, 1). Cards keep their own shape.
 const BIG = "feature-wide_1492x843";
 
+/** Engagements that trade places in the grid, by slug: each takes the other's spot and size. */
+const SWAPS: [string, string][] = [["galeries-lafayette", "wework"]];
+
+function applySwaps(items: GridItem[]): GridItem[] {
+  const out = [...items];
+  for (const [a, b] of SWAPS) {
+    const i = out.findIndex((item) => item.engagement.slug === a);
+    const j = out.findIndex((item) => item.engagement.slug === b);
+    if (i < 0 || j < 0) continue;
+    const [first, second] = [out[i].engagement, out[j].engagement];
+    out[i] = { ...out[i], engagement: second };
+    out[j] = { ...out[j], engagement: first };
+  }
+  return out;
+}
+
 /** The grid's order: each row of three is a card video, an image card, then a ripple card. Image cards are the named clients
     with a still; once they run out, the row ends in ripples. The full-width card is a video while any are left, then a ripple. */
 function arrangeGrid(list: Engagement[]): GridItem[] {
@@ -90,7 +106,7 @@ function arrangeGrid(list: Engagement[]): GridItem[] {
     const big = videos.shift() ?? (ripples[0]?.art?.slots[BIG] ? ripples.shift() : undefined);
     if (big) out.push({ engagement: big, media: "auto", slot: BIG, big: true });
   }
-  return out;
+  return applySwaps(out);
 }
 
 /** The engagement grid with an expanded, sticky filter: mainly 3 columns, with some cards in focus and bigger. */

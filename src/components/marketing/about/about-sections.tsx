@@ -8,6 +8,7 @@ import { HomeHeading } from "@/components/marketing/home/primitives";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
 import type { AboutPageData } from "@/data/about";
 
+import { CareersTeamCloud } from "./careers-team-cloud";
 import { ReachMapEmbed } from "./reach-map-embed";
 
 /** Portrait with the quote beside it; on mobile a hairline, then the portrait with the quote indented under it. */
@@ -140,9 +141,15 @@ export function AboutCareersSection({
 }) {
   return (
     <section className={`pb-[84px] ${className} ${SERVICE_GUTTER}`}>
-      <HomeHeading eyebrow={data.eyebrow} title={data.title} />
-      
-      <div className="mt-8 grid gap-[37px] lg:ml-[41.7%] lg:mt-[67px] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
+      {/* Desktop: the team photos fill the heading's row and below it, the heading over their top left. */}
+      <div className="relative">
+        <div className="lg:absolute lg:left-0 lg:top-0 lg:z-20">
+          <HomeHeading eyebrow={data.eyebrow} title={data.title} />
+        </div>
+        <CareersTeamCloud className="mt-8 lg:mt-0" />
+      </div>
+
+      <div className="mt-[54px] grid gap-[37px] lg:ml-[41.7%] lg:mt-[73px] lg:grid-cols-[226fr_24fr_595fr] lg:gap-0">
         <p className="text-[10px] uppercase leading-[1.15] tracking-[0.25em] text-[var(--hll-dark-grey)] lg:text-[12px]">{data.label}</p>
         {/* The points are grid rows (their items are display: contents), so the row gap spaces them. */}
         <ol className="space-y-[18px] lg:col-span-2 lg:grid lg:grid-cols-subgrid lg:gap-y-[30px] lg:space-y-0">
@@ -151,8 +158,8 @@ export function AboutCareersSection({
               <span className="hll-label block w-[15px] shrink-0 pt-[2px] text-[12px] leading-[1.2] text-black lg:pt-[3px]" style={{ fontFamily: "var(--hll-font-functional)" }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <p className="text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]">
-                <span className="text-black">{point.title}.</span> {point.body}
+              <p data-text-reveal className="text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:text-[clamp(1.125rem,calc(1.59*var(--vw)),1.5rem)]">
+                <span className="text-black">{`${point.title}.`}</span>{` ${point.body}`}
               </p>
             </li>
           ))}

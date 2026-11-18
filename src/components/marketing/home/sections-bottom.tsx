@@ -184,12 +184,14 @@ export function HowWeWork({
   const [videoMs, setVideoMs] = useState<Record<number, number>>({});
   const onVideoMs = (index: number) => (ms: number) =>
     setVideoMs((current) => (current[index] === ms ? current : { ...current, [index]: ms }));
+  // The centre video pauses with the timer, so each swap lands on its video's end.
+  const running = !autoplay || (inView && !held && !focused);
   const timer = (className?: string) =>
     autoplay ? (
       <StageTimer
         key={active}
         ms={videoMs[active] ?? STAGE_MS}
-        paused={!inView || held || focused}
+        paused={!running}
         onDone={() => go(1)}
         className={className}
       />
@@ -227,7 +229,7 @@ export function HowWeWork({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <StepMedia step={step} playing={isActive} onVideoMs={onVideoMs(index)} />
+              <StepMedia step={step} active={isActive} running={running} onVideoMs={onVideoMs(index)} />
               {isActive ? (
                 <>
                   <span className="mt-2 block text-[24px] leading-[27.8px] text-black">
@@ -280,7 +282,7 @@ export function HowWeWork({
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <StepMedia step={step} playing={isActive} onVideoMs={onVideoMs(index)} />
+              <StepMedia step={step} active={isActive} running={running} onVideoMs={onVideoMs(index)} />
               <span className="mt-[6px] block text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
                 {step.title}
               </span>
@@ -388,33 +390,38 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
 /** A How we work step's square: its motion piece looping over the still, or just the still. Only the centre card plays. */
 function StepMedia({
   step,
-  playing,
+  active,
+  running,
   onVideoMs,
 }: {
   step: HomeStep;
-  playing: boolean;
+  active: boolean;
+  running: boolean;
   onVideoMs?: (ms: number) => void;
 }) {
   return (
     <span className="relative block aspect-square w-full overflow-hidden rounded-lg">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={step.image} alt="" draggable={false} className="absolute inset-0 size-full object-cover" />
-      {step.video ? <NearVideo src={step.video} playing={playing} onVideoMs={onVideoMs} /> : null}
+      {step.video ? <NearVideo src={step.video} active={active} running={running} onVideoMs={onVideoMs} /> : null}
     </span>
   );
 }
 
 /**
- * A muted looping video that only downloads near the screen, plays while `playing` and on
+ * A muted looping video that only downloads near the screen, plays while `active` and `running` and on
  * screen, and otherwise waits on its first frame. No poster: the still shows until it loads.
  */
 function NearVideo({
   src,
-  playing,
+  active,
+  running,
   onVideoMs,
 }: {
   src: string;
-  playing: boolean;
+  /** The centre card: plays while `running`, otherwise waits on its first frame. */
+  active: boolean;
+  running: boolean;
   onVideoMs?: (ms: number) => void;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -436,14 +443,14 @@ function NearVideo({
   useEffect(() => {
     const video = ref.current;
     if (!video || !near) return;
-    if (playing && visible) {
+    if (active && running && visible) {
       void video.play().catch(() => {});
       return;
     }
     video.pause();
     // Off centre: back to the first frame, ready to play from the start.
-    if (!playing) video.currentTime = 0;
-  }, [near, playing, visible]);
+    if (!active) video.currentTime = 0;
+  }, [near, active, running, visible]);
   return (
     <video
       ref={ref}

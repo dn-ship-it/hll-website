@@ -554,8 +554,8 @@ export function OurClients({ data }: { data: HomePageContent["clients"] }) {
     : Array.from({ length: 8 }, () => null);
 
   return (
-    // The logos finish growing in once fully on screen.
-    <section data-image-reveal="fit" className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
+    // The logos finish growing in once fully on screen, without the blur, so each stays sharp as it slides in.
+    <section data-image-reveal="fit" data-image-max-blur="0" className="hll-home-section overflow-hidden bg-[var(--hll-bg)] py-[154px] lg:pb-[104px] lg:pt-[76px]">
       <div className={HOME_GUTTER}>
         <HomeHeading eyebrow={data.eyebrow} title={data.title} />
       </div>

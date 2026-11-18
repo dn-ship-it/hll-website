@@ -142,6 +142,7 @@ export const homePageContent: HomePageContent = {
         id: "build",
         title: "Build",
         image: "/assets/home/build.webp",
+        video: "/assets/home/build.mp4",
         body: "We leverage the collective momentum of our people along with future mental models to deliver impact-driven products and services.",
       },
       {

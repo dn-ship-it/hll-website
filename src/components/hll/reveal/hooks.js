@@ -16,10 +16,10 @@ import { scrubImage, bindImageTrigger, IMAGE_REVEAL_DEFAULTS } from './image-rev
 const SKIP_TAGS = new Set(['A', 'BUTTON', 'LABEL', 'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT', 'SELECT', 'OPTION', 'TITLE', 'CODE', 'PRE', 'TIME', 'SUMMARY']);
 const SKIP_CLOSEST = "button, label, nav, svg, canvas, [role='button'], [role='tab'], [role='menuitem'], [role='dialog'], [contenteditable], [aria-hidden='true'], [data-no-text-scroll], [class*='gtr-']";
 
-function textEligible(el, text, skipSelector) {
+function textEligible(el, text, skipSelector, anyLength = false) {
   if (SKIP_TAGS.has(el.tagName) || el.closest(skipSelector)) return false;
   const words = text.trim().split(/\s+/).filter(Boolean).length;
-  if (words < (/^H[2-6]$/.test(el.tagName) ? 2 : 3)) return false;
+  if (!words || (!anyLength && words < (/^H[2-6]$/.test(el.tagName) ? 2 : 3))) return false;
   const own = getComputedStyle(el);
   if (own.webkitLineClamp && own.webkitLineClamp !== 'none') return false;
   if (own.textOverflow === 'ellipsis') return false;
@@ -57,7 +57,39 @@ export function useTextReveal(rootRef, options = {}) {
       observer.observe(el, words);
     };
     const seen = new WeakSet();
+    const undo = [];
+    // Site addition: [data-text-reveal] animates at any length, and as one run
+    // of words when it mixes text with simple inline spans (a darker lead-in).
+    const splitMarked = (el) => {
+      if (seen.has(el)) return;
+      seen.add(el);
+      el.querySelectorAll('*').forEach((child) => seen.add(child));
+      if (!textEligible(el, el.textContent || '', skipSelector, true)) return;
+      const words = [];
+      const texts = [];
+      el.childNodes.forEach((n) => {
+        if (n.nodeType === Node.TEXT_NODE) texts.push(n);
+        else if (n.nodeType === Node.ELEMENT_NODE && n.childNodes.length === 1 && n.firstChild.nodeType === Node.TEXT_NODE) texts.push(n.firstChild);
+      });
+      texts.forEach((t) => {
+        const parts = (t.textContent || '').split(/(\s+)/).filter(Boolean);
+        if (!parts.some((p) => p.trim())) return;
+        const nodes = parts.map((p) => {
+          if (!p.trim()) return document.createTextNode(p);
+          const span = document.createElement('span');
+          span.className = `${WORD_CLASS} is-hidden`;
+          span.textContent = p;
+          words.push(span);
+          return span;
+        });
+        t.replaceWith(...nodes);
+        undo.push(() => { if (nodes[0].isConnected) { nodes[0].before(t); nodes.forEach((n) => n.remove()); } });
+      });
+      if (words.length) observer.observe(el, words);
+    };
     const scan = (scope) => {
+      if (scope.matches?.('[data-text-reveal]')) splitMarked(scope);
+      scope.querySelectorAll?.('[data-text-reveal]').forEach(splitMarked);
       const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
       const parents = [];
       for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -79,6 +111,7 @@ export function useTextReveal(rootRef, options = {}) {
     return () => {
       observer.disconnect(); mutations.disconnect();
       blocks.forEach((text, el) => { if (el.isConnected) el.replaceChildren(document.createTextNode(text)); });
+      undo.forEach((restore) => restore());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rootRef, optionsKey]);

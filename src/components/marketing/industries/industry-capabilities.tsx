@@ -67,7 +67,7 @@ export function IndustryCapabilitiesSection({
                   className="h-px flex-1 bg-[var(--hll-mid-grey)] lg:col-span-2"
                 />
               </div>
-              <h3 className="mt-3 text-[24px] font-normal leading-[1.16] text-black lg:col-start-2 lg:mt-9 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
+              <h3 data-text-reveal className="mt-3 text-[24px] font-normal leading-[1.16] text-black lg:col-start-2 lg:mt-9 lg:text-[clamp(1.75rem,calc(2.38*var(--vw)),2.25rem)]">
                 {item.title}
               </h3>
               <div className="mt-4 max-w-[368px] space-y-3 text-[14px] leading-[1.25] text-[var(--hll-dark-grey)] lg:col-start-3 lg:mt-9 lg:space-y-4 lg:text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)]">
