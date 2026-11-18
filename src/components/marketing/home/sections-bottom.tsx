@@ -71,17 +71,17 @@ function StageTimer({
   );
 }
 
+/** The site's arrow: a "<" or ">" in the functional font, as on Capabilities and the testimonials, with a bigger tap area. */
 function Arrow({ direction, onClick }: { direction: "prev" | "next"; onClick: () => void }) {
   return (
     <button
       type="button"
       aria-label={direction === "prev" ? "Previous stage" : "Next stage"}
       onClick={onClick}
-      className="grid size-[17px] place-items-center text-[var(--hll-dark-grey)] hover:opacity-60"
+      className="-m-3 grid size-[41px] place-items-center text-[12px] leading-none text-[var(--hll-dark-grey)] transition-opacity hover:opacity-60"
+      style={{ fontFamily: "var(--hll-font-functional)" }}
     >
-      <svg viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden className="size-[17px]">
-        {direction === "prev" ? <path d="M16 8.5H1M8 1.5l-7 7 7 7" /> : <path d="M1 8.5h15M9 1.5l7 7-7 7" />}
-      </svg>
+      {direction === "prev" ? "<" : ">"}
     </button>
   );
 }
@@ -99,11 +99,19 @@ export function HowWeWork({
   const [active, setActive] = useState(Math.min(1, steps.length - 1));
   const count = steps.length;
   const slotOf = (index: number, at = active) => (index - at + 1 + count) % count;
-  // With three slots a turn sends one card from end to end; it is remounted at its new slot
-  // (a new key) and fades in rather than sliding across the middle card.
+  // With three slots a turn sends one card from end to end; it swings round behind the middle
+  // card (smaller and faded at the halfway point), like a rotary.
   const [wraps, setWraps] = useState<number[]>(() => steps.map(() => 0));
+  // The step just left: its text fades out while the new one's fades up.
+  const [leaving, setLeaving] = useState<number | null>(null);
+  useEffect(() => {
+    if (leaving === null) return undefined;
+    const t = window.setTimeout(() => setLeaving(null), 700);
+    return () => window.clearTimeout(t);
+  }, [leaving]);
   const select = (next: number) => {
     if (next === active) return;
+    setLeaving(active);
     setWraps((current) =>
       current.map((n, index) =>
         Math.abs(slotOf(index, next) - slotOf(index)) === 2 ? n + 1 : n,
@@ -197,8 +205,12 @@ export function HowWeWork({
       />
     ) : null;
 
-  const wrapIn = (index: number) =>
-    wraps[index] ? "hww-wrap-in 500ms 250ms cubic-bezier(0.22,1,0.36,1) both" : undefined;
+  // Two copies of the same keyframes, so each wrap restarts the swing.
+  const rotary = (index: number) =>
+    wraps[index] ? `hww-rotary-${wraps[index] % 2 ? "a" : "b"} 700ms cubic-bezier(0.22,1,0.36,1) both` : undefined;
+  const textIn = "hww-text-in 600ms 300ms cubic-bezier(0.22,1,0.36,1) both";
+  const textOut = "hww-text-out 300ms ease-in both";
+  const swinging = (index: number) => Math.abs(slotOf(index) - slotOf(index, leaving ?? active)) === 2;
 
   return (
     <section className={`hll-home-section pb-[154px] ${HOME_GUTTER}`}>
@@ -216,7 +228,7 @@ export function HowWeWork({
           const isActive = index === active;
           return (
             <button
-              key={`${step.id}-${wraps[index]}`}
+              key={step.id}
               type="button"
               onClick={() => select(index)}
               aria-current={isActive ? "step" : undefined}
@@ -225,21 +237,22 @@ export function HowWeWork({
                 left: mobileLeft(slotIndex),
                 top: slot.y,
                 width: slotIndex === 1 ? MOBILE_ACTIVE_W : slot.size,
-                animation: wrapIn(index),
+                animation: rotary(index),
+                zIndex: leaving !== null && swinging(index) ? 0 : isActive ? 2 : 1,
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <StepMedia step={step} active={isActive} running={running} onVideoMs={onVideoMs(index)} />
-              {isActive ? (
-                <>
+              {isActive || index === leaving ? (
+                <span key={isActive ? "in" : "out"} className="block" style={{ animation: isActive ? textIn : textOut }}>
                   <span className="mt-2 block text-[24px] leading-[27.8px] text-black">
                     {step.title}
                   </span>
                   <span className="mt-3 block max-w-[312px] text-[14px] leading-[17.5px] text-[var(--hll-dark-grey)]">
                     {step.body}
                   </span>
-                  {timer("mt-4")}
-                </>
+                  {isActive ? timer("mt-4") : null}
+                </span>
               ) : null}
             </button>
           );
@@ -269,7 +282,7 @@ export function HowWeWork({
           const isActive = index === active;
           return (
             <button
-              key={`${step.id}-${wraps[index]}`}
+              key={step.id}
               type="button"
               onClick={() => select(index)}
               aria-current={isActive ? "step" : undefined}
@@ -278,7 +291,8 @@ export function HowWeWork({
                 left: pct(slot.x, STAGE.w),
                 top: pct(slot.y, STAGE.h),
                 width: pct(slot.size, STAGE.w),
-                animation: wrapIn(index),
+                animation: rotary(index),
+                zIndex: leaving !== null && swinging(index) ? 0 : isActive ? 2 : 1,
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -286,13 +300,13 @@ export function HowWeWork({
               <span className="mt-[6px] block text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)] font-normal leading-[1.16] text-black">
                 {step.title}
               </span>
-              {isActive ? (
-                <>
+              {isActive || index === leaving ? (
+                <span key={isActive ? "in" : "out"} className="block" style={{ animation: isActive ? textIn : textOut }}>
                   <span className="mt-[10px] block max-w-[460px] text-[clamp(1rem,calc(1.32*var(--vw)),1.25rem)] leading-[1.25] text-[var(--hll-dark-grey)]">
                     {step.body}
                   </span>
-                  {timer("mt-5")}
-                </>
+                  {isActive ? timer("mt-5") : null}
+                </span>
               ) : null}
             </button>
           );
@@ -387,7 +401,8 @@ export function InsideTheLab({ data }: { data: HomePageContent["lab"] }) {
   );
 }
 
-/** A How we work step's square: its motion piece looping over the still, or just the still. Only the centre card plays. */
+/** A How we work step's square: its motion piece looping over the still, or just the still. Only the centre card plays;
+ *  the side cards show their still, greyed out. */
 function StepMedia({
   step,
   active,
@@ -400,10 +415,18 @@ function StepMedia({
   onVideoMs?: (ms: number) => void;
 }) {
   return (
-    <span className="relative block aspect-square w-full overflow-hidden rounded-lg">
+    // No scroll reveal: it left the stills cut off at the bottom until the cards were fully on screen.
+    <span
+      data-no-image-reveal
+      className={`relative block aspect-square w-full overflow-hidden rounded-lg transition-[filter,opacity] duration-700 ${active ? "" : "opacity-70 grayscale"}`}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={step.image} alt="" draggable={false} className="absolute inset-0 size-full object-cover" />
-      {step.video ? <NearVideo src={step.video} active={active} running={running} onVideoMs={onVideoMs} /> : null}
+      {step.video ? (
+        <span className={`absolute inset-0 transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}>
+          <NearVideo src={step.video} active={active} running={running} onVideoMs={onVideoMs} />
+        </span>
+      ) : null}
     </span>
   );
 }

@@ -876,9 +876,23 @@ main[data-intro="done"] :has(h1) > :not(:has(h1)):not(h1) {
 
 /* Home "How we work": a card wrapping from one end to the other fades in at
    its new slot instead of sliding across the middle card. */
-@keyframes hww-wrap-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* How we work: the card going from one end to the other swings round behind the middle one. */
+@keyframes hww-rotary-a {
+  0%, 100% { transform: none; opacity: 1; }
+  50% { transform: translateY(-6%) scale(0.55); opacity: 0.2; }
+}
+@keyframes hww-rotary-b {
+  0%, 100% { transform: none; opacity: 1; }
+  50% { transform: translateY(-6%) scale(0.55); opacity: 0.2; }
+}
+/* How we work: the centre card's text fades up as it arrives and out as it leaves. */
+@keyframes hww-text-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hww-text-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-8px); }
 }
 
 @keyframes values-saturate {
