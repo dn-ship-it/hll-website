@@ -6,11 +6,12 @@ import { pageZoom } from "@/lib/page-zoom";
 
 /**
  * Scales the element from its laid-out size at the top of the page to covering the viewport once its centre
- * reaches the viewport's centre, rounding its corners off on the way.
+ * reaches the viewport's centre, rounding its corners off on the way. A `follower` (the element right under it)
+ * moves down as it grows, keeping its gap to the window's bottom edge.
  */
 export function useScaleToViewport(
   ref: RefObject<HTMLElement | null>,
-  { desktopOnly = false }: { desktopOnly?: boolean } = {},
+  { desktopOnly = false, follower }: { desktopOnly?: boolean; follower?: RefObject<HTMLElement | null> } = {},
 ) {
   useEffect(() => {
     const node = ref.current;
@@ -21,10 +22,15 @@ export function useScaleToViewport(
     let frame = 0;
     const update = () => {
       frame = 0;
+      const next = follower?.current ?? null;
       if (desktopOnly && mobile.matches) {
         node.style.transform = "";
         node.style.borderRadius = "";
         node.style.marginBottom = "";
+        if (next) {
+          next.style.transform = "";
+          next.style.marginBottom = "";
+        }
         return;
       }
       let top = 0;
@@ -51,7 +57,15 @@ export function useScaleToViewport(
       node.style.borderRadius = `${8 * (1 - eased)}px`;
       // The window grows from its centre, so at full size it reaches this far past its own bottom;
       // leave room for that so it doesn't cover what follows. Fixed, not eased, so the page doesn't shift on scroll.
-      node.style.marginBottom = `${((cover - 1) * node.offsetHeight) / 2}px`;
+      const reach = ((cover - 1) * node.offsetHeight) / 2;
+      if (next) {
+        // The follower rides down with the growing edge and holds the room after itself instead (a margin
+        // on the window would collapse into the follower's own top margin and close the gap).
+        next.style.transform = `translateY(${reach * eased}px)`;
+        next.style.marginBottom = `${reach}px`;
+      } else {
+        node.style.marginBottom = `${reach}px`;
+      }
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -64,5 +78,5 @@ export function useScaleToViewport(
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [ref, desktopOnly]);
+  }, [ref, desktopOnly, follower]);
 }

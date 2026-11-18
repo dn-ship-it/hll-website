@@ -27,8 +27,9 @@ function HeroWindow({
   ctaHref: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
 
-  useScaleToViewport(ref, { desktopOnly: true });
+  useScaleToViewport(ref, { desktopOnly: true, follower: ctaRef });
 
   return (
     <>
@@ -67,8 +68,8 @@ function HeroWindow({
         />
       ) : null}
     </div>
-    {/* The outline button sits under the window on every screen. */}
-    <div className="mt-[54px] flex justify-center lg:mt-8">
+    {/* The outline button sits under the window on every screen, 32px below it on desktop even as it grows. */}
+    <div ref={ctaRef} className="mt-[54px] flex justify-center lg:mt-8">
       <HLLOutlineButton href={ctaHref} variant="engagement">
         {ctaLabel}
       </HLLOutlineButton>
