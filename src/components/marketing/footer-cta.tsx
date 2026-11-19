@@ -134,29 +134,54 @@ const HOME_SHADER_COLORS = ["#F49AB1", "#F483A6", "#F5CAA3"];
 /** Sections whose bottom shader takes the Home colours instead of their own. */
 const HOME_COLOUR_VARIANTS = new Set<string>(["engagement", "services"]);
 
-/** How light a shader colour must be: about Home's darkest. Darker colours, hard-light blended, cover the page like
- *  a solid layer instead of tinting it (the Industries blues), so they are mixed with white up to this. */
-const MIN_SHADER_LUMINANCE = 0.4;
+/*
+ * The blend layer's colour system (HLL-UI-Demo bottom-shader-palette.js, 19 Nov). Hard-light lifts a channel above 0.5
+ * and darkens one below it, so each page's colours are brought into Home's HSB band (hue kept, saturation 33-46%,
+ * brightness 96%) and only tint; the layer fades out to its palette's own hue, not white, so as it thins over black
+ * text it leaves a tint rather than a grey.
+ */
+const HOME_SATURATION = [0.33, 0.46];
+const HOME_BRIGHTNESS = 0.96;
+const FADE_SATURATION = 0.35;
+const FADE_BRIGHTNESS = 0.95;
 
-function luminance([r, g, b]: number[]) {
-  const lin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-}
+const channels = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+const toHex = (rgb: number[]) => `#${rgb.map((n) => Math.round(n * 255).toString(16).padStart(2, "0")).join("")}`;
 
-/** The colour, mixed with white just enough to reach MIN_SHADER_LUMINANCE; lighter colours are left as they are. */
-function shaderSafe(hex: string) {
-  const rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-  if (rgb.some(Number.isNaN) || luminance(rgb) >= MIN_SHADER_LUMINANCE) return hex;
-  let lo = 0;
-  let hi = 1;
-  for (let i = 0; i < 20; i++) {
-    const mid = (lo + hi) / 2;
-    if (luminance(rgb.map((c) => c + (1 - c) * mid)) < MIN_SHADER_LUMINANCE) lo = mid;
-    else hi = mid;
+/** Hex to [hue 0-6, saturation 0-1, brightness 0-1]. */
+function hexToHsb(hex: string) {
+  const [r, g, b] = channels(hex);
+  const max = Math.max(r, g, b);
+  const d = max - Math.min(r, g, b);
+  let h = 0;
+  if (d > 0) {
+    if (max === r) h = ((g - b) / d + 6) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
   }
-  return `#${rgb.map((c) => Math.round((c + (1 - c) * hi) * 255).toString(16).padStart(2, "0")).join("")}`;
+  return [h, max === 0 ? 0 : d / max, max];
 }
 
+function hsbToHex(h: number, s: number, v: number) {
+  const c = v * s;
+  const x = c * (1 - Math.abs((h % 2) - 1));
+  const m = v - c;
+  const [r, g, b] = [[c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x]][Math.floor(h) % 6];
+  return toHex([r + m, g + m, b + m]);
+}
+
+/** The colour's hue at Home's saturation range and brightness; Home's own colours come out as they were. */
+function toHomeBand(hex: string) {
+  const [h, s] = hexToHsb(hex);
+  return hsbToHex(h, Math.min(Math.max(s, HOME_SATURATION[0]), HOME_SATURATION[1]), HOME_BRIGHTNESS);
+}
+
+/** What the blend layer fades out to: the palette's mean hue, light. */
+function paletteFadeColour(hexes: string[]) {
+  const rgb = hexes.map(channels);
+  const mean = toHex([0, 1, 2].map((i) => rgb.reduce((sum, c) => sum + c[i], 0) / rgb.length));
+  return hsbToHex(hexToHsb(mean)[0], FADE_SATURATION, FADE_BRIGHTNESS);
+}
 
 /** Whether the live shader can run here: WebGL2 and motion allowed. */
 function useShaderAble() {
@@ -199,6 +224,28 @@ const DEMO_SETTINGS: ShaderSettings = {
   ...TUNED_SETTINGS,
   tune: { ...TUNED_SETTINGS.tune, vignetteFollow: 0.9 },
 };
+/** A page's blend layer: its palette in Home's band, and settings that fade to the palette's hue. Cached per palette so
+ *  the settings keep one identity (BottomShader restarts its effect when they change). */
+const blendCache = new Map<string, { colors: string[]; settings: ShaderSettings }>();
+function blendLayerFor(palette: string[]) {
+  const key = palette.join(",");
+  let entry = blendCache.get(key);
+  if (!entry) {
+    const colors = palette.map(toHomeBand);
+    const fade = paletteFadeColour(colors);
+    entry = {
+      colors,
+      settings: {
+        ...DEMO_SETTINGS,
+        background: { ...DEMO_SETTINGS.background, fadeColor: fade },
+        // The output pass mixes toward this where the layer is clear; it must match the fade or the edge greys.
+        output: { ...DEMO_SETTINGS.output, color: fade },
+      },
+    };
+    blendCache.set(key, entry);
+  }
+  return entry;
+}
 const DEMO_END_SETTINGS: ShaderSettings = {
   ...TUNED_SETTINGS,
   shatter: { ...TUNED_SETTINGS.shatter, amount: 1 },
@@ -294,12 +341,14 @@ export function ScreenShader() {
   if (!able || !started || (!show && !warm)) return null;
 
   const variant = variantForPath(pathname);
+  // Home has no palette of its own, so Home, Engagement and Capabilities use the Home footer's pink and peach;
+  // every page's colours then go through Home's band.
+  const blend = blendLayerFor(
+    variant && !HOME_COLOUR_VARIANTS.has(variant) ? getVariantColors(variant) : HOME_SHADER_COLORS,
+  );
   const common = {
     variant: variant ?? ("contact" as const),
-    // Home has no palette of its own, so Home, Engagement and Capabilities use
-    // the Home footer's pink and peach.
-    // Other pages keep their own hue, lifted to Home's lightness so the blend tints rather than covers.
-    colors: variant && !HOME_COLOUR_VARIANTS.has(variant) ? getVariantColors(variant).map(shaderSafe) : HOME_SHADER_COLORS,
+    colors: blend.colors,
     passthrough: true,
     scrollResponse: SCROLL_RESPONSE,
     // A fresh canvas if the browser ever drops one's WebGL context.
@@ -311,7 +360,7 @@ export function ScreenShader() {
       <BottomShader
         key={`blend-${generation}`}
         {...common}
-        settings={DEMO_SETTINGS}
+        settings={blend.settings}
         layout={BLEND_LAYOUT}
         overlay
         paused={!show}

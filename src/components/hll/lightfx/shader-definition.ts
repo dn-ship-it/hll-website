@@ -13,6 +13,9 @@ export type ShaderSettings = {
     color: string;
     /** Composite the canvas over whatever is behind it instead of painting an opaque plate. */
     transparent?: boolean;
+    /** What the vignette fades out to; defaults to `color`. The bottom shader's blend layer sets it to its palette's
+     *  hue so a thinning layer stays a tint under hard-light instead of greying dark content (HLL-UI-Demo, 19 Nov). */
+    fadeColor?: string;
   };
   vignette: {
     radius: number;
