@@ -13,6 +13,12 @@ export type ShaderSettings = {
     color: string;
     /** Composite the canvas over whatever is behind it instead of painting an opaque plate. */
     transparent?: boolean;
+    /**
+     * What the vignette fades out to (default: `color`, i.e. white). The overlay layer sets it to the palette's hue so
+     * a thinning layer stays a saturated tint under hard-light instead of draining to grey over dark content. Only the
+     * vignette's clear colour uses it; `color` still drives the output base and the canvas clear.
+     */
+    fadeColor?: string;
   };
   vignette: {
     radius: number;
