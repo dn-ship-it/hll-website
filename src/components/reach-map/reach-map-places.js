@@ -22,7 +22,6 @@ import nileshPhoto from './photos/nilesh.jpg';
 import advaithPhoto from './photos/advaith.jpg';
 import arjunPhoto from './photos/arjun.jpg';
 import rimaPhoto from './photos/rima.jpg';
-import tejPhoto from './photos/tej.jpg';
 
 export const PLACES = [
   { id: 'cupertino', label: 'Cupertino', sub: 'California, United States', country: 'United States of America', precision: 'city', lat: 37.32, lon: -122.03 },
@@ -74,7 +73,7 @@ export const ENGAGEMENT_PLACE_OVERRIDES = {
 export const OFFICES = [
   { id: 'cupertino', type: 'Registered office', placeId: 'cupertino', team: ['hannan', 'nilesh'] },
   { id: 'delaware', type: 'Registered business address', placeId: 'delaware', team: [] },
-  { id: 'amsterdam', type: 'Registered business address', placeId: 'amsterdam', team: ['tej', 'arjun'] },
+  { id: 'amsterdam', type: 'Registered business address', placeId: 'amsterdam', team: ['arjun'] },
   { id: 'dubai', type: 'Office', placeId: 'dubai', team: ['arjun'] },
   { id: 'india', type: 'Office', placeId: 'india', team: ['nilesh', 'rima'] },
 ];
@@ -92,7 +91,6 @@ export const PEOPLE = {
   rima: { name: 'Rima Sarkar', role: 'Head of Growth', photo: rimaPhoto, home: [], email: 'Rima@hyperlycheelabs.com' },
   vidya: { name: 'Vidya Mohan', role: 'Partner', photo: null, home: ['india'], email: 'Vidya@hyperlycheelabs.com' },
   santosh: { name: 'Santosh Maruwada', role: 'Associate Partner', photo: null, home: ['singapore'], email: 'Santosh@hyperlycheelabs.com' },
-  tej: { name: 'Tej Haldule', role: null, photo: tejPhoto, home: [], email: 'Tej@hyperlycheelabs.com' },
 };
 
 // Service -> the gradient variant its accent uses. Cloud has no variant of

@@ -95,15 +95,6 @@ export const TEAM = [
     "caption": "Deepak"
   },
   {
-    "name": "Tej",
-    "image": "tej.webp",
-    "variant": "hll-foundation",
-    "headX": 0.5033,
-    "faceY": 0.1425,
-    "aspect": 0.4608,
-    "caption": "Tej"
-  },
-  {
     "name": "Santosh Maruwada",
     "image": "santosh-maruwada.webp",
     "variant": "hll-trust-and-governance",

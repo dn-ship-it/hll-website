@@ -140,10 +140,15 @@ function imageEligible(el) {
 
 /** Per-section tuning, read from the nearest [data-image-reveal] ancestor:
  *  data-image-reveal="scrub|fit", data-image-rate, data-image-start-offset, … */
+// Site addition: phones use 'fit' unless a section asks otherwise. 'scrub' only finishes once an image's top nears
+// the top of the screen, so on a phone a tall image (or the Home hero, which fits the first screen) stayed cut off
+// and blurred while fully in view.
+const phoneMode = () => (window.matchMedia('(width < 64rem)').matches ? { mode: 'fit' } : {});
+
 function configFor(el) {
   const host = el.closest('[data-image-reveal]');
-  if (!host) return {};
-  const cfg = {};
+  if (!host) return phoneMode();
+  const cfg = phoneMode();
   const mode = host.getAttribute('data-image-reveal');
   if (mode === 'scrub' || mode === 'fit') cfg.mode = mode;
   NUMERIC.forEach((key) => {

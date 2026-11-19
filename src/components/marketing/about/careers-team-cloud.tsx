@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { TEAM } from "./team-skyline/team.js";
 
 /**
- * The Careers team photos (Figma, HLL Website Feedback, 18 Nov): twelve headshots at different depths.
+ * The Careers team photos (Figma, HLL Website Feedback, 18 Nov): eleven headshots at different depths.
  * Bigger photos sit nearer, in front, and shift more as the cursor moves (phones: as the page scrolls).
  */
 
@@ -14,13 +14,13 @@ const DESKTOP = [
   ["rima-sarkar", 610, 48, 137], ["advaith", 460, 157, 100], ["dhanashree", 822, 162, 110],
   ["deepak-motwani", 1057, 90, 98], ["arjun-pathni", 252, 207, 147], ["nilesh-nalnikar", 565, 312, 138],
   ["chinmay", 919, 315, 190], ["santosh-maruwada", 1152, 232, 130], ["hannan-hakim", 305, 410, 130],
-  ["anjali-dharba", 755, 452, 127], ["spoorthi", 502, 507, 97], ["tej", 1249, 468, 107],
+  ["anjali-dharba", 755, 452, 127], ["spoorthi", 502, 507, 97],
 ] as const;
 const STAGE = { w: 1452, h: 640 };
 
 /** Phones: x, y and size on a 343 × 410 stage under the heading; each takes the person of the same size rank on desktop. */
 const MOBILE = [
-  [8, 20, 73], [120, 0, 50], [195, 40, 67], [280, 8, 53],
+  [8, 20, 73], [120, 0, 50], [195, 40, 67],
   [292, 110, 48], [210, 150, 58], [95, 95, 70], [120, 215, 95],
   [10, 150, 64], [240, 250, 63], [30, 285, 49], [250, 345, 55],
 ] as const;
