@@ -479,6 +479,8 @@ export function createShaderFX(
   };
   const bgColorVec = hexToRgb(settings.background.color);
   const outputColorVec = hexToRgb(settings.output.color);
+  // The vignette fades to this (see ShaderSettings.background.fadeColor); other surfaces leave it unset and fade to bg.
+  const fadeColorVec = settings.background.fadeColor ? hexToRgb(settings.background.fadeColor) : bgColorVec;
 
   const renderScale = options.multiplier ?? 0.6;
 
@@ -562,7 +564,7 @@ export function createShaderFX(
       lerp(T.vignetteX, currPointer[0], T.vignetteFollow),
       lerp(T.vignetteY, currPointer[1], T.vignetteFollow),
     ]);
-    set3(u, "uClearColor", bgColorVec);
+    set3(u, "uClearColor", fadeColorVec);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     drawQuad();
