@@ -371,7 +371,12 @@ export function MobileMenu({
         aria-controls="mobile-menu"
         className="-m-2 grid size-11 -translate-y-[2px] place-items-center lg:hidden"
       >
-        <span aria-hidden className="size-7 rounded-full bg-[var(--hll-mid-grey)]" />
+        {/* Hamburger (Hannan, 20 Nov; the Figma frame had a grey dot): drawn like the menu's close cross, 1px black lines. */}
+        <span aria-hidden className="flex w-5 flex-col gap-[6px]">
+          <span className="h-px w-full bg-black" />
+          <span className="h-px w-full bg-black" />
+          <span className="h-px w-full bg-black" />
+        </span>
       </button>
       {open ? createPortal(menu, document.body) : null}
     </>

@@ -69,6 +69,17 @@ const CARDS: Record<string, Card[]> = {
       logo: "logo-undp--logo-white",
     },
   ],
+  // Hannan, 20 Nov: "Loyana - Head Of Growth" (no surname given).
+  "travel-hospitality": [
+    {
+      quote:
+        "HLL helped us brand and reimagine a 260+ year old legacy institution. Their team has a strong culture where partners are involved in every step of the way. In our case it was Hannan.",
+      name: "Loyana",
+      role: "Head of Growth",
+      company: "Cox & Kings",
+      logo: "logo-cox-and-kings--logo",
+    },
+  ],
   pettech: [
     {
       quote:
