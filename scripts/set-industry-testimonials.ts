@@ -58,7 +58,7 @@ const CARDS: Record<string, Card[]> = {
         "We've trusted them with our core data systems, architecture and digital consumer portfolio. They've had direct impact on our growth.",
       name: "Gabriella Demetriades",
       company: "Deme",
-      logo: null,
+      logo: "logo-deme--logo-white",
     },
   ],
   "international-organization": [
@@ -82,9 +82,14 @@ const CARDS: Record<string, Card[]> = {
 
 const payload = await getPayload({ config });
 
-/** Logos made for these cards (a white UNDP from its client-strip logo), uploaded once if missing. */
+/**
+ * Logos made for these cards, uploaded once if missing: a white UNDP from its client-strip logo, a white Deme from
+ * demebygabriella.com, and the Cox & Kings crest from coxandkings.com (for its card once approved).
+ */
 const BUNDLED: Record<string, string> = {
   "logo-undp--logo-white": "scripts/assets/logo-undp--logo-white.png",
+  "logo-deme--logo-white": "scripts/assets/logo-deme--logo-white.png",
+  "logo-cox-and-kings--logo": "scripts/assets/logo-cox-and-kings--logo.png",
 };
 
 async function mediaId(prefix: string | null) {
@@ -135,7 +140,11 @@ for (const [slug, cards] of Object.entries(CARDS)) {
   };
   const same = (["quote", "name", "role", "company", "companyLogo", "portrait"] as const).every(
     (k) => (cv[k] ?? null) === (next[k] ?? null),
-  ) && JSON.stringify((cv.moreQuotes ?? []).map((q: Card) => q.quote)) === JSON.stringify(rest.map((c) => c.quote));
+  ) &&
+    JSON.stringify(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (cv.moreQuotes ?? []).map((q: any) => [q.quote, q.companyLogo ?? null]),
+    ) === JSON.stringify(next.moreQuotes.map((q: { quote: string; companyLogo: number | string | null }) => [q.quote, q.companyLogo ?? null]));
   if (same) {
     console.log(`${slug}: already set`);
     continue;
