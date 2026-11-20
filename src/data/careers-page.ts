@@ -51,15 +51,6 @@ export const ABOUT_HLL_INTRO = [
   "We know that success is not just about what we build, but how we build it. That's why we value transparency, accountability, and a commitment to doing what's right, even when it's not the easy choice. We believe in creating a culture that fosters creativity, diversity, and inclusivity - because we believe that the best ideas come from a range of perspectives.",
   "Join us on our mission to empower businesses to thrive in a rapidly changing world. Let's work together to build a better future, one impact story at a time.",
 ];
-const LOREM_1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sodales laoreet velit, sagittis laoreet neque tincidunt at.";
-const LOREM_2 = "Vestibulum euismod nec lacus vel volutpat. Aenean scelerisque sagittis metus, in luctus nibh rhoncus nec.";
-
-export const placeholderJdSections: CareerSection[] = [
-  { title: "The role", paragraphs: [`${LOREM_1} ${LOREM_2}`, `${LOREM_1} ${LOREM_2}`] },
-  { title: "Responsibilities", paragraphs: [`${LOREM_1} ${LOREM_2}`] },
-  { title: "Who you are", paragraphs: [`${LOREM_1} ${LOREM_2}`] },
-  { title: "Process", paragraphs: [`${LOREM_1} ${LOREM_2}`] },
-];
 
 export const careersPageContent: CareersPageContent = {
   breadcrumb: ["Careers"],
@@ -180,38 +171,3 @@ export const careersPageContent: CareersPageContent = {
   },
 };
 
-export const defaultCareerNotices: CareerNotice[] = [
-  {
-    id: "1",
-    slug: "senior-data-engineer",
-    title: "Senior Data Engineer",
-    summary:
-      "Design and build lakehouse pipelines, governed metrics, and integration layers for enterprise clients.",
-    expiryDate: "2026-10-15",
-    applyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=Senior%20Data%20Engineer",
-    documents: [{ label: "Job description (PDF)", url: "#" }],
-    sections: placeholderJdSections,
-  },
-  {
-    id: "2",
-    slug: "experience-design-lead",
-    title: "Experience Design Lead",
-    summary:
-      "Lead UX research and product design engagements — translating complexity into clarity for global brands.",
-    expiryDate: "2026-09-30",
-    applyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=Experience%20Design%20Lead",
-    documents: [{ label: "Job description (PDF)", url: "#" }],
-    sections: placeholderJdSections,
-  },
-  {
-    id: "3",
-    slug: "ai-ml-engineer",
-    title: "AI / ML Engineer",
-    summary:
-      "Ship production ML systems including knowledge graphs, anomaly detection, and LLM-powered workflows.",
-    expiryDate: null,
-    applyUrl: "mailto:spoorthi@hyperlycheelabs.com?subject=AI%20ML%20Engineer",
-    documents: [],
-    sections: placeholderJdSections,
-  },
-];

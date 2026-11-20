@@ -119,6 +119,7 @@ function IndustriesList({ industries }: { industries: IndustryMenuGroup[] }) {
 
 /** "In the News" belongs to Engagement only, as in the desktop menu. */
 function EngagementNews({ news }: { news: NewsData }) {
+  if (!news.items.length) return null;
   return (
     <div className="ml-px mr-[10px]">
       <NewsPanel

@@ -80,6 +80,7 @@ export function NewsPanel({
   className?: string;
   dividerClassName?: string;
 }) {
+  if (!news.items.length) return null;
   return (
     <Panel className={`h-[242px] pt-[19px] ${className}`} opacity={opacity}>
       {/* The Insights page is reached from here, not from its own menu item. */}
@@ -253,6 +254,11 @@ export function NavMenu({
   // travel from the button down into its panel without it closing.
   const show = (variant: NavVariant) => {
     window.clearTimeout(closeTimer.current);
+    // Engagement's menu is "In the News" alone: with no posts there is nothing to open.
+    if (variant === "engagement" && !news.items.length) {
+      setOpen(null);
+      return;
+    }
     setOpen(variant);
   };
   const hide = () => {

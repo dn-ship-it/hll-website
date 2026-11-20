@@ -15,13 +15,8 @@ const DEFAULT_NAV: SiteNavItem[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-export const DEFAULT_NEWS: NewsData = {
-  items: [
-    { title: "Fresh Recruit: John Doe joins HLL" },
-    { title: "HLL to showcase work at SFCON2026" },
-    { title: "HLL to showcase work at SFCON2026" },
-  ],
-};
+/** No Insights posts yet: "In the News" stays hidden rather than showing sample headlines. */
+export const DEFAULT_NEWS: NewsData = { items: [] };
 
 export function SiteHeader({
   siteName = "Hyper Lychee Labs",

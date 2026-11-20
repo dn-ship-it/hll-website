@@ -1,6 +1,5 @@
 import {
   careersPageContent,
-  defaultCareerNotices,
   type CareerNotice,
 } from "@/data/careers-page";
 import { aboutPage } from "@/data/about";
@@ -24,17 +23,14 @@ import {
   SeeOpenRoles,
 } from "./careers-sections";
 
+/** The CMS's open roles only: with none, Careers shows its "no open notices" message (no sample roles). */
 export async function loadRoles(): Promise<CareerNotice[]> {
   try {
     const careers = await getPublishedCareers();
-    const mapped = careers
-      .map(mapCareerToNotice)
-      .filter((notice) => isNoticeActive(notice));
-    if (mapped.length > 0) return mapped;
+    return careers.map(mapCareerToNotice).filter((notice) => isNoticeActive(notice));
   } catch {
-    // fall through
+    return [];
   }
-  return defaultCareerNotices.filter((notice) => isNoticeActive(notice));
 }
 
 export async function loadCareersContent() {

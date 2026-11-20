@@ -6,7 +6,6 @@ import { HomeHeading } from "@/components/marketing/home/primitives";
 import { RevealRoot } from "@/components/hll/reveal/reveal-root";
 import { MarketingShell } from "@/components/marketing/marketing-shell";
 import { SERVICE_GUTTER } from "@/components/marketing/services/service-chrome";
-import { placeholderJdSections } from "@/data/careers-page";
 
 import { loadCareersContent, loadRoles } from "./careers-page";
 import { OutlineTag, roleTags } from "./role-tags";
@@ -20,7 +19,8 @@ export async function JdPage({ slug }: { slug: string }) {
 
   const tags = roleTags(role);
   const applyHref = role.applyUrl ?? `mailto:spoorthi@hyperlycheelabs.com?subject=${encodeURIComponent(role.title)}`;
-  const sections = role.sections?.length ? role.sections : placeholderJdSections;
+  // A role without a written description skips "About the role" rather than showing filler.
+  const sections = role.sections ?? [];
 
   return (
     <MarketingShell>
@@ -56,6 +56,7 @@ export async function JdPage({ slug }: { slug: string }) {
           <JdApply href={applyHref} />
         </section>
 
+        {sections.length ? (
         <section className={`grid gap-[54px] pt-[54px] lg:grid-cols-[534fr_864fr_54fr] lg:gap-0 lg:pt-[131px] ${SERVICE_GUTTER}`}>
           <div className="lg:sticky lg:top-[calc(var(--nav-h)+24px)] lg:self-start">
             <HomeHeading eyebrow="Careers" title="About" eyebrowColor="var(--hll-mid-grey)" />
@@ -64,6 +65,7 @@ export async function JdPage({ slug }: { slug: string }) {
             <JdAccordion sections={sections} />
           </div>
         </section>
+        ) : null}
 
         <section className={`pb-[84px] pt-[84px] lg:pb-[151px] lg:pt-[214px] ${SERVICE_GUTTER}`}>
           <HomeHeading eyebrow="Careers" title="About HLL" />

@@ -36,10 +36,25 @@ async function loadIndustry(fallback: IndustryPageData) {
   }
 }
 
+const PLACEHOLDER_NAMES = new Set(["john doe", "jane doe"]);
+
 export async function IndustryPage({ content }: { content: IndustryPageData }) {
   const data = await loadIndustry(content);
   const accent = getIndustryAccent(data.hero.title, data.accentColor);
   const voice = data.clientVoice;
+  // Only real quotes: the design's "John Doe" placeholder (the code default, and Healthcare's CMS copy) stays hidden
+  // until a client quote is entered.
+  const slides = [
+    {
+      quote: voice.quote,
+      name: voice.name,
+      role: voice.role,
+      company: voice.company,
+      companyLogo: voice.companyLogo,
+      portrait: voice.portrait,
+    },
+    ...(voice.more ?? []),
+  ].filter((slide) => slide.quote?.trim() && !PLACEHOLDER_NAMES.has((slide.name ?? "").trim().toLowerCase()));
 
   return (
     <MarketingShell markTint={accent}>
@@ -54,23 +69,15 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
           data={data.capabilities}
           accentColor={accent}
         />
-        <VoiceSection
-          slides={[
-            {
-              quote: voice.quote,
-              name: voice.name,
-              role: voice.role,
-              company: voice.company,
-              companyLogo: voice.companyLogo,
-              portrait: voice.portrait,
-            },
-            ...(voice.more ?? []),
-          ]}
-          timerColor={accent}
-          wide
-          headingInset
-          heading={<HomeHeading eyebrow={voice.eyebrow} title="Client Voice" />}
-        />
+        {slides.length ? (
+          <VoiceSection
+            slides={slides}
+            timerColor={accent}
+            wide
+            headingInset
+            heading={<HomeHeading eyebrow={voice.eyebrow} title="Client Voice" />}
+          />
+        ) : null}
         <NamedExpertsSection data={data.experts} accentColor={accent} />
         <IndustryLabSection data={data.lab} />
         <RelatedServicesSection title="Related Industries" items={data.relatedIndustries} />
