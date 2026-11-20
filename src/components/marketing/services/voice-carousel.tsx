@@ -22,6 +22,7 @@ export function VoiceSection({
   divider = true,
   wide = false,
   headingInset = false,
+  logoBox,
 }: {
   slides: readonly ExpertVoice[];
   heading: React.ReactNode;
@@ -34,6 +35,11 @@ export function VoiceSection({
   wide?: boolean;
   /** Industry / Careers mobile set the heading in the 20px gutter (Services: 8px). */
   headingInset?: boolean;
+  /**
+   * Industry testimonials (handoff sheet, 20 Nov): with no portrait, the portrait's place is a box in this colour
+   * carrying the company logo, and the small logo tile is dropped.
+   */
+  logoBox?: string;
 }) {
   const count = slides.length;
   const many = count > 1;
@@ -106,6 +112,7 @@ export function VoiceSection({
   const data = slides[index] ?? slides[0];
   const accent = counterColor;
   const affiliation = [data.role, data.company].filter(Boolean).join(", ");
+  const boxed = Boolean(logoBox && !data.portrait && (data.companyLogo || data.company));
   const running = many && inView && !dragging;
 
   // A single testimonial shows no counter, arrows or timer bar, and doesn't rotate.
@@ -178,7 +185,27 @@ export function VoiceSection({
             className={`mr-2 min-w-0 flex-1 lg:ml-0 lg:mr-0 lg:w-[clamp(10rem,calc(19.8*var(--vw)),18.75rem)] lg:max-w-none lg:flex-none lg:shrink-0 ${wide ? "ml-[11px] max-w-[253px]" : "ml-[15px] max-w-[245px]"}`}
           >
             <div key={index} className="[animation:page-intro-in_500ms_cubic-bezier(0.22,1,0.36,1)_both]">
-              {data.portrait ? (
+              {boxed ? (
+                <div
+                  className={`grid w-full place-items-center rounded-[6px] lg:aspect-[3/4] lg:rounded-[4px] ${wide ? "aspect-square" : "aspect-[245/253]"}`}
+                  style={{ backgroundColor: logoBox }}
+                >
+                  {data.companyLogo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={data.companyLogo}
+                      alt={data.company ?? ""}
+                      draggable={false}
+                      className="max-h-[38%] w-[62%] object-contain"
+                    />
+                  ) : (
+                    // No logo supplied yet: the company's name in its place.
+                    <span className="px-4 text-center text-[28px] leading-[1.1] text-white lg:text-[clamp(1.5rem,calc(2.38*var(--vw)),2.25rem)]">
+                      {data.company}
+                    </span>
+                  )}
+                </div>
+              ) : data.portrait ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={data.portrait}
@@ -195,7 +222,7 @@ export function VoiceSection({
             </div>
             {timer("mt-2 hidden lg:block")}
           </div>
-          {data.company || data.companyLogo ? (
+          {!boxed && (data.company || data.companyLogo) ? (
             <div className="ml-auto grid aspect-square w-[57px] shrink-0 place-items-center rounded-[6px] bg-[#24477F] p-1 text-center text-[9px] text-white lg:ml-0 lg:w-[clamp(4.5rem,calc(7.6*var(--vw)),7.2rem)] lg:rounded-[4px] lg:p-2 lg:text-[11px]">
               {data.companyLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element

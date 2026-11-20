@@ -73,6 +73,7 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
           <VoiceSection
             slides={slides}
             timerColor={accent}
+            logoBox={accent}
             wide
             headingInset
             heading={<HomeHeading eyebrow={voice.eyebrow} title="Client Voice" />}

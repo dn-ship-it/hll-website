@@ -8,6 +8,8 @@ const INDUSTRY_ACCENTS: Record<string, string> = {
   insurance: "#5EE9F8",
   "retail commerce & brands": "#FB500C",
   "pet tech": "#F8AF7E",
+  // The page's title is written as one word.
+  pettech: "#F8AF7E",
   "travel & hospitality": "#798CF6",
   "public sector – tax & commerce": "#FFDA52",
   "public sector – external affairs": "#FFBA6E",

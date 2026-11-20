@@ -215,7 +215,8 @@ export function mapIndustryPage(
       eyebrow: pc.clientVoice?.eyebrow ?? fallback.clientVoice.eyebrow,
       quote: pc.clientVoice?.quote ?? fallback.clientVoice.quote,
       name: pc.clientVoice?.name ?? fallback.clientVoice.name,
-      role: pc.clientVoice?.role ?? fallback.clientVoice.role,
+      // A CMS quote keeps its own attribution: no title means none, not the placeholder's.
+      role: pc.clientVoice?.quote ? (pc.clientVoice.role ?? "") : (pc.clientVoice?.role ?? fallback.clientVoice.role),
       company: pc.clientVoice?.company ?? fallback.clientVoice.company,
       companyLogo:
         resolveMediaUrl(pc.clientVoice?.companyLogo as CmsImageRef) ?? fallback.clientVoice.companyLogo,
