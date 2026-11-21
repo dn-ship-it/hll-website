@@ -13,6 +13,8 @@ const INDUSTRY_ACCENTS: Record<string, string> = {
   "travel & hospitality": "#798CF6",
   "public sector – tax & commerce": "#FFDA52",
   "public sector – external affairs": "#FFBA6E",
+  // The merged page's title (yellow, as the testimonials sheet and the tax & commerce page).
+  "public sector & government services": "#FFDA52",
   "international organization": "#2EB8F6",
   healthcare: "#09C1B6",
   pharmaceuticals: "#086EE8",

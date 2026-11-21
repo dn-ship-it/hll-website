@@ -188,7 +188,7 @@ export function VoiceSection({
               {boxed ? (
                 <div
                   className={`grid w-full place-items-center rounded-[6px] lg:aspect-[3/4] lg:rounded-[4px] ${wide ? "aspect-square" : "aspect-[245/253]"}`}
-                  style={{ backgroundColor: logoBox }}
+                  style={{ backgroundColor: data.boxColor ?? logoBox }}
                 >
                   {data.companyLogo ? (
                     // eslint-disable-next-line @next/next/no-img-element

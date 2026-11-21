@@ -54,7 +54,14 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
       portrait: voice.portrait,
     },
     ...(voice.more ?? []),
-  ].filter((slide) => slide.quote?.trim() && !PLACEHOLDER_NAMES.has((slide.name ?? "").trim().toLowerCase()));
+  ]
+    .filter((slide) => slide.quote?.trim() && !PLACEHOLDER_NAMES.has((slide.name ?? "").trim().toLowerCase()))
+    // The testimonials sheet: McKinsey's card sits in its navy wordmark box, not the page colour.
+    .map((slide) => (/mckinsey/i.test(slide.company ?? "") ? { ...slide, boxColor: "#24477F" } : slide));
+  // HLL's own views (no client named) are Expert Voice; any client quote makes it Client Voice.
+  const voiceTitle = slides.every((slide) => /^(hll|hyper lychee labs)$/i.test((slide.company ?? "").trim()))
+    ? "Expert Voice"
+    : "Client Voice";
 
   return (
     <MarketingShell markTint={accent}>
@@ -76,7 +83,7 @@ export async function IndustryPage({ content }: { content: IndustryPageData }) {
             logoBox={accent}
             wide
             headingInset
-            heading={<HomeHeading eyebrow={voice.eyebrow} title="Client Voice" />}
+            heading={<HomeHeading eyebrow={voice.eyebrow} title={voiceTitle} />}
           />
         ) : null}
         <NamedExpertsSection data={data.experts} accentColor={accent} />

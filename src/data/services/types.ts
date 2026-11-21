@@ -56,6 +56,8 @@ export type ExpertVoice = {
   portrait?: string;
   /** Company logo for the 115px tile next to the portrait. */
   companyLogo?: string;
+  /** Industry logo box: this card's own box colour instead of the page accent (McKinsey's navy). */
+  boxColor?: string;
 };
 
 export type ServicePageData = {

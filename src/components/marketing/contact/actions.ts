@@ -1,5 +1,8 @@
 "use server";
 
+import { after } from "next/server";
+
+import { sendEnquiryEmail } from "@/lib/enquiry-email";
 import { getPayloadClient } from "@/lib/payload/client";
 
 export type EnquiryState = {
@@ -11,7 +14,7 @@ export type EnquiryState = {
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Stores a Contact page message in the CMS (Enquiries). */
+/** Stores a Contact page message in the CMS (Enquiries) and, once Workspace email is set up, emails it to the team. */
 export async function sendEnquiry(
   _prev: EnquiryState,
   formData: FormData,
@@ -36,6 +39,15 @@ export async function sendEnquiry(
       collection: "enquiries",
       data,
       overrideAccess: true,
+    });
+    // Saved first, so a mail failure never loses the enquiry. The email goes after the response, so the
+    // visitor sees "Thanks" without waiting on the mail server.
+    after(async () => {
+      try {
+        await sendEnquiryEmail(data);
+      } catch (error) {
+        console.error("Enquiry saved, but the email to the team failed:", error);
+      }
     });
     return {
       status: "success",

@@ -80,6 +80,65 @@ const CARDS: Record<string, Card[]> = {
       logo: "logo-cox-and-kings--logo",
     },
   ],
+  // Signed off by Hannan, 21 Nov ("all quotes are signed off"). Arjun's title as on Careers until confirmed.
+  manufacturing: [
+    {
+      quote:
+        "Hyper Lychee Labs helped us set up our processes and systems, and assisted with building out an ERP from scratch modelled around our business.",
+      name: "Jason Borges",
+      role: "Head of Manufacturing",
+      company: "Deme by Gabriella",
+      logo: "logo-deme--logo-white",
+    },
+  ],
+  logistics: [
+    {
+      quote:
+        "Most logistics teams make routing decisions while shipment data and route data sit in separate systems. Bring the two together and a delay is visible while it is still small. That gives the team time to change the plan.",
+      name: "Hannan Hakim",
+      role: "CEO and Partner",
+      company: "HLL",
+      logo: "logo-hll--horizontal-white",
+    },
+  ],
+  banking: [
+    {
+      quote:
+        "A bank often knows a customer well in one channel and hardly at all in another. Joining that data under clear governance is the next real gain. It takes patience, because the data sits in many systems.",
+      name: "Hannan Hakim",
+      role: "CEO and Partner",
+      company: "HLL",
+      logo: "logo-hll--horizontal-white",
+    },
+  ],
+  "consulting-firms": [
+    {
+      quote:
+        "Consulting mandates now move faster and need deeper technical skills. A firm responds best when it can bring in a specialist engineer quickly and can trust that engineer with client work.",
+      name: "Arjun Pathni",
+      role: "Partner",
+      company: "HLL",
+      logo: "logo-hll--horizontal-white",
+    },
+  ],
+  "public-sector-government-services": [
+    {
+      quote:
+        "Public sector programmes have long timelines and many stakeholders, so early progress matters. Agreeing one clear outcome at the start gives everyone the same target. Small, visible steps keep support in place.",
+      name: "Hannan Hakim",
+      role: "CEO and Partner",
+      company: "HLL",
+      // Black: the white logo doesn't read on Public Sector's yellow (the sheet holds both).
+      logo: "logo-hll--horizontal-black",
+    },
+    {
+      quote:
+        "HLL was a delivery partner we could rely on. They understood what the mandate needed and worked without close oversight. Our team was glad to put its name on what they delivered.",
+      name: "Engagement Director",
+      company: "McKinsey & Company",
+      logo: "logo-fraud-model-recovery-government-tax-auth--logo-white",
+    },
+  ],
   pettech: [
     {
       quote:
@@ -101,6 +160,8 @@ const BUNDLED: Record<string, string> = {
   "logo-undp--logo-white": "scripts/assets/logo-undp--logo-white.png",
   "logo-deme--logo-white": "scripts/assets/logo-deme--logo-white.png",
   "logo-cox-and-kings--logo": "scripts/assets/logo-cox-and-kings--logo.png",
+  "logo-hll--horizontal-white": "scripts/assets/logo-hll--horizontal-white.png",
+  "logo-hll--horizontal-black": "scripts/assets/logo-hll--horizontal-black.png",
 };
 
 async function mediaId(prefix: string | null) {
